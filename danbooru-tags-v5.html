@@ -864,6 +864,9 @@
             font-size: 12px;
             padding: 4px 8px;
             border-radius: 6px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
         }
 
         /* 移动端三级分类优化 */
@@ -886,6 +889,15 @@
                 font-size: 16px;
                 min-width: 20px;
             }
+            
+            /* 移动端优化 - 减少缩进层次 */
+            .subcategory-item {
+                margin-left: 4px;
+            }
+            
+            .level3-item {
+                margin-left: 12px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -907,6 +919,21 @@
                 padding: 4px 7px;
                 margin: 2px 1px;
             }
+            
+            /* 小屏幕进一步优化 */
+            .category {
+                margin-bottom: 12px;
+            }
+            
+            .category-header {
+                padding: 14px 12px;
+                font-size: 15px;
+            }
+            
+            .subcategory-header {
+                padding: 12px 10px;
+                font-size: 13px;
+            }
         }
 
         /* 触摸设备优化 - 更大的点击区域 */
@@ -919,6 +946,13 @@
             .level3-header:active {
                 background: var(--soft-blue);
                 color: white;
+            }
+            
+            /* 触摸设备 - 标签更大 */
+            .level3-tags .tag {
+                padding: 6px 10px;
+                font-size: 13px;
+                margin: 3px 2px;
             }
         }
 
@@ -3245,132 +3279,137 @@
                         ]
                     },
                     {
-                        title: "8.13 季节主题 - 春季",
-                        tags: [
-                            { en: "spring", cn: "春季" },
-                            { en: "spring_clothes", cn: "春装" },
-                            { en: "light_jacket", cn: "薄外套" },
-                            { en: "cardigan", cn: "开衫毛衣" },
-                            { en: "trench_coat", cn: "风衣" },
-                            { en: "denim_jacket", cn: "牛仔外套" },
-                            { en: "bomber_jacket", cn: "飞行员夹克" },
-                            { en: "long_sleeve_shirt", cn: "长袖衬衫" },
-                            { en: "sweater", cn: "毛衣" },
-                            { en: "vest", cn: "马甲" },
-                            { en: "pleated_skirt", cn: "百褶裙" },
-                            { en: "a-line_skirt", cn: "A 字裙" },
-                            { en: "floral_dress", cn: "碎花裙" },
-                            { en: "sundress", cn: "太阳裙" },
-                            { en: "pastel_colors", cn: "柔和色彩" },
-                            { en: "cherry_blossom", cn: "樱花元素" },
-                            { en: "flower_print", cn: "花卉印花" },
-                            { en: "light_scarf", cn: "薄围巾" },
-                            { en: "ankle_boots", cn: "短靴" },
-                            { en: "sneakers", cn: "运动鞋" }
+                        title: "8.13 季节主题",
+                        items: [
+                            {
+                                title: "春季",
+                                tags: [
+                                    { en: "spring", cn: "春季" },
+                                    { en: "spring_clothes", cn: "春装" },
+                                    { en: "light_jacket", cn: "薄外套" },
+                                    { en: "cardigan", cn: "开衫毛衣" },
+                                    { en: "trench_coat", cn: "风衣" },
+                                    { en: "denim_jacket", cn: "牛仔外套" },
+                                    { en: "bomber_jacket", cn: "飞行员夹克" },
+                                    { en: "long_sleeve_shirt", cn: "长袖衬衫" },
+                                    { en: "sweater", cn: "毛衣" },
+                                    { en: "vest", cn: "马甲" },
+                                    { en: "pleated_skirt", cn: "百褶裙" },
+                                    { en: "a-line_skirt", cn: "A 字裙" },
+                                    { en: "floral_dress", cn: "碎花裙" },
+                                    { en: "sundress", cn: "太阳裙" },
+                                    { en: "pastel_colors", cn: "柔和色彩" },
+                                    { en: "cherry_blossom", cn: "樱花元素" },
+                                    { en: "flower_print", cn: "花卉印花" },
+                                    { en: "light_scarf", cn: "薄围巾" },
+                                    { en: "ankle_boots", cn: "短靴" },
+                                    { en: "sneakers", cn: "运动鞋" }
+                                ]
+                            },
+                            {
+                                title: "夏季",
+                                tags: [
+                                    { en: "summer", cn: "夏季" },
+                                    { en: "summer_clothes", cn: "夏装" },
+                                    { en: "t-shirt", cn: "T 恤" },
+                                    { en: "tank_top", cn: "背心" },
+                                    { en: "crop_top", cn: "短上衣" },
+                                    { en: "sleeveless_shirt", cn: "无袖衫" },
+                                    { en: "halterneck", cn: "挂脖装" },
+                                    { en: "tube_top", cn: "抹胸" },
+                                    { en: "camisole", cn: "吊带衫" },
+                                    { en: "shorts", cn: "短裤" },
+                                    { en: "denim_shorts", cn: "牛仔短裤" },
+                                    { en: "hot_pants", cn: "热裤" },
+                                    { en: "miniskirt", cn: "短裙" },
+                                    { en: "sundress", cn: "太阳裙" },
+                                    { en: "slip_dress", cn: "吊带裙" },
+                                    { en: "bikini", cn: "比基尼" },
+                                    { en: "one_piece_swimsuit", cn: "连体泳衣" },
+                                    { en: "sandals", cn: "凉鞋" },
+                                    { en: "flip-flops", cn: "人字拖" },
+                                    { en: "sun_hat", cn: "太阳帽" },
+                                    { en: "sunglasses", cn: "太阳镜" },
+                                    { en: "beach_cover-up", cn: "沙滩罩衫" },
+                                    { en: "tropical_print", cn: "热带印花" },
+                                    { en: "bright_colors", cn: "鲜艳色彩" }
+                                ]
+                            },
+                            {
+                                title: "秋季",
+                                tags: [
+                                    { en: "autumn", cn: "秋季" },
+                                    { en: "fall", cn: "秋天" },
+                                    { en: "autumn_clothes", cn: "秋装" },
+                                    { en: "sweater", cn: "毛衣" },
+                                    { en: "hoodie", cn: "连帽衫" },
+                                    { en: "cardigan", cn: "针织开衫" },
+                                    { en: "blazer", cn: "西装外套" },
+                                    { en: "leather_jacket", cn: "皮夹克" },
+                                    { en: "denim_jacket", cn: "牛仔夹克" },
+                                    { en: "trench_coat", cn: "风衣" },
+                                    { en: "peacoat", cn: "海军大衣" },
+                                    { en: "long_pants", cn: "长裤" },
+                                    { en: "jeans", cn: "牛仔裤" },
+                                    { en: "cargo_pants", cn: "工装裤" },
+                                    { en: "leggings", cn: "打底裤" },
+                                    { en: "long_skirt", cn: "长裙" },
+                                    { en: "midi_skirt", cn: "中长裙" },
+                                    { en: "plaid_skirt", cn: "格子裙" },
+                                    { en: "turtleneck", cn: "高领毛衣" },
+                                    { en: "scarf", cn: "围巾" },
+                                    { en: "beanie", cn: "针织帽" },
+                                    { en: "ankle_boots", cn: "短靴" },
+                                    { en: "knee_high_boots", cn: "高筒靴" },
+                                    { en: "loafers", cn: "乐福鞋" },
+                                    { en: "earth_tones", cn: "大地色系" },
+                                    { en: "plaid", cn: "格纹" },
+                                    { en: "knit", cn: "针织" }
+                                ]
+                            },
+                            {
+                                title: "冬季",
+                                tags: [
+                                    { en: "winter", cn: "冬季" },
+                                    { en: "winter_clothes", cn: "冬装" },
+                                    { en: "coat", cn: "外套" },
+                                    { en: "overcoat", cn: "大衣" },
+                                    { en: "down_jacket", cn: "羽绒服" },
+                                    { en: "puffer_jacket", cn: "棉服" },
+                                    { en: "parka", cn: "派克大衣" },
+                                    { en: "fur_coat", cn: "皮草大衣" },
+                                    { en: "wool_coat", cn: "羊毛大衣" },
+                                    { en: "trench_coat", cn: "风衣" },
+                                    { en: "peacoat", cn: "海军大衣" },
+                                    { en: "turtleneck", cn: "高领毛衣" },
+                                    { en: "sweater", cn: "毛衣" },
+                                    { en: "hoodie", cn: "连帽衫" },
+                                    { en: "thermal_underwear", cn: "保暖内衣" },
+                                    { en: "long_johns", cn: "秋衣秋裤" },
+                                    { en: "thick_pants", cn: "厚裤子" },
+                                    { en: "jeans", cn: "牛仔裤" },
+                                    { en: "leggings", cn: "打底裤" },
+                                    { en: "long_skirt", cn: "长裙" },
+                                    { en: "wool_skirt", cn: "毛呢裙" },
+                                    { en: "scarf", cn: "围巾" },
+                                    { en: "muffler", cn: "厚围巾" },
+                                    { en: "gloves", cn: "手套" },
+                                    { en: "mittens", cn: "连指手套" },
+                                    { en: "beanie", cn: "针织帽" },
+                                    { en: "earmuffs", cn: "耳罩" },
+                                    { en: "winter_hat", cn: "冬帽" },
+                                    { en: "snow_boots", cn: "雪地靴" },
+                                    { en: "knee_high_boots", cn: "高筒靴" },
+                                    { en: "leather_boots", cn: "皮靴" },
+                                    { en: "thick_socks", cn: "厚袜子" },
+                                    { en: "dark_colors", cn: "深色系" },
+                                    { en: "layered_look", cn: "层叠穿搭" }
+                                ]
+                            }
                         ]
                     },
                     {
-                        title: "8.14 季节主题 - 夏季",
-                        tags: [
-                            { en: "summer", cn: "夏季" },
-                            { en: "summer_clothes", cn: "夏装" },
-                            { en: "t-shirt", cn: "T 恤" },
-                            { en: "tank_top", cn: "背心" },
-                            { en: "crop_top", cn: "短上衣" },
-                            { en: "sleeveless_shirt", cn: "无袖衫" },
-                            { en: "halterneck", cn: "挂脖装" },
-                            { en: "tube_top", cn: "抹胸" },
-                            { en: "camisole", cn: "吊带衫" },
-                            { en: "shorts", cn: "短裤" },
-                            { en: "denim_shorts", cn: "牛仔短裤" },
-                            { en: "hot_pants", cn: "热裤" },
-                            { en: "miniskirt", cn: "短裙" },
-                            { en: "sundress", cn: "太阳裙" },
-                            { en: "slip_dress", cn: "吊带裙" },
-                            { en: "bikini", cn: "比基尼" },
-                            { en: "one_piece_swimsuit", cn: "连体泳衣" },
-                            { en: "sandals", cn: "凉鞋" },
-                            { en: "flip-flops", cn: "人字拖" },
-                            { en: "sun_hat", cn: "太阳帽" },
-                            { en: "sunglasses", cn: "太阳镜" },
-                            { en: "beach_cover-up", cn: "沙滩罩衫" },
-                            { en: "tropical_print", cn: "热带印花" },
-                            { en: "bright_colors", cn: "鲜艳色彩" }
-                        ]
-                    },
-                    {
-                        title: "8.15 季节主题 - 秋季",
-                        tags: [
-                            { en: "autumn", cn: "秋季" },
-                            { en: "fall", cn: "秋天" },
-                            { en: "autumn_clothes", cn: "秋装" },
-                            { en: "sweater", cn: "毛衣" },
-                            { en: "hoodie", cn: "连帽衫" },
-                            { en: "cardigan", cn: "针织开衫" },
-                            { en: "blazer", cn: "西装外套" },
-                            { en: "leather_jacket", cn: "皮夹克" },
-                            { en: "denim_jacket", cn: "牛仔夹克" },
-                            { en: "trench_coat", cn: "风衣" },
-                            { en: "peacoat", cn: "海军大衣" },
-                            { en: "long_pants", cn: "长裤" },
-                            { en: "jeans", cn: "牛仔裤" },
-                            { en: "cargo_pants", cn: "工装裤" },
-                            { en: "leggings", cn: "打底裤" },
-                            { en: "long_skirt", cn: "长裙" },
-                            { en: "midi_skirt", cn: "中长裙" },
-                            { en: "plaid_skirt", cn: "格子裙" },
-                            { en: "turtleneck", cn: "高领毛衣" },
-                            { en: "scarf", cn: "围巾" },
-                            { en: "beanie", cn: "针织帽" },
-                            { en: "ankle_boots", cn: "短靴" },
-                            { en: "knee_high_boots", cn: "高筒靴" },
-                            { en: "loafers", cn: "乐福鞋" },
-                            { en: "earth_tones", cn: "大地色系" },
-                            { en: "plaid", cn: "格纹" },
-                            { en: "knit", cn: "针织" }
-                        ]
-                    },
-                    {
-                        title: "8.16 季节主题 - 冬季",
-                        tags: [
-                            { en: "winter", cn: "冬季" },
-                            { en: "winter_clothes", cn: "冬装" },
-                            { en: "coat", cn: "外套" },
-                            { en: "overcoat", cn: "大衣" },
-                            { en: "down_jacket", cn: "羽绒服" },
-                            { en: "puffer_jacket", cn: "棉服" },
-                            { en: "parka", cn: "派克大衣" },
-                            { en: "fur_coat", cn: "皮草大衣" },
-                            { en: "wool_coat", cn: "羊毛大衣" },
-                            { en: "trench_coat", cn: "风衣" },
-                            { en: "peacoat", cn: "海军大衣" },
-                            { en: "turtleneck", cn: "高领毛衣" },
-                            { en: "sweater", cn: "毛衣" },
-                            { en: "hoodie", cn: "连帽衫" },
-                            { en: "thermal_underwear", cn: "保暖内衣" },
-                            { en: "long_johns", cn: "秋衣秋裤" },
-                            { en: "thick_pants", cn: "厚裤子" },
-                            { en: "jeans", cn: "牛仔裤" },
-                            { en: "leggings", cn: "打底裤" },
-                            { en: "long_skirt", cn: "长裙" },
-                            { en: "wool_skirt", cn: "毛呢裙" },
-                            { en: "scarf", cn: "围巾" },
-                            { en: "muffler", cn: "厚围巾" },
-                            { en: "gloves", cn: "手套" },
-                            { en: "mittens", cn: "连指手套" },
-                            { en: "beanie", cn: "针织帽" },
-                            { en: "earmuffs", cn: "耳罩" },
-                            { en: "winter_hat", cn: "冬帽" },
-                            { en: "snow_boots", cn: "雪地靴" },
-                            { en: "knee_high_boots", cn: "高筒靴" },
-                            { en: "leather_boots", cn: "皮靴" },
-                            { en: "thick_socks", cn: "厚袜子" },
-                            { en: "dark_colors", cn: "深色系" },
-                            { en: "layered_look", cn: "层叠穿搭" }
-                        ]
-                    },
-                    {
-                        title: "8.17 服装材质",
+                        title: "8.14 服装材质",
                         tags: [
                             { en: "cotton", cn: "棉质" },
                             { en: "denim", cn: "牛仔" },
@@ -3409,7 +3448,7 @@
                         ]
                     },
                     {
-                        title: "8.18 服装风格",
+                        title: "8.15 服装风格",
                         tags: [
                             { en: "casual", cn: "休闲" },
                             { en: "formal", cn: "正式" },
@@ -5746,32 +5785,65 @@
             }
         }
 
-        // 切换子分类
+        // 切换子分类 - 支持懒渲染和流畅动画
         function toggleSubcategory(id, event) {
             event.stopPropagation();
-            const content = document.getElementById(id);
+            const tagsDiv = document.getElementById(id);
             const chevronId = id.replace('sub-', 'subchevron-');
             const chevron = document.getElementById(chevronId);
-            const isActive = content.classList.contains('show');
+            const isActive = tagsDiv.classList.contains('show');
 
             if (isActive) {
-                content.classList.remove('show');
+                tagsDiv.classList.remove('show');
                 chevron.classList.remove('active');
             } else {
-                content.classList.add('show');
+                // 懒渲染：如果是第一次展开，渲染三级内容
+                if (tagsDiv._renderContent) {
+                    tagsDiv._renderContent();
+                }
+                
+                tagsDiv.classList.add('show');
                 chevron.classList.add('active');
+                
+                // 添加子分类项的可见性动画
+                const parentItem = tagsDiv.closest('.subcategory-item');
+                if (parentItem) {
+                    const subItems = parentItem.querySelectorAll('.subcategory-item');
+                    subItems.forEach((item, idx) => {
+                        setTimeout(() => item.classList.add('visible'), idx * 40);
+                    });
+                }
             }
         }
 
-        // 切换三级分类
+        // 切换三级分类 - 优化动画
         function toggleLevel3(id, event) {
             event.stopPropagation();
-            const content = document.getElementById(id);
+            const tagsDiv = document.getElementById(id);
             const chevronId = `l3chevron-${id}`;
             const chevron = document.getElementById(chevronId);
-            const isActive = content.classList.contains('show');
+            const isActive = tagsDiv.classList.contains('show');
 
             if (isActive) {
+                tagsDiv.classList.remove('show');
+                chevron.classList.remove('active');
+            } else {
+                tagsDiv.classList.add('show');
+                chevron.classList.add('active');
+                
+                // 添加标签的淡入动画
+                const tagSpans = tagsDiv.querySelectorAll('.tag');
+                tagSpans.forEach((tag, idx) => {
+                    tag.style.opacity = '0';
+                    tag.style.transform = 'translateY(5px)';
+                    setTimeout(() => {
+                        tag.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                        tag.style.opacity = '1';
+                        tag.style.transform = 'translateY(0)';
+                    }, idx * 15);
+                });
+            }
+        }
                 content.classList.remove('show');
                 chevron.classList.remove('active');
             } else {

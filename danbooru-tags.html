@@ -101,118 +101,6 @@
             display: block;
         }
 
-        /* 目录导航 - 右侧悬浮默认只显示方形按钮 */
-        .toc {
-            position: fixed;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            background: #fff;
-            border: 1px solid var(--light-blue);
-            border-radius: 8px;
-            padding: 8px;
-            max-height: 80vh;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            pointer-events: none;
-            min-width: 120px;
-        }
-
-        .toc.expanded {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .toc h3 {
-            display: none;
-        }
-
-        .toc-toggle {
-            position: fixed;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            background: var(--soft-blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0;
-            cursor: pointer;
-            font-size: 24px;
-            font-weight: 600;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 50px;
-            height: 50px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-        }
-
-        .toc-toggle:hover {
-            background: var(--text-dark);
-            transform: translateY(-50%) scale(1.08);
-            box-shadow: 0 6px 15px rgba(44, 74, 92, 0.3);
-        }
-
-        .toc-toggle:active {
-            transform: translateY(-50%) scale(0.95);
-            box-shadow: 0 2px 8px rgba(44, 74, 92, 0.2);
-        }
-
-        /* 移动端目录按钮优化 */
-        @media (max-width: 768px) {
-            .toc-toggle {
-                right: 10px;
-                width: 44px;
-                height: 44px;
-                font-size: 20px;
-            }
-        }
-
-        .toc-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        /* 目录展开状态优化 */
-        .toc.expanded {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(-50%) translateX(0);
-        }
-
-        .toc.expanded .toc-toggle {
-            transform: translateY(-50%) translateX(0);
-        }
-
-        .toc-item {
-            display: block;
-            padding: 10px 14px;
-            background: #fff;
-            color: var(--text-dark);
-            text-decoration: none;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            border: 1px solid var(--light-blue);
-            white-space: nowrap;
-        }
-
-        .toc-item:hover {
-            background: var(--soft-blue);
-            border-color: var(--soft-blue);
-            color: white;
-        }
-
-        .toc-item:active {
-            transform: scale(0.97);
-        }
-
         .disclaimer {
             position: fixed;
             top: 0;
@@ -739,61 +627,111 @@
             max-height: 3000px;
         }
 
-        /* 子分类标题（可折叠） */
+        /* 子分类标题（可折叠）- 优化动画和视觉层次 */
         .subcategory-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            background: #ffffff;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(240, 248, 255, 0.9), rgba(232, 240, 248, 0.8));
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
             margin-bottom: 6px;
-            border: 1px solid var(--light-blue);
+            border: 1px solid rgba(184, 212, 240, 0.6);
             color: var(--text-medium);
             font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subcategory-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--light-blue), var(--soft-blue));
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
         }
 
         .subcategory-header:hover {
-            background: var(--pale-blue);
+            background: linear-gradient(135deg, rgba(232, 240, 248, 0.95), rgba(200, 220, 240, 0.85));
             border-color: var(--soft-blue);
             color: var(--text-dark);
-            transform: translateX(6px);
-            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(168, 200, 232, 0.35);
+        }
+
+        .subcategory-header:hover::before {
+            opacity: 1;
         }
 
         .subcategory-header:active {
-            background: var(--soft-blue);
+            background: linear-gradient(135deg, var(--soft-blue), var(--light-blue));
             color: white;
             border-color: var(--soft-blue);
-            transform: translateX(6px) scale(0.98);
+            transform: translateX(5px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.5);
+        }
+
+        .subcategory-header:active::before {
+            background: linear-gradient(180deg, white, rgba(255, 255, 255, 0.9));
         }
 
         .subcategory-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
-            color: var(--text-dark);
+            color: var(--text-medium);
             margin: 0;
-            transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .subcategory-chevron {
-            font-size: 18px;
-            color: var(--text-medium);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            color: var(--light-blue);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+            flex-shrink: 0;
+            margin-left: 8px;
+            font-weight: bold;
         }
 
         .subcategory-chevron.active {
             transform: rotate(90deg);
+            color: var(--soft-blue);
         }
 
+        /* 子分类标签区域 - 使用 grid-template-rows 实现流畅动画 */
         .subcategory-tags {
-            max-height: 0;
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 12px;
+            margin-left: 6px;
+        }
+
+        .subcategory-tags.show {
+            grid-template-rows: 1fr;
+            padding: 4px 12px 8px 12px;
+        }
+
+        .subcategory-tags-inner {
             overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0 14px;
+            min-height: 0;
+        }
+
+        .subcategory-tags .tag {
+            margin: 4px 3px;
+            font-size: 13px;
+            padding: 5px 10px;
+            border-radius: 7px;
+        }
             background: rgba(232, 240, 248, 0.4);
             border-radius: 8px;
             margin: 0 4px;
@@ -806,78 +744,216 @@
 
         /* 三级分类样式 - 优化美观度和过渡效果 */
         .level3-item {
-            margin: 6px 0 6px 20px;
+            margin: 4px 0 4px 28px;
             padding: 0;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .level3-item.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .level3-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 14px;
-            background: var(--pale-blue);
-            border-radius: 6px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(232, 240, 248, 0.8), rgba(200, 220, 240, 0.6));
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
-            border: 1px solid var(--light-blue);
+            border: 1px solid rgba(184, 212, 240, 0.5);
             color: var(--text-medium);
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level3-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, var(--soft-blue), var(--light-blue));
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
         }
 
         .level3-header:hover {
-            background: var(--light-blue);
+            background: linear-gradient(135deg, rgba(200, 220, 240, 0.9), rgba(184, 212, 240, 0.7));
             border-color: var(--soft-blue);
             color: var(--text-dark);
-            transform: translateX(6px);
-            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.3);
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.25);
+        }
+
+        .level3-header:hover::before {
+            opacity: 1;
         }
 
         .level3-header:active {
-            background: var(--soft-blue);
+            background: linear-gradient(135deg, var(--soft-blue), var(--light-blue));
             color: white;
-            transform: translateX(6px) scale(0.98);
-            box-shadow: 0 2px 6px rgba(168, 200, 232, 0.5);
+            transform: translateX(4px) scale(0.98);
+            box-shadow: 0 2px 6px rgba(168, 200, 232, 0.4);
+        }
+
+        .level3-header:active::before {
+            background: linear-gradient(180deg, white, rgba(255, 255, 255, 0.8));
         }
 
         .level3-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-medium);
             margin: 0;
-            transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .level3-chevron {
-            font-size: 16px;
+            font-size: 14px;
             color: var(--light-blue);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
             flex-shrink: 0;
+            margin-left: 8px;
+            font-weight: bold;
         }
 
         .level3-chevron.active {
             transform: rotate(90deg);
-            color: var(--text-dark);
+            color: var(--soft-blue);
         }
 
-        /* 三级分类标签区域优化 */
+        /* 三级分类标签区域优化 - 使用 grid-template-rows 动画 */
         .level3-tags {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0 10px;
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 8px;
+            margin-left: 8px;
         }
 
         .level3-tags.show {
-            max-height: 1500px;
-            padding: 0 10px 8px 10px;
+            grid-template-rows: 1fr;
+            padding: 4px 8px 8px 8px;
+        }
+
+        .level3-tags-inner {
+            overflow: hidden;
+            min-height: 0;
+            transition: min-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .level3-tags-inner.show {
+            min-height: 100px;
         }
 
         .level3-tags .tag {
-            margin: 4px 2px;
-            font-size: 13px;
-            padding: 5px 10px;
+            margin: 3px 2px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        /* 移动端三级分类优化 */
+        @media (max-width: 768px) {
+            .level3-item {
+                margin-left: 20px;
+            }
+            
+            .level3-header {
+                padding: 10px 12px;
+                font-size: 13px;
+                min-height: 44px;
+            }
+            
+            .level3-title {
+                font-size: 13px;
+            }
+            
+            .level3-chevron {
+                font-size: 16px;
+                min-width: 20px;
+            }
+            
+            /* 移动端优化 - 减少缩进层次 */
+            .subcategory-item {
+                margin-left: 4px;
+            }
+            
+            .level3-item {
+                margin-left: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .level3-item {
+                margin-left: 16px;
+            }
+            
+            .level3-header {
+                padding: 12px 10px;
+                border-radius: 6px;
+            }
+            
+            .level3-title {
+                font-size: 12px;
+            }
+            
+            .level3-tags .tag {
+                font-size: 11px;
+                padding: 4px 7px;
+                margin: 2px 1px;
+            }
+            
+            /* 小屏幕进一步优化 */
+            .category {
+                margin-bottom: 12px;
+            }
+            
+            .category-header {
+                padding: 14px 12px;
+                font-size: 15px;
+            }
+            
+            .subcategory-header {
+                padding: 12px 10px;
+                font-size: 13px;
+            }
+        }
+
+        /* 触摸设备优化 - 更大的点击区域 */
+        @media (hover: none) and (pointer: coarse) {
+            .level3-header {
+                min-height: 48px;
+                padding: 12px 14px;
+            }
+            
+            .level3-header:active {
+                background: var(--soft-blue);
+                color: white;
+            }
+            
+            /* 触摸设备 - 标签更大 */
+            .level3-tags .tag {
+                padding: 6px 10px;
+                font-size: 13px;
+                margin: 3px 2px;
+            }
         }
 
         .subcategory-item {
@@ -2081,34 +2157,32 @@
                         tags: [
                             { en: "artist_rella", cn: "rella" },
                             { en: "artist_WLOP", cn: "WLOP" },
+                            { en: "artist_Guweiz", cn: "Guweiz" },
+                            { en: "artist_Rossdraws", cn: "Rossdraws" },
+                            { en: "artist_Loish", cn: "Loish" },
+                            { en: "artist_sakimichan", cn: "sakimichan" },
+                            { en: "artist_Kuvshinov_Ilya", cn: "Kuvshinov Ilya" },
+                            { en: "artist_artgerm", cn: "Artgerm" },
+                            { en: "artist_mika_pikazo", cn: "mika pikazo" },
+                            { en: "artist_Liduke", cn: "Liduke" },
                             { en: "artist_kantoku", cn: "监督" },
                             { en: "artist_buriki", cn: "ブリキ" },
                             { en: "artist_huke", cn: "huke" },
                             { en: "artist_redjuice", cn: "redjuice" },
-                            { en: "artist_Rossdraws", cn: "Rossdraws" },
-                            { en: "artist_sakimichan", cn: "sakimichan" },
-                            { en: "artist_Kuvshinov_Ilya", cn: "Kuvshinov Ilya" },
-                            { en: "artist_Loish", cn: "Loish" },
-                            { en: "artist_mika_pikazo", cn: "mika pikazo" },
-                            { en: "artist_yuugen", cn: "ゆーげん" },
-                            { en: "artist_37", cn: "37" },
+                            { en: "artist_kurohoshi_kouhaku", cn: "黑星紅白" },
+                            { en: "artist_abec", cn: "abec" },
                             { en: "artist_Miv4t", cn: "Miv4t" },
+                            { en: "artist_37", cn: "37" },
+                            { en: "artist_yuugen", cn: "ゆーげん" },
                             { en: "artist_Corin", cn: "Corin" },
                             { en: "artist_fajyobore", cn: "fajyobore" },
+                            { en: "artist_40hara", cn: "40 原" },
                             { en: "artist_yuuho", cn: "ゆうぽ" },
                             { en: "artist_nagimiso", cn: "なぎみそ" },
-                            { en: "artist_40hara", cn: "40 原" },
                             { en: "artist_Tiv", cn: "Tiv" },
                             { en: "artist_yukimura_aki", cn: "雪村秋" },
                             { en: "artist_tomatoneko", cn: "とまとねこ" },
-                            { en: "artist_rikor", cn: "りこる" },
-                            { en: "artist_mizuryuukei", cn: "水龙敬" },
-                            { en: "artist_yaekashi_minami", cn: "八重樫南" },
-                            { en: "artist_kurohoshi_kouhaku", cn: "黒星紅白" },
-                            { en: "artist_abec", cn: "abec" },
-                            { en: "artist_tetsuya_nomura", cn: "野村哲也" },
-                            { en: "artist_yuusuke_murata", cn: "村田雄介" },
-                            { en: "artist_ken_sugimori", cn: "杉森建" }
+                            { en: "artist_rikor", cn: "りこる" }
                         ]
                     },
                     {
@@ -3205,132 +3279,137 @@
                         ]
                     },
                     {
-                        title: "8.13 季节主题 - 春季",
-                        tags: [
-                            { en: "spring", cn: "春季" },
-                            { en: "spring_clothes", cn: "春装" },
-                            { en: "light_jacket", cn: "薄外套" },
-                            { en: "cardigan", cn: "开衫毛衣" },
-                            { en: "trench_coat", cn: "风衣" },
-                            { en: "denim_jacket", cn: "牛仔外套" },
-                            { en: "bomber_jacket", cn: "飞行员夹克" },
-                            { en: "long_sleeve_shirt", cn: "长袖衬衫" },
-                            { en: "sweater", cn: "毛衣" },
-                            { en: "vest", cn: "马甲" },
-                            { en: "pleated_skirt", cn: "百褶裙" },
-                            { en: "a-line_skirt", cn: "A 字裙" },
-                            { en: "floral_dress", cn: "碎花裙" },
-                            { en: "sundress", cn: "太阳裙" },
-                            { en: "pastel_colors", cn: "柔和色彩" },
-                            { en: "cherry_blossom", cn: "樱花元素" },
-                            { en: "flower_print", cn: "花卉印花" },
-                            { en: "light_scarf", cn: "薄围巾" },
-                            { en: "ankle_boots", cn: "短靴" },
-                            { en: "sneakers", cn: "运动鞋" }
+                        title: "8.13 季节主题",
+                        items: [
+                            {
+                                title: "春季",
+                                tags: [
+                                    { en: "spring", cn: "春季" },
+                                    { en: "spring_clothes", cn: "春装" },
+                                    { en: "light_jacket", cn: "薄外套" },
+                                    { en: "cardigan", cn: "开衫毛衣" },
+                                    { en: "trench_coat", cn: "风衣" },
+                                    { en: "denim_jacket", cn: "牛仔外套" },
+                                    { en: "bomber_jacket", cn: "飞行员夹克" },
+                                    { en: "long_sleeve_shirt", cn: "长袖衬衫" },
+                                    { en: "sweater", cn: "毛衣" },
+                                    { en: "vest", cn: "马甲" },
+                                    { en: "pleated_skirt", cn: "百褶裙" },
+                                    { en: "a-line_skirt", cn: "A 字裙" },
+                                    { en: "floral_dress", cn: "碎花裙" },
+                                    { en: "sundress", cn: "太阳裙" },
+                                    { en: "pastel_colors", cn: "柔和色彩" },
+                                    { en: "cherry_blossom", cn: "樱花元素" },
+                                    { en: "flower_print", cn: "花卉印花" },
+                                    { en: "light_scarf", cn: "薄围巾" },
+                                    { en: "ankle_boots", cn: "短靴" },
+                                    { en: "sneakers", cn: "运动鞋" }
+                                ]
+                            },
+                            {
+                                title: "夏季",
+                                tags: [
+                                    { en: "summer", cn: "夏季" },
+                                    { en: "summer_clothes", cn: "夏装" },
+                                    { en: "t-shirt", cn: "T 恤" },
+                                    { en: "tank_top", cn: "背心" },
+                                    { en: "crop_top", cn: "短上衣" },
+                                    { en: "sleeveless_shirt", cn: "无袖衫" },
+                                    { en: "halterneck", cn: "挂脖装" },
+                                    { en: "tube_top", cn: "抹胸" },
+                                    { en: "camisole", cn: "吊带衫" },
+                                    { en: "shorts", cn: "短裤" },
+                                    { en: "denim_shorts", cn: "牛仔短裤" },
+                                    { en: "hot_pants", cn: "热裤" },
+                                    { en: "miniskirt", cn: "短裙" },
+                                    { en: "sundress", cn: "太阳裙" },
+                                    { en: "slip_dress", cn: "吊带裙" },
+                                    { en: "bikini", cn: "比基尼" },
+                                    { en: "one_piece_swimsuit", cn: "连体泳衣" },
+                                    { en: "sandals", cn: "凉鞋" },
+                                    { en: "flip-flops", cn: "人字拖" },
+                                    { en: "sun_hat", cn: "太阳帽" },
+                                    { en: "sunglasses", cn: "太阳镜" },
+                                    { en: "beach_cover-up", cn: "沙滩罩衫" },
+                                    { en: "tropical_print", cn: "热带印花" },
+                                    { en: "bright_colors", cn: "鲜艳色彩" }
+                                ]
+                            },
+                            {
+                                title: "秋季",
+                                tags: [
+                                    { en: "autumn", cn: "秋季" },
+                                    { en: "fall", cn: "秋天" },
+                                    { en: "autumn_clothes", cn: "秋装" },
+                                    { en: "sweater", cn: "毛衣" },
+                                    { en: "hoodie", cn: "连帽衫" },
+                                    { en: "cardigan", cn: "针织开衫" },
+                                    { en: "blazer", cn: "西装外套" },
+                                    { en: "leather_jacket", cn: "皮夹克" },
+                                    { en: "denim_jacket", cn: "牛仔夹克" },
+                                    { en: "trench_coat", cn: "风衣" },
+                                    { en: "peacoat", cn: "海军大衣" },
+                                    { en: "long_pants", cn: "长裤" },
+                                    { en: "jeans", cn: "牛仔裤" },
+                                    { en: "cargo_pants", cn: "工装裤" },
+                                    { en: "leggings", cn: "打底裤" },
+                                    { en: "long_skirt", cn: "长裙" },
+                                    { en: "midi_skirt", cn: "中长裙" },
+                                    { en: "plaid_skirt", cn: "格子裙" },
+                                    { en: "turtleneck", cn: "高领毛衣" },
+                                    { en: "scarf", cn: "围巾" },
+                                    { en: "beanie", cn: "针织帽" },
+                                    { en: "ankle_boots", cn: "短靴" },
+                                    { en: "knee_high_boots", cn: "高筒靴" },
+                                    { en: "loafers", cn: "乐福鞋" },
+                                    { en: "earth_tones", cn: "大地色系" },
+                                    { en: "plaid", cn: "格纹" },
+                                    { en: "knit", cn: "针织" }
+                                ]
+                            },
+                            {
+                                title: "冬季",
+                                tags: [
+                                    { en: "winter", cn: "冬季" },
+                                    { en: "winter_clothes", cn: "冬装" },
+                                    { en: "coat", cn: "外套" },
+                                    { en: "overcoat", cn: "大衣" },
+                                    { en: "down_jacket", cn: "羽绒服" },
+                                    { en: "puffer_jacket", cn: "棉服" },
+                                    { en: "parka", cn: "派克大衣" },
+                                    { en: "fur_coat", cn: "皮草大衣" },
+                                    { en: "wool_coat", cn: "羊毛大衣" },
+                                    { en: "trench_coat", cn: "风衣" },
+                                    { en: "peacoat", cn: "海军大衣" },
+                                    { en: "turtleneck", cn: "高领毛衣" },
+                                    { en: "sweater", cn: "毛衣" },
+                                    { en: "hoodie", cn: "连帽衫" },
+                                    { en: "thermal_underwear", cn: "保暖内衣" },
+                                    { en: "long_johns", cn: "秋衣秋裤" },
+                                    { en: "thick_pants", cn: "厚裤子" },
+                                    { en: "jeans", cn: "牛仔裤" },
+                                    { en: "leggings", cn: "打底裤" },
+                                    { en: "long_skirt", cn: "长裙" },
+                                    { en: "wool_skirt", cn: "毛呢裙" },
+                                    { en: "scarf", cn: "围巾" },
+                                    { en: "muffler", cn: "厚围巾" },
+                                    { en: "gloves", cn: "手套" },
+                                    { en: "mittens", cn: "连指手套" },
+                                    { en: "beanie", cn: "针织帽" },
+                                    { en: "earmuffs", cn: "耳罩" },
+                                    { en: "winter_hat", cn: "冬帽" },
+                                    { en: "snow_boots", cn: "雪地靴" },
+                                    { en: "knee_high_boots", cn: "高筒靴" },
+                                    { en: "leather_boots", cn: "皮靴" },
+                                    { en: "thick_socks", cn: "厚袜子" },
+                                    { en: "dark_colors", cn: "深色系" },
+                                    { en: "layered_look", cn: "层叠穿搭" }
+                                ]
+                            }
                         ]
                     },
                     {
-                        title: "8.14 季节主题 - 夏季",
-                        tags: [
-                            { en: "summer", cn: "夏季" },
-                            { en: "summer_clothes", cn: "夏装" },
-                            { en: "t-shirt", cn: "T 恤" },
-                            { en: "tank_top", cn: "背心" },
-                            { en: "crop_top", cn: "短上衣" },
-                            { en: "sleeveless_shirt", cn: "无袖衫" },
-                            { en: "halterneck", cn: "挂脖装" },
-                            { en: "tube_top", cn: "抹胸" },
-                            { en: "camisole", cn: "吊带衫" },
-                            { en: "shorts", cn: "短裤" },
-                            { en: "denim_shorts", cn: "牛仔短裤" },
-                            { en: "hot_pants", cn: "热裤" },
-                            { en: "miniskirt", cn: "短裙" },
-                            { en: "sundress", cn: "太阳裙" },
-                            { en: "slip_dress", cn: "吊带裙" },
-                            { en: "bikini", cn: "比基尼" },
-                            { en: "one_piece_swimsuit", cn: "连体泳衣" },
-                            { en: "sandals", cn: "凉鞋" },
-                            { en: "flip-flops", cn: "人字拖" },
-                            { en: "sun_hat", cn: "太阳帽" },
-                            { en: "sunglasses", cn: "太阳镜" },
-                            { en: "beach_cover-up", cn: "沙滩罩衫" },
-                            { en: "tropical_print", cn: "热带印花" },
-                            { en: "bright_colors", cn: "鲜艳色彩" }
-                        ]
-                    },
-                    {
-                        title: "8.15 季节主题 - 秋季",
-                        tags: [
-                            { en: "autumn", cn: "秋季" },
-                            { en: "fall", cn: "秋天" },
-                            { en: "autumn_clothes", cn: "秋装" },
-                            { en: "sweater", cn: "毛衣" },
-                            { en: "hoodie", cn: "连帽衫" },
-                            { en: "cardigan", cn: "针织开衫" },
-                            { en: "blazer", cn: "西装外套" },
-                            { en: "leather_jacket", cn: "皮夹克" },
-                            { en: "denim_jacket", cn: "牛仔夹克" },
-                            { en: "trench_coat", cn: "风衣" },
-                            { en: "peacoat", cn: "海军大衣" },
-                            { en: "long_pants", cn: "长裤" },
-                            { en: "jeans", cn: "牛仔裤" },
-                            { en: "cargo_pants", cn: "工装裤" },
-                            { en: "leggings", cn: "打底裤" },
-                            { en: "long_skirt", cn: "长裙" },
-                            { en: "midi_skirt", cn: "中长裙" },
-                            { en: "plaid_skirt", cn: "格子裙" },
-                            { en: "turtleneck", cn: "高领毛衣" },
-                            { en: "scarf", cn: "围巾" },
-                            { en: "beanie", cn: "针织帽" },
-                            { en: "ankle_boots", cn: "短靴" },
-                            { en: "knee_high_boots", cn: "高筒靴" },
-                            { en: "loafers", cn: "乐福鞋" },
-                            { en: "earth_tones", cn: "大地色系" },
-                            { en: "plaid", cn: "格纹" },
-                            { en: "knit", cn: "针织" }
-                        ]
-                    },
-                    {
-                        title: "8.16 季节主题 - 冬季",
-                        tags: [
-                            { en: "winter", cn: "冬季" },
-                            { en: "winter_clothes", cn: "冬装" },
-                            { en: "coat", cn: "外套" },
-                            { en: "overcoat", cn: "大衣" },
-                            { en: "down_jacket", cn: "羽绒服" },
-                            { en: "puffer_jacket", cn: "棉服" },
-                            { en: "parka", cn: "派克大衣" },
-                            { en: "fur_coat", cn: "皮草大衣" },
-                            { en: "wool_coat", cn: "羊毛大衣" },
-                            { en: "trench_coat", cn: "风衣" },
-                            { en: "peacoat", cn: "海军大衣" },
-                            { en: "turtleneck", cn: "高领毛衣" },
-                            { en: "sweater", cn: "毛衣" },
-                            { en: "hoodie", cn: "连帽衫" },
-                            { en: "thermal_underwear", cn: "保暖内衣" },
-                            { en: "long_johns", cn: "秋衣秋裤" },
-                            { en: "thick_pants", cn: "厚裤子" },
-                            { en: "jeans", cn: "牛仔裤" },
-                            { en: "leggings", cn: "打底裤" },
-                            { en: "long_skirt", cn: "长裙" },
-                            { en: "wool_skirt", cn: "毛呢裙" },
-                            { en: "scarf", cn: "围巾" },
-                            { en: "muffler", cn: "厚围巾" },
-                            { en: "gloves", cn: "手套" },
-                            { en: "mittens", cn: "连指手套" },
-                            { en: "beanie", cn: "针织帽" },
-                            { en: "earmuffs", cn: "耳罩" },
-                            { en: "winter_hat", cn: "冬帽" },
-                            { en: "snow_boots", cn: "雪地靴" },
-                            { en: "knee_high_boots", cn: "高筒靴" },
-                            { en: "leather_boots", cn: "皮靴" },
-                            { en: "thick_socks", cn: "厚袜子" },
-                            { en: "dark_colors", cn: "深色系" },
-                            { en: "layered_look", cn: "层叠穿搭" }
-                        ]
-                    },
-                    {
-                        title: "8.17 服装材质",
+                        title: "8.14 服装材质",
                         tags: [
                             { en: "cotton", cn: "棉质" },
                             { en: "denim", cn: "牛仔" },
@@ -3369,7 +3448,7 @@
                         ]
                     },
                     {
-                        title: "8.18 服装风格",
+                        title: "8.15 服装风格",
                         tags: [
                             { en: "casual", cn: "休闲" },
                             { en: "formal", cn: "正式" },
@@ -5532,99 +5611,154 @@
             "攻击防御", "恐怖电影", "恶魔猎人"
         ];
 
-        // 渲染内容（支持三级嵌套）
+        // 渲染内容（支持三级嵌套）- 使用 DocumentFragment 优化性能
         function renderContent() {
             const content = document.getElementById('content');
-            let html = '';
+            const fragment = document.createDocumentFragment();
+            const container = document.createElement('div');
 
             tagData.forEach((category, catIndex) => {
-                html += `
-                    <div class="category" id="cat-${catIndex}">
-                        <div class="category-header" onclick="toggleCategory(${catIndex})">
-                            <span class="category-title">${category.title}</span>
-                            <span class="chevron" id="chevron-${catIndex}">›</span>
-                        </div>
-                        <div class="subcategory" id="subcat-${catIndex}">
+                const catDiv = document.createElement('div');
+                catDiv.className = 'category';
+                catDiv.id = `cat-${catIndex}`;
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'category-header';
+                headerDiv.onclick = () => toggleCategory(catIndex);
+                headerDiv.innerHTML = `
+                    <span class="category-title">${category.title}</span>
+                    <span class="chevron" id="chevron-${catIndex}">›</span>
                 `;
-
+                
+                const subcatDiv = document.createElement('div');
+                subcatDiv.className = 'subcategory';
+                subcatDiv.id = `subcat-${catIndex}`;
+                
                 category.items.forEach((subcat, subIndex) => {
                     const subId = `sub-${catIndex}-${subIndex}`;
+                    const subItemDiv = document.createElement('div');
+                    subItemDiv.className = 'subcategory-item';
                     
-                    // 检查是否有三级结构（items 数组）
+                    const subHeaderDiv = document.createElement('div');
+                    subHeaderDiv.className = 'subcategory-header';
+                    subHeaderDiv.onclick = (e) => toggleSubcategory(subId, e);
+                    
                     if (subcat.items && subcat.items.length > 0) {
-                        // 三级结构：先显示子分类标题，展开后显示三级分类
-                        html += `
-                            <div class="subcategory-item">
-                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
-                                    <span class="subcategory-title">${subcat.title}</span>
-                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
-                                </div>
-                                <div class="subcategory-tags" id="${subId}">
+                        // 三级结构
+                        subHeaderDiv.innerHTML = `
+                            <span class="subcategory-title">${subcat.title}</span>
+                            <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
                         `;
                         
-                        // 渲染三级分类
-                        subcat.items.forEach((level3, l3Index) => {
-                            const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
-                            html += `
-                                <div class="level3-item">
-                                    <div class="level3-header" onclick="toggleLevel3('${l3Id}', event)">
-                                        <span class="level3-title">${level3.title}</span>
-                                        <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
-                                    </div>
-                                    <div class="level3-tags" id="${l3Id}">
-                            `;
+                        const subTagsDiv = document.createElement('div');
+                        subTagsDiv.className = 'subcategory-tags';
+                        subTagsDiv.id = subId;
+                        subTagsDiv.setAttribute('data-rendered', 'false');
+                        subTagsDiv.onclick = (e) => e.stopPropagation();
+                        
+                        // 懒渲染：只在展开时渲染三级内容
+                        subTagsDiv._renderContent = () => {
+                            if (subTagsDiv.getAttribute('data-rendered') === 'true') return;
                             
-                            if (level3.tags) {
-                                level3.tags.forEach(tag => {
-                                    const isNegative = tag.negative;
-                                    const className = isNegative ? 'tag negative' : 'tag';
-                                    html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                            const innerDiv = document.createElement('div');
+                            innerDiv.className = 'subcategory-tags-inner';
+                            
+                            subcat.items.forEach((level3, l3Index) => {
+                                const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
+                                const l3ItemDiv = document.createElement('div');
+                                l3ItemDiv.className = 'level3-item';
+                                
+                                const l3HeaderDiv = document.createElement('div');
+                                l3HeaderDiv.className = 'level3-header';
+                                l3HeaderDiv.onclick = (e) => toggleLevel3(l3Id, e);
+                                l3HeaderDiv.innerHTML = `
+                                    <span class="level3-title">${level3.title}</span>
+                                    <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
+                                `;
+                                
+                                const l3TagsDiv = document.createElement('div');
+                                l3TagsDiv.className = 'level3-tags';
+                                l3TagsDiv.id = l3Id;
+                                l3TagsDiv.setAttribute('data-rendered', 'false');
+                                
+                                const l3InnerDiv = document.createElement('div');
+                                l3InnerDiv.className = 'level3-tags-inner';
+                                
+                                if (level3.tags) {
+                                    level3.tags.forEach(tag => {
+                                        const tagSpan = document.createElement('span');
+                                        tagSpan.className = tag.negative ? 'tag negative' : 'tag';
+                                        tagSpan.textContent = `${tag.en} · ${tag.cn}`;
+                                        tagSpan.onclick = (e) => {
+                                            e.stopPropagation();
+                                            copyTag(tag.en, tagSpan);
+                                        };
+                                        l3InnerDiv.appendChild(tagSpan);
+                                    });
+                                }
+                                
+                                l3TagsDiv.appendChild(l3InnerDiv);
+                                l3ItemDiv.appendChild(l3HeaderDiv);
+                                l3ItemDiv.appendChild(l3TagsDiv);
+                                innerDiv.appendChild(l3ItemDiv);
+                            });
+                            
+                            subTagsDiv.appendChild(innerDiv);
+                            subTagsDiv.setAttribute('data-rendered', 'true');
+                            
+                            // 添加可见性动画
+                            setTimeout(() => {
+                                subTagsDiv.querySelectorAll('.level3-item').forEach((item, idx) => {
+                                    setTimeout(() => item.classList.add('visible'), idx * 30);
                                 });
-                            }
-                            
-                            html += `
-                                    </div>
-                                </div>
-                            `;
-                        });
+                            }, 50);
+                        };
                         
-                        html += `
-                                </div>
-                            </div>
-                        `;
+                        subItemDiv.appendChild(subHeaderDiv);
+                        subItemDiv.appendChild(subTagsDiv);
                     } else {
-                        // 二级结构：直接显示标签
-                        html += `
-                            <div class="subcategory-item">
-                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
-                                    <span class="subcategory-title">${subcat.title}</span>
-                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
-                                </div>
-                                <div class="subcategory-tags" id="${subId}">
+                        // 二级结构
+                        subHeaderDiv.innerHTML = `
+                            <span class="subcategory-title">${subcat.title}</span>
+                            <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
                         `;
-
+                        
+                        const subTagsDiv = document.createElement('div');
+                        subTagsDiv.className = 'subcategory-tags';
+                        subTagsDiv.id = subId;
+                        
+                        const innerDiv = document.createElement('div');
+                        innerDiv.className = 'subcategory-tags-inner';
+                        
                         if (subcat.tags) {
                             subcat.tags.forEach(tag => {
-                                const isNegative = tag.negative;
-                                const className = isNegative ? 'tag negative' : 'tag';
-                                html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                                const tagSpan = document.createElement('span');
+                                tagSpan.className = tag.negative ? 'tag negative' : 'tag';
+                                tagSpan.textContent = `${tag.en} · ${tag.cn}`;
+                                tagSpan.onclick = (e) => {
+                                    e.stopPropagation();
+                                    copyTag(tag.en, tagSpan);
+                                };
+                                innerDiv.appendChild(tagSpan);
                             });
                         }
-
-                        html += `
-                                </div>
-                            </div>
-                        `;
+                        
+                        subTagsDiv.appendChild(innerDiv);
+                        subItemDiv.appendChild(subHeaderDiv);
+                        subItemDiv.appendChild(subTagsDiv);
                     }
+                    
+                    subcatDiv.appendChild(subItemDiv);
                 });
-
-                html += `
-                        </div>
-                    </div>
-                `;
+                
+                catDiv.appendChild(headerDiv);
+                catDiv.appendChild(subcatDiv);
+                container.appendChild(catDiv);
             });
-
-            content.innerHTML = html;
+            
+            fragment.appendChild(container);
+            content.innerHTML = '';
+            content.appendChild(fragment);
         }
 
         // 切换分类
@@ -5651,32 +5785,65 @@
             }
         }
 
-        // 切换子分类
+        // 切换子分类 - 支持懒渲染和流畅动画
         function toggleSubcategory(id, event) {
             event.stopPropagation();
-            const content = document.getElementById(id);
+            const tagsDiv = document.getElementById(id);
             const chevronId = id.replace('sub-', 'subchevron-');
             const chevron = document.getElementById(chevronId);
-            const isActive = content.classList.contains('show');
+            const isActive = tagsDiv.classList.contains('show');
 
             if (isActive) {
-                content.classList.remove('show');
+                tagsDiv.classList.remove('show');
                 chevron.classList.remove('active');
             } else {
-                content.classList.add('show');
+                // 懒渲染：如果是第一次展开，渲染三级内容
+                if (tagsDiv._renderContent) {
+                    tagsDiv._renderContent();
+                }
+                
+                tagsDiv.classList.add('show');
                 chevron.classList.add('active');
+                
+                // 添加子分类项的可见性动画
+                const parentItem = tagsDiv.closest('.subcategory-item');
+                if (parentItem) {
+                    const subItems = parentItem.querySelectorAll('.subcategory-item');
+                    subItems.forEach((item, idx) => {
+                        setTimeout(() => item.classList.add('visible'), idx * 40);
+                    });
+                }
             }
         }
 
-        // 切换三级分类
+        // 切换三级分类 - 优化动画
         function toggleLevel3(id, event) {
             event.stopPropagation();
-            const content = document.getElementById(id);
+            const tagsDiv = document.getElementById(id);
             const chevronId = `l3chevron-${id}`;
             const chevron = document.getElementById(chevronId);
-            const isActive = content.classList.contains('show');
+            const isActive = tagsDiv.classList.contains('show');
 
             if (isActive) {
+                tagsDiv.classList.remove('show');
+                chevron.classList.remove('active');
+            } else {
+                tagsDiv.classList.add('show');
+                chevron.classList.add('active');
+                
+                // 添加标签的淡入动画
+                const tagSpans = tagsDiv.querySelectorAll('.tag');
+                tagSpans.forEach((tag, idx) => {
+                    tag.style.opacity = '0';
+                    tag.style.transform = 'translateY(5px)';
+                    setTimeout(() => {
+                        tag.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                        tag.style.opacity = '1';
+                        tag.style.transform = 'translateY(0)';
+                    }, idx * 15);
+                });
+            }
+        }
                 content.classList.remove('show');
                 chevron.classList.remove('active');
             } else {
