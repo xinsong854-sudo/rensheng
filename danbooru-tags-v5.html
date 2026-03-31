@@ -6200,7 +6200,13 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            renderContent();
+            try {
+                renderContent();
+                console.log('✅ 页面渲染成功');
+            } catch (e) {
+                console.error('❌ renderContent 错误:', e);
+                document.getElementById('content').innerHTML = '<div style="color:red;padding:20px;">渲染失败，请刷新页面</div>';
+            }
 
             // 显示免责声明 2 秒后隐藏
             const disclaimer = document.getElementById('disclaimer');
