@@ -627,61 +627,111 @@
             max-height: 3000px;
         }
 
-        /* 子分类标题（可折叠） */
+        /* 子分类标题（可折叠）- 优化动画和视觉层次 */
         .subcategory-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            background: #ffffff;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(240, 248, 255, 0.9), rgba(232, 240, 248, 0.8));
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
             margin-bottom: 6px;
-            border: 1px solid var(--light-blue);
+            border: 1px solid rgba(184, 212, 240, 0.6);
             color: var(--text-medium);
             font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subcategory-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--light-blue), var(--soft-blue));
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
         }
 
         .subcategory-header:hover {
-            background: var(--pale-blue);
+            background: linear-gradient(135deg, rgba(232, 240, 248, 0.95), rgba(200, 220, 240, 0.85));
             border-color: var(--soft-blue);
             color: var(--text-dark);
-            transform: translateX(6px);
-            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(168, 200, 232, 0.35);
+        }
+
+        .subcategory-header:hover::before {
+            opacity: 1;
         }
 
         .subcategory-header:active {
-            background: var(--soft-blue);
+            background: linear-gradient(135deg, var(--soft-blue), var(--light-blue));
             color: white;
             border-color: var(--soft-blue);
-            transform: translateX(6px) scale(0.98);
+            transform: translateX(5px) scale(0.98);
+            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.5);
+        }
+
+        .subcategory-header:active::before {
+            background: linear-gradient(180deg, white, rgba(255, 255, 255, 0.9));
         }
 
         .subcategory-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
-            color: var(--text-dark);
+            color: var(--text-medium);
             margin: 0;
-            transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .subcategory-chevron {
-            font-size: 18px;
-            color: var(--text-medium);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            color: var(--light-blue);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+            flex-shrink: 0;
+            margin-left: 8px;
+            font-weight: bold;
         }
 
         .subcategory-chevron.active {
             transform: rotate(90deg);
+            color: var(--soft-blue);
         }
 
+        /* 子分类标签区域 - 使用 grid-template-rows 实现流畅动画 */
         .subcategory-tags {
-            max-height: 0;
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 12px;
+            margin-left: 6px;
+        }
+
+        .subcategory-tags.show {
+            grid-template-rows: 1fr;
+            padding: 4px 12px 8px 12px;
+        }
+
+        .subcategory-tags-inner {
             overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0 14px;
+            min-height: 0;
+        }
+
+        .subcategory-tags .tag {
+            margin: 4px 3px;
+            font-size: 13px;
+            padding: 5px 10px;
+            border-radius: 7px;
+        }
             background: rgba(232, 240, 248, 0.4);
             border-radius: 8px;
             margin: 0 4px;
@@ -5522,99 +5572,154 @@
             "攻击防御", "恐怖电影", "恶魔猎人"
         ];
 
-        // 渲染内容（支持三级嵌套）
+        // 渲染内容（支持三级嵌套）- 使用 DocumentFragment 优化性能
         function renderContent() {
             const content = document.getElementById('content');
-            let html = '';
+            const fragment = document.createDocumentFragment();
+            const container = document.createElement('div');
 
             tagData.forEach((category, catIndex) => {
-                html += `
-                    <div class="category" id="cat-${catIndex}">
-                        <div class="category-header" onclick="toggleCategory(${catIndex})">
-                            <span class="category-title">${category.title}</span>
-                            <span class="chevron" id="chevron-${catIndex}">›</span>
-                        </div>
-                        <div class="subcategory" id="subcat-${catIndex}">
+                const catDiv = document.createElement('div');
+                catDiv.className = 'category';
+                catDiv.id = `cat-${catIndex}`;
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'category-header';
+                headerDiv.onclick = () => toggleCategory(catIndex);
+                headerDiv.innerHTML = `
+                    <span class="category-title">${category.title}</span>
+                    <span class="chevron" id="chevron-${catIndex}">›</span>
                 `;
-
+                
+                const subcatDiv = document.createElement('div');
+                subcatDiv.className = 'subcategory';
+                subcatDiv.id = `subcat-${catIndex}`;
+                
                 category.items.forEach((subcat, subIndex) => {
                     const subId = `sub-${catIndex}-${subIndex}`;
+                    const subItemDiv = document.createElement('div');
+                    subItemDiv.className = 'subcategory-item';
                     
-                    // 检查是否有三级结构（items 数组）
+                    const subHeaderDiv = document.createElement('div');
+                    subHeaderDiv.className = 'subcategory-header';
+                    subHeaderDiv.onclick = (e) => toggleSubcategory(subId, e);
+                    
                     if (subcat.items && subcat.items.length > 0) {
-                        // 三级结构：先显示子分类标题，展开后显示三级分类
-                        html += `
-                            <div class="subcategory-item">
-                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
-                                    <span class="subcategory-title">${subcat.title}</span>
-                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
-                                </div>
-                                <div class="subcategory-tags" id="${subId}">
+                        // 三级结构
+                        subHeaderDiv.innerHTML = `
+                            <span class="subcategory-title">${subcat.title}</span>
+                            <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
                         `;
                         
-                        // 渲染三级分类
-                        subcat.items.forEach((level3, l3Index) => {
-                            const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
-                            html += `
-                                <div class="level3-item">
-                                    <div class="level3-header" onclick="toggleLevel3('${l3Id}', event)">
-                                        <span class="level3-title">${level3.title}</span>
-                                        <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
-                                    </div>
-                                    <div class="level3-tags" id="${l3Id}">
-                            `;
+                        const subTagsDiv = document.createElement('div');
+                        subTagsDiv.className = 'subcategory-tags';
+                        subTagsDiv.id = subId;
+                        subTagsDiv.setAttribute('data-rendered', 'false');
+                        subTagsDiv.onclick = (e) => e.stopPropagation();
+                        
+                        // 懒渲染：只在展开时渲染三级内容
+                        subTagsDiv._renderContent = () => {
+                            if (subTagsDiv.getAttribute('data-rendered') === 'true') return;
                             
-                            if (level3.tags) {
-                                level3.tags.forEach(tag => {
-                                    const isNegative = tag.negative;
-                                    const className = isNegative ? 'tag negative' : 'tag';
-                                    html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                            const innerDiv = document.createElement('div');
+                            innerDiv.className = 'subcategory-tags-inner';
+                            
+                            subcat.items.forEach((level3, l3Index) => {
+                                const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
+                                const l3ItemDiv = document.createElement('div');
+                                l3ItemDiv.className = 'level3-item';
+                                
+                                const l3HeaderDiv = document.createElement('div');
+                                l3HeaderDiv.className = 'level3-header';
+                                l3HeaderDiv.onclick = (e) => toggleLevel3(l3Id, e);
+                                l3HeaderDiv.innerHTML = `
+                                    <span class="level3-title">${level3.title}</span>
+                                    <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
+                                `;
+                                
+                                const l3TagsDiv = document.createElement('div');
+                                l3TagsDiv.className = 'level3-tags';
+                                l3TagsDiv.id = l3Id;
+                                l3TagsDiv.setAttribute('data-rendered', 'false');
+                                
+                                const l3InnerDiv = document.createElement('div');
+                                l3InnerDiv.className = 'level3-tags-inner';
+                                
+                                if (level3.tags) {
+                                    level3.tags.forEach(tag => {
+                                        const tagSpan = document.createElement('span');
+                                        tagSpan.className = tag.negative ? 'tag negative' : 'tag';
+                                        tagSpan.textContent = `${tag.en} · ${tag.cn}`;
+                                        tagSpan.onclick = (e) => {
+                                            e.stopPropagation();
+                                            copyTag(tag.en, tagSpan);
+                                        };
+                                        l3InnerDiv.appendChild(tagSpan);
+                                    });
+                                }
+                                
+                                l3TagsDiv.appendChild(l3InnerDiv);
+                                l3ItemDiv.appendChild(l3HeaderDiv);
+                                l3ItemDiv.appendChild(l3TagsDiv);
+                                innerDiv.appendChild(l3ItemDiv);
+                            });
+                            
+                            subTagsDiv.appendChild(innerDiv);
+                            subTagsDiv.setAttribute('data-rendered', 'true');
+                            
+                            // 添加可见性动画
+                            setTimeout(() => {
+                                subTagsDiv.querySelectorAll('.level3-item').forEach((item, idx) => {
+                                    setTimeout(() => item.classList.add('visible'), idx * 30);
                                 });
-                            }
-                            
-                            html += `
-                                    </div>
-                                </div>
-                            `;
-                        });
+                            }, 50);
+                        };
                         
-                        html += `
-                                </div>
-                            </div>
-                        `;
+                        subItemDiv.appendChild(subHeaderDiv);
+                        subItemDiv.appendChild(subTagsDiv);
                     } else {
-                        // 二级结构：直接显示标签
-                        html += `
-                            <div class="subcategory-item">
-                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
-                                    <span class="subcategory-title">${subcat.title}</span>
-                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
-                                </div>
-                                <div class="subcategory-tags" id="${subId}">
+                        // 二级结构
+                        subHeaderDiv.innerHTML = `
+                            <span class="subcategory-title">${subcat.title}</span>
+                            <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
                         `;
-
+                        
+                        const subTagsDiv = document.createElement('div');
+                        subTagsDiv.className = 'subcategory-tags';
+                        subTagsDiv.id = subId;
+                        
+                        const innerDiv = document.createElement('div');
+                        innerDiv.className = 'subcategory-tags-inner';
+                        
                         if (subcat.tags) {
                             subcat.tags.forEach(tag => {
-                                const isNegative = tag.negative;
-                                const className = isNegative ? 'tag negative' : 'tag';
-                                html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                                const tagSpan = document.createElement('span');
+                                tagSpan.className = tag.negative ? 'tag negative' : 'tag';
+                                tagSpan.textContent = `${tag.en} · ${tag.cn}`;
+                                tagSpan.onclick = (e) => {
+                                    e.stopPropagation();
+                                    copyTag(tag.en, tagSpan);
+                                };
+                                innerDiv.appendChild(tagSpan);
                             });
                         }
-
-                        html += `
-                                </div>
-                            </div>
-                        `;
+                        
+                        subTagsDiv.appendChild(innerDiv);
+                        subItemDiv.appendChild(subHeaderDiv);
+                        subItemDiv.appendChild(subTagsDiv);
                     }
+                    
+                    subcatDiv.appendChild(subItemDiv);
                 });
-
-                html += `
-                        </div>
-                    </div>
-                `;
+                
+                catDiv.appendChild(headerDiv);
+                catDiv.appendChild(subcatDiv);
+                container.appendChild(catDiv);
             });
-
-            content.innerHTML = html;
+            
+            fragment.appendChild(container);
+            content.innerHTML = '';
+            content.appendChild(fragment);
         }
 
         // 切换分类
