@@ -6207,6 +6207,11 @@
             }
             
             function init() {
+                // 调试信息
+                console.log('tagData 长度:', tagData.length);
+                console.log('第一个分类:', tagData[0]?.title);
+                console.log('最后一个分类:', tagData[tagData.length - 1]?.title);
+                
                 try {
                     renderContent();
                     console.log('✅ 页面渲染成功');
