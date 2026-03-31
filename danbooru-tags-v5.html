@@ -101,118 +101,6 @@
             display: block;
         }
 
-        /* 目录导航 - 右侧悬浮默认只显示方形按钮 */
-        .toc {
-            position: fixed;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            background: #fff;
-            border: 1px solid var(--light-blue);
-            border-radius: 8px;
-            padding: 8px;
-            max-height: 80vh;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            pointer-events: none;
-            min-width: 120px;
-        }
-
-        .toc.expanded {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .toc h3 {
-            display: none;
-        }
-
-        .toc-toggle {
-            position: fixed;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            background: var(--soft-blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0;
-            cursor: pointer;
-            font-size: 24px;
-            font-weight: 600;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 50px;
-            height: 50px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-        }
-
-        .toc-toggle:hover {
-            background: var(--text-dark);
-            transform: translateY(-50%) scale(1.08);
-            box-shadow: 0 6px 15px rgba(44, 74, 92, 0.3);
-        }
-
-        .toc-toggle:active {
-            transform: translateY(-50%) scale(0.95);
-            box-shadow: 0 2px 8px rgba(44, 74, 92, 0.2);
-        }
-
-        /* 移动端目录按钮优化 */
-        @media (max-width: 768px) {
-            .toc-toggle {
-                right: 10px;
-                width: 44px;
-                height: 44px;
-                font-size: 20px;
-            }
-        }
-
-        .toc-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        /* 目录展开状态优化 */
-        .toc.expanded {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(-50%) translateX(0);
-        }
-
-        .toc.expanded .toc-toggle {
-            transform: translateY(-50%) translateX(0);
-        }
-
-        .toc-item {
-            display: block;
-            padding: 10px 14px;
-            background: #fff;
-            color: var(--text-dark);
-            text-decoration: none;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            border: 1px solid var(--light-blue);
-            white-space: nowrap;
-        }
-
-        .toc-item:hover {
-            background: var(--soft-blue);
-            border-color: var(--soft-blue);
-            color: white;
-        }
-
-        .toc-item:active {
-            transform: scale(0.97);
-        }
-
         .disclaimer {
             position: fixed;
             top: 0;
@@ -806,78 +694,182 @@
 
         /* 三级分类样式 - 优化美观度和过渡效果 */
         .level3-item {
-            margin: 6px 0 6px 20px;
+            margin: 4px 0 4px 28px;
             padding: 0;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .level3-item.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .level3-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 14px;
-            background: var(--pale-blue);
-            border-radius: 6px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(232, 240, 248, 0.8), rgba(200, 220, 240, 0.6));
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
-            border: 1px solid var(--light-blue);
+            border: 1px solid rgba(184, 212, 240, 0.5);
             color: var(--text-medium);
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level3-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, var(--soft-blue), var(--light-blue));
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
         }
 
         .level3-header:hover {
-            background: var(--light-blue);
+            background: linear-gradient(135deg, rgba(200, 220, 240, 0.9), rgba(184, 212, 240, 0.7));
             border-color: var(--soft-blue);
             color: var(--text-dark);
-            transform: translateX(6px);
-            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.3);
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.25);
+        }
+
+        .level3-header:hover::before {
+            opacity: 1;
         }
 
         .level3-header:active {
-            background: var(--soft-blue);
+            background: linear-gradient(135deg, var(--soft-blue), var(--light-blue));
             color: white;
-            transform: translateX(6px) scale(0.98);
-            box-shadow: 0 2px 6px rgba(168, 200, 232, 0.5);
+            transform: translateX(4px) scale(0.98);
+            box-shadow: 0 2px 6px rgba(168, 200, 232, 0.4);
+        }
+
+        .level3-header:active::before {
+            background: linear-gradient(180deg, white, rgba(255, 255, 255, 0.8));
         }
 
         .level3-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-medium);
             margin: 0;
-            transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .level3-chevron {
-            font-size: 16px;
+            font-size: 14px;
             color: var(--light-blue);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
             flex-shrink: 0;
+            margin-left: 8px;
+            font-weight: bold;
         }
 
         .level3-chevron.active {
             transform: rotate(90deg);
-            color: var(--text-dark);
+            color: var(--soft-blue);
         }
 
-        /* 三级分类标签区域优化 */
+        /* 三级分类标签区域优化 - 使用 grid-template-rows 动画 */
         .level3-tags {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0 10px;
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 8px;
+            margin-left: 8px;
         }
 
         .level3-tags.show {
-            max-height: 1500px;
-            padding: 0 10px 8px 10px;
+            grid-template-rows: 1fr;
+            padding: 4px 8px 8px 8px;
+        }
+
+        .level3-tags-inner {
+            overflow: hidden;
+            min-height: 0;
+            transition: min-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .level3-tags-inner.show {
+            min-height: 100px;
         }
 
         .level3-tags .tag {
-            margin: 4px 2px;
-            font-size: 13px;
-            padding: 5px 10px;
+            margin: 3px 2px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        /* 移动端三级分类优化 */
+        @media (max-width: 768px) {
+            .level3-item {
+                margin-left: 20px;
+            }
+            
+            .level3-header {
+                padding: 10px 12px;
+                font-size: 13px;
+                min-height: 44px;
+            }
+            
+            .level3-title {
+                font-size: 13px;
+            }
+            
+            .level3-chevron {
+                font-size: 16px;
+                min-width: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .level3-item {
+                margin-left: 16px;
+            }
+            
+            .level3-header {
+                padding: 12px 10px;
+                border-radius: 6px;
+            }
+            
+            .level3-title {
+                font-size: 12px;
+            }
+            
+            .level3-tags .tag {
+                font-size: 11px;
+                padding: 4px 7px;
+                margin: 2px 1px;
+            }
+        }
+
+        /* 触摸设备优化 - 更大的点击区域 */
+        @media (hover: none) and (pointer: coarse) {
+            .level3-header {
+                min-height: 48px;
+                padding: 12px 14px;
+            }
+            
+            .level3-header:active {
+                background: var(--soft-blue);
+                color: white;
+            }
         }
 
         .subcategory-item {
@@ -2081,34 +2073,32 @@
                         tags: [
                             { en: "artist_rella", cn: "rella" },
                             { en: "artist_WLOP", cn: "WLOP" },
+                            { en: "artist_Guweiz", cn: "Guweiz" },
+                            { en: "artist_Rossdraws", cn: "Rossdraws" },
+                            { en: "artist_Loish", cn: "Loish" },
+                            { en: "artist_sakimichan", cn: "sakimichan" },
+                            { en: "artist_Kuvshinov_Ilya", cn: "Kuvshinov Ilya" },
+                            { en: "artist_artgerm", cn: "Artgerm" },
+                            { en: "artist_mika_pikazo", cn: "mika pikazo" },
+                            { en: "artist_Liduke", cn: "Liduke" },
                             { en: "artist_kantoku", cn: "监督" },
                             { en: "artist_buriki", cn: "ブリキ" },
                             { en: "artist_huke", cn: "huke" },
                             { en: "artist_redjuice", cn: "redjuice" },
-                            { en: "artist_Rossdraws", cn: "Rossdraws" },
-                            { en: "artist_sakimichan", cn: "sakimichan" },
-                            { en: "artist_Kuvshinov_Ilya", cn: "Kuvshinov Ilya" },
-                            { en: "artist_Loish", cn: "Loish" },
-                            { en: "artist_mika_pikazo", cn: "mika pikazo" },
-                            { en: "artist_yuugen", cn: "ゆーげん" },
-                            { en: "artist_37", cn: "37" },
+                            { en: "artist_kurohoshi_kouhaku", cn: "黑星紅白" },
+                            { en: "artist_abec", cn: "abec" },
                             { en: "artist_Miv4t", cn: "Miv4t" },
+                            { en: "artist_37", cn: "37" },
+                            { en: "artist_yuugen", cn: "ゆーげん" },
                             { en: "artist_Corin", cn: "Corin" },
                             { en: "artist_fajyobore", cn: "fajyobore" },
+                            { en: "artist_40hara", cn: "40 原" },
                             { en: "artist_yuuho", cn: "ゆうぽ" },
                             { en: "artist_nagimiso", cn: "なぎみそ" },
-                            { en: "artist_40hara", cn: "40 原" },
                             { en: "artist_Tiv", cn: "Tiv" },
                             { en: "artist_yukimura_aki", cn: "雪村秋" },
                             { en: "artist_tomatoneko", cn: "とまとねこ" },
-                            { en: "artist_rikor", cn: "りこる" },
-                            { en: "artist_mizuryuukei", cn: "水龙敬" },
-                            { en: "artist_yaekashi_minami", cn: "八重樫南" },
-                            { en: "artist_kurohoshi_kouhaku", cn: "黒星紅白" },
-                            { en: "artist_abec", cn: "abec" },
-                            { en: "artist_tetsuya_nomura", cn: "野村哲也" },
-                            { en: "artist_yuusuke_murata", cn: "村田雄介" },
-                            { en: "artist_ken_sugimori", cn: "杉森建" }
+                            { en: "artist_rikor", cn: "りこる" }
                         ]
                     },
                     {
