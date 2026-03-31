@@ -98,25 +98,29 @@
             display: block;
         }
 
-        /* 目录导航 - 右侧悬浮默认收起 */
+        /* 目录导航 - 右侧悬浮默认只显示方形按钮 */
         .toc {
             position: fixed;
             top: 50%;
-            right: 0;
-            transform: translateY(-50%) translateX(calc(100% - 40px));
+            right: 20px;
+            transform: translateY(-50%);
             background: #fff;
             border: 1px solid var(--light-blue);
-            border-radius: 8px 0 0 8px;
-            padding: 10px 8px;
+            border-radius: 8px;
+            padding: 8px;
             max-height: 80vh;
             overflow-y: auto;
             z-index: 1000;
-            box-shadow: -2px 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            pointer-events: none;
+            min-width: 120px;
         }
 
         .toc.expanded {
-            transform: translateY(-50%) translateX(0);
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .toc h3 {
@@ -124,33 +128,38 @@
         }
 
         .toc-toggle {
-            position: absolute;
-            left: -40px;
+            position: fixed;
             top: 50%;
+            right: 20px;
             transform: translateY(-50%);
             background: var(--soft-blue);
             color: white;
             border: none;
-            border-radius: 8px 0 0 8px;
-            padding: 12px 10px;
+            border-radius: 8px;
+            padding: 0;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 600;
             transition: all 0.25s ease;
-            width: 40px;
-            height: 70px;
-            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.15);
+            width: 50px;
+            height: 50px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
         }
 
         .toc-toggle:hover {
             background: var(--text-dark);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .toc-toggle:active {
+            transform: translateY(-50%) scale(0.95);
         }
 
         .toc-grid {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            min-width: 140px;
+            gap: 4px;
         }
 
         .toc-item {
@@ -160,7 +169,7 @@
             color: var(--text-dark);
             text-decoration: none;
             border-radius: 6px;
-            text-align: left;
+            text-align: center;
             font-size: 13px;
             font-weight: 600;
             transition: all 0.2s ease;
@@ -172,11 +181,10 @@
             background: var(--soft-blue);
             border-color: var(--soft-blue);
             color: white;
-            transform: translateX(-4px);
         }
 
         .toc-item:active {
-            transform: translateX(-4px) scale(0.98);
+            transform: scale(0.98);
         }
 
         .disclaimer {
@@ -4477,13 +4485,13 @@
     <div class="toc" id="toc">
         <button class="toc-toggle" onclick="toggleToc()">☰</button>
         <div class="toc-grid">
-            <a href="#tutorial-section" class="toc-item">📘 新手教程</a>
-            <a href="#recipe-section" class="toc-item">🎲 快速配方</a>
-            <a href="#content" class="toc-item">📚 词条大全</a>
-            <a href="#weight-section" class="toc-item">⚖️ 权重速查</a>
-            <a href="#faq-section" class="toc-item">❓ 常见问题</a>
-            <a href="#sensitive-section" class="toc-item">⚠️ 敏感词检测</a>
-            <a href="#community-section" class="toc-item">👥 社区入口</a>
+            <a href="#tutorial-section" class="toc-item">新手教程</a>
+            <a href="#recipe-section" class="toc-item">快速配方</a>
+            <a href="#content" class="toc-item">词条大全</a>
+            <a href="#weight-section" class="toc-item">权重速查</a>
+            <a href="#faq-section" class="toc-item">常见问题</a>
+            <a href="#sensitive-section" class="toc-item">敏感词检测</a>
+            <a href="#community-section" class="toc-item">社区入口</a>
         </div>
     </div>
 </body>
