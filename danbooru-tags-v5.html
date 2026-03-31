@@ -6198,28 +6198,40 @@
             }
         }
 
-        // 初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                renderContent();
-                console.log('✅ 页面渲染成功');
-            } catch (e) {
-                console.error('❌ renderContent 错误:', e);
-                document.getElementById('content').innerHTML = '<div style="color:red;padding:20px;">渲染失败，请刷新页面</div>';
+        // 初始化 - 使用更可靠的方式
+        (function() {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
             }
-
-            // 显示免责声明 2 秒后隐藏
-            const disclaimer = document.getElementById('disclaimer');
-            disclaimer.classList.add('visible');
             
-            setTimeout(() => {
-                disclaimer.classList.add('hidden');
-                setTimeout(() => {
-                    disclaimer.style.display = 'none';
-                    disclaimer.classList.remove('visible');
-                }, 500);
-            }, 2000);
-        });
+            function init() {
+                try {
+                    renderContent();
+                    console.log('✅ 页面渲染成功');
+                } catch (e) {
+                    console.error('❌ renderContent 错误:', e);
+                    const content = document.getElementById('content');
+                    if (content) {
+                        content.innerHTML = '<div style="color:red;padding:20px;">渲染失败：' + e.message + '</div>';
+                    }
+                }
+                
+                // 显示免责声明 2 秒后隐藏
+                const disclaimer = document.getElementById('disclaimer');
+                if (disclaimer) {
+                    disclaimer.classList.add('visible');
+                    setTimeout(() => {
+                        disclaimer.classList.add('hidden');
+                        setTimeout(() => {
+                            disclaimer.style.display = 'none';
+                            disclaimer.classList.remove('visible');
+                        }, 500);
+                    }, 2000);
+                }
+            }
+        })();
     </script>
 </body>
 </html>
