@@ -722,6 +722,71 @@
             padding: 0 14px 10px 14px;
         }
 
+        /* 三级分类样式 */
+        .level3-item {
+            margin: 6px 0 6px 20px;
+            padding: 0;
+        }
+
+        .level3-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--pale-blue);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            border: 1px solid var(--light-blue);
+            color: var(--text-medium);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .level3-header:hover {
+            background: var(--light-blue);
+            border-color: var(--soft-blue);
+            color: var(--text-dark);
+            transform: translateX(4px);
+        }
+
+        .level3-header:active {
+            background: var(--soft-blue);
+            color: white;
+            transform: translateX(4px) scale(0.995);
+        }
+
+        .level3-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-medium);
+            margin: 0;
+        }
+
+        .level3-chevron {
+            font-size: 16px;
+            color: var(--light-blue);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .level3-chevron.active {
+            transform: rotate(90deg);
+            color: var(--text-dark);
+        }
+
+        .level3-tags {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 10px;
+        }
+
+        .level3-tags.show {
+            max-height: 1500px;
+            padding: 0 10px 8px 10px;
+        }
+
         .subcategory-item {
             padding: 0;
             margin: 0;
@@ -3851,7 +3916,7 @@
             "攻击防御", "恐怖电影", "恶魔猎人"
         ];
 
-        // 渲染内容
+        // 渲染内容（支持三级嵌套）
         function renderContent() {
             const content = document.getElementById('content');
             let html = '';
@@ -3868,25 +3933,73 @@
 
                 category.items.forEach((subcat, subIndex) => {
                     const subId = `sub-${catIndex}-${subIndex}`;
-                    html += `
-                        <div class="subcategory-item">
-                            <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
-                                <span class="subcategory-title">${subcat.title}</span>
-                                <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                    
+                    // 检查是否有三级结构（items 数组）
+                    if (subcat.items && subcat.items.length > 0) {
+                        // 三级结构：先显示子分类标题，展开后显示三级分类
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span class="subcategory-title">${subcat.title}</span>
+                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
+                        
+                        // 渲染三级分类
+                        subcat.items.forEach((level3, l3Index) => {
+                            const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
+                            html += `
+                                <div class="level3-item">
+                                    <div class="level3-header" onclick="toggleLevel3('${l3Id}', event)">
+                                        <span class="level3-title">${level3.title}</span>
+                                        <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
+                                    </div>
+                                    <div class="level3-tags" id="${l3Id}">
+                            `;
+                            
+                            if (level3.tags) {
+                                level3.tags.forEach(tag => {
+                                    const isNegative = tag.negative;
+                                    const className = isNegative ? 'tag negative' : 'tag';
+                                    html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                                });
+                            }
+                            
+                            html += `
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
                             </div>
-                            <div class="subcategory-tags" id="${subId}">
-                    `;
+                        `;
+                    } else {
+                        // 二级结构：直接显示标签
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span class="subcategory-title">${subcat.title}</span>
+                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
 
-                    subcat.tags.forEach(tag => {
-                        const isNegative = tag.negative;
-                        const className = isNegative ? 'tag negative' : 'tag';
-                        html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
-                    });
+                        if (subcat.tags) {
+                            subcat.tags.forEach(tag => {
+                                const isNegative = tag.negative;
+                                const className = isNegative ? 'tag negative' : 'tag';
+                                html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                            });
+                        }
 
-                    html += `
+                        html += `
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 });
 
                 html += `
@@ -3927,6 +4040,23 @@
             event.stopPropagation();
             const content = document.getElementById(id);
             const chevronId = id.replace('sub-', 'subchevron-');
+            const chevron = document.getElementById(chevronId);
+            const isActive = content.classList.contains('show');
+
+            if (isActive) {
+                content.classList.remove('show');
+                chevron.classList.remove('active');
+            } else {
+                content.classList.add('show');
+                chevron.classList.add('active');
+            }
+        }
+
+        // 切换三级分类
+        function toggleLevel3(id, event) {
+            event.stopPropagation();
+            const content = document.getElementById(id);
+            const chevronId = `l3chevron-${id}`;
             const chevron = document.getElementById(chevronId);
             const isActive = content.classList.contains('show');
 

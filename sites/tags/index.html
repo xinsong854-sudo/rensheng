@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 生图标签库 - Danbooru 版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #4a4a6a;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .search-box {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #4a4a6a;
+            border-radius: 25px;
+            background: #2a2a4a;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: #6a6aaa;
+        }
+        
+        .search-input::placeholder {
+            color: #888;
+        }
+        
+        .category-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .category-nav::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .category-nav::-webkit-scrollbar-track {
+            background: #2a2a4a;
+            border-radius: 3px;
+        }
+        
+        .category-nav::-webkit-scrollbar-thumb {
+            background: #4a4a6a;
+            border-radius: 3px;
+        }
+        
+        .nav-btn {
+            padding: 8px 16px;
+            background: #2a2a4a;
+            border: 1px solid #4a4a6a;
+            border-radius: 20px;
+            color: #ccc;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover,
+        .nav-btn.active {
+            background: #4a4a6a;
+            color: #fff;
+            border-color: #6a6aaa;
+        }
+        
+        .categories {
+            display: grid;
+            gap: 30px;
+        }
+        
+        .category {
+            background: rgba(42, 42, 74, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #4a4a6a;
+        }
+        
+        .category-header {
+            padding: 15px 20px;
+            background: rgba(74, 74, 106, 0.5);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category-title {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+        
+        .category-count {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        
+        .category-toggle {
+            font-size: 1.2rem;
+            color: #888;
+            transition: transform 0.3s;
+        }
+        
+        .category.open .category-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .subcategory {
+            padding: 15px 20px;
+            border-bottom: 1px solid #3a3a5a;
+        }
+        
+        .subcategory:last-child {
+            border-bottom: none;
+        }
+        
+        .subcategory-title {
+            font-size: 0.95rem;
+            color: #aaa;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #4a4a6a;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag {
+            padding: 6px 12px;
+            background: #1a1a2e;
+            border: 1px solid #4a4a6a;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .tag:hover {
+            background: #4a4a6a;
+            color: #fff;
+            border-color: #6a6aaa;
+        }
+        
+        .tag:active {
+            transform: scale(0.95);
+        }
+        
+        .tag.copied {
+            background: #2d5a2d;
+            border-color: #4a8a4a;
+            color: #fff;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(45, 90, 45, 0.95);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .stats {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.85rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .category-header {
+                padding: 12px 15px;
+            }
+            
+            .category-title {
+                font-size: 1rem;
+            }
+            
+            .subcategory {
+                padding: 12px 15px;
+            }
+            
+            .tag {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 AI 生图标签库</h1>
+            <p class="subtitle">Danbooru 格式 · 点击复制 · 适配手机</p>
+        </header>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜索标签... 例如：blue_eyes, hair, red">
+            <div class="category-nav" id="categoryNav"></div>
+        </div>
+        
+        <div class="categories" id="categories"></div>
+        
+        <div class="stats" id="stats"></div>
+    </div>
+    
+    <div class="toast" id="toast">✅ 已复制</div>
+    
+    <script>
+        const tagData = {
+            "零、颜色": {
+                "基础色": ["red", "blue", "green", "yellow", "orange", "purple", "pink", "brown", "black", "white", "gray", "grey"],
+                "红色系": ["crimson", "scarlet", "ruby", "maroon", "burgundy", "cherry", "rose", "coral", "salmon", "tomato", "vermilion", "cinnabar", "cardinal", "brick_red", "mahogany", "chestnut", "copper", "bronze"],
+                "蓝色系": ["navy", "midnight_blue", "royal_blue", "sapphire", "cobalt", "azure", "cerulean", "sky_blue", "light_blue", "pale_blue", "powder_blue", "baby_blue", "ice_blue", "cyan", "turquoise", "teal", "aqua", "aquamarine", "ocean", "indigo", "slate_blue", "steel_blue", "periwinkle", "lavender", "violet", "plum", "amethyst"],
+                "绿色系": ["lime", "chartreuse", "olive", "forest_green", "emerald", "jade", "mint", "seafoam", "sage", "moss", "khaki", "army_green", "camouflage", "pine", "kelly_green", "shamrock", "spring_green", "leaf_green", "grass_green", "yellow_green", "dark_green", "light_green", "neon_green"],
+                "黄色系": ["gold", "golden", "yellow", "lemon", "canary", "banana", "cream", "butter", "wheat", "beige", "tan", "sand", "ochre", "mustard", "amber", "honey", "maize", "sunflower", "egg_yolk", "mango", "peach", "apricot"],
+                "橙色系": ["orange", "tangerine", "mandarin", "cantaloupe", "persimmon", "papaya", "carrot", "pumpkin", "terracotta", "burnt_orange", "dark_orange", "light_orange", "neon_orange"],
+                "紫色系": ["purple", "violet", "lavender", "lilac", "plum", "eggplant", "aubergine", "grape", "wine", "mulberry", "magenta", "fuchsia", "orchid", "mauve", "amethyst", "royal_purple", "deep_purple", "dark_purple", "light_purple", "neon_purple"],
+                "粉色系": ["pink", "hot_pink", "deep_pink", "light_pink", "pale_pink", "baby_pink", "pastel_pink", "dusty_pink", "rose", "rose_gold", "blush", "coral_pink", "salmon_pink", "peach", "cherry_blossom", "sakura", "magenta", "fuchsia", "cerise"],
+                "棕褐色系": ["brown", "tan", "beige", "cream", "ivory", "eggshell", "off_white", "snow", "pearl", "champagne", "nude", "skin_tone", "light_skin", "medium_skin", "dark_skin", "pale_skin", "tanned_skin", "olive_skin", "honey", "caramel", "toffee", "chocolate", "dark_chocolate", "milk_chocolate", "white_chocolate", "cocoa", "coffee", "espresso", "latte", "mocha", "chestnut", "mahogany", "walnut", "hazel", "almond", "taupe", "greige", "charcoal", "slate"],
+                "黑白灰色系": ["black", "jet_black", "onyx", "ebony", "pitch_black", "midnight", "shadow", "charcoal", "soot", "ink", "obsidian", "coal", "dark_grey", "grey", "gray", "light_grey", "pale_grey", "silver", "platinum", "sterling", "pewter", "nickel", "chrome", "steel", "iron", "slate", "graphite", "ash", "smoke", "mist", "fog", "cloud", "white", "pure_white", "frost", "ice", "glacier", "vanilla", "cotton", "linen", "silk", "satin", "porcelain", "bone", "chalk", "lily", "jasmine"],
+                "金属色": ["gold", "silver", "bronze", "copper", "brass", "platinum", "chrome", "nickel", "steel", "iron", "titanium", "aluminum", "tin", "lead", "zinc", "mercury", "rose_gold", "white_gold", "yellow_gold", "red_gold", "green_gold", "pink_gold", "champagne_gold"],
+                "特殊效果": ["transparent", "translucent", "opaque", "clear", "invisible", "ethereal", "celestial", "divine", "holy", "magical", "mystical", "arcane", "eldritch", "abyssal", "void", "darkness", "shadow", "spectral", "ghostly", "phantom", "luminous", "glowing", "radiant", "brilliant", "dazzling", "blazing", "fiery", "burning", "incandescent", "fluorescent", "phosphorescent", "neon", "electric", "plasma", "laser", "holographic", "prismatic", "iridescent", "opalescent", "pearlescent", "metallic", "shimmer", "sparkle", "glitter", "glimmer", "gleam", "glow"],
+                "渐变混合": ["gradient", "ombre", "multicolored", "two-tone", "tri-color", "rainbow", "streaked", "mottled", "marbled", "swirled", "striped", "banded", "layered", "fade", "bleached", "washed", "faded", "pastel", "muted", "subdued", "soft", "vivid", "bright", "dark", "deep", "rich", "pale", "light"]
+            },
+            "一、眼睛": {
+                "眼型": ["tsurime", "tareme", "round_eyes", "narrow_eyes", "closed_eyes", "half-closed_eyes", "wide_eyes", "slit_pupils", "dot_eyes", "empty_eyes", "sparkling_eyes", "dilated_pupils", "contracted_pupils", "ringed_eyes", "cross-shaped_pupils", "plus-shaped_eyes", "x-shaped_pupils", "swirl_eyes", "hypnotic_eyes", "galaxy_eyes", "fire_eyes", "ice_eyes", "lightning_eyes"],
+                "瞳孔颜色": ["blue_eyes", "red_eyes", "green_eyes", "purple_eyes", "yellow_eyes", "orange_eyes", "pink_eyes", "brown_eyes", "black_eyes", "gray_eyes", "silver_eyes", "gold_eyes", "white_eyes", "heterochromia", "gradient_eyes"],
+                "眼神表情": ["teary_eyes", "crying", "smiling_eyes", "glaring", "looking_at_viewer", "looking_away", "looking_up", "looking_down", "looking_sideways", "eye_reflection", "covered_eyes", "one_eye_covered"],
+                "睫毛": ["long_eyelashes", "thick_eyelashes", "curled_eyelashes", "lower_lashes", "upper_lashes"],
+                "眼部装饰": ["eye_makeup", "eyeliner", "eyeshadow", "mascara", "false_eyelashes"]
+            },
+            "二、头发": {
+                "长度": ["long_hair", "medium_hair", "short_hair", "very_long_hair", "absurdly_long_hair"],
+                "发型": ["twin_tails", "low_twin_tails", "short_twin_tails", "long_twin_tails", "drill_hair", "side_drill", "ponytail", "high_ponytail", "low_ponytail", "side_ponytail", "short_ponytail", "braided_ponytail", "pigtails", "low_pigtails", "short_pigtails", "tri_tails", "quad_tails", "multiple_braids", "french_braid", "dutch_braid", "fishtail_braid", "crown_braid", "side_braid", "loose_braid", "single_braid", "curly_hair", "wavy_hair", "straight_hair", "messy_hair", "bed_hair", "afro", "bouffant", "crew_cut", "buzz_cut", "pixie_cut", "bob_cut", "blunt_cut", "hime_cut", "layered_hair"],
+                "发色": ["blonde_hair", "black_hair", "brown_hair", "silver_hair", "white_hair", "red_hair", "blue_hair", "green_hair", "pink_hair", "purple_hair", "orange_hair", "yellow_hair", "grey_hair", "lavender_hair", "mint_hair", "aqua_hair", "teal_hair", "magenta_hair", "scarlet_hair", "crimson_hair", "navy_hair", "indigo_hair", "beige_hair", "champagne_hair", "rose_gold_hair", "copper_hair", "bronze_hair", "platinum_hair", "ash_hair", "hazel_hair", "chestnut_hair", "mahogany_hair", "auburn_hair", "dirty_blonde", "gradient_hair", "streaked_hair", "multicolored_hair", "two-tone_hair"]
+            },
+            "三、耳朵": {
+                "耳型": ["pointed_ears", "long_ears", "animal_ears", "cat_ears", "dog_ears", "fox_ears", "wolf_ears", "bear_ears", "mouse_ears", "rabbit_ears", "sheep_ears", "cow_ears", "horse_ears", "pig_ears", "lion_ears", "tiger_ears", "leopard_ears", "jaguar_ears", "lynx_ears", "bat_ears", "elephant_ears", "monkey_ears", "ape_ears", "panda_ears", "koala_ears", "kangaroo_ears", "squirrel_ears", "raccoon_ears", "skunk_ears", "otter_ears", "seal_ears", "whale_ears", "dolphin_ears", "shark_ears", "fish_ears", "bird_ears", "dragon_ears", "demon_ears", "angel_ears", "fairy_ears", "elf_ears", "vampire_ears", "zombie_ears", "ghost_ears", "robot_ears", "cyborg_ears", "mechanical_ears"],
+                "耳饰": ["ear_piercing", "earring", "stud_earring", "hoop_earring", "dangle_earring", "chandelier_earring", "clip-on_earring", "multiple_earrings", "mismatched_earrings", "ear_muffs", "covered_ears"]
+            },
+            "四、嘴巴": {
+                "嘴型": ["small_mouth", "large_mouth", "full_lips", "thin_lips", "pouty_lips"],
+                "表情": ["smiling", "grin", "frown", "pout", "open_mouth", "closed_mouth", "parted_lips", "licking_lips", "biting_lip", "tongue_out", "tongue"],
+                "牙齿": ["fangs", "vampire_fangs", "sharp_teeth", "crooked_teeth", "missing_tooth", "braces"],
+                "装饰": ["lipstick", "lip_gloss", "lip_balm", "lip_piercing"],
+                "遮挡": ["mouth_mask", "gas_mask", "surgical_mask", "bandana", "scarf", "gag", "ball_gag", "bit_gag", "tape_gag", "cloth_gag", "muzzle"]
+            },
+            "五、表情": {
+                "基础表情": ["smile", "laugh", "cry", "angry", "sad", "happy", "surprised", "scared", "shocked", "disgusted", "confused", "thinking", "bored", "tired", "sleepy", "excited", "nervous", "embarrassed", "shy", "proud", "confident", "determined", "serious", "neutral", "expressionless", "blank_expression", "no_expression"],
+                "复杂表情": ["evil_smile", "smirk", "sneer", "grimace", "wince", "pout", "pouty", "frown", "scowl", "glare", "glaring", "stare", "staring", "gaze", "looking_at_viewer", "looking_away", "looking_up", "looking_down", "looking_sideways", "blush", "blushing", "flushed", "teary", "teary_eyes", "crying", "sobbing", "wailing", "laughing", "giggling", "chuckling", "snickering", "cackling", "howling", "screaming", "yelling", "shouting", "whispering", "muttering", "humming", "singing", "whistling", "yawning", "sighing", "gasping", "panting", "breathing_heavy", "holding_breath"]
+            },
+            "六、服装 - 上装": {
+                "日常上装": ["t-shirt", "shirt", "blouse", "tank_top", "sleeveless_shirt", "crop_top", "tube_top", "halter_top", "off_shoulder", "long_sleeve", "short_sleeve", "sweater", "cardigan", "hoodie", "jacket", "coat", "blazer", "vest", "waistcoat", "suit", "formal_wear", "casual_wear"],
+                "传统服装": ["kimono", "yukata", "hanfu", "cheongsam", "sari", "hanbok", "ao_dai", "thobe", "abaya", "hijab", "niqab", "burqa", "turban", "kilt", "poncho", "cape", "cloak", "robe", "gown"],
+                "制服": ["school_uniform", "sailor_suit", "blazer_uniform", "gakuran", "serafuku", "maid_dress", "butler_suit", "nurse_uniform", "doctor_coat", "police_uniform", "military_uniform", "soldier_uniform", "pilot_uniform", "chef_uniform", "waitress_uniform", "waiter_uniform", "receptionist_uniform", "security_uniform", "firefighter_uniform", "paramedic_uniform"],
+                "运动装": ["tracksuit", "jersey", "athletic_uniform", "gym_uniform", "swimsuit", "bikini", "one-piece_swimsuit", "rash_guard", "wetsuit", "dive_suit", "ski_suit", "snow_suit", "yoga_pants", "leggings", "sports_bra", "compression_shirt"],
+                "内衣": ["bra", "panties", "lingerie", "corset", "bustier", "camisole", "chemise", "nightgown", "pajamas", "sleepwear", "underwear", "boxers", "briefs", "thong", "garter_belt", "stockings", "pantyhose"]
+            },
+            "七、服装 - 下装": {
+                "裙子": ["skirt", "miniskirt", "shorts", "long_skirt", "pencil_skirt", "a-line_skirt", "pleated_skirt", "circle_skirt", "tutu", "maxi_skirt", "midi_skirt", "wrap_skirt", "tiered_skirt", "bubble_skirt", "peplum_skirt"],
+                "裤子": ["pants", "trousers", "jeans", "leggings", "yoga_pants", "sweatpants", "cargo_pants", "khakis", "slacks", "dress_pants", "capri_pants", "cropped_pants", "wide-leg_pants", "palazzo_pants", "harem_pants", "joggers", "track_pants", "compression_pants", "leather_pants", "vinyl_pants", "latex_pants"]
+            },
+            "八、画风": {
+                "动漫风格": ["anime", "anime_style", "manga", "manga_style", "cel_shading", "flat_color", "watercolor", "oil_painting", "acrylic_painting", "digital_painting", "pixel_art", "low_poly", "vector_art", "line_art", "sketch", "drawing", "illustration", "concept_art", "character_design", "background_art", "matte_painting"],
+                "艺术风格": ["realistic", "photorealistic", "semi-realistic", "stylized", "cartoon", "chibi", "super_deformed", "abstract", "impressionist", "expressionist", "cubist", "surrealist", "art_nouveau", "art_deco", "gothic", "baroque", "renaissance", "classical", "modern", "contemporary", "pop_art", "minimalist", "maximalist"],
+                "光影风格": ["soft_lighting", "hard_lighting", "dramatic_lighting", "cinematic_lighting", "studio_lighting", "natural_lighting", "artificial_lighting", "backlighting", "side_lighting", "top_lighting", "bottom_lighting", "rim_lighting", "ambient_lighting", "volumetric_lighting", "god_rays", "caustics", "global_illumination", "ray_tracing"]
+            },
+            "九、服饰配件": {
+                "鞋子": ["shoes", "sneakers", "boots", "high_heels", "sandals", "slippers", "flats", "loafers", "oxfords", "brogues", "pumps", "wedges", "platform_shoes", "ankle_boots", "knee_high_boots", "thigh_high_boots", "combat_boots", "rain_boots", "snow_boots", "hiking_boots", "work_boots", "steel_toe_boots", "cowboy_boots", "chelsea_boots", "desert_boots", "chukka_boots", "dr_martens", "converse", "vans", "nike", "adidas", "puma", "reebok", "new_balance", "asics", "brooks", "saucony", "mizuno", "under_armour"],
+                "袜子": ["socks", "ankle_socks", "crew_socks", "knee_high_socks", "thigh_high_socks", "pantyhose", "stockings", "tights", "leggings", "leg_warmers", "gaiters", "footwarmers"],
+                "首饰": ["jewelry", "necklace", "pendant", "choker", "collar", "bracelet", "bangle", "ring", "earrings", "brooch", "pin", "tiara", "crown", "headband", "hair_clip", "hair_pin", "hair_ornament", "watch", "pocket_watch", "glasses", "sunglasses", "monocle", "eyepatch", "mask", "veil", "gloves", "mittens", "fingerless_gloves", "arm_warmers", "scarf", "shawl", "stole", "wrap", "belt", "suspenders", "garter", "harness", "strap", "buckle", "button", "zipper", "lace", "ribbon", "bow", "rosette", "flower", "corsage", "boutonniere", "lei", "wreath", "garland"]
+            },
+            "十、背景": {
+                "自然景观": ["nature", "landscape", "scenery", "mountain", "mountains", "hill", "valley", "canyon", "cliff", "rock", "stone", "boulder", "cave", "volcano", "river", "stream", "lake", "pond", "ocean", "sea", "beach", "shore", "coast", "island", "forest", "woods", "tree", "trees", "flower", "flowers", "grass", "field", "meadow", "desert", "dunes", "oasis", "glacier", "iceberg", "snow", "ice", "frost"],
+                "天空": ["sky", "cloud", "clouds", "sun", "sunrise", "sunset", "moon", "full_moon", "crescent_moon", "new_moon", "star", "stars", "milky_way", "rainbow", "lightning", "thunder", "rain", "snow", "fog", "mist"],
+                "建筑": ["building", "house", "home", "apartment", "mansion", "castle", "palace", "temple", "church", "mosque", "synagogue", "pagoda", "tower", "skyscraper", "bridge", "tunnel", "wall", "fence", "gate", "door", "window", "roof", "balcony", "porch", "patio", "garden", "park", "plaza", "square", "street", "road", "path", "alley", "sidewalk"],
+                "室内": ["room", "bedroom", "bathroom", "kitchen", "living_room", "dining_room", "office", "classroom", "library", "laboratory", "studio", "workshop", "garage", "basement", "attic", "hallway", "staircase", "elevator"]
+            },
+            "十一、灯光": {
+                "自然光": ["natural_light", "sunlight", "sunshine", "moonlight", "starlight", "firelight", "candlelight", "dawn", "dusk", "twilight", "golden_hour", "blue_hour", "noon", "midnight", "day", "night", "morning", "evening", "afternoon"],
+                "人造光": ["artificial_light", "lamp", "light_bulb", "fluorescent_light", "led_light", "neon_light", "street_light", "headlight", "flashlight", "lantern", "torch", "candle", "fire", "bonfire", "fireplace", "stove", "oven", "microwave", "refrigerator", "television", "computer", "monitor", "screen", "phone", "tablet", "camera", "flash"],
+                "特效光": ["glow", "glowing", "luminescent", "fluorescent", "phosphorescent", "incandescent", "neon", "laser", "holographic", "iridescent", "opalescent", "pearlescent", "metallic", "shimmer", "sparkle", "glitter", "radiant", "brilliant", "dazzling"]
+            },
+            "十二、构图": {
+                "视角": ["viewpoint", "point_of_view", "pov", "angle", "perspective", "from_above", "from_below", "from_side", "from_behind", "from_front", "aerial_view", "birds_eye_view", "worms_eye_view", "eye_level", "low_angle", "high_angle", "dutch_angle", "overhead", "underneath", "side_view", "front_view", "back_view", "three-quarter_view", "profile_view", "full_face", "close-up", "medium_shot", "long_shot", "extreme_close-up", "extreme_long_shot", "full_body", "upper_body", "lower_body", "face_only", "head_only", "bust", "portrait", "landscape"],
+                "景别": ["foreground", "midground", "background", "depth_of_field", "shallow_depth_of_field", "deep_depth_of_field", "bokeh", "blur", "focused", "in_focus", "out_of_focus"],
+                "构图方式": ["rule_of_thirds", "golden_ratio", "symmetry", "asymmetry", "balance", "contrast", "pattern", "texture", "line", "shape", "form", "space", "negative_space", "frame_within_frame", "leading_lines", "vanishing_point", "horizon_line", "centered", "off_center", "cropped", "zoomed_in", "zoomed_out", "panoramic", "wide_angle", "telephoto", "macro", "fisheye", "wide_shot"]
+            },
+            "十三、特效": {
+                "魔法特效": ["magic", "magical", "spell", "sorcery", "witchcraft", "wizardry", "enchantment", "charm", "curse", "hex", "jinx", "potion", "elixir", "scroll", "tome", "grimoire", "wand", "staff", "rod", "scepter", "crystal_ball", "tarot_cards", "runes", "sigil", "glyph", "symbol", "circle", "magic_circle", "summoning_circle", "teleportation", "teleport", "portal", "gateway", "dimensional_gate", "time_travel", "time_loop", "time_stop", "slow_motion", "fast_motion", "time_skip"],
+                "元素特效": ["fire", "flame", "burning", "smoke", "ash", "ember", "spark", "explosion", "blast", "water", "splash", "wave", "ripple", "droplet", "rain", "snow", "ice", "frost", "hail", "wind", "breeze", "gust", "tornado", "hurricane", "typhoon", "earth", "rock", "stone", "sand", "dust", "mud", "clay", "metal", "lightning", "thunder", "electricity", "energy", "plasma", "radiation", "light", "darkness", "shadow", "void", "space", "time", "gravity", "force", "power", "aura", "field", "barrier", "shield", "wall", "dome", "sphere", "orb", "bubble"],
+                "粒子特效": ["particles", "sparkles", "glitter", "stars", "hearts", "flowers", "petals", "leaves", "feathers", "snowflakes", "raindrops", "bubbles", "smoke", "steam", "mist", "fog", "clouds", "dust", "sand", "debris", "shards", "fragments", "pieces", "chunks", "rocks", "pebbles", "gravel", "dirt", "mud", "slime", "goo", "ooze"]
+            },
+            "十四、姿势": {
+                "站姿": ["standing", "stand", "upright", "erect", "vertical", "straight", "balanced", "stable", "steady", "firm", "solid", "grounded", "rooted", "planted", "fixed", "anchored"],
+                "坐姿": ["sitting", "sit", "seated", "chair", "bench", "stool", "sofa", "couch", "armchair", "recliner", "rocking_chair", "wheelchair", "throne", "ottoman", "beanbag", "floor", "ground", "mat", "cushion", "pillow"],
+                "卧姿": ["lying", "lay", "reclining", "prone", "supine", "on_side", "fetal_position", "spread_eagle", "starfish", "curled_up", "stretched_out", "relaxed", "resting", "sleeping", "napping", "dozing", "slumbering", "dreaming"],
+                "动作姿势": ["walking", "walk", "running", "run", "jogging", "sprinting", "dashing", "rushing", "hurrying", "speeding", "racing", "chasing", "fleeing", "escaping", "hiding", "seeking", "searching", "hunting", "fishing", "gathering", "picking", "harvesting", "planting", "watering", "digging", "burying", "climbing", "jumping", "leaping", "hopping", "skipping", "dancing", "spinning", "twirling", "turning", "pivoting", "swiveling", "rotating", "revolving", "circling", "orbiting", "looping", "rolling", "tumbling", "somersaulting", "cartwheeling", "handstand", "headstand", "yoga", "stretching", "bending", "crouching", "squatting", "kneeling", "prostrating", "bowing", "curtsying", "saluting", "waving", "pointing", "gesturing", "signaling", "beckoning", "dismissing", "applauding", "clapping", "snapping", "thumbs_up", "thumbs_down", "peace_sign", "v_sign", "ok_sign", "rock_on", "devil_horns", "finger_gun", "middle_finger"]
+            },
+            "十五、氛围": {
+                "情绪氛围": ["atmosphere", "ambiance", "mood", "tone", "feeling", "sense", "vibe", "aura", "presence", "essence", "spirit", "soul", "heart", "core", "center", "focus", "point", "spot", "place", "location", "position", "site", "locale", "venue", "setting", "scene", "scenery", "backdrop", "background", "context", "environment", "surroundings", "milieu", "habitat", "ecosystem"],
+                "天气氛围": ["sunny", "cloudy", "overcast", "rainy", "stormy", "windy", "foggy", "misty", "hazy", "smoggy", "dusty", "sandy", "snowy", "icy", "frosty", "cold", "cool", "warm", "hot", "humid", "dry", "wet", "damp", "muggy", "sticky", "slick", "slippery", "rough", "smooth", "soft", "hard", "firm", "solid", "liquid", "gas", "plasma", "frozen", "melted", "boiling", "steaming", "smoking", "burning", "glowing", "shining", "sparkling", "twinkling", "flickering", "fluttering", "waving", "swaying", "swinging", "rocking", "rolling", "spinning", "turning", "twisting", "bending", "stretching", "contracting", "expanding", "growing", "shrinking", "increasing", "decreasing", "rising", "falling", "ascending", "descending", "climbing", "dropping", "plummeting", "soaring", "flying", "floating", "drifting", "sailing", "swimming", "diving", "sinking", "drowning", "surfing", "skiing", "skating", "snowboarding"]
+            }
+        };
+
+        let totalTags = 0;
+        for (const cat in tagData) {
+            for (const sub in tagData[cat]) {
+                totalTags += tagData[cat][sub].length;
+            }
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            const nav = document.getElementById('categoryNav');
+            
+            let navHtml = '<button class="nav-btn active" data-category="all">全部</button>';
+            let html = '';
+            let catIndex = 0;
+            
+            for (const [catName, subcats] of Object.entries(tagData)) {
+                navHtml += `<button class="nav-btn" data-category="${catIndex}">${catName}</button>`;
+                
+                let subcatHtml = '';
+                let tagCount = 0;
+                
+                for (const [subName, tags] of Object.entries(subcats)) {
+                    tagCount += tags.length;
+                    subcatHtml += `
+                        <div class="subcategory" data-subcategory="${subName.toLowerCase()}">
+                            <div class="subcategory-title">${subName} (${tags.length})</div>
+                            <div class="tags">
+                                ${tags.map(tag => `<span class="tag" data-tag="${tag}">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="category open" data-category="${catIndex}" data-catname="${catName}">
+                        <div class="category-header">
+                            <div>
+                                <span class="category-title">${catName}</span>
+                                <span class="category-count">(${tagCount} 标签)</span>
+                            </div>
+                            <span class="category-toggle">▼</span>
+                        </div>
+                        <div class="category-content">
+                            ${subcatHtml}
+                        </div>
+                    </div>
+                `;
+                catIndex++;
+            }
+            
+            nav.innerHTML = navHtml;
+            container.innerHTML = html;
+            document.getElementById('stats').textContent = `总计 ${Object.keys(tagData).length} 个分类 · ${totalTags} 个标签`;
+            
+            attachEventListeners();
+        }
+
+        function attachEventListeners() {
+            // 分类导航
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const cat = btn.dataset.category;
+                    document.querySelectorAll('.category').forEach((el, idx) => {
+                        if (cat === 'all' || idx == cat) {
+                            el.classList.remove('hidden');
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+            
+            // 分类展开/折叠
+            document.querySelectorAll('.category-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const cat = header.parentElement;
+                    cat.classList.toggle('open');
+                    const content = header.nextElementSibling;
+                    content.style.display = cat.classList.contains('open') ? 'block' : 'none';
+                });
+            });
+            
+            // 标签复制
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const text = tag.dataset.tag;
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        tag.classList.add('copied');
+                        showToast(`✅ 已复制：${text}`);
+                        setTimeout(() => tag.classList.remove('copied'), 1000);
+                    } catch (err) {
+                        showToast('❌ 复制失败');
+                    }
+                });
+            });
+            
+            // 搜索
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                
+                document.querySelectorAll('.subcategory').forEach(sub => {
+                    const tags = sub.querySelectorAll('.tag');
+                    let hasMatch = false;
+                    
+                    tags.forEach(tag => {
+                        const tagName = tag.dataset.tag.toLowerCase();
+                        if (query === '' || tagName.includes(query)) {
+                            tag.style.display = 'block';
+                            hasMatch = true;
+                        } else {
+                            tag.style.display = 'none';
+                        }
+                    });
+                    
+                    sub.style.display = hasMatch ? 'block' : 'none';
+                });
+                
+                document.querySelectorAll('.category').forEach(cat => {
+                    const visibleSubs = cat.querySelectorAll('.subcategory[style="display: block;"], .subcategory:not([style*="display: none"])');
+                    cat.style.display = visibleSubs.length > 0 ? 'block' : 'none';
+                });
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // 初始化
+        renderCategories();
+    </script>
+</body>
+</html>

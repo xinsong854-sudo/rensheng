@@ -1,0 +1,21 @@
+# 敏感凭证
+.github-cookie
+*.cookie
+.env
+.env.local
+.token
+*.token
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+.tmp/
+*.tmp
+*.swp
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
