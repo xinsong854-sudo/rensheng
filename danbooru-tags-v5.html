@@ -103,7 +103,7 @@
             position: fixed;
             top: 50%;
             right: 0;
-            transform: translateY(-50%) translateX(100%);
+            transform: translateY(-50%) translateX(calc(100% - 40px));
             background: #fff;
             border: 1px solid var(--light-blue);
             border-radius: 8px 0 0 8px;
@@ -968,20 +968,6 @@
             <p>捏 Ta 新人友好版 · 点击词条可直接复制</p>
             <div class="header-banner">
                 <img src="header-banner.jpg" alt="装饰横幅">
-            </div>
-        </div>
-
-        <!-- 目录 - 右侧悬浮可完全收起 -->
-        <div class="toc" id="toc">
-            <button class="toc-toggle" onclick="toggleToc()">☰</button>
-            <div class="toc-grid">
-                <a href="#tutorial-section" class="toc-item">📘 新手教程</a>
-                <a href="#recipe-section" class="toc-item">🎲 快速配方</a>
-                <a href="#content" class="toc-item">📚 词条大全</a>
-                <a href="#weight-section" class="toc-item">⚖️ 权重速查</a>
-                <a href="#faq-section" class="toc-item">❓ 常见问题</a>
-                <a href="#sensitive-section" class="toc-item">⚠️ 敏感词检测</a>
-                <a href="#community-section" class="toc-item">👥 社区入口</a>
             </div>
         </div>
 
@@ -4356,5 +4342,19 @@
             }, 2000);
         });
     </script>
+
+    <!-- 目录 - 右侧悬浮可完全收起 -->
+    <div class="toc" id="toc">
+        <button class="toc-toggle" onclick="toggleToc()">☰</button>
+        <div class="toc-grid">
+            <a href="#tutorial-section" class="toc-item">📘 新手教程</a>
+            <a href="#recipe-section" class="toc-item">🎲 快速配方</a>
+            <a href="#content" class="toc-item">📚 词条大全</a>
+            <a href="#weight-section" class="toc-item">⚖️ 权重速查</a>
+            <a href="#faq-section" class="toc-item">❓ 常见问题</a>
+            <a href="#sensitive-section" class="toc-item">⚠️ 敏感词检测</a>
+            <a href="#community-section" class="toc-item">👥 社区入口</a>
+        </div>
+    </div>
 </body>
 </html>
