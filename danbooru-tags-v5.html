@@ -22,7 +22,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: #ffffff;
-            color: #333;
+            color: var(--text-dark);
             line-height: 1.6;
             -webkit-tap-highlight-color: transparent;
             font-size: 16px;
@@ -51,11 +51,12 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px 20px;
-            background: rgba(240, 248, 255, 0.9);
+            background: rgba(232, 240, 248, 0.95);
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
             margin-bottom: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .header {
@@ -85,11 +86,13 @@
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             opacity: 0.7;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .header-banner:hover {
             opacity: 0.85;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         .header-banner img {
@@ -231,12 +234,13 @@
 
         /* 新手教程区样式 */
         .tutorial-section {
-            background: linear-gradient(135deg, #98B8D8, var(--soft-blue));
+            background: linear-gradient(135deg, rgba(152, 184, 216, 0.95), var(--soft-blue));
             color: white;
             padding: 25px;
             border-radius: 16px;
             margin-bottom: 25px;
             box-shadow: 0 4px 15px rgba(168, 200, 232, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .tutorial-section h2 {
@@ -245,6 +249,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            color: #ffffff;
         }
 
         .tutorial-section h3 {
@@ -289,23 +294,26 @@
         }
 
         .tutorial-section .badge {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.3);
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
+            font-weight: 600;
         }
 
         .tutorial-content {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 12px;
             margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .tutorial-content h3 {
             font-size: 16px;
             margin-bottom: 10px;
             margin-top: 15px;
+            color: #ffffff;
         }
 
         .tutorial-content h3:first-child {
@@ -323,21 +331,24 @@
         }
 
         .example-box {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.25);
             padding: 12px;
             border-radius: 8px;
             font-family: monospace;
             font-size: 13px;
             margin: 10px 0;
             word-break: break-all;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .example-good {
-            border-left: 3px solid #4ade80;
+            border-left: 3px solid rgba(74, 222, 128, 0.9);
+            background: rgba(74, 222, 128, 0.15);
         }
 
         .example-bad {
-            border-left: 3px solid #f87171;
+            border-left: 3px solid rgba(248, 113, 113, 0.9);
+            background: rgba(248, 113, 113, 0.15);
         }
 
         /* 快速配方样式 */
@@ -348,16 +359,29 @@
         .recipe-section h2 {
             font-size: 18px;
             margin-bottom: 15px;
-            color: #1a1a1a;
+            color: var(--text-dark);
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .recipe-section > p {
+            color: var(--text-medium);
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .recipe-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 12px;
+        }
+
+        /* 移动端配方卡片优化 */
+        @media (max-width: 600px) {
+            .recipe-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .recipe-card {
@@ -384,13 +408,14 @@
             font-size: 16px;
             margin-bottom: 8px;
             color: var(--text-dark);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .recipe-card p {
             font-size: 13px;
             color: var(--text-medium);
             margin-bottom: 10px;
+            line-height: 1.5;
         }
 
         .recipe-tags {
@@ -419,7 +444,7 @@
 
         .recipe-copy:hover {
             background: var(--text-dark);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(44, 74, 92, 0.3);
         }
 
@@ -428,7 +453,7 @@
         }
 
         .recipe-copy.copy-btn {
-            background: #fff;
+            background: #ffffff;
             color: var(--text-dark);
             border: 2px solid var(--soft-blue);
         }
@@ -436,6 +461,7 @@
         .recipe-copy.copy-btn:hover {
             background: var(--soft-blue);
             color: white;
+            border-color: var(--soft-blue);
             box-shadow: 0 4px 12px rgba(168, 200, 232, 0.4);
         }
 
@@ -468,11 +494,15 @@
         .weight-table th {
             background: var(--soft-blue);
             color: white;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .weight-table tr:last-child td {
             border-bottom: none;
+        }
+
+        .weight-table tr:hover td {
+            background: rgba(168, 200, 232, 0.2);
         }
 
         .weight-code {
@@ -483,6 +513,7 @@
             font-size: 12px;
             color: var(--text-dark);
             font-weight: 600;
+            border: 1px solid var(--light-blue);
         }
 
         /* FAQ 折叠样式 */
@@ -576,11 +607,16 @@
             border-radius: 10px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .community-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(168, 200, 232, 0.4);
+        }
+
+        .community-card:active {
+            transform: translateY(-1px) scale(0.98);
         }
 
         .community-card .name {
@@ -592,15 +628,20 @@
         .community-card .number {
             font-family: monospace;
             font-size: 16px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.25);
             padding: 6px 10px;
             border-radius: 6px;
             display: inline-block;
+            transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .community-card:hover .number {
+            background: rgba(255, 255, 255, 0.35);
         }
 
         .community-card .copy-hint {
             font-size: 11px;
-            opacity: 0.8;
+            opacity: 0.85;
             margin-top: 5px;
         }
 
@@ -647,12 +688,13 @@
         .category-title {
             font-size: 17px;
             font-weight: 600;
-            color: #1a1a1a;
+            color: var(--text-dark);
+            transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .chevron {
             font-size: 20px;
-            color: #999;
+            color: var(--text-medium);
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -704,13 +746,14 @@
         .subcategory-title {
             font-size: 15px;
             font-weight: 500;
-            color: #444;
+            color: var(--text-dark);
             margin: 0;
+            transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .subcategory-chevron {
             font-size: 18px;
-            color: #888;
+            color: var(--text-medium);
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -730,7 +773,7 @@
             padding: 0 14px 10px 14px;
         }
 
-        /* 三级分类样式 */
+        /* 三级分类样式 - 优化美观度和过渡效果 */
         .level3-item {
             margin: 6px 0 6px 20px;
             padding: 0;
@@ -756,13 +799,15 @@
             background: var(--light-blue);
             border-color: var(--soft-blue);
             color: var(--text-dark);
-            transform: translateX(4px);
+            transform: translateX(6px);
+            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.3);
         }
 
         .level3-header:active {
             background: var(--soft-blue);
             color: white;
-            transform: translateX(4px) scale(0.995);
+            transform: translateX(6px) scale(0.98);
+            box-shadow: 0 2px 6px rgba(168, 200, 232, 0.5);
         }
 
         .level3-title {
@@ -770,12 +815,14 @@
             font-weight: 500;
             color: var(--text-medium);
             margin: 0;
+            transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .level3-chevron {
             font-size: 16px;
             color: var(--light-blue);
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
         }
 
         .level3-chevron.active {
@@ -783,6 +830,7 @@
             color: var(--text-dark);
         }
 
+        /* 三级分类标签区域优化 */
         .level3-tags {
             max-height: 0;
             overflow: hidden;
@@ -793,6 +841,12 @@
         .level3-tags.show {
             max-height: 1500px;
             padding: 0 10px 8px 10px;
+        }
+
+        .level3-tags .tag {
+            margin: 4px 2px;
+            font-size: 13px;
+            padding: 5px 10px;
         }
 
         .subcategory-item {
@@ -811,25 +865,28 @@
         .tag {
             display: inline-block;
             padding: 6px 12px;
-            background: #f0f2f5;
+            background: var(--pale-blue);
             border-radius: 8px;
             font-size: 14px;
-            color: #444;
+            color: var(--text-dark);
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid #e4e6e9;
+            border: 1px solid var(--light-blue);
             user-select: none;
         }
 
         .tag:hover {
-            background: #e0e3e8;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background: var(--light-blue);
+            border-color: var(--soft-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(168, 200, 232, 0.4);
         }
 
         .tag:active {
             transform: translateY(0) scale(0.98);
-            background: #d0d5dc;
+            background: var(--soft-blue);
+            border-color: var(--soft-blue);
+            color: white;
         }
 
         .tag.copied {
@@ -839,75 +896,96 @@
         }
 
         .tag.negative {
-            background: #fff3cd;
-            border-color: #ffc107;
-            color: #856404;
+            background: rgba(255, 193, 7, 0.2);
+            border-color: rgba(255, 193, 7, 0.5);
+            color: #b7950b;
+        }
+
+        .tag.negative:hover {
+            background: rgba(255, 193, 7, 0.4);
+            border-color: rgba(255, 193, 7, 0.7);
         }
 
         /* 敏感词检测器样式 */
         .sensitive-checker {
             margin-top: 30px;
             padding: 20px;
-            background: #f8f9fa;
+            background: var(--pale-blue);
             border-radius: 12px;
-            border: 1px solid #e9ecef;
+            border: 1px solid var(--light-blue);
         }
 
         .sensitive-checker h2 {
             font-size: 18px;
             margin-bottom: 15px;
-            color: #1a1a1a;
+            color: var(--text-dark);
         }
 
         .sensitive-checker textarea {
             width: 100%;
             min-height: 100px;
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--light-blue);
             border-radius: 8px;
             font-size: 14px;
             font-family: inherit;
             resize: vertical;
+            background: #ffffff;
+            color: var(--text-dark);
+        }
+
+        .sensitive-checker textarea:focus {
+            outline: none;
+            border-color: var(--soft-blue);
+            box-shadow: 0 0 0 3px rgba(168, 200, 232, 0.2);
         }
 
         .sensitive-checker button {
             margin-top: 10px;
             padding: 10px 20px;
-            background: #007bff;
+            background: var(--soft-blue);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 14px;
             cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sensitive-checker button:hover {
-            background: #0056b3;
+            background: var(--text-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 74, 92, 0.3);
+        }
+
+        .sensitive-checker button:active {
+            transform: translateY(0) scale(0.98);
         }
 
         .sensitive-result {
             margin-top: 15px;
             padding: 15px;
-            background: #fff;
+            background: #ffffff;
             border-radius: 8px;
-            border: 1px solid #e9ecef;
+            border: 1px solid var(--light-blue);
         }
 
         .sensitive-result .warning {
-            color: #dc3545;
-            font-weight: 500;
+            color: #c0392b;
+            font-weight: 600;
         }
 
         .sensitive-result .safe {
-            color: #28a745;
-            font-weight: 500;
+            color: #27ae60;
+            font-weight: 600;
         }
 
         .sensitive-disclaimer {
             font-size: 11px;
-            color: #999;
+            color: var(--text-medium);
             margin-top: 10px;
             font-style: italic;
+            opacity: 0.8;
         }
 
         .highlighted-text {
@@ -915,33 +993,34 @@
             word-break: break-word;
             line-height: 1.8;
             padding: 12px;
-            background: #f8f9fa;
+            background: var(--pale-blue);
             border-radius: 8px;
             margin-top: 10px;
+            border: 1px solid var(--light-blue);
         }
 
         .highlighted-text .sensitive-high {
-            background: #ffcccc;
-            color: #cc0000;
+            background: rgba(255, 100, 100, 0.3);
+            color: #c0392b;
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 500;
-            border: 1px solid #ff9999;
+            border: 1px solid rgba(255, 100, 100, 0.5);
         }
 
         .highlighted-text .sensitive-low {
-            background: #fff3cd;
-            color: #856404;
+            background: rgba(255, 193, 7, 0.3);
+            color: #b7950b;
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 500;
-            border: 1px solid #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.5);
         }
 
         .sensitive-legend {
             margin-top: 10px;
             font-size: 12px;
-            color: #666;
+            color: var(--text-medium);
         }
 
         .sensitive-legend span {
@@ -953,16 +1032,17 @@
             bottom: 80px;
             left: 50%;
             transform: translateX(-50%) translateY(20px);
-            background: rgba(0, 0, 0, 0.85);
-            color: #fff;
+            background: rgba(44, 74, 92, 0.95);
+            color: #ffffff;
             padding: 12px 24px;
             border-radius: 30px;
             font-size: 14px;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .toast.show {
@@ -972,25 +1052,36 @@
         }
 
         .toast.copied {
-            background: rgba(40, 167, 69, 0.9);
+            background: rgba(39, 174, 96, 0.95);
+        }
+
+        /* 移动端 Toast 优化 */
+        @media (max-width: 480px) {
+            .toast {
+                bottom: 70px;
+                padding: 10px 18px;
+                font-size: 13px;
+                max-width: 90%;
+                white-space: normal;
+            }
         }
 
         .footer {
             text-align: center;
             padding: 30px 0;
-            color: #999;
+            color: var(--text-medium);
             font-size: 12px;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid var(--light-blue);
             margin-top: 30px;
         }
 
         .footer .promo {
             margin-top: 15px;
             padding: 15px;
-            background: #f8f9fa;
+            background: var(--pale-blue);
             border-radius: 8px;
             font-size: 13px;
-            color: #666;
+            color: var(--text-medium);
             display: inline-flex;
             align-items: center;
             gap: 12px;
@@ -999,9 +1090,9 @@
         }
 
         .footer .promo:hover {
-            background: #e9ecef;
+            background: var(--light-blue);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(168, 200, 232, 0.4);
         }
 
         .footer .promo:active {
@@ -1009,7 +1100,7 @@
         }
 
         .footer .promo strong {
-            color: #007bff;
+            color: var(--text-dark);
             font-size: 14px;
         }
 
@@ -1019,7 +1110,149 @@
             object-fit: contain;
             border-radius: 50%;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            background: #fff;
+            background: #ffffff;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer .promo:hover .promo-icon {
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        /* 全局移动端适配优化 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px 15px;
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .category-header {
+                padding: 15px 16px;
+            }
+
+            .category-title {
+                font-size: 16px;
+            }
+
+            .subcategory-header {
+                padding: 10px 14px;
+            }
+
+            .subcategory-title {
+                font-size: 14px;
+            }
+
+            .level3-header {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .tag {
+                font-size: 13px;
+                padding: 5px 10px;
+            }
+
+            .tutorial-section {
+                padding: 20px;
+            }
+
+            .tutorial-section h2 {
+                font-size: 18px;
+            }
+
+            .faq-question {
+                padding: 12px 15px;
+                font-size: 13px;
+            }
+
+            .faq-answer-content {
+                padding: 12px 15px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 12px 12px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .header-banner {
+                max-width: 100%;
+            }
+
+            .category-header {
+                padding: 12px 14px;
+            }
+
+            .category-title {
+                font-size: 15px;
+            }
+
+            .chevron {
+                font-size: 18px;
+            }
+
+            .tag {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+
+            .weight-table th,
+            .weight-table td {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .community-card .number {
+                font-size: 14px;
+            }
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .category-header:hover,
+            .subcategory-header:hover,
+            .level3-header:hover {
+                transform: none;
+            }
+
+            .category-header:active,
+            .subcategory-header:active,
+            .level3-header:active {
+                transform: scale(0.98);
+            }
+
+            .tag:hover {
+                transform: none;
+            }
+
+            .tag:active {
+                transform: scale(0.95);
+            }
+
+            .recipe-card:hover {
+                transform: none;
+            }
+
+            .recipe-card:active {
+                transform: scale(0.98);
+            }
         }
     </style>
 </head>
@@ -1099,7 +1332,7 @@
         <!-- 快速配方 -->
         <div class="recipe-section">
             <h2>🎲 随机配方生成器</h2>
-            <p style="margin-bottom: 15px; color: #666; font-size: 14px;">从所有标签分类中随机组合，每次都是新灵感！</p>
+            <p style="margin-bottom: 15px; color: var(--text-medium); font-size: 14px;">从所有标签分类中随机组合，每次都是新灵感！</p>
             <div class="recipe-grid">
                 <div class="recipe-card">
                     <h3>🍼 Q 版角色</h3>
@@ -1202,7 +1435,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p style="margin-top: 10px; font-size: 13px; color: #666;">
+            <p style="margin-top: 10px; font-size: 13px; color: var(--text-medium);">
                 💡 <strong>提示：</strong>权重不要超过 1.5，否则可能产生奇怪的效果。核心特征放前面，次要特征放后面。
             </p>
         </div>
@@ -2096,8 +2329,11 @@
                 title: "三、动作篇 (Poses)",
                 items: [
                     {
-                        title: "3.1 表情 - 喜（开心）",
-                        tags: [
+                        title: "3.1 表情分类",
+                        items: [
+                            {
+                                title: "3.1.1 表情 - 喜（开心）",
+                                tags: [
                             { en: "smiling", cn: "微笑" },
                             { en: "smile", cn: "笑容" },
                             { en: "grin", cn: "咧嘴笑" },
@@ -2211,11 +2447,16 @@
                             { en: "petrified", cn: "石化恐惧" },
                             { en: "screaming", cn: "尖叫" },
                             { en: "scream", cn: "尖叫" }
+                                ]
+                            }
                         ]
                     },
                     {
-                        title: "3.5 表情 - 其他情绪",
-                        tags: [
+                        title: "3.2 其他表情和动作",
+                        items: [
+                            {
+                                title: "3.2.1 表情 - 其他情绪",
+                                tags: [
                             { en: "surprised", cn: "惊讶" },
                             { en: "shocked", cn: "震惊" },
                             { en: "confused", cn: "困惑" },
@@ -2455,6 +2696,8 @@
                             { en: "graceful pose", cn: "优雅姿势" },
                             { en: "seductive pose", cn: "诱惑姿势" },
                             { en: "provocative pose", cn: "挑逗姿势" }
+                                ]
+                            }
                         ]
                     }
                 ]
@@ -3249,7 +3492,433 @@
                             { en: "umbrella", cn: "伞" },
                             { en: "parasol", cn: "阳伞" },
                             { en: "cane", cn: "手杖" },
-                            { en: "walking_stick", cn: "拐杖" }
+                            { en: "walking_stick", cn: "拐杖" },
+                            { en: "messenger_bag", cn: "邮差包" },
+                            { en: "tote_bag", cn: "托特包" },
+                            { en: "clutch", cn: "手拿包" },
+                            { en: "waist_bag", cn: "腰包" },
+                            { en: "fanny_pack", cn: "腰包" },
+                            { en: "satchel", cn: "书包" },
+                            { en: "duffel_bag", cn: "旅行袋" },
+                            { en: "suitcase", cn: "行李箱" },
+                            { en: "pouch", cn: "小包" },
+                            { en: "drawstring_bag", cn: "束口袋" }
+                        ]
+                    },
+                    {
+                        title: "9.9 头饰/帽子",
+                        tags: [
+                            { en: "hat", cn: "帽子" },
+                            { en: "cap", cn: "棒球帽" },
+                            { en: "baseball_cap", cn: "棒球帽" },
+                            { en: "beanie", cn: "针织帽" },
+                            { en: "beret", cn: "贝雷帽" },
+                            { en: "fedora", cn: "软呢帽" },
+                            { en: "top_hat", cn: "高顶礼帽" },
+                            { en: "bowler_hat", cn: "圆顶礼帽" },
+                            { en: "sun_hat", cn: "太阳帽" },
+                            { en: "bucket_hat", cn: "渔夫帽" },
+                            { en: "cowboy_hat", cn: "牛仔帽" },
+                            { en: "witch_hat", cn: "女巫帽" },
+                            { en: "wizard_hat", cn: "巫师帽" },
+                            { en: "santa_hat", cn: "圣诞帽" },
+                            { en: "party_hat", cn: "派对帽" },
+                            { en: "chef_hat", cn: "厨师帽" },
+                            { en: "nurse_cap", cn: "护士帽" },
+                            { en: "military_hat", cn: "军帽" },
+                            { en: "police_hat", cn: "警帽" },
+                            { en: "pilot_hat", cn: "飞行员帽" },
+                            { en: "sailor_hat", cn: "水手帽" },
+                            { en: "graduation_cap", cn: "学士帽" },
+                            { en: "crown", cn: "王冠" },
+                            { en: "tiara", cn: "头冠" },
+                            { en: "diadem", cn: "头饰" },
+                            { en: "hairpin", cn: "发簪" },
+                            { en: "kanzashi", cn: "日式发簪" },
+                            { en: "hair_stick", cn: "发钗" },
+                            { en: "hair_comb", cn: "发梳" },
+                            { en: "hair_vine", cn: "发藤" },
+                            { en: "headpiece", cn: "头饰" },
+                            { en: "headdress", cn: "头饰" },
+                            { en: "veil", cn: "面纱" },
+                            { en: "headband", cn: "头带" },
+                            { en: "hachimaki", cn: "头巾" },
+                            { en: "bandana", cn: "方巾" },
+                            { en: "headscarf", cn: "头巾" },
+                            { en: "hijab", cn: "头巾" },
+                            { en: "turban", cn: "头巾" },
+                            { en: "hood", cn: "兜帽" },
+                            { en: "cat_ear_headphones", cn: "猫耳耳机" },
+                            { en: "headphones", cn: "耳机" },
+                            { en: "earphones", cn: "耳塞" },
+                            { en: "hair_bells", cn: "铃铛发饰" },
+                            { en: "hair_bow", cn: "蝴蝶结发饰" },
+                            { en: "hair_flower", cn: "花朵发饰" },
+                            { en: "hair_ribbon", cn: "丝带发饰" },
+                            { en: "antenna_hair", cn: "天线发" },
+                            { en: "ahoge", cn: "呆毛" }
+                        ]
+                    },
+                    {
+                        title: "9.10 珠宝首饰",
+                        tags: [
+                            { en: "jewelry", cn: "珠宝" },
+                            { en: "necklace", cn: "项链" },
+                            { en: "pendant", cn: "吊坠" },
+                            { en: "choker", cn: "项圈" },
+                            { en: "collar", cn: "颈圈" },
+                            { en: "pearl_necklace", cn: "珍珠项链" },
+                            { en: "diamond_necklace", cn: "钻石项链" },
+                            { en: "gold_necklace", cn: "金项链" },
+                            { en: "silver_necklace", cn: "银项链" },
+                            { en: "cross_necklace", cn: "十字架项链" },
+                            { en: "locket", cn: "盒式项链" },
+                            { en: "chain_necklace", cn: "链式项链" },
+                            { en: "beaded_necklace", cn: "珠串项链" },
+                            { en: "charm_necklace", cn: "吊坠项链" },
+                            { en: "torc", cn: "项圈" },
+                            { en: "gorget", cn: "护颈" },
+                            { en: "earrings", cn: "耳环" },
+                            { en: "stud_earrings", cn: "耳钉" },
+                            { en: "hoop_earrings", cn: "圈形耳环" },
+                            { en: "dangle_earrings", cn: "垂坠耳环" },
+                            { en: "chandelier_earrings", cn: "吊灯耳环" },
+                            { en: "clip-on_earrings", cn: "夹式耳环" },
+                            { en: "ear_cuff", cn: "耳夹" },
+                            { en: "ear_piercing", cn: "耳洞" },
+                            { en: "multiple_earrings", cn: "多个耳环" },
+                            { en: "asymmetric_earrings", cn: "不对称耳环" },
+                            { en: "feather_earrings", cn: "羽毛耳环" },
+                            { en: "crystal_earrings", cn: "水晶耳环" },
+                            { en: "gem_earrings", cn: "宝石耳环" },
+                            { en: "bracelet", cn: "手链" },
+                            { en: "bangle", cn: "手镯" },
+                            { en: "charm_bracelet", cn: "吊坠手链" },
+                            { en: "tennis_bracelet", cn: "网球手链" },
+                            { en: "cuff_bracelet", cn: "手镯" },
+                            { en: "chain_bracelet", cn: "链式手链" },
+                            { en: "beaded_bracelet", cn: "珠串手链" },
+                            { en: "leather_bracelet", cn: "皮质手链" },
+                            { en: "friendship_bracelet", cn: "友谊手链" },
+                            { en: "anklet", cn: "脚链" },
+                            { en: "ankle_bracelet", cn: "脚链" },
+                            { en: "toe_ring", cn: "脚趾环" },
+                            { en: "ring", cn: "戒指" },
+                            { en: "engagement_ring", cn: "订婚戒指" },
+                            { en: "wedding_ring", cn: "结婚戒指" },
+                            { en: "signet_ring", cn: "印章戒指" },
+                            { en: "promise_ring", cn: "承诺戒指" },
+                            { en: "stackable_rings", cn: "叠戴戒指" },
+                            { en: "knuckle_ring", cn: "指节环" },
+                            { en: "midi_ring", cn: "中节戒指" },
+                            { en: "toe_ring", cn: "脚趾环" },
+                            { en: "diamond_ring", cn: "钻石戒指" },
+                            { en: "gemstone_ring", cn: "宝石戒指" },
+                            { en: "pearl_ring", cn: "珍珠戒指" },
+                            { en: "gold_ring", cn: "金戒指" },
+                            { en: "silver_ring", cn: "银戒指" },
+                            { en: "platinum_ring", cn: "铂金戒指" },
+                            { en: "body_jewelry", cn: "身体珠宝" },
+                            { en: "belly_chain", cn: "腰链" },
+                            { en: "navel_piercing", cn: "脐钉" },
+                            { en: "nipple_piercing", cn: "乳钉" },
+                            { en: "eyebrow_piercing", cn: "眉钉" },
+                            { en: "nose_piercing", cn: "鼻钉" },
+                            { en: "septum_piercing", cn: "鼻中隔钉" },
+                            { en: "lip_piercing", cn: "唇钉" },
+                            { en: "tongue_piercing", cn: "舌钉" },
+                            { en: "industrial_piercing", cn: "工业钉" }
+                        ]
+                    },
+                    {
+                        title: "9.11 功能性配件",
+                        tags: [
+                            { en: "watch", cn: "手表" },
+                            { en: "wristwatch", cn: "腕表" },
+                            { en: "pocket_watch", cn: "怀表" },
+                            { en: "smartwatch", cn: "智能手表" },
+                            { en: "fitness_tracker", cn: "健身追踪器" },
+                            { en: "goggles", cn: "护目镜" },
+                            { en: "swimming_goggles", cn: "泳镜" },
+                            { en: "ski_goggles", cn: "滑雪镜" },
+                            { en: "pilot_goggles", cn: "飞行员护目镜" },
+                            { en: "steampunk_goggles", cn: "蒸汽朋克护目镜" },
+                            { en: "gas_mask", cn: "防毒面具" },
+                            { en: "oxygen_mask", cn: "氧气面罩" },
+                            { en: "surgical_mask", cn: "医用口罩" },
+                            { en: "face_mask", cn: "口罩" },
+                            { en: "mask", cn: "面具" },
+                            { en: "half_mask", cn: "半面具" },
+                            { en: "full_mask", cn: "全面具" },
+                            { en: "oni_mask", cn: "鬼面具" },
+                            { en: "kitsune_mask", cn: "狐面具" },
+                            { en: "noh_mask", cn: "能剧面具" },
+                            { en: "venetian_mask", cn: "威尼斯面具" },
+                            { en: "plague_doctor_mask", cn: "瘟疫医生面具" },
+                            { en: "hockey_mask", cn: "曲棍球面具" },
+                            { en: "eyepatch", cn: "眼罩" },
+                            { en: "blindfold", cn: "蒙眼" },
+                            { en: "sleep_mask", cn: "眼罩" },
+                            { en: "monocle", cn: "单片眼镜" },
+                            { en: "glasses", cn: "眼镜" },
+                            { en: "sunglasses", cn: "太阳镜" },
+                            { en: "reading_glasses", cn: "老花镜" },
+                            { en: "safety_glasses", cn: "安全眼镜" },
+                            { en: "3d_glasses", cn: "3D 眼镜" },
+                            { en: "vr_headset", cn: "VR 头显" },
+                            { en: "ar_glasses", cn: "AR 眼镜" },
+                            { en: "head_mounted_display", cn: "头戴显示器" },
+                            { en: "binoculars", cn: "双筒望远镜" },
+                            { en: "telescope", cn: "望远镜" },
+                            { en: "microscope", cn: "显微镜" },
+                            { en: "magnifying_glass", cn: "放大镜" },
+                            { en: "compass", cn: "指南针" },
+                            { en: "stopwatch", cn: "秒表" },
+                            { en: "timer", cn: "计时器" },
+                            { en: "radio", cn: "收音机" },
+                            { en: "walkie_talkie", cn: "对讲机" },
+                            { en: "headset", cn: "耳机" },
+                            { en: "microphone", cn: "麦克风" },
+                            { en: "earpiece", cn: "耳麦" },
+                            { en: "hearing_aid", cn: "助听器" },
+                            { en: "cochlear_implant", cn: "人工耳蜗" }
+                        ]
+                    },
+                    {
+                        title: "9.12 武器配件",
+                        tags: [
+                            { en: "weapon", cn: "武器" },
+                            { en: "sword", cn: "剑" },
+                            { en: "katana", cn: "武士刀" },
+                            { en: "wakizashi", cn: "胁差" },
+                            { en: "tanto", cn: "短刀" },
+                            { en: "naginata", cn: "薙刀" },
+                            { en: "spear", cn: "长枪" },
+                            { en: "lance", cn: "长矛" },
+                            { en: "halberd", cn: "戟" },
+                            { en: "axe", cn: "斧" },
+                            { en: "battle_axe", cn: "战斧" },
+                            { en: "hammer", cn: "锤" },
+                            { en: "war_hammer", cn: "战锤" },
+                            { en: "mace", cn: "钉头锤" },
+                            { en: "flail", cn: "链枷" },
+                            { en: "morning_star", cn: "晨星" },
+                            { en: "club", cn: "棍棒" },
+                            { en: "bat", cn: "球棒" },
+                            { en: "staff", cn: "法杖" },
+                            { en: "wand", cn: "魔杖" },
+                            { en: "rod", cn: "魔杖" },
+                            { en: "scepter", cn: "权杖" },
+                            { en: "bow", cn: "弓" },
+                            { en: "longbow", cn: "长弓" },
+                            { en: "crossbow", cn: "弩" },
+                            { en: "arrow", cn: "箭" },
+                            { en: "quiver", cn: "箭袋" },
+                            { en: "slingshot", cn: "弹弓" },
+                            { en: "boomerang", cn: "回旋镖" },
+                            { en: "chakram", cn: "环刃" },
+                            { en: "shuriken", cn: "手里剑" },
+                            { en: "kunai", cn: "苦无" },
+                            { en: "dagger", cn: "匕首" },
+                            { en: "knife", cn: "小刀" },
+                            { en: "throwing_knife", cn: "飞刀" },
+                            { en: "scythe", cn: "镰刀" },
+                            { en: "scissor_blades", cn: "剪刀刃" },
+                            { en: "claws", cn: "爪" },
+                            { en: "knuckle_dusters", cn: "指虎" },
+                            { en: "brass_knuckles", cn: "指虎" },
+                            { en: "gauntlet", cn: "护手" },
+                            { en: "shield", cn: "盾" },
+                            { en: "buckler", cn: "圆盾" },
+                            { en: "tower_shield", cn: "塔盾" },
+                            { en: "kite_shield", cn: "鸢盾" },
+                            { en: "heater_shield", cn: "加热盾" },
+                            { en: "pavise", cn: "大盾" },
+                            { en: "targe", cn: "小圆盾" },
+                            { en: "gun", cn: "枪" },
+                            { en: "pistol", cn: "手枪" },
+                            { en: "revolver", cn: "左轮手枪" },
+                            { en: "rifle", cn: "步枪" },
+                            { en: "sniper_rifle", cn: "狙击步枪" },
+                            { en: "assault_rifle", cn: "突击步枪" },
+                            { en: "shotgun", cn: "霰弹枪" },
+                            { en: "submachine_gun", cn: "冲锋枪" },
+                            { en: "machine_gun", cn: "机枪" },
+                            { en: "minigun", cn: "转轮机枪" },
+                            { en: "cannon", cn: "大炮" },
+                            { en: "rocket_launcher", cn: "火箭筒" },
+                            { en: "grenade", cn: "手榴弹" },
+                            { en: "grenade_launcher", cn: "榴弹发射器" },
+                            { en: "bomb", cn: "炸弹" },
+                            { en: "mine", cn: "地雷" },
+                            { en: "landmine", cn: "地雷" },
+                            { en: "explosive", cn: "爆炸物" },
+                            { en: "dynamite", cn: "炸药" },
+                            { en: "tnt", cn: "TNT" },
+                            { en: "c4", cn: "C4 炸药" },
+                            { en: "molotov", cn: "燃烧瓶" },
+                            { en: "flamethrower", cn: "火焰喷射器" },
+                            { en: "chainsaw", cn: "电锯" },
+                            { en: "whip", cn: "鞭子" },
+                            { en: "chain_whip", cn: "链鞭" },
+                            { en: "chain", cn: "锁链" },
+                            { en: "rope", cn: "绳索" },
+                            { en: "net", cn: "网" },
+                            { en: "trap", cn: "陷阱" },
+                            { en: "holster", cn: "枪套" },
+                            { en: "sheath", cn: "刀鞘" },
+                            { en: "scabbard", cn: "剑鞘" },
+                            { en: "quiver", cn: "箭袋" },
+                            { en: "ammo_belt", cn: "弹药带" },
+                            { en: "bandolier", cn: "弹药带" },
+                            { en: "pouch", cn: "小包" },
+                            { en: "utility_belt", cn: "工具带" },
+                            { en: "tactical_vest", cn: "战术背心" },
+                            { en: "bulletproof_vest", cn: "防弹背心" },
+                            { en: "body_armor", cn: "防弹衣" },
+                            { en: "armor", cn: "铠甲" },
+                            { en: "plate_armor", cn: "板甲" },
+                            { en: "chainmail", cn: "锁子甲" },
+                            { en: "leather_armor", cn: "皮甲" },
+                            { en: "scale_armor", cn: "鳞甲" },
+                            { en: "lamellar_armor", cn: "札甲" },
+                            { en: "brigandine", cn: "布面甲" },
+                            { en: "cuirass", cn: "胸甲" },
+                            { en: "breastplate", cn: "胸甲" },
+                            { en: "pauldron", cn: "肩甲" },
+                            { en: "gauntlet", cn: "手甲" },
+                            { en: "greave", cn: "胫甲" },
+                            { en: "sabaton", cn: "足甲" },
+                            { en: "helmet", cn: "头盔" },
+                            { en: "kabuto", cn: "日本头盔" },
+                            { en: "visor", cn: "面罩" },
+                            { en: "horned_helmet", cn: "角盔" }
+                        ]
+                    },
+                    {
+                        title: "9.13 其他小物件",
+                        tags: [
+                            { en: "key", cn: "钥匙" },
+                            { en: "keychain", cn: "钥匙扣" },
+                            { en: "lock", cn: "锁" },
+                            { en: "padlock", cn: "挂锁" },
+                            { en: "chain", cn: "链条" },
+                            { en: "rope", cn: "绳子" },
+                            { en: "ribbon", cn: "丝带" },
+                            { en: "bow", cn: "蝴蝶结" },
+                            { en: "lace", cn: "蕾丝" },
+                            { en: "button", cn: "纽扣" },
+                            { en: "zipper", cn: "拉链" },
+                            { en: "snap_fastener", cn: "按扣" },
+                            { en: "velcro", cn: "魔术贴" },
+                            { en: "buckle", cn: "扣子" },
+                            { en: "clasp", cn: "扣子" },
+                            { en: "pin", cn: "别针" },
+                            { en: "safety_pin", cn: "安全别针" },
+                            { en: "brooch", cn: "胸针" },
+                            { en: "badge", cn: "徽章" },
+                            { en: "patch", cn: "补丁" },
+                            { en: "emblem", cn: "徽章" },
+                            { en: "insignia", cn: "徽章" },
+                            { en: "medal", cn: "勋章" },
+                            { en: "ribbon_medal", cn: "勋章" },
+                            { en: "trophy", cn: "奖杯" },
+                            { en: "award", cn: "奖项" },
+                            { en: "certificate", cn: "证书" },
+                            { en: "scroll", cn: "卷轴" },
+                            { en: "book", cn: "书" },
+                            { en: "notebook", cn: "笔记本" },
+                            { en: "diary", cn: "日记" },
+                            { en: "journal", cn: "日志" },
+                            { en: "planner", cn: "计划本" },
+                            { en: "calendar", cn: "日历" },
+                            { en: "pen", cn: "笔" },
+                            { en: "pencil", cn: "铅笔" },
+                            { en: "marker", cn: "马克笔" },
+                            { en: "highlighter", cn: "荧光笔" },
+                            { en: "eraser", cn: "橡皮" },
+                            { en: "ruler", cn: "尺子" },
+                            { en: "scissors", cn: "剪刀" },
+                            { en: "tape", cn: "胶带" },
+                            { en: "glue", cn: "胶水" },
+                            { en: "stapler", cn: "订书机" },
+                            { en: "paperclip", cn: "回形针" },
+                            { en: "bookmark", cn: "书签" },
+                            { en: "sticky_note", cn: "便利贴" },
+                            { en: "envelope", cn: "信封" },
+                            { en: "letter", cn: "信件" },
+                            { en: "postcard", cn: "明信片" },
+                            { en: "stamp", cn: "邮票" },
+                            { en: "seal", cn: "印章" },
+                            { en: "wax_seal", cn: "火漆印" },
+                            { en: "candle", cn: "蜡烛" },
+                            { en: "lantern", cn: "灯笼" },
+                            { en: "flashlight", cn: "手电筒" },
+                            { en: "torch", cn: "火把" },
+                            { en: "lighter", cn: "打火机" },
+                            { en: "match", cn: "火柴" },
+                            { en: "matchbox", cn: "火柴盒" },
+                            { en: "ashtray", cn: "烟灰缸" },
+                            { en: "pipe", cn: "烟斗" },
+                            { en: "cigarette", cn: "香烟" },
+                            { en: "cigar", cn: "雪茄" },
+                            { en: "hookah", cn: "水烟" },
+                            { en: "vape", cn: "电子烟" },
+                            { en: "bottle", cn: "瓶子" },
+                            { en: "flask", cn: "酒壶" },
+                            { en: "cup", cn: "杯子" },
+                            { en: "mug", cn: "马克杯" },
+                            { en: "glass", cn: "玻璃杯" },
+                            { en: "wine_glass", cn: "酒杯" },
+                            { en: "champagne_glass", cn: "香槟杯" },
+                            { en: "teacup", cn: "茶杯" },
+                            { en: "teapot", cn: "茶壶" },
+                            { en: "coffeepot", cn: "咖啡壶" },
+                            { en: "thermos", cn: "保温瓶" },
+                            { en: "water_bottle", cn: "水瓶" },
+                            { en: "sippy_cup", cn: "吸管杯" },
+                            { en: "straw", cn: "吸管" },
+                            { en: "spoon", cn: "勺子" },
+                            { en: "fork", cn: "叉子" },
+                            { en: "knife", cn: "餐刀" },
+                            { en: "chopsticks", cn: "筷子" },
+                            { en: "plate", cn: "盘子" },
+                            { en: "bowl", cn: "碗" },
+                            { en: "tray", cn: "托盘" },
+                            { en: "platter", cn: "大盘" },
+                            { en: "basket", cn: "篮子" },
+                            { en: "bucket", cn: "桶" },
+                            { en: "pail", cn: "桶" },
+                            { en: "box", cn: "盒子" },
+                            { en: "chest", cn: "箱子" },
+                            { en: "treasure_chest", cn: "宝箱" },
+                            { en: "coffin", cn: "棺材" },
+                            { en: "crate", cn: "板条箱" },
+                            { en: "barrel", cn: "桶" },
+                            { en: "keg", cn: "桶" },
+                            { en: "jar", cn: "罐子" },
+                            { en: "pot", cn: "锅" },
+                            { en: "pan", cn: "平底锅" },
+                            { en: "wok", cn: "炒锅" },
+                            { en: "kettle", cn: "水壶" },
+                            { en: "teakettle", cn: "茶壶" },
+                            { en: "pressure_cooker", cn: "高压锅" },
+                            { en: "rice_cooker", cn: "电饭煲" },
+                            { en: "toaster", cn: "烤面包机" },
+                            { en: "microwave", cn: "微波炉" },
+                            { en: "oven", cn: "烤箱" },
+                            { en: "stove", cn: "炉子" },
+                            { en: "refrigerator", cn: "冰箱" },
+                            { en: "freezer", cn: "冰柜" },
+                            { en: "blender", cn: "搅拌机" },
+                            { en: "mixer", cn: "搅拌器" },
+                            { en: "food_processor", cn: "食品加工机" },
+                            { en: "coffee_maker", cn: "咖啡机" },
+                            { en: "espresso_machine", cn: "意式咖啡机" },
+                            { en: "tea_set", cn: "茶具" },
+                            { en: "dinner_set", cn: "餐具" },
+                            { en: "silverware", cn: "银器" },
+                            { en: "cutlery", cn: "餐具" }
                         ]
                     }
                 ]
@@ -3645,9 +4314,907 @@
                             { en: "rainbow", cn: "彩虹" },
                             { en: "double rainbow", cn: "双彩虹" },
                             { en: "aurora", cn: "极光" },
-                            { en: "northern lights", cn: "北极光" }
+                            { en: "northern lights", cn: "北极光" },
+                            { en: "southern lights", cn: "南极光" },
+                            { en: "meteor_shower", cn: "流星雨" },
+                            { en: "shooting_star", cn: "流星" },
+                            { en: "comet", cn: "彗星" },
+                            { en: "eclipse", cn: "日/月食" },
+                            { en: "solar_eclipse", cn: "日食" },
+                            { en: "lunar_eclipse", cn: "月食" },
+                            { en: "blood_moon", cn: "血月" },
+                            { en: "blue_moon", cn: "蓝月" },
+                            { en: "supermoon", cn: "超级月亮" },
+                            { en: "full_moon", cn: "满月" },
+                            { en: "new_moon", cn: "新月" },
+                            { en: "crescent_moon", cn: "月牙" },
+                            { en: "half_moon", cn: "半月" },
+                            { en: "gibbous_moon", cn: "凸月" },
+                            { en: "moonlight", cn: "月光" },
+                            { en: "starlight", cn: "星光" },
+                            { en: "twilight", cn: "黄昏" },
+                            { en: "dawn", cn: "黎明" },
+                            { en: "dusk", cn: "黄昏" },
+                            { en: "sunrise", cn: "日出" },
+                            { en: "sunset", cn: "日落" },
+                            { en: "golden_hour", cn: "黄金时刻" },
+                            { en: "blue_hour", cn: "蓝色时刻" },
+                            { en: "magic_hour", cn: "魔法时刻" },
+                            { en: "midnight", cn: "午夜" },
+                            { en: "noon", cn: "正午" },
+                            { en: "day", cn: "白天" },
+                            { en: "night", cn: "夜晚" },
+                            { en: "evening", cn: "傍晚" },
+                            { en: "morning", cn: "早晨" },
+                            { en: "afternoon", cn: "下午" },
+                            { en: "seasonal_change", cn: "季节变换" },
+                            { en: "spring_breeze", cn: "春风" },
+                            { en: "summer_heat", cn: "夏日炎热" },
+                            { en: "autumn_wind", cn: "秋风" },
+                            { en: "winter_cold", cn: "冬日寒冷" },
+                            { en: "heat_haze", cn: "热浪" },
+                            { en: "cold_air", cn: "冷空气" },
+                            { en: "warm_air", cn: "暖空气" },
+                            { en: "humidity", cn: "湿度" },
+                            { en: "dry_air", cn: "干燥空气" },
+                            { en: "atmospheric_pressure", cn: "气压" },
+                            { en: "barometric_pressure", cn: "大气压" },
+                            { en: "weather_front", cn: "锋面" },
+                            { en: "cold_front", cn: "冷锋" },
+                            { en: "warm_front", cn: "暖锋" },
+                            { en: "occluded_front", cn: "锢囚锋" },
+                            { en: "stationary_front", cn: "静止锋" },
+                            { en: "low_pressure", cn: "低压" },
+                            { en: "high_pressure", cn: "高压" },
+                            { en: "cyclone", cn: "气旋" },
+                            { en: "anticyclone", cn: "反气旋" },
+                            { en: "typhoon", cn: "台风" },
+                            { en: "waterspout", cn: "水龙卷" },
+                            { en: "dust_devil", cn: "尘卷风" },
+                            { en: "sandstorm", cn: "沙尘暴" },
+                            { en: "dust_storm", cn: "沙尘暴" },
+                            { en: "haze", cn: "雾霾" },
+                            { en: "smog", cn: "烟雾" },
+                            { en: "pollution", cn: "污染" },
+                            { en: "acid_rain", cn: "酸雨" },
+                            { en: "radioactive_rain", cn: "辐射雨" },
+                            { en: "meteor_impact", cn: "陨石撞击" },
+                            { en: "asteroid", cn: "小行星" },
+                            { en: "volcanic_eruption", cn: "火山爆发" },
+                            { en: "lava", cn: "熔岩" },
+                            { en: "ash_cloud", cn: "灰云" },
+                            { en: "pyroclastic_flow", cn: "火山碎屑流" },
+                            { en: "geyser", cn: "间歇泉" },
+                            { en: "hot_spring", cn: "温泉" },
+                            { en: "steam", cn: "蒸汽" },
+                            { en: "vapor", cn: "水蒸气" },
+                            { en: "condensation", cn: "凝结" },
+                            { en: "evaporation", cn: "蒸发" },
+                            { en: "precipitation", cn: "降水" },
+                            { en: "runoff", cn: "径流" },
+                            { en: "flood", cn: "洪水" },
+                            { en: "flash_flood", cn: "山洪" },
+                            { en: "tsunami", cn: "海啸" },
+                            { en: "tidal_wave", cn: "潮汐波" },
+                            { en: "wave", cn: "波浪" },
+                            { en: "surf", cn: "海浪" },
+                            { en: "foam", cn: "泡沫" },
+                            { en: "sea_spray", cn: "海浪飞沫" },
+                            { en: "whirlpool", cn: "漩涡" },
+                            { en: "maelstrom", cn: "大漩涡" },
+                            { en: "current", cn: "水流" },
+                            { en: "undertow", cn: "回流" },
+                            { en: "rip_current", cn: "离岸流" }
                         ]
-                    }
+                    },
+                    {
+                        title: "11.11 战斗/动作效果",
+                        tags: [
+                            { en: "action_lines", cn: "动作线" },
+                            { en: "speed_lines", cn: "速度线" },
+                            { en: "motion_blur", cn: "运动模糊" },
+                            { en: "impact", cn: "冲击" },
+                            { en: "impact_effect", cn: "冲击效果" },
+                            { en: "hit_effect", cn: "击中效果" },
+                            { en: "damage_effect", cn: "伤害效果" },
+                            { en: "explosion", cn: "爆炸" },
+                            { en: "blast", cn: "爆炸" },
+                            { en: "detonation", cn: "引爆" },
+                            { en: "muzzle_flash", cn: "枪口焰" },
+                            { en: "shell_casing", cn: "弹壳" },
+                            { en: "bullet_trail", cn: "子弹轨迹" },
+                            { en: "laser_beam", cn: "激光束" },
+                            { en: "plasma_beam", cn: "等离子束" },
+                            { en: "energy_beam", cn: "能量束" },
+                            { en: "particle_beam", cn: "粒子束" },
+                            { en: "ray_attack", cn: "射线攻击" },
+                            { en: "wave_attack", cn: "波动攻击" },
+                            { en: "shockwave", cn: "冲击波" },
+                            { en: "sonic_boom", cn: "音爆" },
+                            { en: "pressure_wave", cn: "压力波" },
+                            { en: "force_field", cn: "力场" },
+                            { en: "energy_shield", cn: "能量护盾" },
+                            { en: "barrier", cn: "屏障" },
+                            { en: "wall", cn: "墙" },
+                            { en: "dome", cn: "圆顶" },
+                            { en: "sphere", cn: "球体" },
+                            { en: "cube", cn: "立方体" },
+                            { en: "pyramid", cn: "金字塔" },
+                            { en: "prism", cn: "棱镜" },
+                            { en: "crystal", cn: "水晶" },
+                            { en: "gem", cn: "宝石" },
+                            { en: "diamond", cn: "钻石" },
+                            { en: "ruby", cn: "红宝石" },
+                            { en: "sapphire", cn: "蓝宝石" },
+                            { en: "emerald", cn: "绿宝石" },
+                            { en: "amethyst", cn: "紫水晶" },
+                            { en: "topaz", cn: "黄玉" },
+                            { en: "opal", cn: "蛋白石" },
+                            { en: "pearl", cn: "珍珠" },
+                            { en: "jade", cn: "玉石" },
+                            { en: "quartz", cn: "石英" },
+                            { en: "crystal_growth", cn: "水晶生长" },
+                            { en: "crystallization", cn: "结晶" },
+                            { en: "shatter", cn: "破碎" },
+                            { en: "shattered", cn: "破碎的" },
+                            { en: "broken", cn: "破碎" },
+                            { en: "cracked", cn: "裂纹" },
+                            { en: "fracture", cn: "裂缝" },
+                            { en: "fragment", cn: "碎片" },
+                            { en: "debris", cn: "残骸" },
+                            { en: "rubble", cn: "瓦砾" },
+                            { en: "ruins", cn: "废墟" },
+                            { en: "destruction", cn: "破坏" },
+                            { en: "collapse", cn: "倒塌" },
+                            { en: "falling", cn: "坠落" },
+                            { en: "falling_debris", cn: "坠落碎片" },
+                            { en: "falling_rocks", cn: "落石" },
+                            { en: "landslide", cn: "山体滑坡" },
+                            { en: "avalanche", cn: "雪崩" },
+                            { en: "earthquake", cn: "地震" },
+                            { en: "tremor", cn: "震动" },
+                            { en: "seismic_wave", cn: "地震波" },
+                            { en: "ground_crack", cn: "地面裂缝" },
+                            { en: "fissure", cn: "裂缝" },
+                            { en: "chasm", cn: "深渊" },
+                            { en: "abyss", cn: "深渊" },
+                            { en: "void", cn: "虚空" },
+                            { en: "darkness", cn: "黑暗" },
+                            { en: "shadow", cn: "阴影" },
+                            { en: "silhouette", cn: "剪影" },
+                            { en: "contrast", cn: "对比" },
+                            { en: "chiaroscuro", cn: "明暗对照" },
+                            { en: "noir", cn: "黑色电影" },
+                            { en: "film_noir", cn: "黑色电影" },
+                            { en: "dramatic", cn: "戏剧性" },
+                            { en: "cinematic", cn: "电影感" },
+                            { en: "epic", cn: "史诗感" },
+                            { en: "heroic", cn: "英雄气概" },
+                            { en: "powerful", cn: "强大" },
+                            { en: "intense", cn: "激烈" },
+                            { en: "fierce", cn: "猛烈" },
+                            { en: "brutal", cn: "残酷" },
+                            { en: "violent", cn: "暴力" },
+                            { en: "aggressive", cn: "攻击性" },
+                            { en: "dynamic", cn: "动态" },
+                            { en: "energetic", cn: "充满活力" },
+                            { en: "vigorous", cn: "精力充沛" },
+                            { en: "spirited", cn: "精神饱满" },
+                            { en: "lively", cn: "生动" },
+                            { en: "vibrant", cn: "充满活力" },
+                            { en: "vivid", cn: "生动" },
+                            { en: "bright", cn: "明亮" },
+                            { en: "brilliant", cn: "辉煌" },
+                            { en: "radiant", cn: "光芒四射" },
+                            { en: "luminous", cn: "发光" },
+                            { en: "incandescent", cn: "白炽" },
+                            { en: "fluorescent", cn: "荧光" },
+                            { en: "phosphorescent", cn: "磷光" },
+                            { en: "iridescent", cn: "彩虹色" },
+                            { en: "opalescent", cn: "乳白色" },
+                            { en: "pearlescent", cn: "珍珠色" },
+                            { en: "metallic", cn: "金属色" },
+                            { en: "chrome", cn: "铬色" },
+                            { en: "silver", cn: "银色" },
+                            { en: "gold", cn: "金色" },
+                            { en: "bronze", cn: "青铜色" },
+                            { en: "copper", cn: "铜色" },
+                            { en: "platinum", cn: "铂金色" },
+                            { en: "titanium", cn: "钛色" },
+                            { en: "steel", cn: "钢色" },
+                            { en: "iron", cn: "铁色" },
+                            { en: "rust", cn: "铁锈" },
+                            { en: "oxidized", cn: "氧化" },
+                            { en: "corroded", cn: "腐蚀" },
+                            { en: "weathered", cn: "风化" },
+                            { en: "aged", cn: "老化" },
+                            { en: "worn", cn: "磨损" },
+                            { en: "scratched", cn: "划痕" },
+                            { en: "dented", cn: "凹陷" },
+                            { en: "damaged", cn: "损坏" },
+                            { en: "battle_damaged", cn: "战斗损伤" },
+                            { en: "war_torn", cn: "战火摧残" },
+                            { en: "bloodstained", cn: "血迹斑斑" },
+                            { en: "blood_splatter", cn: "血迹飞溅" },
+                            { en: "blood_trail", cn: "血迹" },
+                            { en: "wound", cn: "伤口" },
+                            { en: "injury", cn: "受伤" },
+                            { en: "scar", cn: "伤疤" },
+                            { en: "bandage", cn: "绷带" },
+                            { en: "gauze", cn: "纱布" },
+                            { en: "plaster", cn: "创可贴" },
+                            { en: "stitches", cn: "缝线" },
+                            { en: "suture", cn: "缝合" },
+                            { en: "healing", cn: "治疗" },
+                            { en: "regeneration", cn: "再生" },
+                            { en: "recovery", cn: "恢复" },
+                            { en: "revival", cn: "复活" },
+                            { en: "resurrection", cn: "复活" },
+                            { en: "rebirth", cn: "重生" },
+                            { en: "reincarnation", cn: "转世" },
+                            { en: "transmigration", cn: "转生" },
+                            { en: "isekai", cn: "异世界" }
+                        ]
+                    },
+                    {
+                        title: "11.12 情感/心理效果",
+                        tags: [
+                            { en: "emotion_effect", cn: "情感效果" },
+                            { en: "mood", cn: "情绪" },
+                            { en: "atmosphere", cn: "氛围" },
+                            { en: "ambiance", cn: "气氛" },
+                            { en: "feeling", cn: "感觉" },
+                            { en: "sentiment", cn: "情感" },
+                            { en: "passion", cn: "激情" },
+                            { en: "desire", cn: "欲望" },
+                            { en: "longing", cn: "渴望" },
+                            { en: "yearning", cn: "渴望" },
+                            { en: "hope", cn: "希望" },
+                            { en: "despair", cn: "绝望" },
+                            { en: "hopelessness", cn: "无望" },
+                            { en: "optimism", cn: "乐观" },
+                            { en: "pessimism", cn: "悲观" },
+                            { en: "confidence", cn: "自信" },
+                            { en: "insecurity", cn: "不安" },
+                            { en: "doubt", cn: "怀疑" },
+                            { en: "uncertainty", cn: "不确定" },
+                            { en: "confusion", cn: "困惑" },
+                            { en: "clarity", cn: "清晰" },
+                            { en: "realization", cn: "领悟" },
+                            { en: "epiphany", cn: "顿悟" },
+                            { en: "enlightenment", cn: "启蒙" },
+                            { en: "awakening", cn: "觉醒" },
+                            { en: "consciousness", cn: "意识" },
+                            { en: "subconscious", cn: "潜意识" },
+                            { en: "unconscious", cn: "无意识" },
+                            { en: "dream", cn: "梦境" },
+                            { en: "dreamlike", cn: "梦幻般" },
+                            { en: "surreal", cn: "超现实" },
+                            { en: "surrealism", cn: "超现实主义" },
+                            { en: "fantasy", cn: "幻想" },
+                            { en: "imagination", cn: "想象" },
+                            { en: "creative", cn: "创意" },
+                            { en: "artistic", cn: "艺术" },
+                            { en: "aesthetic", cn: "美学" },
+                            { en: "beautiful", cn: "美丽" },
+                            { en: "beauty", cn: "美" },
+                            { en: "ugly", cn: "丑陋" },
+                            { en: "grotesque", cn: "怪异" },
+                            { en: "bizarre", cn: "奇异" },
+                            { en: "weird", cn: "奇怪" },
+                            { en: "strange", cn: "陌生" },
+                            { en: "mysterious", cn: "神秘" },
+                            { en: "mystery", cn: "谜" },
+                            { en: "enigma", cn: "谜" },
+                            { en: "puzzle", cn: "谜题" },
+                            { en: "riddle", cn: "谜语" },
+                            { en: "secret", cn: "秘密" },
+                            { en: "hidden", cn: "隐藏" },
+                            { en: "concealed", cn: " concealed" },
+                            { en: "obscured", cn: "遮蔽" },
+                            { en: "veiled", cn: "面纱" },
+                            { en: "masked", cn: "蒙面" },
+                            { en: "disguised", cn: "伪装" },
+                            { en: "camouflaged", cn: "伪装" },
+                            { en: "invisible", cn: "隐形" },
+                            { en: "invisibility", cn: "隐形" },
+                            { en: "transparency", cn: "透明" },
+                            { en: "opacity", cn: "不透明" },
+                            { en: "translucence", cn: "半透明" },
+                            { en: "clarity", cn: "透明" },
+                            { en: "purity", cn: "纯洁" },
+                            { en: "innocence", cn: "天真" },
+                            { en: "naivety", cn: "幼稚" },
+                            { en: "wisdom", cn: "智慧" },
+                            { en: "knowledge", cn: "知识" },
+                            { en: "learning", cn: "学习" },
+                            { en: "study", cn: "研究" },
+                            { en: "research", cn: "研究" },
+                            { en: "discovery", cn: "发现" },
+                            { en: "exploration", cn: "探索" },
+                            { en: "adventure", cn: "冒险" },
+                            { en: "journey", cn: "旅程" },
+                            { en: "quest", cn: "任务" },
+                            { en: "mission", cn: "使命" },
+                            { en: "goal", cn: "目标" },
+                            { en: "objective", cn: "目标" },
+                            { en: "purpose", cn: "目的" },
+                            { en: "destiny", cn: "命运" },
+                            { en: "fate", cn: "命运" },
+                            { en: "karma", cn: "因果" },
+                            { en: "luck", cn: "运气" },
+                            { en: "fortune", cn: "幸运" },
+                            { en: "misfortune", cn: "不幸" },
+                            { en: "curse", cn: "诅咒" },
+                            { en: "blessing", cn: "祝福" },
+                            { en: "prayer", cn: "祈祷" },
+                            { en: "wish", cn: "愿望" },
+                            { en: "hope", cn: "希望" },
+                            { en: "dream", cn: "梦想" },
+                            { en: "aspiration", cn: "抱负" },
+                            { en: "ambition", cn: "野心" },
+                            { en: "drive", cn: "动力" },
+                            { en: "motivation", cn: "动机" },
+                            { en: "inspiration", cn: "灵感" },
+                            { en: "muse", cn: "缪斯" },
+                            { en: "genius", cn: "天才" },
+                            { en: "talent", cn: "天赋" },
+                            { en: "skill", cn: "技能" },
+                            { en: "ability", cn: "能力" },
+                            { en: "power", cn: "力量" },
+                            { en: "strength", cn: "力量" },
+                            { en: "weakness", cn: "弱点" },
+                            { en: "vulnerability", cn: "脆弱" },
+                            { en: "fragility", cn: "脆弱" },
+                            { en: "resilience", cn: "韧性" },
+                            { en: "endurance", cn: "耐力" },
+                            { en: "stamina", cn: "体力" },
+                            { en: "energy", cn: "能量" },
+                            { en: "vitality", cn: "活力" },
+                            { en: "vigor", cn: "精力" },
+                            { en: "health", cn: "健康" },
+                            { en: "wellness", cn: "健康" },
+                            { en: "fitness", cn: "健身" },
+                            { en: "exercise", cn: "锻炼" },
+                            { en: "training", cn: "训练" },
+                            { en: "practice", cn: "练习" },
+                            { en: "rehearsal", cn: "排练" },
+                            { en: "performance", cn: "表演" },
+                            { en: "show", cn: "演出" },
+                            { en: "concert", cn: "音乐会" },
+                            { en: "recital", cn: "独奏会" },
+                            { en: "opera", cn: "歌剧" },
+                            { en: "ballet", cn: "芭蕾" },
+                            { en: "dance", cn: "舞蹈" },
+                            { en: "music", cn: "音乐" },
+                            { en: "song", cn: "歌曲" },
+                            { en: "melody", cn: "旋律" },
+                            { en: "harmony", cn: "和声" },
+                            { en: "rhythm", cn: "节奏" },
+                            { en: "beat", cn: "节拍" },
+                            { en: "tempo", cn: "速度" },
+                            { en: "note", cn: "音符" },
+                            { en: "chord", cn: "和弦" },
+                            { en: "scale", cn: "音阶" },
+                            { en: "key", cn: "调" },
+                            { en: "major", cn: "大调" },
+                            { en: "minor", cn: "小调" },
+                            { en: "sharp", cn: "升号" },
+                            { en: "flat", cn: "降号" },
+                            { en: "natural", cn: "自然音" },
+                            { en: "accidental", cn: "临时记号" },
+                            { en: "rest", cn: "休止符" },
+                            { en: "pause", cn: "暂停" },
+                            { en: "silence", cn: "沉默" },
+                            { en: "quiet", cn: "安静" },
+                            { en: "loud", cn: "响亮" },
+                            { en: "noise", cn: "噪音" },
+                            { en: "sound", cn: "声音" },
+                            { en: "echo", cn: "回声" },
+                            { en: "reverberation", cn: "混响" },
+                            { en: "acoustics", cn: "声学" },
+                            { en: "resonance", cn: "共鸣" },
+                            { en: "vibration", cn: "振动" },
+                            { en: "frequency", cn: "频率" },
+                            { en: "wavelength", cn: "波长" },
+                            { en: "amplitude", cn: "振幅" },
+                            { en: "volume", cn: "音量" },
+                            { en: "pitch", cn: "音高" },
+                            { en: "tone", cn: "音调" },
+                            { en: "timbre", cn: "音色" },
+                            { en: "timbre_effect", cn: "音色效果" },
+                            { en: "distortion", cn: "失真" },
+                            { en: "reverb", cn: "混响" },
+                            { en: "delay", cn: "延迟" },
+                            { en: "chorus", cn: "合唱" },
+                            { en: "flanger", cn: "镶边" },
+                            { en: "phaser", cn: "移相" },
+                            { en: "tremolo", cn: "颤音" },
+                            { en: "vibrato", cn: "震音" },
+                            { en: "wah", cn: "哇音" },
+                            { en: "filter", cn: "滤波器" },
+                            { en: "equalizer", cn: "均衡器" },
+                            { en: "compressor", cn: "压缩器" },
+                            { en: "limiter", cn: "限制器" },
+                            { en: "gate", cn: "噪声门" },
+                            { en: "expander", cn: "扩展器" },
+                            { en: "synthesizer", cn: "合成器" },
+                            { en: "synth", cn: "合成器" },
+                            { en: "electronic", cn: "电子" },
+                            { en: "digital", cn: "数字" },
+                            { en: "analog", cn: "模拟" },
+                            { en: "virtual", cn: "虚拟" },
+                            { en: "augmented_reality", cn: "增强现实" },
+                            { en: "mixed_reality", cn: "混合现实" },
+                            { en: "extended_reality", cn: "扩展现实" },
+                            { en: "metaverse", cn: "元宇宙" },
+                            { en: "cyberspace", cn: "网络空间" },
+                            { en: "internet", cn: "互联网" },
+                            { en: "web", cn: "网络" },
+                            { en: "online", cn: "在线" },
+                            { en: "offline", cn: "离线" },
+                            { en: "network", cn: "网络" },
+                            { en: "connection", cn: "连接" },
+                            { en: "disconnection", cn: "断开" },
+                            { en: "link", cn: "链接" },
+                            { en: "bond", cn: "纽带" },
+                            { en: "relationship", cn: "关系" },
+                            { en: "friendship", cn: "友谊" },
+                            { en: "love", cn: "爱" },
+                            { en: "romance", cn: "浪漫" },
+                            { en: "affection", cn: "感情" },
+                            { en: "attachment", cn: "依恋" },
+                            { en: "devotion", cn: "奉献" },
+                            { en: "loyalty", cn: "忠诚" },
+                            { en: "trust", cn: "信任" },
+                            { en: "betrayal", cn: "背叛" },
+                            { en: "deception", cn: "欺骗" },
+                            { en: "lie", cn: "谎言" },
+                            { en: "truth", cn: "真相" },
+                            { en: "honesty", cn: "诚实" },
+                            { en: "integrity", cn: "正直" },
+                            { en: "honor", cn: "荣誉" },
+                            { en: "dignity", cn: "尊严" },
+                            { en: "pride", cn: "骄傲" },
+                            { en: "humility", cn: "谦逊" },
+                            { en: "modesty", cn: "谦虚" },
+                            { en: "arrogance", cn: "傲慢" },
+                            { en: "conceit", cn: "自负" },
+                            { en: "vanity", cn: "虚荣" },
+                            { en: "greed", cn: "贪婪" },
+                            { en: "envy", cn: "嫉妒" },
+                            { en: "jealousy", cn: "嫉妒" },
+                            { en: "wrath", cn: "愤怒" },
+                            { en: "gluttony", cn: "暴食" },
+                            { en: "lust", cn: "色欲" },
+                            { en: "sloth", cn: "懒惰" },
+                            { en: "seven_deadly_sins", cn: "七宗罪" },
+                            { en: "seven_virtues", cn: "七美德" },
+                            { en: "virtue", cn: "美德" },
+                            { en: "sin", cn: "罪恶" },
+                            { en: "evil", cn: "邪恶" },
+                            { en: "good", cn: "善良" },
+                            { en: "righteousness", cn: "正义" },
+                            { en: "justice", cn: "公正" },
+                            { en: "fairness", cn: "公平" },
+                            { en: "equality", cn: "平等" },
+                            { en: "freedom", cn: "自由" },
+                            { en: "liberty", cn: "自由" },
+                            { en: "independence", cn: "独立" },
+                            { en: "autonomy", cn: "自治" },
+                            { en: "sovereignty", cn: "主权" },
+                            { en: "democracy", cn: "民主" },
+                            { en: "republic", cn: "共和" },
+                            { en: "monarchy", cn: "君主制" },
+                            { en: "empire", cn: "帝国" },
+                            { en: "kingdom", cn: "王国" },
+                            { en: "nation", cn: "国家" },
+                            { en: "country", cn: "国家" },
+                            { en: "state", cn: "州" },
+                            { en: "government", cn: "政府" },
+                            { en: "politics", cn: "政治" },
+                            { en: "political", cn: "政治" },
+                            { en: "ideology", cn: "意识形态" },
+                            { en: "philosophy", cn: "哲学" },
+                            { en: "religion", cn: "宗教" },
+                            { en: "spirituality", cn: "灵性" },
+                            { en: "faith", cn: "信仰" },
+                            { en: "belief", cn: "信念" },
+                            { en: "dogma", cn: "教条" },
+                            { en: "doctrine", cn: "学说" },
+                            { en: "creed", cn: "信条" },
+                            { en: "cult", cn: "邪教" },
+                            { en: "sect", cn: "教派" },
+                            { en: "denomination", cn: "宗派" },
+                            { en: "church", cn: "教堂" },
+                            { en: "temple", cn: "寺庙" },
+                            { en: "shrine", cn: "神社" },
+                            { en: "mosque", cn: "清真寺" },
+                            { en: "synagogue", cn: "犹太教堂" },
+                            { en: "monastery", cn: "修道院" },
+                            { en: "convent", cn: "女修道院" },
+                            { en: "altar", cn: "祭坛" },
+                            { en: "sacred", cn: "神圣" },
+                            { en: "holy", cn: "神圣" },
+                            { en: "divine", cn: "神圣" },
+                            { en: "blessed", cn: "受祝福的" },
+                            { en: "consecrated", cn: "祝圣的" },
+                            { en: "sanctified", cn: "净化的" },
+                            { en: "purified", cn: "净化的" },
+                            { en: "cleansed", cn: "净化的" },
+                            { en: "redemption", cn: "救赎" },
+                            { en: "salvation", cn: "拯救" },
+                            { en: "deliverance", cn: "拯救" },
+                            { en: "liberation", cn: "解放" },
+                            { en: "emancipation", cn: "解放" },
+                            { en: "freedom", cn: "自由" },
+                            { en: "escape", cn: "逃脱" },
+                            { en: "breakout", cn: "越狱" },
+                            { en: "prison", cn: "监狱" },
+                            { en: "jail", cn: "监狱" },
+                            { en: "cell", cn: "牢房" },
+                            { en: "cage", cn: "笼子" },
+                            { en: "trap", cn: "陷阱" },
+                            { en: "snare", cn: "陷阱" },
+                            { en: "ambush", cn: "伏击" },
+                            { en: "surprise_attack", cn: "突袭" },
+                            { en: "stealth", cn: "潜行" },
+                            { en: "sneak", cn: "潜行" },
+                            { en: "hide", cn: "隐藏" },
+                            { en: "seek", cn: "寻找" },
+                            { en: "hunt", cn: "狩猎" },
+                            { en: "chase", cn: "追逐" },
+                            { en: "pursuit", cn: "追求" },
+                            { en: "escape", cn: "逃跑" },
+                            { en: "flee", cn: "逃跑" },
+                            { en: "run", cn: "跑" },
+                            { en: "sprint", cn: "冲刺" },
+                            { en: "dash", cn: "猛冲" },
+                            { en: "rush", cn: "冲" },
+                            { en: "charge", cn: "冲锋" },
+                            { en: "assault", cn: "突击" },
+                            { en: "attack", cn: "攻击" },
+                            { en: "defend", cn: "防御" },
+                            { en: "protect", cn: "保护" },
+                            { en: "guard", cn: "守卫" },
+                            { en: "shield", cn: "盾牌" },
+                            { en: "block", cn: "格挡" },
+                            { en: "parry", cn: "招架" },
+                            { en: "dodge", cn: "闪避" },
+                            { en: "evade", cn: "闪避" },
+                            { en: "counter", cn: "反击" },
+                            { en: "counterattack", cn: "反击" },
+                            { en: "retaliate", cn: "报复" },
+                            { en: "revenge", cn: "复仇" },
+                            { en: "vengeance", cn: "复仇" },
+                            { en: "retribution", cn: "报应" },
+                            { en: "justice", cn: "正义" },
+                            { en: "judgment", cn: "审判" },
+                            { en: "verdict", cn: "判决" },
+                            { en: "sentence", cn: "判决" },
+                            { en: "punishment", cn: "惩罚" },
+                            { en: "penalty", cn: "惩罚" },
+                            { en: "reward", cn: "奖励" },
+                            { en: "prize", cn: "奖品" },
+                            { en: "trophy", cn: "奖杯" },
+                            { en: "medal", cn: "奖牌" },
+                            { en: "medallion", cn: "大奖章" },
+                            { en: "badge", cn: "徽章" },
+                            { en: "insignia", cn: "徽章" },
+                            { en: "emblem", cn: "徽章" },
+                            { en: "symbol", cn: "符号" },
+                            { en: "icon", cn: "图标" },
+                            { en: "logo", cn: "标志" },
+                            { en: "brand", cn: "品牌" },
+                            { en: "trademark", cn: "商标" },
+                            { en: "copyright", cn: "版权" },
+                            { en: "patent", cn: "专利" },
+                            { en: "license", cn: "许可" },
+                            { en: "permit", cn: "许可" },
+                            { en: "certificate", cn: "证书" },
+                            { en: "diploma", cn: "文凭" },
+                            { en: "degree", cn: "学位" },
+                            { en: "qualification", cn: "资格" },
+                            { en: "credential", cn: "凭证" },
+                            { en: "accreditation", cn: "认证" },
+                            { en: "certification", cn: "认证" },
+                            { en: "validation", cn: "验证" },
+                            { en: "verification", cn: "验证" },
+                            { en: "authentication", cn: "认证" },
+                            { en: "authorization", cn: "授权" },
+                            { en: "permission", cn: "许可" },
+                            { en: "consent", cn: "同意" },
+                            { en: "approval", cn: "批准" },
+                            { en: "acceptance", cn: "接受" },
+                            { en: "rejection", cn: "拒绝" },
+                            { en: "denial", cn: "拒绝" },
+                            { en: "refusal", cn: "拒绝" },
+                            { en: "decline", cn: "拒绝" },
+                            { en: "veto", cn: "否决" },
+                            { en: "ban", cn: "禁止" },
+                            { en: "prohibition", cn: "禁止" },
+                            { en: "restriction", cn: "限制" },
+                            { en: "limitation", cn: "限制" },
+                            { en: "constraint", cn: "约束" },
+                            { en: "bound", cn: "束缚" },
+                            { en: "bond", cn: "束缚" },
+                            { en: "chain", cn: "锁链" },
+                            { en: "shackle", cn: "镣铐" },
+                            { en: "fetter", cn: "镣铐" },
+                            { en: "manacle", cn: "手铐" },
+                            { en: "handcuff", cn: "手铐" },
+                            { en: "straitjacket", cn: "约束衣" },
+                            { en: "gag", cn: "口塞" },
+                            { en: "blindfold", cn: "眼罩" },
+                            { en: "hood", cn: "头套" },
+                            { en: "mask", cn: "面具" },
+                            { en: "disguise", cn: "伪装" },
+                            { en: "costume", cn: "服装" },
+                            { en: "outfit", cn: "服装" },
+                            { en: "attire", cn: "服装" },
+                            { en: "garment", cn: "服装" },
+                            { en: "clothing", cn: "服装" },
+                            { en: "apparel", cn: "服装" },
+                            { en: "wear", cn: "穿着" },
+                            { en: "fashion", cn: "时尚" },
+                            { en: "style", cn: "风格" },
+                            { en: "trend", cn: "趋势" },
+                            { en: "vogue", cn: "时尚" },
+                            { en: "chic", cn: "别致" },
+                            { en: "elegance", cn: "优雅" },
+                            { en: "grace", cn: "优雅" },
+                            { en: "poise", cn: "镇定" },
+                            { en: "composure", cn: "镇定" },
+                            { en: "calm", cn: "冷静" },
+                            { en: "serenity", cn: "宁静" },
+                            { en: "tranquility", cn: "宁静" },
+                            { en: "peace", cn: "和平" },
+                            { en: "harmony", cn: "和谐" },
+                            { en: "balance", cn: "平衡" },
+                            { en: "equilibrium", cn: "平衡" },
+                            { en: "stability", cn: "稳定" },
+                            { en: "steadiness", cn: "稳定" },
+                            { en: "consistency", cn: "一致" },
+                            { en: "uniformity", cn: "统一" },
+                            { en: "regularity", cn: "规律" },
+                            { en: "pattern", cn: "模式" },
+                            { en: "design", cn: "设计" },
+                            { en: "plan", cn: "计划" },
+                            { en: "scheme", cn: "计划" },
+                            { en: "strategy", cn: "策略" },
+                            { en: "tactic", cn: "战术" },
+                            { en: "approach", cn: "方法" },
+                            { en: "method", cn: "方法" },
+                            { en: "technique", cn: "技巧" },
+                            { en: "skill", cn: "技能" },
+                            { en: "art", cn: "艺术" },
+                            { en: "craft", cn: "工艺" },
+                            { en: "trade", cn: "手艺" },
+                            { en: "profession", cn: "职业" },
+                            { en: "occupation", cn: "职业" },
+                            { en: "job", cn: "工作" },
+                            { en: "career", cn: "事业" },
+                            { en: "vocation", cn: "职业" },
+                            { en: "calling", cn: "使命" },
+                            { en: "purpose", cn: "目的" },
+                            { en: "mission", cn: "使命" },
+                            { en: "quest", cn: "追求" },
+                            { en: "journey", cn: "旅程" },
+                            { en: "path", cn: "道路" },
+                            { en: "way", cn: "道路" },
+                            { en: "route", cn: "路线" },
+                            { en: "course", cn: "路线" },
+                            { en: "direction", cn: "方向" },
+                            { en: "orientation", cn: "方向" },
+                            { en: "position", cn: "位置" },
+                            { en: "location", cn: "地点" },
+                            { en: "place", cn: "地点" },
+                            { en: "spot", cn: "地点" },
+                            { en: "site", cn: "地点" },
+                            { en: "area", cn: "区域" },
+                            { en: "region", cn: "区域" },
+                            { en: "zone", cn: "区域" },
+                            { en: "district", cn: "区域" },
+                            { en: "territory", cn: "领土" },
+                            { en: "domain", cn: "领域" },
+                            { en: "realm", cn: "领域" },
+                            { en: "kingdom", cn: "王国" },
+                            { en: "empire", cn: "帝国" },
+                            { en: "universe", cn: "宇宙" },
+                            { en: "cosmos", cn: "宇宙" },
+                            { en: "multiverse", cn: "多重宇宙" },
+                            { en: "dimension", cn: "维度" },
+                            { en: "plane", cn: "位面" },
+                            { en: "world", cn: "世界" },
+                            { en: "earth", cn: "地球" },
+                            { en: "planet", cn: "行星" },
+                            { en: "star", cn: "恒星" },
+                            { en: "sun", cn: "太阳" },
+                            { en: "moon", cn: "月亮" },
+                            { en: "satellite", cn: "卫星" },
+                            { en: "asteroid", cn: "小行星" },
+                            { en: "comet", cn: "彗星" },
+                            { en: "meteor", cn: "流星" },
+                            { en: "meteorite", cn: "陨石" },
+                            { en: "galaxy", cn: "星系" },
+                            { en: "nebula", cn: "星云" },
+                            { en: "black_hole", cn: "黑洞" },
+                            { en: "white_hole", cn: "白洞" },
+                            { en: "wormhole", cn: "虫洞" },
+                            { en: "portal", cn: "传送门" },
+                            { en: "gate", cn: "门" },
+                            { en: "door", cn: "门" },
+                            { en: "entrance", cn: "入口" },
+                            { en: "exit", cn: "出口" },
+                            { en: "passage", cn: "通道" },
+                            { en: "corridor", cn: "走廊" },
+                            { en: "hallway", cn: "走廊" },
+                            { en: "tunnel", cn: "隧道" },
+                            { en: "bridge", cn: "桥" },
+                            { en: "overpass", cn: "天桥" },
+                            { en: "underpass", cn: "地下通道" },
+                            { en: "crossing", cn: "十字路口" },
+                            { en: "intersection", cn: "交叉路口" },
+                            { en: "junction", cn: "连接点" },
+                            { en: "crossroads", cn: "十字路口" },
+                            { en: "fork", cn: "岔路" },
+                            { en: "turn", cn: "转弯" },
+                            { en: "curve", cn: "曲线" },
+                            { en: "bend", cn: "弯曲" },
+                            { en: "spiral", cn: "螺旋" },
+                            { en: "helix", cn: "螺旋" },
+                            { en: "coil", cn: "线圈" },
+                            { en: "loop", cn: "环" },
+                            { en: "circle", cn: "圆" },
+                            { en: "ring", cn: "环" },
+                            { en: "cycle", cn: "循环" },
+                            { en: "rotation", cn: "旋转" },
+                            { en: "revolution", cn: "革命" },
+                            { en: "orbit", cn: "轨道" },
+                            { en: "trajectory", cn: "轨迹" },
+                            { en: "arc", cn: "弧线" },
+                            { en: "parabola", cn: "抛物线" },
+                            { en: "ellipse", cn: "椭圆" },
+                            { en: "hyperbola", cn: "双曲线" },
+                            { en: "line", cn: "线" },
+                            { en: "straight", cn: "直线" },
+                            { en: "diagonal", cn: "对角线" },
+                            { en: "horizontal", cn: "水平" },
+                            { en: "vertical", cn: "垂直" },
+                            { en: "perpendicular", cn: "垂直" },
+                            { en: "parallel", cn: "平行" },
+                            { en: "converge", cn: "汇聚" },
+                            { en: "diverge", cn: "发散" },
+                            { en: "intersect", cn: "相交" },
+                            { en: "overlap", cn: "重叠" },
+                            { en: "coincide", cn: "重合" },
+                            { en: "align", cn: "对齐" },
+                            { en: "arrange", cn: "排列" },
+                            { en: "organize", cn: "组织" },
+                            { en: "order", cn: "秩序" },
+                            { en: "chaos", cn: "混沌" },
+                            { en: "disorder", cn: "混乱" },
+                            { en: "confusion", cn: "混乱" },
+                            { en: "entropy", cn: "熵" },
+                            { en: "randomness", cn: "随机" },
+                            { en: "probability", cn: "概率" },
+                            { en: "chance", cn: "机会" },
+                            { en: "luck", cn: "运气" },
+                            { en: "fortune", cn: "命运" },
+                            { en: "destiny", cn: "命运" },
+                            { en: "fate", cn: "命运" },
+                            { en: "karma", cn: "因果" },
+                            { en: "serendipity", cn: "意外发现" },
+                            { en: "coincidence", cn: "巧合" },
+                            { en: "synchronicity", cn: "共时性" },
+                            { en: "miracle", cn: "奇迹" },
+                            { en: "magic", cn: "魔法" },
+                            { en: "spell", cn: "咒语" },
+                            { en: "enchantment", cn: "附魔" },
+                            { en: "charm", cn: "魅力" },
+                            { en: "hex", cn: "诅咒" },
+                            { en: "curse", cn: "诅咒" },
+                            { en: "jinx", cn: "厄运" },
+                            { en: "ward", cn: "守护" },
+                            { en: "protection", cn: "保护" },
+                            { en: "defense", cn: "防御" },
+                            { en: "offense", cn: "进攻" },
+                            { en: "attack", cn: "攻击" },
+                            { en: "strike", cn: "打击" },
+                            { en: "hit", cn: "击中" },
+                            { en: "blow", cn: "打击" },
+                            { en: "smash", cn: "粉碎" },
+                            { en: "crush", cn: "压碎" },
+                            { en: "destroy", cn: "摧毁" },
+                            { en: "annihilate", cn: "消灭" },
+                            { en: "obliterate", cn: "消灭" },
+                            { en: "eradicate", cn: "根除" },
+                            { en: "eliminate", cn: "消除" },
+                            { en: "remove", cn: "移除" },
+                            { en: "delete", cn: "删除" },
+                            { en: "erase", cn: "擦除" },
+                            { en: "wipe", cn: "擦除" },
+                            { en: "clean", cn: "清洁" },
+                            { en: "purify", cn: "净化" },
+                            { en: "cleanse", cn: "净化" },
+                            { en: "sanitize", cn: "消毒" },
+                            { en: "sterilize", cn: "灭菌" },
+                            { en: "disinfect", cn: "消毒" },
+                            { en: "contaminate", cn: "污染" },
+                            { en: "pollute", cn: "污染" },
+                            { en: "infect", cn: "感染" },
+                            { en: "virus", cn: "病毒" },
+                            { en: "bacteria", cn: "细菌" },
+                            { en: "germ", cn: "细菌" },
+                            { en: "microbe", cn: "微生物" },
+                            { en: "pathogen", cn: "病原体" },
+                            { en: "disease", cn: "疾病" },
+                            { en: "illness", cn: "疾病" },
+                            { en: "sickness", cn: "疾病" },
+                            { en: "ailment", cn: "疾病" },
+                            { en: "malady", cn: "疾病" },
+                            { en: "disorder", cn: "疾病" },
+                            { en: "syndrome", cn: "综合症" },
+                            { en: "condition", cn: "状况" },
+                            { en: "symptom", cn: "症状" },
+                            { en: "sign", cn: "体征" },
+                            { en: "indication", cn: "迹象" },
+                            { en: "signal", cn: "信号" },
+                            { en: "warning", cn: "警告" },
+                            { en: "alert", cn: "警报" },
+                            { en: "alarm", cn: "警报" },
+                            { en: "siren", cn: "警报器" },
+                            { en: "bell", cn: "铃" },
+                            { en: "chime", cn: "钟声" },
+                            { en: "gong", cn: "锣" },
+                            { en: "drum", cn: "鼓" },
+                            { en: "horn", cn: "号角" },
+                            { en: "trumpet", cn: "小号" },
+                            { en: "flute", cn: "长笛" },
+                            { en: "pipe", cn: "管" },
+                            { en: "whistle", cn: "哨子" },
+                            { en: "recorder", cn: "竖笛" },
+                            { en: "clarinet", cn: "单簧管" },
+                            { en: "oboe", cn: "双簧管" },
+                            { en: "bassoon", cn: "巴松管" },
+                            { en: "saxophone", cn: "萨克斯" },
+                            { en: "trombone", cn: "长号" },
+                            { en: "tuba", cn: "大号" },
+                            { en: "french_horn", cn: "圆号" },
+                            { en: "cornet", cn: "短号" },
+                            { en: "bugle", cn: "军号" },
+                            { en: "harmonica", cn: "口琴" },
+                            { en: "accordion", cn: "手风琴" },
+                            { en: "concertina", cn: "六角手风琴" },
+                            { en: "bandoneon", cn: "班多钮手风琴" },
+                            { en: "melodica", cn: "口风琴" },
+                            { en: "pianica", cn: "口风琴" },
+                            { en: "keyboard", cn: "键盘" },
+                            { en: "piano", cn: "钢琴" },
+                            { en: "grand_piano", cn: "三角钢琴" },
+                            { en: "upright_piano", cn: "立式钢琴" },
+                            { en: "electric_piano", cn: "电钢琴" },
+                            { en: "digital_piano", cn: "数码钢琴" },
+                            { en: "synthesizer", cn: "合成器" },
+                            { en: "organ", cn: "风琴" },
+                            { en: "harpsichord", cn: "大键琴" },
+                            { en: "clavichord", cn: "小键琴" },
+                            { en: "celesta", cn: "钢片琴" },
+                            { en: "glockenspiel", cn: "钟琴" },
+                            { en: "xylophone", cn: "木琴" },
+                            { en: "marimba", cn: "马林巴" },
+                            { en: "vibraphone", cn: "颤音琴" },
+                            { en: "steel_drum", cn: "钢鼓" },
+                            { en: "timpani", cn: "定音鼓" },
+                            { en: "snare_drum", cn: "小军鼓" },
+                            { en: "bass_drum", cn: "大鼓" },
+                            { en: "tom_tom", cn: "通鼓" },
+                            { en: "floor_tom", cn: "落地通鼓" },
+                            { en: "cymbal", cn: "钹" },
+                            { en: "hi_hat", cn: "踩钹" },
+                            { en: "ride_cymbal", cn: "吊钹" },
+                            { en: "crash_cymbal", cn: "碎音钹" },
+                            { en: "splash_cymbal", cn:
                 ]
             },
             {
