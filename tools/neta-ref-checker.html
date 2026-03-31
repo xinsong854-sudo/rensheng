@@ -288,27 +288,39 @@
     </div>
     
     <script>
-        // 从短链接解析 UUID
+        // 从短链接解析 UUID - 使用 CORS 代理
         async function resolveUuidFromShortLink(shortId) {
-            // 尝试通过页面重定向获取 UUID
-            try {
-                const response = await fetch(`https://t.nieta.art/${shortId}`, {
-                    method: 'GET',
-                    redirect: 'manual'
-                });
-                const location = response.headers.get('location') || '';
-                const uuidMatch = location.match(/uuid=([a-f0-9-]{36})/i);
-                if (uuidMatch) return uuidMatch[1];
-            } catch (e) {
-                console.log('重定向解析失败:', e.message);
-            }
-            
             // 如果 shortId 本身就是 UUID 格式，直接返回
             if (/^[a-f0-9-]{36}$/i.test(shortId)) {
                 return shortId;
             }
             
-            return null;
+            // 使用 CORS 代理获取重定向 URL
+            const corsProxies = [
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url='
+            ];
+            
+            for (const proxy of corsProxies) {
+                try {
+                    const response = await fetch(proxy + encodeURIComponent(`https://t.nieta.art/${shortId}`), {
+                        method: 'GET',
+                        redirect: 'follow'
+                    });
+                    const finalUrl = response.url || '';
+                    const uuidMatch = finalUrl.match(/uuid=([a-f0-9-]{36})/i);
+                    if (uuidMatch) {
+                        console.log('通过代理解析成功:', uuidMatch[1]);
+                        return uuidMatch[1];
+                    }
+                } catch (e) {
+                    console.log(`代理 ${proxy} 失败:`, e.message);
+                }
+            }
+            
+            // 最后尝试：假设 shortId 可能是 UUID 或其他格式
+            // 直接返回，让后续 API 调用去验证
+            return shortId;
         }
         
         async function checkStory() {
@@ -351,13 +363,7 @@
             
             try {
                 // 第一步：解析 UUID
-                let uuid = shortId;
-                if (!/^[a-f0-9-]{36}$/i.test(shortId)) {
-                    uuid = await resolveUuidFromShortLink(shortId);
-                    if (!uuid) {
-                        throw new Error('无法解析该链接，请检查链接是否正确或作品是否存在');
-                    }
-                }
+                let uuid = await resolveUuidFromShortLink(shortId);
                 
                 checkBtn.innerHTML = '<span class="loading">获取作品信息中</span>';
                 
@@ -373,6 +379,8 @@
                 if (!response.ok) {
                     if (response.status === 404) {
                         throw new Error('作品不存在或已被删除，请检查链接是否正确');
+                    } else if (response.status === 401 || response.status === 403) {
+                        throw new Error('该作品是私密作品，无法查看');
                     } else {
                         throw new Error(`API 请求失败：${response.status}`);
                     }
