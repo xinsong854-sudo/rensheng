@@ -108,12 +108,17 @@
             right: 0;
             bottom: 0;
             background: rgba(44, 74, 92, 0.85);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 9999;
             opacity: 1;
             transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .disclaimer.visible {
+            display: flex;
+            opacity: 1;
         }
 
         .disclaimer.hidden {
@@ -6197,12 +6202,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderContent();
 
-            // 2 秒后隐藏免责声明
+            // 显示免责声明 2 秒后隐藏
+            const disclaimer = document.getElementById('disclaimer');
+            disclaimer.classList.add('visible');
+            
             setTimeout(() => {
-                const disclaimer = document.getElementById('disclaimer');
                 disclaimer.classList.add('hidden');
                 setTimeout(() => {
                     disclaimer.style.display = 'none';
+                    disclaimer.classList.remove('visible');
                 }, 500);
             }, 2000);
         });
