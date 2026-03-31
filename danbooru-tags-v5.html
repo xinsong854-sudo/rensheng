@@ -75,7 +75,7 @@
 
         .header p {
             font-size: 15px;
-            color: #666;
+            color: var(--text-medium);
         }
 
         .header-banner {
@@ -143,7 +143,7 @@
             cursor: pointer;
             font-size: 24px;
             font-weight: 600;
-            transition: all 0.25s ease;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             width: 50px;
             height: 50px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -152,17 +152,40 @@
 
         .toc-toggle:hover {
             background: var(--text-dark);
-            transform: translateY(-50%) scale(1.05);
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 0 6px 15px rgba(44, 74, 92, 0.3);
         }
 
         .toc-toggle:active {
             transform: translateY(-50%) scale(0.95);
+            box-shadow: 0 2px 8px rgba(44, 74, 92, 0.2);
+        }
+
+        /* 移动端目录按钮优化 */
+        @media (max-width: 768px) {
+            .toc-toggle {
+                right: 10px;
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
         }
 
         .toc-grid {
             display: flex;
             flex-direction: column;
             gap: 4px;
+        }
+
+        /* 目录展开状态优化 */
+        .toc.expanded {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .toc.expanded .toc-toggle {
+            transform: translateY(-50%) translateX(0);
         }
 
         .toc-item {
@@ -187,7 +210,7 @@
         }
 
         .toc-item:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
 
         .disclaimer {
@@ -196,13 +219,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(44, 74, 92, 0.85);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 9999;
             opacity: 1;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .disclaimer.hidden {
@@ -222,13 +245,13 @@
 
         .disclaimer-content h2 {
             font-size: 18px;
-            color: #333;
+            color: var(--text-dark);
             margin-bottom: 15px;
         }
 
         .disclaimer-content p {
             font-size: 14px;
-            color: #666;
+            color: var(--text-medium);
             line-height: 1.8;
         }
 
@@ -473,13 +496,13 @@
         .weight-section h2 {
             font-size: 18px;
             margin-bottom: 15px;
-            color: #1a1a1a;
+            color: var(--text-dark);
         }
 
         .weight-table {
             width: 100%;
             border-collapse: collapse;
-            background: #f8f9fa;
+            background: var(--pale-blue);
             border-radius: 12px;
             overflow: hidden;
         }
@@ -488,7 +511,7 @@
         .weight-table td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #e9ecef;
+            border-bottom: 1px solid var(--light-blue);
         }
 
         .weight-table th {
@@ -524,40 +547,41 @@
         .faq-section h2 {
             font-size: 18px;
             margin-bottom: 15px;
-            color: #1a1a1a;
+            color: var(--text-dark);
         }
 
         .faq-item {
             margin-bottom: 10px;
-            border: 1px solid #e9ecef;
+            border: 1px solid var(--light-blue);
             border-radius: 12px;
             overflow: hidden;
         }
 
         .faq-question {
             padding: 15px 18px;
-            background: #f8f9fa;
+            background: var(--pale-blue);
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 500;
             font-size: 14px;
-            transition: background 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .faq-question:hover {
-            background: #e9ecef;
+            background: var(--light-blue);
         }
 
         .faq-question .icon {
             font-size: 18px;
-            color: #999;
-            transition: transform 0.3s ease;
+            color: var(--text-medium);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .faq-question.active .icon {
             transform: rotate(45deg);
+            color: var(--text-dark);
         }
 
         .faq-answer {
@@ -591,7 +615,7 @@
         .community-section h2 {
             font-size: 18px;
             margin-bottom: 15px;
-            color: #1a1a1a;
+            color: var(--text-dark);
         }
 
         .community-grid {
@@ -647,7 +671,7 @@
 
         /* 标签分类样式 */
         .category {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .category-header {
@@ -655,7 +679,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 18px 20px;
-            background: #fff;
+            background: #ffffff;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -670,13 +694,14 @@
             border-color: var(--soft-blue);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(168, 200, 232, 0.4);
+            box-shadow: 0 6px 15px rgba(168, 200, 232, 0.4);
         }
 
         .category-header:active {
             background: var(--text-dark);
             color: white;
-            transform: translateY(0) scale(0.995);
+            border-color: var(--text-dark);
+            transform: translateY(0) scale(0.98);
         }
 
         .category-header.active {
@@ -705,12 +730,12 @@
         .subcategory {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin-top: 8px;
         }
 
         .subcategory.show {
-            max-height: 2000px;
+            max-height: 3000px;
         }
 
         /* 子分类标题（可折叠） */
@@ -719,7 +744,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 12px 16px;
-            background: #fff;
+            background: #ffffff;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -734,13 +759,15 @@
             background: var(--pale-blue);
             border-color: var(--soft-blue);
             color: var(--text-dark);
-            transform: translateX(4px);
+            transform: translateX(6px);
+            box-shadow: 0 2px 8px rgba(168, 200, 232, 0.3);
         }
 
         .subcategory-header:active {
             background: var(--soft-blue);
             color: white;
-            transform: translateX(4px) scale(0.995);
+            border-color: var(--soft-blue);
+            transform: translateX(6px) scale(0.98);
         }
 
         .subcategory-title {
@@ -764,12 +791,15 @@
         .subcategory-tags {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 0 14px;
+            background: rgba(232, 240, 248, 0.4);
+            border-radius: 8px;
+            margin: 0 4px;
         }
 
         .subcategory-tags.show {
-            max-height: 1500px;
+            max-height: 3000px;
             padding: 0 14px 10px 14px;
         }
 
@@ -890,9 +920,9 @@
         }
 
         .tag.copied {
-            background: #28a745;
+            background: #27ae60;
             color: white;
-            border-color: #28a745;
+            border-color: #27ae60;
         }
 
         .tag.negative {
@@ -6010,32 +6040,9 @@
             }
         }
 
-        // 切换目录
-        function toggleToc() {
-            const toc = document.getElementById('toc');
-            toc.classList.toggle('expanded');
-        }
-
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             renderContent();
-
-            // 目录点击平滑滚动
-            document.querySelectorAll('.toc-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const target = document.getElementById(targetId);
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        // 展开该分类
-                        const index = parseInt(targetId.replace('cat-', ''));
-                        if (!isNaN(index)) {
-                            setTimeout(() => toggleCategory(index), 500);
-                        }
-                    }
-                });
-            });
 
             // 2 秒后隐藏免责声明
             setTimeout(() => {
@@ -6047,19 +6054,5 @@
             }, 2000);
         });
     </script>
-
-    <!-- 目录 - 右侧悬浮可完全收起 -->
-    <div class="toc" id="toc">
-        <button class="toc-toggle" onclick="toggleToc()">☰</button>
-        <div class="toc-grid">
-            <a href="#tutorial-section" class="toc-item">新手教程</a>
-            <a href="#recipe-section" class="toc-item">快速配方</a>
-            <a href="#content" class="toc-item">词条大全</a>
-            <a href="#weight-section" class="toc-item">权重速查</a>
-            <a href="#faq-section" class="toc-item">常见问题</a>
-            <a href="#sensitive-section" class="toc-item">敏感词检测</a>
-            <a href="#community-section" class="toc-item">社区入口</a>
-        </div>
-    </div>
 </body>
 </html>
