@@ -103,7 +103,7 @@
             position: fixed;
             top: 50%;
             right: 0;
-            transform: translateY(-50%) translateX(100%);
+            transform: translateY(-50%) translateX(calc(100% - 40px));
             background: #fff;
             border: 1px solid var(--light-blue);
             border-radius: 8px 0 0 8px;
@@ -968,20 +968,6 @@
             <p>捏 Ta 新人友好版 · 点击词条可直接复制</p>
             <div class="header-banner">
                 <img src="header-banner.jpg" alt="装饰横幅">
-            </div>
-        </div>
-
-        <!-- 目录 - 右侧悬浮可完全收起 -->
-        <div class="toc" id="toc">
-            <button class="toc-toggle" onclick="toggleToc()">☰</button>
-            <div class="toc-grid">
-                <a href="#tutorial-section" class="toc-item">📘 新手教程</a>
-                <a href="#recipe-section" class="toc-item">🎲 快速配方</a>
-                <a href="#content" class="toc-item">📚 词条大全</a>
-                <a href="#weight-section" class="toc-item">⚖️ 权重速查</a>
-                <a href="#faq-section" class="toc-item">❓ 常见问题</a>
-                <a href="#sensitive-section" class="toc-item">⚠️ 敏感词检测</a>
-                <a href="#community-section" class="toc-item">👥 社区入口</a>
             </div>
         </div>
 
@@ -2860,6 +2846,205 @@
                             { en: "lace_panties", cn: "蕾丝内裤" },
                             { en: "silk_panties", cn: "丝绸内裤" }
                         ]
+                    },
+                    {
+                        title: "8.13 季节主题 - 春季",
+                        tags: [
+                            { en: "spring", cn: "春季" },
+                            { en: "spring_clothes", cn: "春装" },
+                            { en: "light_jacket", cn: "薄外套" },
+                            { en: "cardigan", cn: "开衫毛衣" },
+                            { en: "trench_coat", cn: "风衣" },
+                            { en: "denim_jacket", cn: "牛仔外套" },
+                            { en: "bomber_jacket", cn: "飞行员夹克" },
+                            { en: "long_sleeve_shirt", cn: "长袖衬衫" },
+                            { en: "sweater", cn: "毛衣" },
+                            { en: "vest", cn: "马甲" },
+                            { en: "pleated_skirt", cn: "百褶裙" },
+                            { en: "a-line_skirt", cn: "A 字裙" },
+                            { en: "floral_dress", cn: "碎花裙" },
+                            { en: "sundress", cn: "太阳裙" },
+                            { en: "pastel_colors", cn: "柔和色彩" },
+                            { en: "cherry_blossom", cn: "樱花元素" },
+                            { en: "flower_print", cn: "花卉印花" },
+                            { en: "light_scarf", cn: "薄围巾" },
+                            { en: "ankle_boots", cn: "短靴" },
+                            { en: "sneakers", cn: "运动鞋" }
+                        ]
+                    },
+                    {
+                        title: "8.14 季节主题 - 夏季",
+                        tags: [
+                            { en: "summer", cn: "夏季" },
+                            { en: "summer_clothes", cn: "夏装" },
+                            { en: "t-shirt", cn: "T 恤" },
+                            { en: "tank_top", cn: "背心" },
+                            { en: "crop_top", cn: "短上衣" },
+                            { en: "sleeveless_shirt", cn: "无袖衫" },
+                            { en: "halterneck", cn: "挂脖装" },
+                            { en: "tube_top", cn: "抹胸" },
+                            { en: "camisole", cn: "吊带衫" },
+                            { en: "shorts", cn: "短裤" },
+                            { en: "denim_shorts", cn: "牛仔短裤" },
+                            { en: "hot_pants", cn: "热裤" },
+                            { en: "miniskirt", cn: "短裙" },
+                            { en: "sundress", cn: "太阳裙" },
+                            { en: "slip_dress", cn: "吊带裙" },
+                            { en: "bikini", cn: "比基尼" },
+                            { en: "one_piece_swimsuit", cn: "连体泳衣" },
+                            { en: "sandals", cn: "凉鞋" },
+                            { en: "flip-flops", cn: "人字拖" },
+                            { en: "sun_hat", cn: "太阳帽" },
+                            { en: "sunglasses", cn: "太阳镜" },
+                            { en: "beach_cover-up", cn: "沙滩罩衫" },
+                            { en: "tropical_print", cn: "热带印花" },
+                            { en: "bright_colors", cn: "鲜艳色彩" }
+                        ]
+                    },
+                    {
+                        title: "8.15 季节主题 - 秋季",
+                        tags: [
+                            { en: "autumn", cn: "秋季" },
+                            { en: "fall", cn: "秋天" },
+                            { en: "autumn_clothes", cn: "秋装" },
+                            { en: "sweater", cn: "毛衣" },
+                            { en: "hoodie", cn: "连帽衫" },
+                            { en: "cardigan", cn: "针织开衫" },
+                            { en: "blazer", cn: "西装外套" },
+                            { en: "leather_jacket", cn: "皮夹克" },
+                            { en: "denim_jacket", cn: "牛仔夹克" },
+                            { en: "trench_coat", cn: "风衣" },
+                            { en: "peacoat", cn: "海军大衣" },
+                            { en: "long_pants", cn: "长裤" },
+                            { en: "jeans", cn: "牛仔裤" },
+                            { en: "cargo_pants", cn: "工装裤" },
+                            { en: "leggings", cn: "打底裤" },
+                            { en: "long_skirt", cn: "长裙" },
+                            { en: "midi_skirt", cn: "中长裙" },
+                            { en: "plaid_skirt", cn: "格子裙" },
+                            { en: "turtleneck", cn: "高领毛衣" },
+                            { en: "scarf", cn: "围巾" },
+                            { en: "beanie", cn: "针织帽" },
+                            { en: "ankle_boots", cn: "短靴" },
+                            { en: "knee_high_boots", cn: "高筒靴" },
+                            { en: "loafers", cn: "乐福鞋" },
+                            { en: "earth_tones", cn: "大地色系" },
+                            { en: "plaid", cn: "格纹" },
+                            { en: "knit", cn: "针织" }
+                        ]
+                    },
+                    {
+                        title: "8.16 季节主题 - 冬季",
+                        tags: [
+                            { en: "winter", cn: "冬季" },
+                            { en: "winter_clothes", cn: "冬装" },
+                            { en: "coat", cn: "外套" },
+                            { en: "overcoat", cn: "大衣" },
+                            { en: "down_jacket", cn: "羽绒服" },
+                            { en: "puffer_jacket", cn: "棉服" },
+                            { en: "parka", cn: "派克大衣" },
+                            { en: "fur_coat", cn: "皮草大衣" },
+                            { en: "wool_coat", cn: "羊毛大衣" },
+                            { en: "trench_coat", cn: "风衣" },
+                            { en: "peacoat", cn: "海军大衣" },
+                            { en: "turtleneck", cn: "高领毛衣" },
+                            { en: "sweater", cn: "毛衣" },
+                            { en: "hoodie", cn: "连帽衫" },
+                            { en: "thermal_underwear", cn: "保暖内衣" },
+                            { en: "long_johns", cn: "秋衣秋裤" },
+                            { en: "thick_pants", cn: "厚裤子" },
+                            { en: "jeans", cn: "牛仔裤" },
+                            { en: "leggings", cn: "打底裤" },
+                            { en: "long_skirt", cn: "长裙" },
+                            { en: "wool_skirt", cn: "毛呢裙" },
+                            { en: "scarf", cn: "围巾" },
+                            { en: "muffler", cn: "厚围巾" },
+                            { en: "gloves", cn: "手套" },
+                            { en: "mittens", cn: "连指手套" },
+                            { en: "beanie", cn: "针织帽" },
+                            { en: "earmuffs", cn: "耳罩" },
+                            { en: "winter_hat", cn: "冬帽" },
+                            { en: "snow_boots", cn: "雪地靴" },
+                            { en: "knee_high_boots", cn: "高筒靴" },
+                            { en: "leather_boots", cn: "皮靴" },
+                            { en: "thick_socks", cn: "厚袜子" },
+                            { en: "dark_colors", cn: "深色系" },
+                            { en: "layered_look", cn: "层叠穿搭" }
+                        ]
+                    },
+                    {
+                        title: "8.17 服装材质",
+                        tags: [
+                            { en: "cotton", cn: "棉质" },
+                            { en: "denim", cn: "牛仔" },
+                            { en: "leather", cn: "皮革" },
+                            { en: "suede", cn: "麂皮" },
+                            { en: "fur", cn: "皮草" },
+                            { en: "wool", cn: "羊毛" },
+                            { en: "cashmere", cn: "羊绒" },
+                            { en: "silk", cn: "丝绸" },
+                            { en: "satin", cn: "缎面" },
+                            { en: "chiffon", cn: "雪纺" },
+                            { en: "lace", cn: "蕾丝" },
+                            { en: "mesh", cn: "网眼" },
+                            { en: "velvet", cn: "天鹅绒" },
+                            { en: "corduroy", cn: "灯芯绒" },
+                            { en: "linen", cn: "亚麻" },
+                            { en: "polyester", cn: "聚酯纤维" },
+                            { en: "spandex", cn: "氨纶" },
+                            { en: "knit", cn: "针织" },
+                            { en: "crochet", cn: "钩针" },
+                            { en: "transparent", cn: "透明" },
+                            { en: "sheer", cn: "薄纱" },
+                            { en: "shiny", cn: "光泽" },
+                            { en: "matte", cn: "哑光" },
+                            { en: "metallic", cn: "金属质感" },
+                            { en: "sequins", cn: "亮片" },
+                            { en: "embroidered", cn: "刺绣" },
+                            { en: "printed", cn: "印花" },
+                            { en: "striped", cn: "条纹" },
+                            { en: "polka_dot", cn: "波点" },
+                            { en: "plaid", cn: "格纹" },
+                            { en: "checkered", cn: "方格" },
+                            { en: "floral_print", cn: "花卉印花" },
+                            { en: "camouflage", cn: "迷彩" },
+                            { en: "tie-dye", cn: "扎染" }
+                        ]
+                    },
+                    {
+                        title: "8.18 服装风格",
+                        tags: [
+                            { en: "casual", cn: "休闲" },
+                            { en: "formal", cn: "正式" },
+                            { en: "elegant", cn: "优雅" },
+                            { en: "cute", cn: "可爱" },
+                            { en: "sexy", cn: "性感" },
+                            { en: "cool", cn: "帅气" },
+                            { en: "sporty", cn: "运动" },
+                            { en: "preppy", cn: "学院风" },
+                            { en: "vintage", cn: "复古" },
+                            { en: "retro", cn: "怀旧" },
+                            { en: "modern", cn: "现代" },
+                            { en: "minimalist", cn: "极简" },
+                            { en: "bohemian", cn: "波西米亚" },
+                            { en: "punk", cn: "朋克" },
+                            { en: "gothic", cn: "哥特" },
+                            { en: "lolita", cn: "洛丽塔" },
+                            { en: "gyaru", cn: "辣妹" },
+                            { en: "harajuku", cn: "原宿风" },
+                            { en: "streetwear", cn: "街头风" },
+                            { en: "hip-hop", cn: "嘻哈" },
+                            { en: "business", cn: "商务" },
+                            { en: "office_lady", cn: "OL" },
+                            { en: "mori_girl", cn: "森女" },
+                            { en: "fairy_kei", cn: "童话风" },
+                            { en: "decora", cn: "装饰风" },
+                            { en: "visual_kei", cn: "视觉系" },
+                            { en: "cosplay", cn: "角色扮演" },
+                            { en: "traditional", cn: "传统" },
+                            { en: "ethnic", cn: "民族风" },
+                            { en: "western", cn: "西部风" }
+                        ]
                     }
                 ]
             },
@@ -3666,7 +3851,7 @@
             "攻击防御", "恐怖电影", "恶魔猎人"
         ];
 
-        // 渲染内容
+        // 渲染内容（支持三级嵌套）
         function renderContent() {
             const content = document.getElementById('content');
             let html = '';
@@ -3683,25 +3868,73 @@
 
                 category.items.forEach((subcat, subIndex) => {
                     const subId = `sub-${catIndex}-${subIndex}`;
-                    html += `
-                        <div class="subcategory-item">
-                            <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
-                                <span class="subcategory-title">${subcat.title}</span>
-                                <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                    
+                    // 检查是否有三级结构（items 数组）
+                    if (subcat.items && subcat.items.length > 0) {
+                        // 三级结构：先显示子分类标题，展开后显示三级分类
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span class="subcategory-title">${subcat.title}</span>
+                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
+                        
+                        // 渲染三级分类
+                        subcat.items.forEach((level3, l3Index) => {
+                            const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
+                            html += `
+                                <div class="level3-item">
+                                    <div class="level3-header" onclick="toggleLevel3('${l3Id}', event)">
+                                        <span class="level3-title">${level3.title}</span>
+                                        <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
+                                    </div>
+                                    <div class="level3-tags" id="${l3Id}">
+                            `;
+                            
+                            if (level3.tags) {
+                                level3.tags.forEach(tag => {
+                                    const isNegative = tag.negative;
+                                    const className = isNegative ? 'tag negative' : 'tag';
+                                    html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                                });
+                            }
+                            
+                            html += `
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
                             </div>
-                            <div class="subcategory-tags" id="${subId}">
-                    `;
+                        `;
+                    } else {
+                        // 二级结构：直接显示标签
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span class="subcategory-title">${subcat.title}</span>
+                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
 
-                    subcat.tags.forEach(tag => {
-                        const isNegative = tag.negative;
-                        const className = isNegative ? 'tag negative' : 'tag';
-                        html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
-                    });
+                        if (subcat.tags) {
+                            subcat.tags.forEach(tag => {
+                                const isNegative = tag.negative;
+                                const className = isNegative ? 'tag negative' : 'tag';
+                                html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                            });
+                        }
 
-                    html += `
+                        html += `
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 });
 
                 html += `
@@ -4157,5 +4390,19 @@
             }, 2000);
         });
     </script>
+
+    <!-- 目录 - 右侧悬浮可完全收起 -->
+    <div class="toc" id="toc">
+        <button class="toc-toggle" onclick="toggleToc()">☰</button>
+        <div class="toc-grid">
+            <a href="#tutorial-section" class="toc-item">📘 新手教程</a>
+            <a href="#recipe-section" class="toc-item">🎲 快速配方</a>
+            <a href="#content" class="toc-item">📚 词条大全</a>
+            <a href="#weight-section" class="toc-item">⚖️ 权重速查</a>
+            <a href="#faq-section" class="toc-item">❓ 常见问题</a>
+            <a href="#sensitive-section" class="toc-item">⚠️ 敏感词检测</a>
+            <a href="#community-section" class="toc-item">👥 社区入口</a>
+        </div>
+    </div>
 </body>
 </html>
