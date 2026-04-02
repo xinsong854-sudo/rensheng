@@ -51,36 +51,21 @@ class ImagePreloader {
     loadImage(img, dataSrc, priority) {
         const image = new Image();
         
-        // 低优先级图片使用 fetch 低优先级
-        if (priority === 'low') {
-            fetch(dataSrc, { priority: 'low' })
-                .then(response => response.blob())
-                .then(blob => {
-                    img.src = URL.createObjectURL(blob);
-                    img.removeAttribute('data-src');
-                    this.loading.delete(img);
-                    this.processQueue();
-                })
-                .catch(() => {
-                    img.src = PLACEHOLDER_IMAGE;
-                    this.loading.delete(img);
-                    this.processQueue();
-                });
-        } else {
-            // 高优先级图片直接加载
-            image.onload = () => {
-                img.src = dataSrc;
-                img.removeAttribute('data-src');
-                this.loading.delete(img);
-                this.processQueue();
-            };
-            image.onerror = () => {
-                img.src = PLACEHOLDER_IMAGE;
-                this.loading.delete(img);
-                this.processQueue();
-            };
-            image.src = dataSrc;
-        }
+        // 所有图片都使用相同方式加载，但高优先级先加载
+        image.onload = () => {
+            img.src = dataSrc;
+            img.removeAttribute('data-src');
+            this.loading.delete(img);
+            this.processQueue();
+        };
+        
+        image.onerror = () => {
+            img.src = PLACEHOLDER_IMAGE;
+            this.loading.delete(img);
+            this.processQueue();
+        };
+        
+        image.src = dataSrc;
     }
 }
 
