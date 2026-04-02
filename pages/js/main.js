@@ -508,10 +508,10 @@ function renderArtifacts(filter) {
         return;
     }
     
-    // 使用懒加载：先显示占位图，真实图片 URL 存储在 data-src 中
+    // 使用预加载：先显示占位图，真实图片 URL 存储在 data-src 中
     grid.innerHTML = filtered.map((artifact, index) => `
         <div class="artifact-card fade-in" style="animation-delay: ${index * 0.05}s" onclick="showArtifact('${artifact.id}')">
-            <img class="card-image" src="${PLACEHOLDER_IMAGE}" data-src="${artifact.image}" alt="${artifact.name}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMAGE}'">
+            <img class="card-image" src="${PLACEHOLDER_IMAGE}" data-src="${artifact.image}" alt="${artifact.name}" onerror="this.src='${PLACEHOLDER_IMAGE}'">
             <div class="card-info">
                 <div class="card-number">${artifact.id}</div>
                 <div class="card-name">${artifact.name}</div>
@@ -520,11 +520,13 @@ function renderArtifacts(filter) {
         </div>
     `).join('');
     
-    // 重新初始化图片观察者
-    if (imageObserver) {
-        const images = grid.querySelectorAll('img.card-image[data-src]');
-        images.forEach(img => imageObserver.observe(img));
-    }
+    // 重新初始化图片预加载
+    const images = grid.querySelectorAll('img.card-image[data-src]');
+    images.forEach(img => {
+        if (img.src === PLACEHOLDER_IMAGE && img.dataset.src) {
+            preloader.add(img, 'high');
+        }
+    });
 }
 
 // 显示物品详情
