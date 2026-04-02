@@ -82,7 +82,7 @@ async function compressImage() {
         img.src = URL.createObjectURL(originalFile);
         
         await new Promise((resolve) => {
-            img.onload = () => {
+            img.onload = async () => {
                 progressFill.style.width = '50%';
                 
                 // 创建 Canvas
@@ -111,8 +111,10 @@ async function compressImage() {
                 let blob;
                 
                 do {
-                    blob = await new Promise(resolve => {
-                        canvas.toBlob(resolve, 'image/jpeg', quality);
+                    blob = await new Promise((resolveBlob) => {
+                        canvas.toBlob((resultBlob) => {
+                            resolveBlob(resultBlob);
+                        }, 'image/jpeg', quality);
                     });
                     quality -= 0.1;
                 } while (blob.size > 100 * 1024 && quality > 0.1);

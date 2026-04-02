@@ -11,30 +11,103 @@ const artifacts = window.artifacts || [];
 // 图片懒加载占位图（base64 编码的灰色占位 SVG）
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU4Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGR5PSIuM2VtIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5Ij7mloXmnKw8L3RleHQ+PC9zdmc+';
 
-// IntersectionObserver 用于懒加载
-let imageObserver = null;
-
-// 初始化图片懒加载观察者
-function initImageObserver() {
-    if ('IntersectionObserver' in window) {
-        imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    const dataSrc = img.dataset.src;
-                    if (dataSrc) {
-                        img.src = dataSrc;
-                        img.removeAttribute('data-src');
-                        observer.unobserve(img);
-                    }
-                }
-            });
-        }, {
-            rootMargin: '50px 0px', // 提前 50px 开始加载
-            threshold: 0.01
-        });
-        console.log('图片懒加载观察者已初始化');
+// 图片预加载管理器 - 所有图片都会加载，但分优先级
+class ImagePreloader {
+    constructor() {
+        this.queue = []; // 待加载图片队列
+        this.loading = new Set(); // 正在加载的图片
+        this.maxConcurrent = 6; // 最大并发数
+        this.priorityScreens = 3; // 优先加载前 3 屏的图片
     }
+
+    // 添加图片到加载队列
+    add(img, priority = 'low') {
+        const dataSrc = img.dataset.src;
+        if (!dataSrc || img.src !== PLACEHOLDER_IMAGE) return;
+
+        this.queue.push({ img, dataSrc, priority });
+        this.processQueue();
+    }
+
+    // 处理加载队列
+    processQueue() {
+        while (this.queue.length > 0 && this.loading.size < this.maxConcurrent) {
+            // 优先加载高优先级图片
+            this.queue.sort((a, b) => {
+                if (a.priority === 'high' && b.priority === 'low') return -1;
+                if (a.priority === 'low' && b.priority === 'high') return 1;
+                return 0;
+            });
+
+            const { img, dataSrc, priority } = this.queue.shift();
+            if (this.loading.has(img)) continue;
+
+            this.loading.add(img);
+            this.loadImage(img, dataSrc, priority);
+        }
+    }
+
+    // 加载单张图片
+    loadImage(img, dataSrc, priority) {
+        const image = new Image();
+        
+        // 低优先级图片使用 fetch 低优先级
+        if (priority === 'low') {
+            fetch(dataSrc, { priority: 'low' })
+                .then(response => response.blob())
+                .then(blob => {
+                    img.src = URL.createObjectURL(blob);
+                    img.removeAttribute('data-src');
+                    this.loading.delete(img);
+                    this.processQueue();
+                })
+                .catch(() => {
+                    img.src = PLACEHOLDER_IMAGE;
+                    this.loading.delete(img);
+                    this.processQueue();
+                });
+        } else {
+            // 高优先级图片直接加载
+            image.onload = () => {
+                img.src = dataSrc;
+                img.removeAttribute('data-src');
+                this.loading.delete(img);
+                this.processQueue();
+            };
+            image.onerror = () => {
+                img.src = PLACEHOLDER_IMAGE;
+                this.loading.delete(img);
+                this.processQueue();
+            };
+            image.src = dataSrc;
+        }
+    }
+}
+
+const preloader = new ImagePreloader();
+
+// 初始化图片预加载 - 所有图片都会加载，但分优先级
+function initImagePreload() {
+    const images = document.querySelectorAll('img[data-src]');
+    
+    // 计算视口高度
+    const viewportHeight = window.innerHeight;
+    const priorityScreens = preloader.priorityScreens;
+    
+    images.forEach((img) => {
+        const rect = img.getBoundingClientRect();
+        const distanceFromViewport = rect.top - viewportHeight;
+        
+        // 视口内和前 N 屏的图片高优先级
+        if (distanceFromViewport < viewportHeight * priorityScreens) {
+            preloader.add(img, 'high');
+        } else {
+            // 其他图片低优先级后台加载
+            preloader.add(img, 'low');
+        }
+    });
+    
+    console.log(`图片预加载已启动，共 ${images.length} 张图片`);
 }
 
 // 引入资料数据（组织/地区/角色）
@@ -50,8 +123,8 @@ let currentFilter = null;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('页面加载完成，开始初始化...');
     
-    // 初始化图片懒加载观察者
-    initImageObserver();
+    // 初始化图片预加载（所有图片都会加载，但分优先级）
+    initImagePreload();
     
     // 绑定回车键事件
     const usernameInput = document.getElementById('username-input');
