@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三级分类功能测试 - Danbooru 标签</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .test-result {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .pass { color: #28a745; }
+        .fail { color: #dc3545; }
+        
+        .category {
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .category-header {
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .subcategory {
+            display: none;
+            padding: 10px;
+        }
+        
+        .subcategory.show {
+            display: block;
+        }
+        
+        .subcategory-item {
+            margin: 5px 0;
+        }
+        
+        .subcategory-header {
+            padding: 10px 15px;
+            background: #ecf0f1;
+            cursor: pointer;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+        
+        .subcategory-tags {
+            display: none;
+            padding: 10px;
+        }
+        
+        .subcategory-tags.show {
+            display: block;
+        }
+        
+        .level3-item {
+            margin: 5px 0 5px 20px;
+        }
+        
+        .level3-header {
+            padding: 8px 12px;
+            background: #e8f4f8;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .level3-header:hover {
+            background: #d4edf7;
+        }
+        
+        .level3-chevron {
+            transition: transform 0.3s;
+        }
+        
+        .level3-chevron.active {
+            transform: rotate(90deg);
+        }
+        
+        .level3-tags {
+            display: none;
+            padding: 8px;
+        }
+        
+        .level3-tags.show {
+            display: block;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin: 2px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        .tag:hover {
+            background: #e9ecef;
+        }
+        
+        .tag.copied {
+            background: #28a745;
+            color: white;
+        }
+        
+        #content {
+            margin-top: 20px;
+        }
+        
+        .test-instructions {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 三级分类功能测试</h1>
+    
+    <div class="test-instructions">
+        <h3>测试说明：</h3>
+        <ol>
+            <li>点击"三、动作篇 (Poses)"展开分类</li>
+            <li>点击"3.1 表情分类"展开子分类</li>
+            <li>点击"3.1.1 表情 - 喜（开心）"等三级分类，应该能展开/收起标签</li>
+            <li>检查箭头是否正确旋转（› 变为 › 旋转 90 度）</li>
+        </ol>
+    </div>
+    
+    <div id="test-results" class="test-result">
+        <h3>测试结果：</h3>
+        <div id="results"></div>
+    </div>
+    
+    <div id="content"></div>
+
+    <script>
+        // 简化的测试数据 - 只包含表情篇的三级结构
+        const testTagData = [
+            {
+                title: "三、动作篇 (Poses)",
+                items: [
+                    {
+                        title: "3.1 表情分类",
+                        items: [
+                            {
+                                title: "3.1.1 表情 - 喜（开心）",
+                                tags: [
+                                    { en: "smiling", cn: "微笑" },
+                                    { en: "smile", cn: "笑容" },
+                                    { en: "happy", cn: "开心" },
+                                    { en: "laughing", cn: "大笑" }
+                                ]
+                            },
+                            {
+                                title: "3.1.2 表情 - 怒（生气）",
+                                tags: [
+                                    { en: "angry", cn: "生气" },
+                                    { en: "mad", cn: "愤怒" },
+                                    { en: "furious", cn: "暴怒" }
+                                ]
+                            },
+                            {
+                                title: "3.1.3 表情 - 哀（悲伤）",
+                                tags: [
+                                    { en: "sad", cn: "悲伤" },
+                                    { en: "crying", cn: "哭泣" },
+                                    { en: "tears", cn: "眼泪" }
+                                ]
+                            },
+                            {
+                                title: "3.1.4 表情 - 惧（恐惧）",
+                                tags: [
+                                    { en: "scared", cn: "害怕" },
+                                    { en: "fear", cn: "恐惧" },
+                                    { en: "terrified", cn: "惊恐" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "3.2 其他表情和动作",
+                        items: [
+                            {
+                                title: "3.2.1 表情 - 其他情绪",
+                                tags: [
+                                    { en: "surprised", cn: "惊讶" },
+                                    { en: "confused", cn: "困惑" },
+                                    { en: "neutral", cn: "面无表情" }
+                                ]
+                            },
+                            {
+                                title: "3.2.2 眼部表情",
+                                tags: [
+                                    { en: "winking", cn: "眨眼" },
+                                    { en: "eyes_closed", cn: "闭眼" },
+                                    { en: "sparkling_eyes", cn: "闪亮眼睛" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        let testResults = [];
+
+        function renderContent() {
+            const content = document.getElementById('content');
+            let html = '';
+
+            testTagData.forEach((category, catIndex) => {
+                html += `
+                    <div class="category" id="cat-${catIndex}">
+                        <div class="category-header" onclick="toggleCategory(${catIndex})">
+                            <span>${category.title}</span>
+                            <span style="float:right">›</span>
+                        </div>
+                        <div class="subcategory" id="subcat-${catIndex}">
+                `;
+
+                category.items.forEach((subcat, subIndex) => {
+                    const subId = `sub-${catIndex}-${subIndex}`;
+                    
+                    if (subcat.items && subcat.items.length > 0) {
+                        // 三级结构
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span>${subcat.title}</span>
+                                    <span style="float:right">›</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
+                        
+                        subcat.items.forEach((level3, l3Index) => {
+                            const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
+                            html += `
+                                <div class="level3-item">
+                                    <div class="level3-header" onclick="toggleLevel3('${l3Id}', event)">
+                                        <span class="level3-title">${level3.title}</span>
+                                        <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
+                                    </div>
+                                    <div class="level3-tags" id="${l3Id}">
+                            `;
+                            
+                            if (level3.tags) {
+                                level3.tags.forEach(tag => {
+                                    html += `<span class="tag" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                                });
+                            }
+                            
+                            html += `</div></div>`;
+                        });
+                        
+                        html += `</div></div>`;
+                    } else {
+                        // 二级结构
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span>${subcat.title}</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
+
+                        if (subcat.tags) {
+                            subcat.tags.forEach(tag => {
+                                html += `<span class="tag">${tag.en} · ${tag.cn}</span>`;
+                            });
+                        }
+
+                        html += `</div></div>`;
+                    }
+                });
+
+                html += `</div></div>`;
+            });
+
+            content.innerHTML = html;
+            
+            // 运行测试
+            runTests();
+        }
+
+        function toggleCategory(index) {
+            const subcategory = document.getElementById(`subcat-${index}`);
+            subcategory.classList.toggle('show');
+        }
+
+        function toggleSubcategory(id, event) {
+            event.stopPropagation();
+            const content = document.getElementById(id);
+            content.classList.toggle('show');
+        }
+
+        function toggleLevel3(id, event) {
+            event.stopPropagation();
+            const content = document.getElementById(id);
+            const chevronId = `l3chevron-${id}`;
+            const chevron = document.getElementById(chevronId);
+            
+            content.classList.toggle('show');
+            chevron.classList.toggle('active');
+            
+            console.log('✓ toggleLevel3 被调用:', id, '状态:', content.classList.contains('show') ? '展开' : '收起');
+        }
+
+        function copyTag(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                element.classList.add('copied');
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                }, 500);
+            });
+        }
+
+        function runTests() {
+            const results = document.getElementById('results');
+            let html = '';
+            
+            // 测试 1: renderContent 是否正确渲染三级结构
+            const level3Items = document.querySelectorAll('.level3-item');
+            const test1 = level3Items.length === 6; // 应该有 6 个三级分类
+            testResults.push({ name: 'renderContent 渲染三级结构', pass: test1, detail: `找到 ${level3Items.length} 个三级分类（期望 6 个）` });
+            
+            // 测试 2: 检查三级分类标题是否正确
+            const level3Titles = document.querySelectorAll('.level3-title');
+            const test2 = level3Titles.length === 6 && level3Titles[0].textContent === '3.1.1 表情 - 喜（开心）';
+            testResults.push({ name: '三级分类标题正确', pass: test2, detail: `第一个标题：${level3Titles[0]?.textContent || 'N/A'}` });
+            
+            // 测试 3: 检查标签是否正确渲染
+            const tags = document.querySelectorAll('.level3-tags .tag');
+            const test3 = tags.length > 0;
+            testResults.push({ name: '标签正确渲染', pass: test3, detail: `找到 ${tags.length} 个标签` });
+            
+            // 测试 4: 检查 CSS 类是否存在
+            const hasLevel3CSS = getComputedStyle(document.querySelector('.level3-header')).cursor === 'pointer';
+            testResults.push({ name: 'CSS 样式正确', pass: hasLevel3CSS, detail: 'level3-header 样式应用' });
+            
+            // 渲染结果
+            testResults.forEach(test => {
+                html += `<div class="${test.pass ? 'pass' : 'fail'}">
+                    <strong>${test.pass ? '✓' : '✗'} ${test.name}</strong>: ${test.detail}
+                </div>`;
+            });
+            
+            results.innerHTML = html;
+        }
+
+        // 初始化
+        renderContent();
+        console.log('测试页面已加载，三级分类功能就绪');
+    </script>
+</body>
+</html>

@@ -8,6 +8,35 @@ const PERMISSION_LEVELS = window.PERMISSION_LEVELS || {};
 const CLASS_PERMISSION_MAP = window.CLASS_PERMISSION_MAP || {};
 const artifacts = window.artifacts || [];
 
+// 图片懒加载占位图（base64 编码的灰色占位 SVG）
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU4Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGR5PSIuM2VtIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5Ij7mloXmnKw8L3RleHQ+PC9zdmc+';
+
+// IntersectionObserver 用于懒加载
+let imageObserver = null;
+
+// 初始化图片懒加载观察者
+function initImageObserver() {
+    if ('IntersectionObserver' in window) {
+        imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    const dataSrc = img.dataset.src;
+                    if (dataSrc) {
+                        img.src = dataSrc;
+                        img.removeAttribute('data-src');
+                        observer.unobserve(img);
+                    }
+                }
+            });
+        }, {
+            rootMargin: '50px 0px', // 提前 50px 开始加载
+            threshold: 0.01
+        });
+        console.log('图片懒加载观察者已初始化');
+    }
+}
+
 // 引入资料数据（组织/地区/角色）
 const LORE_ORGANIZATIONS = window.LORE_ORGANIZATIONS || {};
 const LORE_REGIONS = window.LORE_REGIONS || {};
@@ -20,6 +49,9 @@ let currentFilter = null;
 // 初始化 - 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', () => {
     console.log('页面加载完成，开始初始化...');
+    
+    // 初始化图片懒加载观察者
+    initImageObserver();
     
     // 绑定回车键事件
     const usernameInput = document.getElementById('username-input');
@@ -418,9 +450,10 @@ function renderArtifacts(filter) {
         return;
     }
     
+    // 使用懒加载：先显示占位图，真实图片 URL 存储在 data-src 中
     grid.innerHTML = filtered.map((artifact, index) => `
         <div class="artifact-card fade-in" style="animation-delay: ${index * 0.05}s" onclick="showArtifact('${artifact.id}')">
-            <img class="card-image" src="${artifact.image}" alt="${artifact.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU4Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGR5PSIuM2VtIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5Ij7mloXmnKw8L3RleHQ+PC9zdmc+'">
+            <img class="card-image" src="${PLACEHOLDER_IMAGE}" data-src="${artifact.image}" alt="${artifact.name}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMAGE}'">
             <div class="card-info">
                 <div class="card-number">${artifact.id}</div>
                 <div class="card-name">${artifact.name}</div>
@@ -428,6 +461,12 @@ function renderArtifacts(filter) {
             </div>
         </div>
     `).join('');
+    
+    // 重新初始化图片观察者
+    if (imageObserver) {
+        const images = grid.querySelectorAll('img.card-image[data-src]');
+        images.forEach(img => imageObserver.observe(img));
+    }
 }
 
 // 显示物品详情
@@ -450,7 +489,13 @@ function showArtifact(id) {
     document.getElementById('modal-containment').textContent = artifact.containment;
     document.getElementById('modal-effect').textContent = artifact.effect || '未知';
     document.getElementById('modal-description').textContent = artifact.description;
-    document.getElementById('modal-img').src = artifact.image;
+    
+    // 模态框图片懒加载：设置 data-src，然后立即加载（因为模态框打开时用户会看到）
+    const modalImg = document.getElementById('modal-img');
+    if (modalImg) {
+        modalImg.dataset.src = artifact.image;
+        modalImg.src = artifact.image; // 模态框打开时立即加载真实图片
+    }
     
     // 显示辛秘（仅高权限）
     const secretSection = document.getElementById('secret-section');
