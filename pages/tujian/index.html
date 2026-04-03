@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>伪物图鉴 | Pseudo-Artifacts Archive</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/lore-data.js"></script>
+    <script src="js/secrets.js"></script>
+</head>
+<body>
+    <!-- 登录界面 -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>伪物图鉴</h1>
+                <p>Pseudo-Artifacts Archive</p>
+            </div>
+            <div class="login-warning">
+                <span class="warning-icon">⚠️</span>
+                <span>警告：本系统为伪人专属内部网络，由营长创立并维护</span>
+            </div>
+            <input type="text" id="username-input" class="login-input" placeholder="请输入用户名" autocomplete="off">
+            <button class="login-btn" onclick="verifyUser()">验证权限</button>
+            <p class="login-hint">提示：已登记在册的伪人将自动获得相应访问权限</p>
+        </div>
+    </div>
+
+    <!-- 主界面 -->
+    <div class="container" id="main-container" style="display: none;">
+        <header class="header">
+            <div class="header-nav">
+                <div class="nav-left">
+                    <button class="logout-btn" onclick="logout()" title="退出登录">退出登录</button>
+                </div>
+                <div class="nav-center">
+                    <h1 class="title">伪物图鉴</h1>
+                    <p class="subtitle">Pseudo-Human Artifact Archive</p>
+                </div>
+                <div class="nav-right">
+                    <div class="user-info">
+                        <span class="welcome-text">欢迎，</span>
+                        <span class="user-name" id="user-name-display">未知用户</span>
+                        <span class="user-identity" id="user-identity-display">身份：未验证</span>
+                        <span class="user-level" id="user-level-display">权限等级：未验证</span>
+                        <span class="temporary-boost-badge" id="temporary-boost-badge" style="display: none;">🔓 临时权限激活</span>
+                    </div>
+                    <button id="permission-boost-entry" class="boost-btn" onclick="showPermissionModal()" style="display: none; margin-left: 10px;" title="申请临时权限">🔑 权限提升</button>
+                </div>
+            </div>
+            <div class="warning-banner">
+                <span class="warning-icon">⚠️</span>
+                <span>警告：以下内容包含里界异常物品信息，仅限黎守授权人员查阅</span>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn" data-filter="safe" data-permission="low">
+                🟩 SAFE 安全级（无害） <span class="count" id="count-safe">(0)</span>
+            </button>
+            <button class="tab-btn" data-filter="caution" data-permission="normal">
+                🟨 CAUTION 注意级（谨慎） <span class="count" id="count-caution">(0)</span>
+            </button>
+            <button class="tab-btn" data-filter="danger" data-permission="high">
+                🟧 DANGER 危险级（高危） <span class="count" id="count-danger">(0)</span>
+            </button>
+            <button class="tab-btn" data-filter="hazard" data-permission="high">
+                🟥 HAZARD 危害级（禁忌） <span class="count" id="count-hazard">(0)</span>
+            </button>
+        </nav>
+
+        <main class="artifact-grid" id="artifact-grid">
+            <div class="empty-state">
+                <div class="empty-icon">📁</div>
+                <p>请选择伪物危险等级查看对应档案</p>
+                <p class="empty-hint">根据您的权限等级，您可访问不同危险级别的伪物档案</p>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2026 黎守调查局 伪物档案馆 | 渊 • 西陆 • 赤红新星 联合收容</p>
+            <p class="disclaimer">本系统收录表界/里界异常物品，未经授权禁止访问</p>
+        </footer>
+
+        <!-- 权限提升入口（仅普通/低权限可见） -->
+        <div class="permission-boost-section" id="permission-boost-section">
+            <p>权限不足？申请临时访问许可</p>
+            <button onclick="showPermissionModal()">申请临时许可</button>
+        </div>
+    </div>
+
+    <!-- 物品详情模态框 -->
+    <div class="modal" id="artifact-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div class="modal-header">
+                <h2 id="modal-title">物品编号</h2>
+                <span class="modal-class" id="modal-class">Safe</span>
+            </div>
+            <div class="modal-image">
+                <img id="modal-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZThlOGU4Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGR5PSIuM2VtIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5Ij7mloXmnKw8L3RleHQ+PC9zdmc+" data-src="" alt="物品图片" loading="lazy">
+            </div>
+            <div class="modal-info">
+                <div class="info-row">
+                    <strong>物品名称：</strong><span id="modal-name"></span>
+                </div>
+                <div class="info-row">
+                    <strong>发现地点：</strong><span id="modal-location"></span>
+                </div>
+                <div class="info-row">
+                    <strong>收容措施：</strong><span id="modal-containment"></span>
+                </div>
+                <div class="info-row">
+                    <strong>特殊效果：</strong>
+                    <p id="modal-effect" class="effect-text"></p>
+                </div>
+                <div class="info-row">
+                    <strong>描述：</strong>
+                    <p id="modal-description" class="description-text"></p>
+                </div>
+                <!-- 辛秘区域 - 仅高权限可见 -->
+                <div class="secret-section" id="secret-section" style="display: none;">
+                    <div class="secret-header">
+                        <span class="secret-icon">📜</span>
+                        <span>坊间传闻的野史</span>
+                    </div>
+                    <div class="secret-content" id="secret-content"></div>
+                </div>
+                <div class="secret-lock" id="secret-lock" style="display: none;">
+                    <span class="lock-icon">🔒</span>
+                    <span>权限不足：此物品的辛秘档案需要高级访问权限</span>
+                </div>
+            </div>
+            <button class="back-btn" onclick="closeModal()">返回图鉴</button>
+        </div>
+    </div>
+
+    <!-- 权限不足提示 -->
+    <div class="permission-denied" id="permission-denied">
+        <div class="denied-content">
+            <div class="denied-icon">🔒</div>
+            <h2>访问受限</h2>
+            <p>Access Restricted</p>
+            <p class="denied-message">您的权限等级不足以查看此分级的伪物档案</p>
+            <p class="denied-hint">如需提升权限，请联系营长或大本营管理员</p>
+            <button class="denied-btn" onclick="closePermissionDenied()">返回</button>
+        </div>
+    </div>
+
+    <!-- 权限提升验证弹窗 -->
+    <div class="permission-modal-overlay" id="permission-modal-overlay">
+        <div class="permission-modal">
+            <div class="permission-modal-header">
+                <span class="permission-modal-title">🔑 临时访问许可验证</span>
+                <button class="permission-modal-close" onclick="closePermissionModal()">&times;</button>
+            </div>
+            <div class="permission-modal-body">
+                <p style="margin-bottom: 15px; color: var(--text-secondary); font-size: 14px;">
+                    请输入伪人大本营临时访问验证码
+                </p>
+                <input type="text" id="permission-code-input" class="permission-input" placeholder="请输入群号验证码" maxlength="10" autocomplete="off">
+                <button class="permission-btn" onclick="verifyPermissionCode()">验证验证码</button>
+                <div id="permission-message" class="permission-message"></div>
+                <p class="permission-hint">提示：验证码由营长或管理员提供，临时许可在刷新页面后有效</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 资料弹窗（组织/地区/角色） -->
+    <div class="lore-modal-overlay" id="lore-modal-overlay" style="display: none;" onclick="closeLoreModalOnOverlay(event)">
+        <div class="lore-modal">
+            <div class="lore-modal-header">
+                <h3 class="lore-modal-title" id="lore-modal-title">资料</h3>
+                <button class="lore-modal-close" onclick="closeLoreModal()">&times;</button>
+            </div>
+            <div class="lore-modal-body" id="lore-modal-body">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化特殊链接点击事件
+    initSecretLinks();
+});
+
+function initSecretLinks() {
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('secret-link')) {
+            e.preventDefault();
+            const type = e.target.getAttribute('data-type');
+            const name = e.target.getAttribute('data-name');
+            if (type && name) {
+                showLoreModal(type, name);
+            }
+        }
+    });
+}
+</script>
+</body>
+</html>
