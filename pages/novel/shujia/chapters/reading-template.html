@@ -125,6 +125,7 @@
             font-size: 18px;
             line-height: 2;
             text-align: justify;
+            color: #4a4a4a;
         }
         
         .chapter-content p {
@@ -185,15 +186,16 @@
             top: 80px;
             right: -350px;
             width: 320px;
-            background: rgba(26, 26, 46, 0.98);
+            background: rgba(255, 254, 240, 0.98);
             border-radius: 20px 0 0 20px;
             padding: 30px;
             transition: right 0.3s ease;
             z-index: 999;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(74, 74, 74, 0.1);
             border-right: none;
             max-height: calc(100vh - 100px);
             overflow-y: auto;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.08);
         }
         
         .toc-panel.open {
@@ -202,10 +204,10 @@
         
         .toc-title {
             font-size: 1.5em;
-            color: #667eea;
+            color: #e74c3c;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(231, 76, 60, 0.2);
         }
         
         .toc-list {
@@ -217,7 +219,7 @@
         }
         
         .toc-list a {
-            color: #e8e8e8;
+            color: #4a4a4a;
             text-decoration: none;
             padding: 10px 15px;
             display: block;
@@ -227,15 +229,15 @@
         
         .toc-list a:hover,
         .toc-list a.active {
-            background: rgba(102, 126, 234, 0.3);
-            color: #667eea;
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
         }
         
         .toc-toggle {
             position: fixed;
             top: 100px;
             right: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
             padding: 15px 12px;
