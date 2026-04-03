@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化而为 - 第二章：觉醒 - 里界物语</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', '宋体', serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f4c75 50%, #1b262c 100%); min-height: 100vh; color: #4a4a4a; }
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(30, 58, 95, 0.95); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(74, 74, 74, 0.1); z-index: 1000; }
+        .nav-btn {
+            color: white; background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%); color: #4a4a4a; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4); }
+        .nav-btn.secondary { background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%); }
+        .font-control { display: flex; align-items: center; gap: 10px; background: rgba(231, 76, 60, 0.1); padding: 8px 15px; border-radius: 20px; }
+        .font-btn { background: rgba(231, 76, 60, 0.2); border: none; color: #4a4a4a; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+        .content-wrapper { max-width: 800px; margin: 100px auto 120px; padding: 50px 60px; background: rgba(30, 58, 95, 0.8); border-radius: 20px; }
+        .chapter-header { text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid rgba(231, 76, 60, 0.2); }
+        .chapter-title { font-size: 2.5em; color: #00d9ff; margin-bottom: 15px; }
+        .chapter-subtitle { font-size: 1.2em; color: #8a8a8a; font-style: italic; }
+        .chapter-content { font-size: 18px; line-height: 2; text-align: justify; }
+        .chapter-content p { margin-bottom: 25px; text-indent: 2em; }
+        .chapter-content p:first-child { text-indent: 0; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(30, 58, 95, 0.95); padding: 20px 30px; display: flex; justify-content: center; gap: 30px; border-top: 1px solid rgba(74, 74, 74, 0.1); z-index: 1000; }
+        .page-btn {
+            color: white; background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%); color: #4a4a4a; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; text-decoration: none; }
+        .page-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 217, 255, 0.5); }
+        .page-btn.disabled { background: rgba(231, 76, 60, 0.1); cursor: not-allowed; }
+        .toc-panel { position: fixed; top: 80px; right: -350px; width: 320px; background: rgba(30, 58, 95, 0.98); padding: 30px; transition: right 0.3s ease; z-index: 999; }
+        .toc-panel.open { right: 0; }
+        .toc-title { font-size: 1.5em; color: #00d9ff; margin-bottom: 20px; }
+        .toc-list { list-style: none; }
+        .toc-list a { color: #4a4a4a; text-decoration: none; padding: 10px 15px; display: block; border-radius: 10px; }
+        .toc-list a:hover, .toc-list a.active { background: rgba(0, 217, 255, 0.3); color: #00d9ff; }
+    </style>
+</head>
+<body>
+    <nav class="top-nav"><div class="nav-left"><a href="../../index.html" class="nav-btn">← 返回</a><a href="#" class="nav-btn secondary" onclick="toggleTOC()">📑 目录</a></div><div class="font-control"><span>字体:</span><button class="font-btn" onclick="adjustFont(-1)">A-</button><span id="fontSize">18</span><button class="font-btn" onclick="adjustFont(1)">A+</button></div></nav>
+    <button class="toc-toggle" onclick="toggleTOC()" style="position:fixed;top:100px;right:0;background:#00d9ff;color:white;border:none;padding:15px 12px;border-radius:10px 0 0 10px;cursor:pointer;z-index:998;">☰</button>
+    <div class="toc-panel" id="tocPanel"><h3 class="toc-title">📖 化而为章节</h3><ul class="toc-list"><li><a href="huaerwei_ch1.html">第一章：初现</a></li><li><a href="huaerwei_ch2.html" class="active">第二章：觉醒</a></li><li><a href="huaerwei_ch3.html">第三章：学习</a></li><li><a href="huaerwei_ch4.html">第四章：归途</a></li></ul></div>
+    <div class="content-wrapper">
+        <div class="chapter-header"><h1 class="chapter-title">第二章：觉醒</h1><p class="chapter-subtitle">化而为 · 史莱姆的少女</p></div>
+        <div class="chapter-content" id="content">
+            <p>化而为的能力正在觉醒。</p>
+            
+            <p>那天早上，她像往常一样在房间里练习变形。她变成了一只猫，然后又变成了一只鸟，最后变成了绫份的样子。</p>
+            
+            <p>但今天有些不一样。当她变回自己的形态时，她发现自己可以……同时保持两种形态。</p>
+            
+            <p>她的左手变成了史莱姆的蓝色流体，而右手依然是人类少女的样子。</p>
+            
+            <p>「这是……怎么回事？」化而为惊讶地看着自己的手。</p>
+            
+            <p>她尝试着控制这种变化，发现她可以精确地控制身体的每一个部分。她可以让左臂变成刀刃，让右腿变成翅膀，甚至可以让一部分身体分解成分子大小，穿过墙壁。</p>
+            
+            <p>「化而为，你在吗？」门外传来营长的声音。</p>
+            
+            <p>化而为赶紧变回原样，打开了门：「营长！」</p>
+            
+            <p>营长的无数双眼睛同时看向她：「你感觉到了吗？」</p>
+            
+            <p>「感觉到什么？」</p>
+            
+            <p>「你的能力在进化。」营长说，「史莱姆的本源能力是『可塑性』，但你已经超越了普通的可塑性。你现在可以……」</p>
+            
+            <p>营长停顿了一下，似乎在寻找合适的词汇：「你可以同时存在於多种状态。就像量子叠加态一样。」</p>
+            
+            <p>化而为歪着头：「那是什么？」</p>
+            
+            <p>营长的一只眼睛眨了眨：「……等你再长大一点，我再跟你解释。现在，有件事需要你帮忙。」</p>
+            
+            <p>「什么忙？」</p>
+            
+            <p>「有一个人类，他叫林默。他正在调查里界的真相，但他遇到了一些……麻烦。」营长说，「我需要你去接触他，引导他。」</p>
+            
+            <p>「为什么是我？」</p>
+            
+            <p>「因为你是最像人类的伪人。」营长说，「他不会害怕你。」</p>
+            
+            <p>化而为想了想，点点头：「好，我去。」</p>
+            
+            <p>她不知道的是，这个决定将改变她的命运。林默——或者说，新的烛灯——将成为她生命中最重要的朋友之一。</p>
+            
+            <p>但此刻，化而为只是简单地想着：终于有事情做了！好期待！</p>
+            
+            <p>她拿起手机，给林默发了一条短信：「明天下午三点，槐安公寓，302 室。带上你找到的资料。——化而为」</p>
+            
+            <p>发送成功后，她开心地跳了起来：「我要见新朋友了！」</p>
+            
+            <p>窗外，阳光正好。化而为不知道，一场关乎两个世界命运的相遇，即将开始。</p>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="huaerwei_ch1.html" class="page-btn">← 上一章</a>
+        <a href="huaerwei_ch3.html" class="page-btn">下一章 →</a>
+    </div>
+    <script>
+        let currentFontSize = 18;
+        function adjustFont(delta) { currentFontSize = Math.max(14, Math.min(24, currentFontSize + delta)); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; localStorage.setItem('readerFontSize', currentFontSize); }
+        const savedFontSize = localStorage.getItem('readerFontSize'); if (savedFontSize) { currentFontSize = parseInt(savedFontSize); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; }
+        function toggleTOC() { document.getElementById('tocPanel').classList.toggle('open'); }
+        function toggleSettings() { alert('设置功能开发中...'); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { window.location.href = 'huaerwei_ch1.html'; } else if (e.key === 'ArrowRight') { window.location.href = 'huaerwei_ch3.html'; } else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); } });
+    </script>
+</body>
+</html>

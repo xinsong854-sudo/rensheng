@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绫份 - 第四章：归途 - 里界物语</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', '宋体', serif; background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 50%, #0f3460 100%); min-height: 100vh; color: #4a4a4a; }
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(45, 27, 78, 0.95); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(74, 74, 74, 0.1); z-index: 1000; }
+        .nav-btn {
+            color: white; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); color: #4a4a4a; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(168, 85, 247, 0.4); }
+        .nav-btn.secondary { background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%); }
+        .font-control { display: flex; align-items: center; gap: 10px; background: rgba(231, 76, 60, 0.1); padding: 8px 15px; border-radius: 20px; }
+        .font-btn { background: rgba(231, 76, 60, 0.2); border: none; color: #4a4a4a; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+        .content-wrapper { max-width: 800px; margin: 100px auto 120px; padding: 50px 60px; background: rgba(45, 27, 78, 0.8); border-radius: 20px; }
+        .chapter-header { text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid rgba(231, 76, 60, 0.2); }
+        .chapter-title { font-size: 2.5em; color: #a855f7; margin-bottom: 15px; }
+        .chapter-subtitle { font-size: 1.2em; color: #8a8a8a; font-style: italic; }
+        .chapter-content { font-size: 18px; line-height: 2; text-align: justify; }
+        .chapter-content p { margin-bottom: 25px; text-indent: 2em; }
+        .chapter-content p:first-child { text-indent: 0; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(45, 27, 78, 0.95); padding: 20px 30px; display: flex; justify-content: center; gap: 30px; border-top: 1px solid rgba(74, 74, 74, 0.1); z-index: 1000; }
+        .page-btn {
+            color: white; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); color: #4a4a4a; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; text-decoration: none; }
+        .page-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(168, 85, 247, 0.5); }
+        .page-btn.disabled { background: rgba(231, 76, 60, 0.1); cursor: not-allowed; }
+        .toc-panel { position: fixed; top: 80px; right: -350px; width: 320px; background: rgba(45, 27, 78, 0.98); padding: 30px; transition: right 0.3s ease; z-index: 999; }
+        .toc-panel.open { right: 0; }
+        .toc-title { font-size: 1.5em; color: #a855f7; margin-bottom: 20px; }
+        .toc-list { list-style: none; }
+        .toc-list a { color: #4a4a4a; text-decoration: none; padding: 10px 15px; display: block; border-radius: 10px; }
+        .toc-list a:hover, .toc-list a.active { background: rgba(168, 85, 247, 0.3); color: #a855f7; }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left"><a href="../../index.html" class="nav-btn">← 返回</a><a href="#" class="nav-btn secondary" onclick="toggleTOC()">📑 目录</a></div>
+        <div class="font-control"><span>字体:</span><button class="font-btn" onclick="adjustFont(-1)">A-</button><span id="fontSize">18</span><button class="font-btn" onclick="adjustFont(1)">A+</button></div>
+    </nav>
+    <button class="toc-toggle" onclick="toggleTOC()" style="position:fixed;top:100px;right:0;background:#a855f7;color:white;border:none;padding:15px 12px;border-radius:10px 0 0 10px;cursor:pointer;z-index:998;">☰</button>
+    <div class="toc-panel" id="tocPanel">
+        <h3 class="toc-title">📖 绫份章节</h3>
+        <ul class="toc-list">
+            <li><a href="lingfen_ch1.html">第一章：初现</a></li>
+            <li><a href="lingfen_ch2.html">第二章：觉醒</a></li>
+            <li><a href="lingfen_ch3.html">第三章：交锋</a></li>
+            <li><a href="lingfen_ch4.html" class="active">第四章：归途</a></li>
+        </ul>
+    </div>
+    <div class="content-wrapper">
+        <div class="chapter-header">
+            <h1 class="chapter-title">第四章：归途</h1>
+            <p class="chapter-subtitle">绫份 · 白夜叉的战斗</p>
+        </div>
+        <div class="chapter-content" id="content">
+            <p>战斗持续了整整一个小时。</p>
+            
+            <p>当第一缕晨光划破夜空时，绫份和温塔莎都停了下来。两人身上都布满了伤口，但眼中都闪烁着兴奋的光芒。</p>
+            
+            <p>「平手。」温塔莎变回人形，整理了一下破损的风衣，「你比我想象的要强。」</p>
+            
+            <p>绫份收起双剑，「露」已经回到了剑鞘中。她的伤势正在快速愈合，这是她能力的副作用——越受伤，恢复越快。</p>
+            
+            <p>「你还没告诉我，为什么要测试我。」绫份说。</p>
+            
+            <p>温塔莎沉默了片刻：「因为西陆联盟在找一个能够对抗伪神的人。你的抗性，你的战斗能力，还有你那把剑……你符合条件。」</p>
+            
+            <p>「伪神？」绫份皱眉，「你是说安布罗斯、约斯密特那些家伙？」</p>
+            
+            <p>「你知道他们？」温塔莎有些惊讶。</p>
+            
+            <p>「营长的档案库里有。」绫份说，「静谧织命者的首领，伪神级别的危险存在。他们想干什么？」</p>
+            
+            <p>温塔莎叹了口气：「说实话，我也不知道。但我知道的是，他们正在收集某种东西，某种能够让他们真正控制表里两界的东西。」</p>
+            
+            <p>她递给绫份一张卡片：「如果你想知道更多，来西陆联盟。找教廷，报我的名字。」</p>
+            
+            <p>绫份接过卡片，上面只有一个地址和一个名字：温塔莎·克林斯曼。</p>
+            
+            <p>「为什么帮我？」她问。</p>
+            
+            <p>温塔莎笑了：「因为我也讨厌被支配。基质 -0 聚合体……听起来很厉害，但实际上，我只是一个想要自由的伪人罢了。」</p>
+            
+            <p>她转身离去，身影渐渐消失在晨雾中。</p>
+            
+            <p>绫份回到公寓时，营长正在大厅等她。</p>
+            
+            <p>「怎么样？」营长问。</p>
+            
+            <p>「平手。」绫份说，「她给了我一个选择——去西陆联盟，调查伪神的阴谋。」</p>
+            
+            <p>「你会去吗？」</p>
+            
+            <p>绫份走到窗前，看着初升的太阳。阳光洒在她的脸上，温暖而明亮。</p>
+            
+            <p>「我本来就是个自由身。」她说，「哪里有架打，我就去哪里。」</p>
+            
+            <p>但她没有说的是，她对这个世界的真相越来越好奇了。她的能力是从哪里来的？她的父母是谁？为什么她会拥有对抗伪人的力量？</p>
+            
+            <p>这些问题，也许只有在西陆联盟才能找到答案。</p>
+            
+            <p>「那我让人准备一下。」营长说，「三天后有一趟去西陆的专列，你可以搭那趟车。」</p>
+            
+            <p>绫份点点头，转身走向自己的房间。路过 302 室时，她看到一个白发红瞳的少女正站在门口，好奇地看着她。</p>
+            
+            <p>那是化而为，一个由史莱姆变化而来的伪人少女。</p>
+            
+            <p>「你要走了吗？」化而为问。</p>
+            
+            <p>「嗯。」绫份说，「去一个很远的地方。」</p>
+            
+            <p>「还会回来吗？」</p>
+            
+            <p>绫份想了想，笑了：「当然。这里可是我的家。」</p>
+            
+            <p>她继续向前走，回到了自己的房间。房间里很简洁，除了一张床、一张桌子，就只有墙上挂着的一张照片。</p>
+            
+            <p>那是她和父母的合影。照片中的她还是个孩子，被父母抱在中间，三个人都笑得很开心。</p>
+            
+            <p>绫份轻轻抚摸着照片，眼中闪过一丝复杂的情绪。</p>
+            
+            <p>「等我找到答案，就回来。」她轻声说，「我保证。」</p>
+            
+            <p>窗外，太阳已经完全升起。新的一天开始了，而绫份的旅程，也将进入新的篇章。</p>
+            
+            <p>在西陆联盟，有伪神，有教廷，有未知的危险，也有她一直在寻找的真相。</p>
+            
+            <p>而她，白夜叉绫份，已经准备好了。</p>
+            
+            <p>「有架打吗？」她对着镜子自语，嘴角扬起一抹自信的笑容，「交给我。」</p>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="lingfen_ch3.html" class="page-btn">← 上一章</a>
+        <span class="page-btn disabled">下一章 →</span>
+    </div>
+    <script>
+        let currentFontSize = 18;
+        function adjustFont(delta) { currentFontSize = Math.max(14, Math.min(24, currentFontSize + delta)); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; localStorage.setItem('readerFontSize', currentFontSize); }
+        const savedFontSize = localStorage.getItem('readerFontSize'); if (savedFontSize) { currentFontSize = parseInt(savedFontSize); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; }
+        function toggleTOC() { document.getElementById('tocPanel').classList.toggle('open'); }
+        function toggleSettings() { alert('设置功能开发中...'); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { window.location.href = 'lingfen_ch3.html'; } else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); } });
+    </script>
+</body>
+</html>
