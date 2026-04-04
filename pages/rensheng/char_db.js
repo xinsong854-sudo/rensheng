@@ -5,7 +5,7 @@ const CHARDB = {
 
 // ---------- 伪人档案 ----------
 "营长": {
-  desc: "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」，兼职清劣者，有很多双眼睛。",
+  desc: "伪人大本营管理者，槐安公寓楼长，疑似来自「人世监」（后更名为「人监」），兼职清劣者，有很多双眼睛。",
   region: "渊",
   type: "伪人"
 },
@@ -55,7 +55,7 @@ const CHARDB = {
   type: "伪人"
 },
 "特洛菲&洛洛": {
-  desc: "人监之口，腹部有巨口的异种，洛洛为黑色蟒蛇状怪物，共享循环系统。",
+  desc: "人世监之口，腹部有巨口的异种，洛洛为黑色蟒蛇状怪物，共享循环系统。",
   region: "渊",
   type: "伪人"
 },
@@ -315,6 +315,21 @@ const CHARDB = {
   desc: "首位多次自主进入里界的人类先驱，建立ABSC，发明普罗米修斯提灯，后自杀。",
   region: "西陆",
   type: "人类"
+},
+"奈塔": {
+  desc: "赤红新星农家乐的土豆种植者，拥有土豆服务器，在赤星的农田中默默耕耘。",
+  region: "赤红新星",
+  type: "人类"
+},
+"西西": {
+  desc: "雪山修道院的恶魔修女，神秘而危险的存在。",
+  region: "西陆联盟",
+  type: "特殊"
+},
+"卜焕汣": {
+  desc: "哨站「桃花堂」的堂主，守护着两界交流的通道。",
+  region: "渊",
+  type: "人类"
 }
 };
 
@@ -323,10 +338,24 @@ const CHARDB = {
 // 只收录明确唯一指向的别名，排除泛称（如站长、楼长、炼金术师等）
 const CHARDB_ALIASES = {
   // 营长
-  "楼长": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
-  "安诺涅": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
-  "Anonymous": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
-  "anonymous": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
+  "楼长": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人世监」（后更名为「人监」）。"],
+  "安诺涅": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人世监」（后更名为「人监」）。"],
+  "Anonymous": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人世监」（后更名为「人监」）。"],
+  "anonymous": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人世监」（后更名为「人监」）。"],
+
+  // 奈塔
+  "小雨": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+  "暮笙笙": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+  "夕月": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+  "小水": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+  "xh": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+  "口熊": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+  "大头": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+  "白玲可": ["奈塔", "赤红新星农家乐的土豆种植者，拥有土豆服务器。"],
+
+  // 卜焕汣
+  "桃花不换酒": ["卜焕汣", "哨站「桃花堂」的堂主。"],
+  "桃花": ["卜焕汣", "哨站「桃花堂」的堂主。"],
 
   // 非常玦蝶
   "玦蝶": ["非常玦蝶", "非常电影院站长，渊境内顶尖清劣者。"],
@@ -391,7 +420,7 @@ const CHARDB_ALIASES = {
   "013": ["Joschmitt.", "Joschmitt的西陆教会修女傀儡。"],
 
   // 特洛菲&洛洛
-  "特洛菲": ["特洛菲&洛洛", "人监之口，腹部巨口异种，与洛洛共享循环系统。"],
+  "特洛菲": ["特洛菲&洛洛", "人世监之口，腹部巨口异种，与洛洛共享循环系统。"],
   "洛洛": ["特洛菲&洛洛", "特洛菲的黑色蟒蛇状伙伴，共享知觉和思维。"],
 
   // 汐&涟
@@ -564,24 +593,39 @@ function resolveName(input) {
     return { canonicalName: name, info: c ? c.desc : desc, region: c ? c.region : '未知', type: c ? c.type : '未知', match: 'alias' };
   }
 
-  // 3. 模糊匹配别名（输入包含别名 或 别名包含输入）
-  for (const alias in CHARDB_ALIASES) {
-    if (alias.includes(q) || q.includes(alias)) {
-      const [name, desc] = CHARDB_ALIASES[alias];
-      const c = CHARDB[name];
-      return { canonicalName: name, info: c ? c.desc : desc, region: c ? c.region : '未知', type: c ? c.type : '未知', match: 'fuzzy', alias: alias };
+  // 3. 模糊匹配别名（门槛：中文≥2字，英文≥5字母）
+  if (_fuzzyThreshold(q)) {
+    for (const alias in CHARDB_ALIASES) {
+      if (alias.includes(q) || q.includes(alias)) {
+        const [name, desc] = CHARDB_ALIASES[alias];
+        const c = CHARDB[name];
+        return { canonicalName: name, info: c ? c.desc : desc, region: c ? c.region : '未知', type: c ? c.type : '未知', match: 'fuzzy', alias: alias };
+      }
     }
   }
 
-  // 4. 模糊匹配规范名称
-  for (const name in CHARDB) {
-    if (name.includes(q) || q.includes(name)) {
-      const c = CHARDB[name];
-      return { canonicalName: name, info: c.desc, region: c.region, type: c.type, match: 'fuzzy' };
+  // 4. 模糊匹配规范名称（门槛：中文≥2字，英文≥5字母）
+  if (_fuzzyThreshold(q)) {
+    for (const name in CHARDB) {
+      if (name.includes(q) || q.includes(name)) {
+        const c = CHARDB[name];
+        return { canonicalName: name, info: c.desc, region: c.region, type: c.type, match: 'fuzzy' };
+      }
     }
   }
 
   return null;
+}
+
+// ===== 模糊匹配（有门槛） =====
+// 中文至少2个字，英文至少5个字母才启用
+function _fuzzyThreshold(q) {
+  const hasCJK = /[\u4e00-\u9fff]/.test(q);
+  const hasEn = /[a-zA-Z]{5,}/.test(q);
+  const cjkCount = (q.match(/[\u4e00-\u9fff]/g) || []).length;
+  if (hasCJK && cjkCount >= 2) return true;
+  if (hasEn) return true;
+  return false;
 }
 
 // ===== LLM 身份识别（无思考模式 fallback） =====

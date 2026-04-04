@@ -18,7 +18,7 @@
 // ============================================================
 
 const _LC_CHARDB = {
-  "营长": "槐安公寓楼长，《伪人大本营》管理者，有很多双眼睛，疑似来自里界「人监」。",
+  "营长": "槐安公寓楼长，《伪人大本营》管理者，有很多双眼睛，疑似来自里界「人世监」（营长离开后才更名为「人监」）。",
   "非常玦蝶": "渊境内最大哨站「非常电影院」站长，顶尖清劣者，来自里界「若迷界」。",
   "化而为": "蓝白色史莱姆状生命变化而来的白发红瞳少女，可随时变成任何见过的模样。",
   "西瓜人": "4580岁，对成为人类有深深执念，住在槐安公寓。",
@@ -28,7 +28,7 @@ const _LC_CHARDB = {
   "温塔莎·克林斯曼": "基质-0聚合体，紫黑风衣高大女性，皮肤苍白，左眼流黑色液体。",
   "荆千棘": "亚契助手，蔷薇科植物本体，蔷薇藤、黑色模特假人、LED屏幕的集合。",
   "赫卡忒": "亚契创造的仿生人，炭黑色皮肤，蓝色水晶头发，四个手臂。",
-  "特洛菲": "人监之口，可分泌强酸性物质。",
+  "特洛菲": "人世监之口，可分泌强酸性物质。",
   "洛洛": "黑色蟒蛇状怪物，与特洛菲共生。",
   "瘟疫医生": "古老伪人，与过去'大瘟疫'事件有关，基本没有交流。",
   "汐": "出没于渊附近海域的鲛人，歌声让人短暂失去时间和空间概念。",
@@ -59,21 +59,34 @@ const _LC_ALIASES = {
 
 function _lcResolveName(input) {
   if (!input) return null;
-  // 优先检查全局 resolveName（如果HTML已定义）
+  // 优先使用全局 CHARDB（完整数据，含type）
+  if (typeof CHARDB !== 'undefined' && CHARDB[input]) {
+    const c = CHARDB[input];
+    return { canonicalName: input, info: c.desc, region: c.region, type: c.type, match: 'exact' };
+  }
+  if (typeof CHARDB_ALIASES !== 'undefined' && CHARDB_ALIASES[input]) {
+    const [name, desc] = CHARDB_ALIASES[input];
+    const c = CHARDB[name];
+    return { canonicalName: name, info: c ? c.desc : desc, region: c ? c.region : '未知', type: c ? c.type : '未知', match: 'alias' };
+  }
   if (typeof resolveName === 'function') {
     try { return resolveName(input); } catch(e) {}
   }
-  // 内建解析
+  // 内建解析（fallback，数据不完整）
   if (_LC_CHARDB[input]) return { canonicalName: input, info: _LC_CHARDB[input], match: 'exact' };
   if (_LC_ALIASES[input]) { const c = _LC_ALIASES[input][0]; return { canonicalName: c, info: _LC_CHARDB[c] || '', match: 'alias' }; }
-  for (const a in _LC_ALIASES) {
-    if (a.includes(input) || input.includes(a)) {
-      const c = _LC_ALIASES[a][0];
-      return { canonicalName: c, info: _LC_CHARDB[c] || '', match: 'fuzzy', alias: a };
+  // 模糊匹配：中文≥2字，英文≥5字母
+  const _ft = (q) => { const hasCJK = /[\u4e00-\u9fff]/.test(q); const hasEn = /[a-zA-Z]{5,}/.test(q); const cjkCount = (q.match(/[\u4e00-\u9fff]/g) || []).length; if (hasCJK && cjkCount >= 2) return true; if (hasEn) return true; return false; };
+  if (_ft(input)) {
+    for (const a in _LC_ALIASES) {
+      if (a.includes(input) || input.includes(a)) {
+        const c = _LC_ALIASES[a][0];
+        return { canonicalName: c, info: _LC_CHARDB[c] || '', match: 'fuzzy', alias: a };
+      }
     }
-  }
-  for (const n in _LC_CHARDB) {
-    if (n.includes(input) || input.includes(n)) return { canonicalName: n, info: _LC_CHARDB[n], match: 'fuzzy' };
+    for (const n in _LC_CHARDB) {
+      if (n.includes(input) || input.includes(n)) return { canonicalName: n, info: _LC_CHARDB[n], match: 'fuzzy' };
+    }
   }
   return null;
 }
@@ -165,20 +178,20 @@ const CHARACTER_LIFECYCLES = {
     notes: 'AI存在，寿命取决于硬件，无财富概念'
   },
 
-  // 营长 - 来自里界「人监」
+  // 营长 - 来自里界「人世监」
   '营长': {
     type: 'pseudo_long',
     maxAge: 2000,
     decayRate: 0.05,
     stages: [
-      { stage: '入世期', minAge: 0, maxAge: 100, decayRate: 0.05, desc: '从人监来到表界' },
+      { stage: '入世期', minAge: 0, maxAge: 100, decayRate: 0.05, desc: '从人世监来到表界' },
       { stage: '督察期', minAge: 101, maxAge: 800, decayRate: 0.08, desc: '担任公寓楼长，督察伪人' },
       { stage: '守望期', minAge: 801, maxAge: 1500, decayRate: 0.15, desc: '岁月漫长，职责不变' },
       { stage: '衰退期', minAge: 1501, maxAge: Infinity, decayRate: 0.3, desc: '力量衰退，但双眼依旧' },
     ],
     initialWealth: 80,
-    identity: '槐安公寓楼长/人监督察者',
-    notes: '多眼存在，来自人监，位高权重'
+    identity: '槐安公寓楼长/人世监察者',
+    notes: '多眼存在，来自人世监，位高权重'
   },
 
   // 非常玦蝶 - 顶尖清劣者
@@ -352,12 +365,12 @@ const CHARACTER_LIFECYCLES = {
     maxAge: 3000,
     decayRate: 0.03,
     stages: [
-      { stage: '深渊期', minAge: 0, maxAge: 1000, decayRate: 0.02, desc: '人监之口的深渊岁月' },
+      { stage: '深渊期', minAge: 0, maxAge: 1000, decayRate: 0.02, desc: '人世监之口的深渊岁月' },
       { stage: '活跃期', minAge: 1001, maxAge: 2000, decayRate: 0.05, desc: '强酸性物质分泌旺盛期' },
       { stage: '衰竭期', minAge: 2001, maxAge: Infinity, decayRate: 0.2, desc: '酸液逐渐减少' },
     ],
     initialWealth: 55,
-    identity: '人监之口',
+    identity: '人世监之口',
     notes: '可分泌强酸性物质'
   },
 
@@ -371,7 +384,7 @@ const CHARACTER_LIFECYCLES = {
       { stage: '蜕皮期', minAge: 2001, maxAge: Infinity, decayRate: 0.2, desc: '最后一次蜕皮何时到来' },
     ],
     initialWealth: 55,
-    identity: '人监之口/黑色蟒蛇状怪物',
+    identity: '人世监之口/黑色蟒蛇状怪物',
     notes: '与特洛菲共生'
   },
 };
@@ -382,34 +395,48 @@ const CHARACTER_LIFECYCLES = {
 
 const CHARACTER_ORIGINS = {
   // 渊阵营
-  '营长': '人监→渊',
-  '安诺涅': '人监→渊',
-  '楼长': '人监→渊',
-  '无名': '人监→渊',
-  'Anonymous': '人监→渊',
-  'anonymous': '人监→渊',
-  '非常玦蝶': '若迷界→渊',
-  '二营长': '若迷界→渊',
-  '化而为': '随心→渊',
+  '营长': '人世监',
+  '安诺涅': '人世监',
+  '楼长': '人世监',
+  '无名': '人世监',
+  'Anonymous': '人世监',
+  'anonymous': '人世监',
+  '非常玦蝶': '若迷界',
+  '二营长': '若迷界',
+  '化而为': '随心',
   '西瓜人': '渊',
   'X': '渊',
   '093': '渊',
   '独允': '渊',
-  '亚契·谜思': '错位花园→渊',
-  '荆千棘': '错位花园→渊',
-  '赫卡忒': '错位花园→渊',
-  '特洛菲': '人监→渊',
-  '洛洛': '人监→渊',
-  '【瘟疫的病主】医生？': '疫病区→渊',
-  '瘟疫医生': '疫病区→渊',
+  '亚契·谜思': '错位花园',
+  '荆千棘': '错位花园',
+  '赫卡忒': '错位花园',
+  '特洛菲': '人世监',
+  '特洛菲&洛洛': '人世监',
+  '洛洛': '人世监',
+  '【瘟疫的病主】医生？': '疫病区',
+  '瘟疫医生': '疫病区',
   '汐': '渊(海域)',
   '涟': '渊(海域)',
-  '春山抚子': '天风阁→渊',
+  '春山抚子': '天风阁',
   '小赤帽': '渊',
   '折纸簌鸟': '渊',
   '单先生': '渊',
   '虫者': '渊',
   '笑颜': '渊',
+  '奈塔': '赤红新星农家乐',
+  '小雨': '赤红新星农家乐',
+  '暮笙笙': '赤红新星农家乐',
+  '夕月': '赤红新星农家乐',
+  '小水': '赤红新星农家乐',
+  'xh': '赤红新星农家乐',
+  '口熊': '赤红新星农家乐',
+  '大头': '赤红新星农家乐',
+  '白玲可': '赤红新星农家乐',
+  '西西': '雪山修道院',
+  '卜焕汣': '桃花堂',
+  '桃花不换酒': '桃花堂',
+  '桃花': '桃花堂',
   '陆玖': '渊',
   '墨水夜': '渊',
   '石测': '渊',
@@ -423,7 +450,7 @@ const CHARACTER_ORIGINS = {
   'Cipher': '渊',
   '无名卿': '渊',
   '伊露': '渊',
-  '阿秋': '人监→渊',
+  '阿秋': '人世监',
   '云蓝': '渊',
   // 西陆阵营
   '温塔莎·克林斯曼': '西陆联盟',
@@ -447,8 +474,8 @@ const CHARACTER_ORIGINS = {
   'Эдельвейс': '赤红新星',
   '雪绒花': '赤红新星',
   // 其他
-  '圣地亚哥·梅尔维尔': '未知→各处出没',
-  '渔夫': '未知→各处出没',
+  '圣地亚哥·梅尔维尔': '未知',
+  '渔夫': '未知',
   '拟人蝎': '巢穴',
   '绫份': '自由联盟',
   '灼玥': '自由联盟',
@@ -471,16 +498,17 @@ const CHARACTER_ORIGINS = {
  * @param {string} userPlace - 用户选择的出生地
  * @returns {string} 最终出生地
  */
-function resolveBirthplace(inputName, userPlace) {
-  const resolved = _lcResolveName(inputName);
+function resolveBirthplace(inputName, userPlace, skipCharMatch) {
+  // skipCharMatch 为 true 时跳过角色匹配
+  const resolved = skipCharMatch ? null : _lcResolveName(inputName);
   if (resolved) {
     const origin = CHARACTER_ORIGINS[resolved.canonicalName];
     if (origin) {
-      // 用户选择的出生地总是生效，但保留原出生地供AI推演时合理化
+      // 已知角色出生地锁定为档案地点，不可更改
       return {
         origin: origin,
-        current: userPlace,
-        display: origin + '→' + userPlace
+        current: origin,
+        display: origin
       };
     }
     // 已知角色但无明确出生地记录
@@ -507,8 +535,9 @@ function resolveBirthplace(inputName, userPlace) {
  * @param {string} place - 出生地
  * @returns {object} 生命周期配置对象
  */
-function generateLifecycle(name, place) {
-  const resolved = _lcResolveName(name);
+function generateLifecycle(name, place, skipCharMatch) {
+  // skipCharMatch 为 true 时跳过角色匹配，视为同名同姓的普通人
+  const resolved = skipCharMatch ? null : _lcResolveName(name);
   const isKnownChar = !!resolved;
   const charName = isKnownChar ? resolved.canonicalName : name;
 
