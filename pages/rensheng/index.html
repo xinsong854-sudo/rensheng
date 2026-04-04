@@ -372,7 +372,7 @@ async function generateBatch(){
 
 ${WLD}${charCtx}${geoCtx}
 
-角色：${G.name}，从${startAge}岁开始（${stageName}），出生于${G.place}
+角色：${G.name}，从${startAge}岁开始（${stageName}），当前所在地：${G.place}${G.originPlace && G.originPlace !== G.place ? '（真实来源：'+G.originPlace+'，请合理化其为何出现在'+G.place+'——可能是迁移、传送、被带来等。角色的本质不因出生地选择而改变）' : ''}
 属性：生命${Math.round(G.hp)}/100 理智${Math.round(G.sp)}/100 运气${Math.round(G.lk)} 战力${Math.round(G.cb)} 财富${Math.round(G.wl)}/100(${wealthDesc})
 ${decayInfo?'生命周期：'+decayInfo:''}
 特质：${G.traits.join(',')||'无'}
