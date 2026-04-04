@@ -324,6 +324,7 @@ const CHARDB = {
 const CHARDB_ALIASES = {
   // 营长
   "楼长": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
+  "安诺涅": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
   "Anonymous": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
   "anonymous": ["营长", "伪人大本营管理者，槐安公寓楼长，疑似来自「人监」。"],
 
@@ -580,5 +581,49 @@ function resolveName(input) {
     }
   }
 
+  return null;
+}
+
+// ===== LLM 身份识别（无思考模式 fallback） =====
+async function resolveNameLLM(input) {
+  if (!input || !input.trim() || !window._LLM_RESOLVING) return null;
+  window._LLM_RESOLVING = false;
+  var nameList = CHAR_LIST.map(function(l){return l.split("|")[0];}).join(", ");
+  var prompt = "判断以下名字是否匹配里界世界观中的角色。如果匹配返回JSON：{\"name\":\"规范名称\",\"info\":\"简介(50字内)\",\"region\":\"所属地域\",\"type\":\"人类/伪人/伪神\"}，不匹配返回{\"match\":false}。输入名字：" + input.trim() + " 候选角色列表：" + nameList;
+  try {
+    var ctrl = new AbortController();
+    var tmo = setTimeout(function(){ctrl.abort();}, 15000);
+    var r = await fetch("https://litellm.talesofai.cn/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer sk-fZrLXE0IEs6EDYJCOsLLaQ" },
+      body: JSON.stringify({
+        model: "qwen3.6-plus",
+        messages: [
+          { role: "system", content: "只返回JSON对象。不要其他内容。" },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 128,
+        temperature: 0.1
+      }),
+      signal: ctrl.signal
+    });
+    clearTimeout(tmo);
+    if (!r.ok) return null;
+    var d = await r.json();
+    var txt = (d.choices && d.choices[0] && d.choices[0].message) ? d.choices[0].message.content : "";
+    txt = txt.replace(/```(?:json)?/g, "").replace(/```/g, "").trim();
+    var j = JSON.parse(txt);
+    if (j && j.match === false) return null;
+    if (j && j.name) {
+      var c = CHARDB[j.name];
+      return {
+        canonicalName: j.name,
+        info: j.info || (c ? c.desc : ""),
+        region: j.region || (c ? c.region : "未知"),
+        type: j.type || (c ? c.type : "未知"),
+        match: "llm"
+      };
+    }
+  } catch (e) {}
   return null;
 }

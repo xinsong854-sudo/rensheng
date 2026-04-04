@@ -536,7 +536,42 @@ function generateLifecycle(name, place) {
     };
   }
 
-  // 自定义角色 - 使用人类生命周期
+  // 自定义角色 - 3:1 概率人类/伪人，推演前不告知
+  const isPseudoCustom = Math.random() < 0.25;
+  const pseudoTypes = ['pseudo_medium', 'pseudo_long', 'pseudo_ancient'];
+  const pseudoType = pseudoTypes[Math.floor(Math.random() * pseudoTypes.length)];
+  const pseudoMaxAge = pseudoType === 'pseudo_medium' ? (300 + Math.floor(Math.random() * 300)) :
+                       pseudoType === 'pseudo_long' ? (800 + Math.floor(Math.random() * 700)) :
+                       (2000 + Math.floor(Math.random() * 3000));
+  const pseudoDecay = pseudoType === 'pseudo_medium' ? (0.1 + Math.random() * 0.1) :
+                      pseudoType === 'pseudo_long' ? (0.03 + Math.random() * 0.07) :
+                      (0.01 + Math.random() * 0.03);
+
+  if (isPseudoCustom) {
+    return {
+      name: charName,
+      type: 'pseudo_hidden',
+      isHuman: false,
+      isKnownCharacter: false,
+      lifecycleType: pseudoType,
+      maxAge: pseudoMaxAge,
+      stages: [
+        { stage: '潜伏期', minAge: 0, maxAge: 30, decayRate: pseudoDecay * 0.5, desc: '外表与常人无异，但隐约感觉不同' },
+        { stage: '觉醒期', minAge: 31, maxAge: Math.floor(pseudoMaxAge * 0.3), decayRate: pseudoDecay, desc: '异常能力开始显现' },
+        { stage: '成熟期', minAge: Math.floor(pseudoMaxAge * 0.3) + 1, maxAge: Math.floor(pseudoMaxAge * 0.7), decayRate: pseudoDecay * 1.2, desc: '非人本质逐渐显露' },
+        { stage: '蜕变期', minAge: Math.floor(pseudoMaxAge * 0.7) + 1, maxAge: Math.floor(pseudoMaxAge * 0.95), decayRate: pseudoDecay * 2, desc: '人性与伪性的拉扯' },
+        { stage: '终末期', minAge: Math.floor(pseudoMaxAge * 0.95) + 1, maxAge: Infinity, decayRate: pseudoDecay * 4, desc: '存在本身的消退' },
+      ],
+      baseDecayRate: pseudoDecay,
+      initialWealth: null,
+      identity: null,
+      birthplace: resolveBirthplace(name, place),
+      charInfo: '',
+      notes: '⚠️ 伪人身份隐藏中，通过游戏事件逐步揭示',
+      canPseudoTransform: false, // 已经是伪人
+    };
+  }
+
   return {
     name: charName,
     type: 'human',
