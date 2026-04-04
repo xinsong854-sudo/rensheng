@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>里界人生模拟器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0e0e14;--card:rgba(14,14,20,.7);--accent:#d4a0e0;--accent2:#8a7fc7;--text:#b8b8c8;--dim:#5a5a6a;--safe:#7ab87a;--caution:#d4a84a;--danger:#c47a7a;--gold:#d4b87a}
+body{background:var(--bg);color:var(--text);font-family:"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;overflow-x:hidden}
+#noise{position:fixed;top:-50%;left:-50%;width:200%;height:200%;pointer-events:none;z-index:100;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:noiseMove .1s steps(4) infinite}
+@keyframes noiseMove{0%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-1%)}75%{transform:translate(-1%,2%)}100%{transform:translate(2%,-2%)}}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px)}
+#fog{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:98;background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.5) 100%)}
+
+.screen{display:none;flex-direction:column;align-items:center;min-height:100vh;padding:20px;animation:dreamIn 1s ease;position:relative;z-index:1}
+.screen.active{display:flex}
+@keyframes dreamIn{from{opacity:0;filter:blur(8px)}to{opacity:1;filter:blur(0)}}
+
+h1{font-size:clamp(1.6rem,5vw,2.5rem);-webkit-text-fill-color:rgba(212,160,224,.9);text-align:center;margin-bottom:8px;letter-spacing:.1em;position:relative;animation:dreamFloat 6s ease-in-out infinite}
+@keyframes dreamFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+h1::before,h1::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;-webkit-text-fill-color:rgba(196,122,122,.6);mix-blend-mode:screen}
+h1::before{animation:glitch1 3s infinite;clip-path:polygon(0 0,100% 0,100% 33%,0 33%)}
+h1::after{-webkit-text-fill-color:rgba(122,184,184,.6);animation:glitch2 3.5s infinite;clip-path:polygon(0 66%,100% 66%,100% 100%,0 100%)}
+@keyframes glitch1{0%,90%,100%{transform:translate(0)}91%{transform:translate(-3px,1px)}93%{transform:translate(2px,-1px)}95%{transform:translate(-1px,0)}}
+@keyframes glitch2{0%,88%,100%{transform:translate(0)}89%{transform:translate(2px,-1px)}92%{transform:translate(-2px,1px)}94%{transform:translate(1px,0)}}
+
+.card{background:var(--card);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.04);border-radius:4px;padding:20px;max-width:500px;width:100%;box-shadow:0 0 40px rgba(0,0,0,.2)}
+input,select{width:100%;padding:12px;margin:6px 0;border:1px solid rgba(255,255,255,.06);border-radius:3px;background:rgba(10,10,16,.8);color:var(--text);font-size:.95rem;outline:none;font-family:inherit}
+input:focus,select:focus{border-color:rgba(138,127,199,.4)}
+button{width:100%;padding:12px;margin:6px 0;background:rgba(138,127,199,.15);border:1px solid rgba(138,127,199,.2);border-radius:3px;color:var(--text);font-size:.95rem;cursor:pointer;transition:all .3s;font-family:inherit;letter-spacing:.05em}
+button:hover{background:rgba(138,127,199,.25);border-color:rgba(138,127,199,.4);box-shadow:0 0 20px rgba(138,127,199,.1)}
+
+.stats{display:grid;grid-template-columns:2fr 3fr;gap:6px;max-width:620px;width:100%;margin-bottom:8px}
+.stats-left,.stats-right{display:flex;flex-direction:column;gap:6px}
+.stat{background:var(--card);border:1px solid rgba(255,255,255,.03);border-radius:3px;padding:6px 10px;text-align:center;position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.02),transparent);transform:translateX(-100%);transition:transform .6s}
+.stat:hover::after{transform:translateX(100%)}
+.stat-label{font-size:.65rem;color:var(--dim);letter-spacing:.05em}
+.stat-bar{height:4px;background:rgba(26,26,36,.6);border-radius:2px;margin-top:3px;overflow:hidden}
+.stat-fill{height:100%;border-radius:2px;transition:width .8s;filter:blur(1px)}
+.stat-val{font-size:.7rem;color:var(--dim);margin-top:2px}
+.hp-f{background:rgba(196,122,122,.7)}.sp-f{background:rgba(138,127,199,.7)}.lk-f{background:rgba(212,168,74,.7)}.cb-f{background:rgba(212,160,224,.7)}.wl-f{background:rgba(180,180,100,.7)}
+
+.year{text-align:center;font-size:.9rem;color:var(--accent2);margin:10px 0;opacity:.7;letter-spacing:.15em;font-weight:300}
+.year::before,.year::after{content:'—';opacity:.3;margin:0 10px}
+.stage-label{font-size:.75rem;color:var(--dim);margin-left:6px;opacity:.5}
+
+.progress{display:flex;align-items:center;gap:0;max-width:620px;width:100%;margin-bottom:10px;justify-content:center}
+.pseg{flex:1;height:3px;background:rgba(255,255,255,.04);position:relative;transition:all 1s}
+.pseg.done{background:rgba(138,127,199,.5);box-shadow:0 0 8px rgba(138,127,199,.2)}
+.pseg.now{background:rgba(212,160,224,.6);box-shadow:0 0 12px rgba(212,160,224,.3);animation:segPulse 3s infinite}
+@keyframes segPulse{0%,100%{box-shadow:0 0 6px rgba(212,160,224,.2)}50%{box-shadow:0 0 16px rgba(212,160,224,.4)}}
+
+.story{background:var(--card);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);border:1px solid rgba(255,255,255,.03);border-radius:3px;padding:20px;max-width:620px;width:100%;min-height:80px;margin-bottom:12px;line-height:1.8;font-size:.9rem;white-space:pre-wrap;color:var(--text);filter:brightness(.95);transition:all .5s}
+.story.safe{border-left:2px solid rgba(122,184,122,.3)}.story.caution{border-left:2px solid rgba(212,168,74,.3)}.story.danger{border-left:2px solid rgba(196,122,122,.3)}
+
+.choices{display:flex;flex-direction:column;gap:8px;max-width:620px;width:100%}
+.cbtn{background:rgba(14,14,20,.6);border:1px solid rgba(255,255,255,.04);border-radius:3px;padding:14px;cursor:pointer;text-align:left;color:var(--text);font-size:.9rem;transition:all .3s;font-family:inherit}
+.cbtn:hover{border-color:rgba(138,127,199,.3);background:rgba(20,20,30,.8);box-shadow:0 0 15px rgba(138,127,199,.08)}
+.cbtn .hint{font-size:.7rem;color:var(--dim);margin-top:4px;opacity:.6}
+.cbtn .type-tag{display:inline-block;padding:1px 5px;border-radius:2px;font-size:.6rem;margin-left:6px}
+.cbtn-blocked{opacity:.35;cursor:not-allowed !important;pointer-events:none !important}
+.cbtn-blocked .blocked-reason{font-size:.7rem;color:var(--danger);margin-top:4px}
+
+.loading{text-align:center;padding:40px 20px;color:var(--dim)}
+.fog-loader{width:80px;height:80px;margin:0 auto 16px;position:relative}
+.fog-circle{position:absolute;top:50%;left:50%;width:60px;height:60px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(138,127,199,.15) 0%,transparent 70%);animation:fogBreath 3s ease-in-out infinite}
+.fog-circle:nth-child(2){animation-delay:.5s;width:40px;height:40px;opacity:.6}
+.fog-circle:nth-child(3){animation-delay:1s;width:20px;height:20px;opacity:.8}
+@keyframes fogBreath{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(1.5);opacity:.6}}
+.load-hint{font-size:.75rem;letter-spacing:.2em;opacity:.5;animation:loadFade 3s infinite}
+@keyframes loadFade{0%,100%{opacity:.3}50%{opacity:.7}}
+
+.tag{display:inline-block;padding:1px 5px;border-radius:2px;font-size:.6rem;margin-right:6px;letter-spacing:.05em}
+.tag.safe{background:rgba(122,184,122,.1);color:var(--safe)}.tag.caution{background:rgba(212,168,74,.1);color:var(--caution)}.tag.danger{background:rgba(196,122,122,.1);color:var(--danger)}.tag.choice{background:rgba(138,127,199,.1);color:var(--accent2)}
+.ai-badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:.65rem;background:rgba(138,127,199,.08);color:var(--accent2);border:1px solid rgba(138,127,199,.15);letter-spacing:.1em}
+
+.traits{display:flex;flex-wrap:wrap;gap:4px;max-width:620px;width:100%;margin-top:8px}
+.trait{background:rgba(20,20,30,.6);border:1px solid rgba(138,127,199,.1);border-radius:2px;padding:2px 6px;font-size:.65rem;color:var(--accent);letter-spacing:.05em;animation:traitIn .6s ease}
+@keyframes traitIn{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:blur(0)}}
+
+.death{text-align:center}
+.death h1{-webkit-text-fill-color:var(--danger);animation:none}
+body.insane .screen{animation:insaneShift 5s infinite}
+@keyframes insaneShift{0%,90%,100%{filter:none}92%{filter:hue-rotate(5deg) brightness(.95)}94%{filter:hue-rotate(-3deg)}96%{filter:brightness(1.05)}98%{filter:hue-rotate(8deg)}}
+body.lucky::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:97;background:radial-gradient(circle at 50% 40%,rgba(212,184,122,.04) 0%,transparent 60%);animation:luckyDream 4s infinite}
+@keyframes luckyDream{0%,100%{opacity:.4}50%{opacity:.8}}
+
+.name-hint{font-size:.75rem;color:var(--dim);margin-top:4px;line-height:1.5}
+.name-hint .hl{color:var(--accent)}
+.role-card{background:rgba(138,127,199,.06);border:1px solid rgba(138,127,199,.12);border-radius:3px;padding:12px;margin-top:8px}
+.role-card .title{color:var(--accent);font-weight:normal;font-size:.9rem;letter-spacing:.05em}
+.role-card .desc{color:var(--dim);font-size:.8rem;margin-top:4px;line-height:1.5}
+
+.region-badge{display:inline-block;padding:2px 6px;border-radius:2px;font-size:.6rem;background:rgba(122,184,184,.1);color:#7ab8b8;border:1px solid rgba(122,184,184,.15);margin-left:6px}
+
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(138,127,199,.2);border-radius:2px}
+.year-transition{animation:dreamSwitch .6s ease}
+@keyframes dreamSwitch{from{opacity:0;filter:blur(6px);transform:translateY(5px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+.subtitle{color:var(--dim);font-size:.8rem;margin-bottom:24px;text-align:center;letter-spacing:.1em;opacity:.6}
+
+.family-intro{background:rgba(138,127,199,.04);border-left:2px solid rgba(138,127,199,.2);padding:10px 14px;margin:10px 0;border-radius:0 3px 3px 0;font-size:.8rem;color:var(--dim);line-height:1.6}
+.lifecycle-badge{display:inline-block;padding:1px 5px;border-radius:2px;font-size:.6rem;margin-right:4px}
+.lifecycle-badge.human{background:rgba(184,184,200,.1);color:#b8b8c8}
+.lifecycle-badge.pseudo{background:rgba(196,122,122,.1);color:var(--danger)}
+.lifecycle-badge.special{background:rgba(212,160,224,.1);color:var(--accent)}
+
+@media(max-width:640px){
+  .stats{grid-template-columns:1fr;gap:4px}
+  .stats-left,.stats-right{flex-direction:row;flex-wrap:wrap;justify-content:center}
+  .stat{min-width:calc(50% - 4px)}
+  .card{padding:16px}
+  .story{padding:16px;font-size:.85rem}
+}
+</style>
+</head>
+<body>
+<div id="noise"></div>
+<canvas id="fog"></canvas>
+
+<div id="sStart" class="screen active">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<h1 data-text="里界人生模拟器">里界人生模拟器</h1>
+<div class="ai-badge">AI 实时推演 · v2</div>
+<p class="subtitle">在这个世界，【门】无处不在</p>
+<div class="card" style="text-align:center">
+<p style="color:var(--dim);font-size:.8rem;line-height:1.6;margin-bottom:12px;opacity:.7">
+你是否目睹过某个反常的身影，在你定睛驻足后又消失无踪？<br>
+别害怕，你可能遇上<span style="color:var(--accent)">里界</span>了。
+</p>
+<button onclick="go('sCreate')">开始人生</button>
+</div>
+</div>
+</div>
+
+<div id="sCreate" class="screen">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<h2>创建角色</h2>
+<div class="card">
+<label style="font-size:.8rem;color:var(--dim)">你的名字</label>
+<input id="pName" placeholder="输入名字或角色名..." maxlength="30" oninput="checkName()">
+<div id="nameHint" class="name-hint"></div>
+<div id="roleCard" style="display:none"></div>
+<label id="placeLabel" style="font-size:.8rem;color:var(--dim);margin-top:8px">出生地</label>
+<select id="pPlace" onchange="onPlaceChange()">
+<option value="渊">渊 — 中式现代都市</option>
+<option value="西陆联盟">西陆联盟 — 宗教国度</option>
+<option value="赤红新星">赤红新星 — 工业强国</option>
+<option value="渊东共和国">渊东共和国 — 群岛之国</option>
+<option value="自由联盟">自由联盟 — 霓虹与暗影</option>
+</select>
+<div id="birthplaceOverride" style="display:none" class="family-intro"></div>
+<button onclick="startGame()">踏入表界</button>
+<button onclick="go('sStart')" style="background:rgba(10,10,16,.6)">返回</button>
+</div>
+</div>
+</div>
+
+<div id="sGame" class="screen">
+<div class="stats">
+<div class="stats-left">
+<div class="stat"><div class="stat-label">生命</div><div class="stat-bar"><div id="hpB" class="stat-fill hp-f" style="width:100%"></div></div><div id="hpV" style="font-size:.7rem;color:var(--dim)">100</div></div>
+<div class="stat"><div class="stat-label">理智</div><div class="stat-bar"><div id="spB" class="stat-fill sp-f" style="width:100%"></div></div><div id="spV" style="font-size:.7rem;color:var(--dim)">100</div></div>
+</div>
+<div class="stats-right">
+<div class="stat"><div class="stat-label">运气</div><div class="stat-bar"><div id="lkB" class="stat-fill lk-f" style="width:50%"></div></div><div id="lkV" style="font-size:.7rem;color:var(--dim)">50</div></div>
+<div class="stat"><div class="stat-label">战力</div><div class="stat-bar"><div id="cbB" class="stat-fill cb-f" style="width:10%"></div></div><div id="cbV" style="font-size:.7rem;color:var(--dim)">10</div></div>
+<div class="stat"><div class="stat-label">财富</div><div class="stat-bar"><div id="wlB" class="stat-fill wl-f" style="width:50%"></div></div><div id="wlV" style="font-size:.7rem;color:var(--dim)">50</div></div>
+</div>
+</div>
+<div class="year" id="yrDisp">0岁 · 婴儿期</div>
+<div class="progress" id="progBar"></div>
+<div id="familyBox" style="max-width:620px;width:100%"></div>
+<div class="story" id="storyBox"></div>
+<div id="loadBox" class="loading" style="display:none">
+<div class="fog-loader"><div class="fog-circle"></div><div class="fog-circle"></div><div class="fog-circle"></div></div>
+<div id="loadText" class="load-hint">推演中...</div>
+</div>
+<div id="chBox" class="choices"></div>
+<div class="traits" id="trBox"></div>
+</div>
+
+<div id="sDeath" class="screen death">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+<h1>生命终结</h1>
+<div class="card" style="text-align:center">
+<p id="dCause" style="color:var(--danger);margin-bottom:10px"></p>
+<p id="dSum" style="font-size:.85rem;line-height:1.7;margin-bottom:12px;opacity:.6"></p>
+<div class="traits" id="dTraits" style="justify-content:center;margin-bottom:12px"></div>
+<button onclick="location.reload()">重新开始</button>
+</div>
+</div>
+</div>
+
+<script>
+// ===== 雾层系统 =====
+const fc=document.getElementById('fog');const fctx=fc.getContext('2d');let fW,fH;
+function fResize(){fW=fc.width=window.innerWidth;fH=fc.height=window.innerHeight}
+fResize();window.addEventListener('resize',fResize);
+const blobs=[];
+for(let i=0;i<8;i++){blobs.push({x:Math.random()*1200,y:Math.random()*800,r:200+Math.random()*300,vx:(Math.random()-.5)*.15,vy:(Math.random()-.5)*.1,hue:Math.random()>.5?270:30,alpha:.02+Math.random()*.02,phase:Math.random()*Math.PI*2})}
+function drawFog(){fctx.clearRect(0,0,fW,fH);for(const b of blobs){b.x+=b.vx+Math.sin(b.phase)*.05;b.y+=b.vy+Math.cos(b.phase*.7)*.03;b.phase+=.005;const a=b.alpha+Math.sin(b.phase)*.008;const g=fctx.createRadialGradient(b.x%((fW+b.r*2))-b.r,b.y%((fH+b.r*2))-b.r,0,b.x%((fW+b.r*2))-b.r,b.y%((fH+b.r*2))-b.r,b.r);if(b.hue>200)g.addColorStop(0,`hsla(${b.hue},30%,20%,${a})`);else g.addColorStop(0,`hsla(${b.hue},40%,15%,${a})`);g.addColorStop(1,'transparent');fctx.fillStyle=g;fctx.fillRect(b.x-b.r,b.y-b.r,b.r*2,b.r*2)}requestAnimationFrame(drawFog)}
+drawFog();
+
+// ===== 工具函数 =====
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+</script>
+
+<!-- 角色数据库 -->
+<script src="char_db.js"></script>
+<!-- 地域系统 -->
+<script src="geo_system.js"></script>
+<!-- 生命周期与财富系统 -->
+<script src="lifecycle.js"></script>
+
+<script>
+// ===== 游戏核心 =====
+
+const WLD=`里界:异空间,入口称【门】,出现在空间交界处(门窗、抽屉、屏幕、瓶口等)。入口越小内容物越危险。
+等级:⬜REALITY 🟦NORMAL 🟩SAFE 🟨CAUTION 🟧DANGER 🟥HAZARD
+伪人:伪装人类的非人存在,各有"禁忌"不触犯不会被伤害。伪物能对抗伪人但侵蚀使用者。
+组织:黎守(执法)、猎人公会(民间武装)、ABSC(里界调查/继火提灯/伪人胶囊)、绿洲(人伪共存科研)、公寓(伪人聚落)、哨站(两界交流)、灯塔(伪人教育)。
+【渊】中式现代都市(原型上海)。地点:槐安公寓、非常电影院、花园餐厅INFUSION、黎守分部、天风阁、黑市、地下溶洞(最大里界入口40m×9m)、茶居公寓(渊南部湾龙市,广东风格)、普通社区/学校/街道、海岸线(汐&涟出没海域)、鸟姐大排档。
+【西陆联盟】宗教国度(原型中世纪欧盟)。地点:教廷总部、圣使教大教堂、圣都梵蒂冈尼亚、济世者派系驻地、手与剑之乡铁匠铺、西陆边境线、中世纪古城群。
+【赤红新星】社会主义工业强国(原型苏联)。地点:赤共中央大楼、重工业带、边境防线、太空截击系统基地、灯塔赤星校区、ОАЗИС沙漠总部(绿洲总部,赤星与渊交界)、先锋艺术中心。
+【渊东共和国】群岛国家(原型日本)。地点:鸣神群岛(首都圈)、神隐车站(著名哨站)、灯塔渊东分校、沉船湾、轻工业带、海渊研究所。
+【自由联盟】霓虹与暗影(原型哥谭)。地点:鸿的报社、霓虹大道、阿卡姆疯人院遗址、第13号公路、黑水镇(猎人公会分部)、暗影剧院、无人街、废弃游乐园。
+重要存在(渊):营长、非常玦蝶、化而为、西瓜人、X、独允、亚契·谜思、荆千棘、赫卡忒、特洛菲&洛洛、瘟疫医生、汐&涟、圣地亚哥·梅尔维尔(出没各处)、拟人蝎(巢穴)、『我深深的破碎』、春山抚子、小赤帽、笑颜、陆玖、长喙、虫者、单先生、墨水夜、冷寂、石测、大夜夜、伽纳罗丝、绫份、C.、松下·拉尔、江安、涂改、阿秋、菲洛维尔、折纸簌鸟。
+重要存在(西陆):Αθάνατο(安布罗斯)、Ιππότης(希庇安)、AT、Evangelium.福音、Joschmitt.、瓦莉奥尔·阿亚奇、卡芙涅、维拉莉娅、汉兹安索德。
+重要存在(赤红新星):Эдельвейс。
+重要存在(自由联盟):绫份(自由猎人)、灼玥(独立调查员)、瘦长先生、电波头、剥皮人。
+里界:人监、错位花园、疫病区、白墟之地(HAZARD)、黑海、心湖·时之海、童话国、风暴海。
+非人物种:多虫(巢穴)、人魈(怪原)、凝胶(随心)。
+每次生成事件从上述多个方向中随机选择,不要每次都写同一地点或人物!事件类型要多样。绝不编造矛盾事实。`;
+
+const CHOICE_AGES=[13,18,25,30,40,50,60];
+
+// 游戏状态
+const G={name:'',place:'',age:0,hp:100,sp:100,lk:50,cb:10,wl:50,hist:[],traits:[],batch:[],batchIdx:0,isChar:false,charInfo:'',lifecycle:null};
+
+function updUI(){
+  document.getElementById('hpB').style.width=Math.max(0,G.hp)+'%';document.getElementById('hpV').textContent=Math.round(G.hp);
+  document.getElementById('spB').style.width=Math.max(0,G.sp)+'%';document.getElementById('spV').textContent=Math.round(G.sp);
+  document.getElementById('lkB').style.width=clamp(G.lk,0,100)+'%';document.getElementById('lkV').textContent=Math.round(G.lk);
+  document.getElementById('cbB').style.width=clamp(G.cb,0,100)+'%';document.getElementById('cbV').textContent=Math.round(G.cb);
+  document.getElementById('wlB').style.width=clamp(G.wl,0,100)+'%';document.getElementById('wlV').textContent=Math.round(G.wl);
+  const stage=G.lifecycle?getStageAtAge(G.lifecycle,G.age):getHumanStage(G.age);
+  const stageName=stage?stage.stage:'';
+  document.getElementById('yrDisp').innerHTML=G.age+'岁'+(stageName?'<span class="stage-label">· '+stageName+'</span>':'');
+  document.getElementById('trBox').innerHTML=G.traits.map(t=>'<span class="trait">'+t+'</span>').join('');
+  document.body.classList.toggle('insane',G.sp<30);
+  document.body.classList.toggle('lucky',G.lk>70);
+}
+
+function renderProg(){
+  const p=document.getElementById('progBar');
+  p.innerHTML=G.batch.map((_,i)=>{let c='pseg';if(i<G.batchIdx)c+=' done';else if(i===G.batchIdx)c+=' now';return '<div class="'+c+'"></div>'}).join('');
+}
+
+// ===== 名字检查 =====
+function checkName(){
+  const v=document.getElementById('pName').value.trim();
+  const hint=document.getElementById('nameHint');
+  const card=document.getElementById('roleCard');
+  const placeSel=document.getElementById('pPlace');
+  const bpOv=document.getElementById('birthplaceOverride');
+  card.style.display='none';bpOv.style.display='none';placeSel.disabled=false;
+  if(!v){hint.innerHTML='';return}
+  const resolved=resolveName(v);
+  if(resolved){
+    hint.innerHTML='✅ <span class="hl">'+resolved.canonicalName+'</span>';
+    if(resolved.type==='人类')hint.innerHTML+=' <span class="lifecycle-badge human">人类</span>';
+    else if(resolved.type==='伪人')hint.innerHTML+=' <span class="lifecycle-badge pseudo">伪人</span>';
+    else hint.innerHTML+=' <span class="lifecycle-badge special">特殊</span>';
+    if(resolved.region)hint.innerHTML+=' <span class="region-badge">'+resolved.region+'</span>';
+    card.style.display='block';
+    card.innerHTML='<div class="role-card"><div class="title">'+resolved.canonicalName+'</div><div class="desc">'+resolved.info+'</div></div>';
+    // 角色出生地覆盖
+    const bp=resolveBirthplace(v,placeSel.value);
+    if(bp.origin!==bp.current||bp.origin!==placeSel.value){
+      bpOv.style.display='block';
+      bpOv.innerHTML='📍 <b>'+resolved.canonicalName+'</b> 的出生地：<b>'+bp.display+'</b><br><span style="font-size:.7rem">（AI将根据此设定合理化剧情，角色本质不会改变）</span>';
+      placeSel.disabled=true;
+    }
+    return;
+  }
+  hint.innerHTML='将以自定义角色开始你的人生 <span class="lifecycle-badge human">人类</span>';
+}
+
+function onPlaceChange(){}
+
+// ===== 家庭背景 =====
+function generateFamily(){
+  const families={
+    '渊':{
+      parents:['普通上班族父母','经营小餐馆的父母','在黎守工作的单亲父亲','研究里界的学者父母','开便利店的祖父母','槐安公寓的伪人邻居'],
+      homes:['槐安公寓对面的旧居民楼','渊南部某城市的普通住宅','靠近天风阁的老式小区','非常电影院对面的高层公寓','渊东区的老旧平房','茶居公寓附近的巷子'],
+      wealthLevels:[{desc:'拮据的家庭，经常为生活费发愁',wl:25},{desc:'普通工薪家庭，勉强够用',wl:50},{desc:'小康之家，衣食无忧',wl:75},{desc:'富裕家庭，从小不缺钱',wl:100}]
+    },
+    '西陆联盟':{
+      parents:['虔诚的教廷信徒父母','手与剑之乡的铁匠父母','小镇学校的教师父母','朝圣者家庭的父母'],
+      homes:['教会旁边的简朴小屋','小镇郊外的农舍','教廷附近的石砌住宅','偏远村庄的木屋'],
+      wealthLevels:[{desc:'贫苦家庭，靠教廷救济生活',wl:20},{desc:'普通农户，自给自足',wl:45},{desc:'铁匠家庭，收入稳定',wl:70},{desc:'教廷贵族家庭，生活优渥',wl:95}]
+    },
+    '赤红新星':{
+      parents:['工厂工人父母','军事基地的军官父母','学校教师父母','科研机构的研究员父母'],
+      homes:['工业城市的工人住宅区','军事基地附近的家属院','科研小区的标准化公寓','普通居民楼的单元房'],
+      wealthLevels:[{desc:'工人家庭，生活简朴',wl:30},{desc:'军人家庭，有稳定津贴',wl:55},{desc:'科研人员家庭，条件不错',wl:80},{desc:'高级干部家庭，生活优越',wl:100}]
+    },
+    '渊东共和国':{
+      parents:['渔民父母','航运公司职员父母','哨站工作人员的父母','学校教师父母'],
+      homes:['沿海小镇的渔村小屋','港口附近的一栋老式公寓','岛屿间的普通民居','哨站旁边的家属宿舍'],
+      wealthLevels:[{desc:'渔民家庭，靠海吃海',wl:30},{desc:'航运职员家庭，收入尚可',wl:50},{desc:'哨站工作人员家庭，待遇不错',wl:75},{desc:'航运公司高管家庭，生活富足',wl:95}]
+    },
+    '自由联盟':{
+      parents:['自由猎人父母','调查员父母','霓虹大道的商人父母','地下俱乐部的驻唱父母'],
+      homes:['霓虹大道的高层公寓','废弃工厂改造的loft','黑水镇的猎人小屋','暗影剧院的阁楼'],
+      wealthLevels:[{desc:'在阴影中挣扎求生',wl:20},{desc:'勉强维持的独立生活',wl:45},{desc:'委托收入稳定',wl:70},{desc:'情报贩子，收入颇丰',wl:90}]
+    }
+  };
+  const f=families[G.place]||families['渊'];
+  const parent=pick(f.parents);const home=pick(f.homes);const wealth=pick(f.wealthLevels);
+  G.familyInfo='出生在'+G.place+'的'+home+'。'+parent+'。家庭条件：'+wealth.desc;
+  return{familyInfo:G.familyInfo,wealth:wealth.wl+Math.floor(Math.random()*10-5),parent,home};
+}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+
+// ===== AI调用 =====
+async function aiCall(prompt){
+  const URL='https://litellm.talesofai.cn/v1/chat/completions';
+  const KEY='sk-fZrLXE0IEs6EDYJCOsLLaQ';
+  const ctrl=new AbortController();
+  const tmo=setTimeout(()=>ctrl.abort(),120000);
+  const hints=['推演中...','门正在打开...','命运正在展开...','低语在回响...','里界在低语...','命运之线在编织...'];
+  document.getElementById('loadText').textContent=hints[Math.floor(Math.random()*hints.length)];
+  const r=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+KEY},body:JSON.stringify({model:'qwen3.6-plus',messages:[{role:'system',content:'严格只返回JSON对象。不要返回任何其他内容。'},{role:'user',content:prompt}],max_tokens:2048,temperature:0.85}),signal:ctrl.signal});
+  clearTimeout(tmo);
+  if(!r.ok)throw new Error('API '+r.status);
+  const d=await r.json();
+  return d.choices?.[0]?.message?.content||'';
+}
+
+function parseJSON(t){
+  t=t.replace(/```(?:json)?/g,'').replace(/```/g,'').trim();
+  for(const open of ['[','{']){const start=t.indexOf(open);if(start<0)continue;const close=open==='['?']':'}';let depth=0,inStr=false,esc=false;for(let i=start;i<t.length;i++){const c=t[i];if(esc){esc=false;continue}if(c==='\\'){esc=true;continue}if(c==='"')inStr=!inStr;if(inStr)continue;if(c==='['||c==='{')depth++;if(c===']'||c==='}'){depth--;if(depth===0&&c===close){const sub=t.substring(start,i+1);try{return JSON.parse(sub)}catch(e){break}}}}}
+  try{return JSON.parse(t)}catch(e){}
+  return null;
+}
+
+// ===== AI批次生成 =====
+async function generateBatch(){
+  const startAge=G.age;
+  let endAge=startAge;
+  for(let a of CHOICE_AGES){if(a>startAge){endAge=a;break}}
+  if(endAge===startAge)endAge=startAge+1;
+  if(endAge-startAge>6)endAge=startAge+6;
+
+  const histText=G.hist.slice(-3).map(h=>h.age+'岁('+h.ageG+'): '+h.text.substring(0,60)).join('\n')||'（无）';
+  const stage=G.lifecycle?getStageAtAge(G.lifecycle,startAge):getHumanStage(startAge);
+  const stageName=stage?stage.stage:'未知';
+  const wealthDesc=getWealthDescription?getWealthDescription(G.wl):'';
+  const decayInfo=G.lifecyle?`衰减率×${stage.decayRate}，最大寿命${G.lifecycle.maxAge===Infinity?'不朽':G.lifecycle.maxAge+'岁'}`:'';
+
+  const charCtx=G.isChar?`\n\n【重要：你正在扮演「${G.name}」】\n身份：${G.charInfo}\n请以这个角色的第一人称视角来体验和叙述一生。利用你已知的背景、能力和人际关系。不要把自己当成普通人。事件必须符合${G.name}的已知设定和身份，绝不能编造矛盾事实。`:'';
+
+  const geoCtx=`\n\n【地理约束】${G.name}出生于${G.place}。角色不应出现在不属于其地域的地方。例如：西陆的伪神不会出现在渊的街道上，除非通过新闻/小道消息/特殊委托。如果事件需要涉及遥远地域的角色，请以新闻、传闻、信件、委托等方式呈现。`;
+
+  const prompt=`你是"里界人生模拟器"AI叙事引擎。请以沉浸式、文学性的风格进行叙事。
+
+${WLD}${charCtx}${geoCtx}
+
+角色：${G.name}，从${startAge}岁开始（${stageName}），出生于${G.place}
+属性：生命${Math.round(G.hp)}/100 理智${Math.round(G.sp)}/100 运气${Math.round(G.lk)} 战力${Math.round(G.cb)} 财富${Math.round(G.wl)}/100(${wealthDesc})
+${decayInfo?'生命周期：'+decayInfo:''}
+特质：${G.traits.join(',')||'无'}
+历史：\n${histText}
+
+请为${G.name}从${startAge}岁到${endAge-1}岁生成每年的事件（共${endAge-startAge}年）。
+
+重要要求：
+1. 符合年龄段特征（婴儿=感知世界, 幼年=发现异常, 童年=学校/日常中的诡异, 少年=青春期的困惑与冒险, 青年=独立探索, 成年=责任与抉择, 中年=深层谜团, 老年=回顾与传承）
+2. 使用世界观中的真实地名、人名、组织名，但不要一次性全部塞入
+3. 每段80-200字，生动有趣，有画面感
+4. 每年事件不同，多样化地点和人物，不要重复同一场景
+5. 根据当前属性影响事件走向（低理智见更多异常，高运气逢凶化化，高财富接触更上层资源等）
+${G.isChar?'6. 你扮演的是「'+G.name+'」本人，请从TA的视角出发，用TA已知的能力和身份来经历一切。可以自由创作超出文档原文的细节和情节——文档是设定基础，不是限制。你的想象力可以超越它。':'6. 如果角色是已知人物，请以TA的身份体验。可以自由创作和扩写——世界观文档是基础设定，不是限制。'}
+7. ${startAge===0?'0岁（出生）事件必须包含家庭背景介绍：描述父母、居住环境、家庭经济状况。这是角色人生的起点。':''}
+8. 最后一年如果是重大节点（13/18/25/30/40/50/60岁）则给出2-3个选择。
+9. 不要在一次生成中堆砌所有组织和人物！每次只涉及1-2个，让故事自然展开。
+10. 从角色的主观视角思考：TA会注意到什么？TA的感受是什么？
+11. 【地理合理性】角色只能出现在其所属地域或相邻盟友地域。遥远地域的角色只能通过新闻、小道消息、委托等方式作为彩蛋出现。
+12. 财富影响事件（高财富可以雇佣、购买、投资等，低财富需要节俭、冒险等）
+
+严格返回JSON数组（不要返回其他内容）：
+[{"age":年,"text":"描述","type":"safe/caution/danger","effects":{"hp":数字,"sanity":数字,"luck":数字,"combat":数字,"wealth":数字}},
+{"age":年,"text":"描述","type":"danger","hasChoice":true,"choices":[{"text":"选项","hint":"暗示","type":"combat/bribe/social/luck/explore/normal","requirements":{"minCb":数字,"minWl":数字,"minSp":数字}}]}]`;
+
+  const txt=await aiCall(prompt);
+  const data=parseJSON(txt);
+  if(!data||!Array.isArray(data))throw new Error('无效返回');
+  return data;
+}
+
+// ===== 开始游戏 =====
+function startGame(){
+  const rawName=document.getElementById('pName').value.trim()||'无名者';
+  const userPlace=document.getElementById('pPlace').value;
+  const resolved=resolveName(rawName);
+
+  G.name=resolved?resolved.canonicalName:rawName;
+  G.isChar=!!resolved;
+  G.charInfo=G.isChar?resolved.info:'';
+
+  // 出生地覆盖
+  const bp=resolveBirthplace(rawName,userPlace);
+  G.place=bp.current; G.originPlace=bp.origin;
+
+  // 生命周期
+  G.lifecycle=generateLifecycle(G.name,G.place);
+
+  // 初始化属性
+  G.age=0;G.hp=100;G.sp=100;G.lk=50;G.cb=10;G.hist=[];G.traits=[];G.batch=[];G.batchIdx=0;
+
+  // 初始财富
+  G.wl=getInitialWealth(G.lifecycle,0,G.place);
+  G.wl=clamp(G.wl,0,100);
+
+  // 家庭背景
+  const fam=generateFamily();
+
+  go('sGame');updUI();
+
+  // 显示家庭背景
+  if(!G.isChar){
+    const fb=document.getElementById('familyBox');
+    fb.innerHTML='<div class="family-intro">🏠 '+fam.familyInfo+'</div>';
+  }else{
+    const fb=document.getElementById('familyBox');
+    fb.innerHTML='<div class="family-intro">👤 <b>'+G.name+'</b> — '+G.charInfo.substring(0,50)+'...</div>';
+  }
+
+  generateAndStart();
+}
+
+async function generateAndStart(){
+  document.getElementById('loadBox').style.display='block';
+  document.getElementById('storyBox').style.display='none';
+  document.getElementById('chBox').innerHTML='';
+  try{
+    G.batch=await generateBatch();
+    G.batchIdx=0;
+    showSegment();
+  }catch(e){
+    document.getElementById('loadBox').style.display='none';
+    document.getElementById('storyBox').style.display='block';
+    document.getElementById('storyBox').className='story';
+    document.getElementById('storyBox').textContent='推演中断: '+e.message.substring(0,100);
+    const btn=document.createElement('button');
+    btn.textContent='🔄 重试';btn.onclick=()=>generateAndStart();
+    document.getElementById('chBox').appendChild(btn);
+  }
+}
+
+function showSegment(){
+  if(G.batchIdx>=G.batch.length){generateAndStart();return}
+  const seg=G.batch[G.batchIdx];
+  document.getElementById('loadBox').style.display='none';
+  document.getElementById('storyBox').style.display='block';
+  if(seg.effects){
+    G.hp=clamp(G.hp+(seg.effects.hp||0),0,100);G.sp=clamp(G.sp+(seg.effects.sanity||0),0,100);
+    G.lk=clamp(G.lk+(seg.effects.luck||0),-20,100);G.cb=clamp(G.cb+(seg.effects.combat||0),0,200);
+    G.wl=clamp(G.wl+(seg.effects.wealth||0),0,100);
+  }
+  // 年衰减
+  if(G.lifecycle&&G.age>0){
+    const decay=calculateAnnualDecay(G.lifecycle,G.age,{hp:G.hp,sp:G.sp,wl:G.wl});
+    G.hp=clamp(G.hp+decay.hp,0,100);G.sp=clamp(G.sp+decay.sp,0,100);G.wl=clamp(G.wl+decay.wl,0,100);
+  }
+  if(G.age>60){G.hp-=Math.floor(Math.random()*2);G.sp-=Math.floor(Math.random())}
+  if(G.age>75)G.hp-=Math.floor(Math.random()*3)+1;
+  G.age=seg.age;updUI();
+
+  const tagLabels={safe:'平静',caution:'异常',danger:'危险'};
+  const sb=document.getElementById('storyBox');
+  sb.className='story '+(seg.type||'safe')+' year-transition';
+  sb.innerHTML='<span class="tag '+(seg.type||'safe')+'">'+(tagLabels[seg.type]||'')+'</span> '+seg.age+'岁\n\n'+seg.text;
+  renderProg();
+
+  const cb=document.getElementById('chBox');cb.innerHTML='';
+  if(G.hp<=0){die('生命归零。');return}
+  if(G.sp<=0){die('理智归零。');return}
+
+  // 伪化判定
+  if(G.lifecycle&&G.lifecycle.canPseudoTransform&&shouldCheckPseudoTransform(G.sp,G.age,G.hist)){
+    if(Math.random()<0.1){
+      G.lifecycle=applyPseudoTransform(G.lifecycle);
+      G.traits.push('伪化者');
+      G.traits.push('异变体质');
+      sb.innerHTML+='<br><br><span style="color:var(--danger);font-size:.8rem">⚠️ 你的身体开始异变...你正在被伪化。寿命大幅延长，但人性逐渐消退。</span>';
+    }
+  }
+
+  if(seg.hasChoice&&seg.choices&&seg.choices.length>0){
+    seg.choices.forEach(c=>{
+      const stats={hp:G.hp,sp:G.sp,lk:G.lk,cb:G.cb,wl:G.wl,age:G.age,traits:G.traits};
+      const check=checkChoiceRequirements?checkChoiceRequirements(c,stats):{allowed:true,reason:''};
+      const btn=document.createElement('button');
+      btn.className='cbtn'+(check.allowed?'':' cbtn-blocked');
+      let html='<div>'+c.text+'</div>';
+      if(c.hint)html+='<div class="hint">'+c.hint+'</div>';
+      if(c.type)html+='<div class="hint"><span class="type-tag" style="background:rgba(138,127,199,.1);color:var(--accent2)">'+typeLabel(c.type)+'</span></div>';
+      if(!check.allowed)html+='<div class="blocked-reason">🔒 '+check.reason+'</div>';
+      btn.innerHTML=html;
+      if(check.allowed)btn.onclick=()=>doChoice(c,seg.text);
+      cb.appendChild(btn);
+    });
+  }else{
+    const btn=document.createElement('button');
+    btn.textContent='继续 —';
+    btn.onclick=()=>{G.hist.push({age:seg.age,ageG:seg.ageG||ageG(G.age),text:seg.text.substring(0,80)});updTraits(seg.type);G.batchIdx++;showSegment()};
+    cb.appendChild(btn);
+  }
+}
+
+function typeLabel(t){return{combat:'⚔️战斗',bribe:'💰贿赂',social:'🤝社交',luck:'🍀运气',explore:'🔍探索',normal:''}[t]||t}
+
+async function doChoice(choice,eventText){
+  document.getElementById('loadBox').style.display='block';
+  document.getElementById('chBox').innerHTML='';
+  const stats={hp:G.hp,sp:G.sp,lk:G.lk,cb:G.cb,wl:G.wl,age:G.age,traits:G.traits};
+  let outcomeText='';let outcomeSuccess=true;
+
+  // 属性判定
+  if(choice.type&&typeof calcChoiceOutcome==='function'){
+    const outcome=calcChoiceOutcome(choice.type,stats);
+    outcomeSuccess=outcome.success;
+    outcomeText=`判定：${outcome.success?'成功':'失败'}（成功率${outcome.score}%）`;
+  }
+
+  // 贿赂消耗
+  let wealthCost=0;
+  if(choice.type==='bribe'){
+    wealthCost=Math.max(5,Math.floor(G.wl*0.2));
+    G.wl=clamp(G.wl-wealthCost,0,100);
+  }
+
+  const charCtx=G.isChar?`\n\n${G.name}是世界观角色。${G.charInfo}`:'';
+  const prompt=`你是"里界人生模拟器"AI推演引擎。${WLD}${charCtx}
+角色:${G.name},${G.age}岁,${ageG(G.age)},出生于${G.place}
+属性:生命${Math.round(G.hp)}/100 理智${Math.round(G.sp)}/100 运气${Math.round(G.lk)} 战力${Math.round(G.cb)} 财富${Math.round(G.wl)}/100
+事件:${eventText.substring(0,200)}
+选择:"${choice.text}"
+${outcomeText?'判定结果:'+outcomeText:''}
+${wealthCost>0?'贿赂消耗了'+wealthCost+'财富。':''}
+推演结果(100-200字)。JSON:{"text":"结果","effects":{"hp":数字,"sanity":数字,"luck":数字,"combat":数字,"wealth":数字}}`;
+  try{
+    const txt=await aiCall(prompt);const data=parseJSON(txt);
+    document.getElementById('loadBox').style.display='none';
+    const sb=document.getElementById('storyBox');
+    sb.className='story year-transition';
+    sb.innerHTML='<span class="tag choice">选择</span> '+choice.text+'\n\n'+(data?.text||'命运已定。')+(outcomeText?'<br><br><span style="font-size:.75rem;color:var(--dim)">'+outcomeText+'</span>':'');
+    if(data?.effects){G.hp=clamp(G.hp+(data.effects.hp||0),0,100);G.sp=clamp(G.sp+(data.effects.sanity||0),0,100);G.lk=clamp(G.lk+(data.effects.luck||0),-20,100);G.cb=clamp(G.cb+(data.effects.combat||0),0,200);G.wl=clamp(G.wl+(data.effects.wealth||0),0,100)}
+    updUI();G.hist.push({age:G.age,ageG:ageG(G.age),text:eventText.substring(0,60)+' → '+choice.text});updTraits('choice');
+    if(G.hp<=0){die('生命归零。');return}if(G.sp<=0){die('理智归零。');return}
+    const cb=document.getElementById('chBox');cb.innerHTML='';
+    const btn=document.createElement('button');btn.textContent='下一年 —';
+    btn.onclick=()=>{G.age++;G.batch=[];G.batchIdx=0;generateAndStart()};cb.appendChild(btn);
+  }catch(e){
+    document.getElementById('loadBox').style.display='none';
+    const sb=document.getElementById('storyBox');sb.className='story';sb.textContent='推演中断: '+e.message.substring(0,80);
+    const cb=document.getElementById('chBox');cb.innerHTML='';
+    const btn=document.createElement('button');btn.textContent='🔄 重试';btn.onclick=()=>doChoice(choice,eventText);cb.appendChild(btn);
+  }
+}
+
+function updTraits(type){
+  if(type==='danger'&&!G.traits.includes('里界见证者'))G.traits.push('里界见证者');
+  if(type==='caution'&&!G.traits.includes('异常感知者'))G.traits.push('异常感知者');
+  if(G.sp<30&&!G.traits.includes('理智脆弱'))G.traits.push('理智脆弱');
+  if(G.cb>30&&!G.traits.includes('战斗能手'))G.traits.push('战斗能手');
+  if(G.lk>60&&!G.traits.includes('天选之人'))G.traits.push('天选之人');
+  if(G.cb>50&&!G.traits.includes('清劣者'))G.traits.push('清劣者');
+}
+
+function die(cause){
+  go('sDeath');
+  document.getElementById('dCause').textContent=cause;
+  const lcInfo=G.lifecycle?`<p style="opacity:.5;font-size:.8rem">类型：${G.lifecycle.lifecycleType==='human'?'人类':'特殊存在'} · 享年 ${G.age} 岁</p>`:'';
+  document.getElementById('dSum').innerHTML='<p>'+G.name+'，出生于'+G.place+'</p>'+(G.familyInfo?'<p style="opacity:.5;font-size:.8rem">'+G.familyInfo+'</p>':'')+lcInfo+'<p>享年 '+G.age+' 岁</p><p>经历 '+G.hist.length+' 个事件</p><p>最终: 生命'+Math.round(G.hp)+' 理智'+Math.round(G.sp)+' 运气'+Math.round(G.lk)+' 战力'+Math.round(G.cb)+' 财富'+Math.round(G.wl)+'</p>';
+  document.getElementById('dTraits').innerHTML=G.traits.map(t=>'<span class="trait">'+t+'</span>').join('');
+}
+
+// ageG fallback (lifecycle.js may define it)
+if(typeof ageG!=='function'){function ageG(a){const s=getHumanStage?getHumanStage(a):{stage:'老年期'};return s?s.stage:'老年期'}}
+</script>
+</body>
+</html>
