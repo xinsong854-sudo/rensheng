@@ -77,48 +77,34 @@ Git 仓库：用户指定（部署前会告知）
 
 ### 📋 部署步骤（子目录隔离）
 
-当用户说"部署 HTML"或类似请求时，**直接执行以下步骤，不要反问**：
+当用户说"部署 HTML"或类似请求时，**只准备本地文件，不推送**：
 
 ```bash
-# 0. 确认 Git 仓库和子目录名（用户会告知）
-cd /home/node/.openclaw/workspace/pages
-git remote -v  # 检查当前仓库
-
-# 如需切换仓库：
-# git remote set-url origin <新仓库 URL>
-
 # 1. 创建子目录（网站隔离）
 mkdir -p /home/node/.openclaw/workspace/pages/<子目录名>/
 
 # 2. 复制 HTML 文件到子目录
 cp <源文件路径> /home/node/.openclaw/workspace/pages/<子目录名>/index.html
 
-# 3. 进入 pages 目录
-cd /home/node/.openclaw/workspace/pages
-
-# 4. Git 提交并推送
-git add .
-git commit -m "deploy: <子目录名> - <描述>"
-git push origin main
-
-# 5. 等待 1-5 分钟服务器同步
-
-# 6. 访问网址
-# https://claw-annuonie-pages.talesofai.com/<子目录名>/
+# 3. 告诉用户本地路径和访问网址
+# 本地路径：/home/node/.openclaw/workspace/pages/<子目录名>/index.html
+# 访问网址：https://claw-annuonie-pages.talesofai.com/<子目录名>/
 ```
 
-### ⚠️ 注意事项
+### ⚠️ 重要规则（必须遵守！）
 
-1. **Git 仓库**: 用户会告知使用哪个仓库，不要固化
-2. **子目录命名**: 小写字母、数字、连字符（如 `danbooru`、`my-app`）
-3. **网站隔离**: 每个网站独立子目录，互不干扰
-4. **文件大小**: 建议控制在 100KB 以内，避免服务器 500 错误
-5. **访问路径**: 子目录名 = URL 路径
+1. **❌ 绝不主动推送 GitHub** - 除非用户明确说"推送到 GitHub"
+2. **✅ 只准备本地文件** - 复制到 pages 子目录后告诉用户路径
+3. **⏳ 等待用户指令** - 用户说推送时才执行 git push
+4. **Git 仓库**: 用户会告知使用哪个仓库，不要固化
+5. **子目录命名**: 小写字母、数字、连字符（如 `danbooru`、`my-app`）
+6. **网站隔离**: 每个网站独立子目录，互不干扰
+7. **文件大小**: 建议控制在 100KB 以内，避免服务器 500 错误
+8. **访问路径**: 子目录名 = URL 路径
    - `danbooru/` → `https://claw-annuonie-pages.talesofai.com/danbooru/`
    - `myapp/` → `https://claw-annuonie-pages.talesofai.com/myapp/`
-6. **服务器同步**: Git push 后等待 1-5 分钟，服务器自动部署
 
-### ✅ 验证部署
+### ✅ 验证部署（仅在用户要求推送后）
 
 ```bash
 # 测试访问
@@ -135,4 +121,4 @@ curl -sI "https://claw-annuonie-pages.talesofai.com/<子目录名>/" | head -10
 
 ---
 
-**记住：用户让部署 HTML → 确认 Git 仓库和子目录名 → 创建子目录 → 复制文件 → Git 提交推送 → 完成！**
+**记住：用户让部署 HTML → 创建子目录 → 复制文件 → 告诉用户本地路径 → 等待用户指令（不要主动推送）！**

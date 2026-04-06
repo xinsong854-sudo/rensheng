@@ -387,6 +387,38 @@ const CHARACTER_LIFECYCLES = {
     identity: '人世监之口/黑色蟒蛇状怪物',
     notes: '与特洛菲共生'
   },
+
+  // 月汐 - 里界伪人，吞噬与拟态
+  '月汐': {
+    type: 'pseudo_long',
+    maxAge: 600,
+    decayRate: 0.08,
+    stages: [
+      { stage: '潜伏期', minAge: 0, maxAge: 80, decayRate: 0.06, desc: '外表与人类少女无异' },
+      { stage: '觉醒期', minAge: 81, maxAge: 200, decayRate: 0.08, desc: '吞噬能力逐渐成熟' },
+      { stage: '成熟期', minAge: 201, maxAge: 500, decayRate: 0.12, desc: '影子中的猎食者' },
+      { stage: '终末期', minAge: 501, maxAge: Infinity, decayRate: 0.3, desc: '存在本身的消退' },
+    ],
+    initialWealth: 30,
+    identity: '槐安公寓410室住民',
+    notes: '冷静理智的伪人，能力为吞噬与拟态'
+  },
+
+  // LAZARUS THE LOVED - 荆棘冠复生者
+  'LAZARUS THE LOVED': {
+    type: 'pseudo_immortal',
+    maxAge: 3000,
+    decayRate: 0.03,
+    stages: [
+      { stage: '复生期', minAge: 0, maxAge: 500, decayRate: 0.02, desc: '荆棘冠中的二度复生者' },
+      { stage: '守望期', minAge: 501, maxAge: 1500, decayRate: 0.03, desc: '渴望爱世人却总是搞砸' },
+      { stage: '轮回期', minAge: 1501, maxAge: 2800, decayRate: 0.05, desc: '生死疲劳，不断复生' },
+      { stage: '终末期', minAge: 2801, maxAge: Infinity, decayRate: 0.2, desc: '奇迹终将归于沉寂' },
+    ],
+    initialWealth: 25,
+    identity: '槐安公寓612住民/被蒙爱的轮回者',
+    notes: '西陆出身，信仰AT，能力为荆棘冠复生，对楼长有敬畏'
+  },
 };
 
 // ============================================================
@@ -565,16 +597,49 @@ function generateLifecycle(name, place, skipCharMatch) {
     };
   }
 
+  // 如果全局指定出生类型为'人类'，直接返回人类生命周期
+  if (typeof G !== 'undefined' && G.liJieBirthType === '人类') {
+    return { name:charName, type:'human', isHuman:true, isKnownCharacter:true, lifecycleType:'human', maxAge:80+Math.floor(Math.random()*20-10), stages:HUMAN_LIFECYCLE, baseDecayRate:1.0, initialWealth:null, identity:null, birthplace:resolveBirthplace(name,place), charInfo:resolved?resolved.info:'', notes:'', canPseudoTransform:false };
+  }
+
   // 自定义角色 - 3:1 概率人类/伪人，推演前不告知
   const isPseudoCustom = Math.random() < 0.25;
-  const pseudoTypes = ['pseudo_medium', 'pseudo_long', 'pseudo_ancient'];
-  const pseudoType = pseudoTypes[Math.floor(Math.random() * pseudoTypes.length)];
-  const pseudoMaxAge = pseudoType === 'pseudo_medium' ? (300 + Math.floor(Math.random() * 300)) :
-                       pseudoType === 'pseudo_long' ? (800 + Math.floor(Math.random() * 700)) :
-                       (2000 + Math.floor(Math.random() * 3000));
-  const pseudoDecay = pseudoType === 'pseudo_medium' ? (0.1 + Math.random() * 0.1) :
-                      pseudoType === 'pseudo_long' ? (0.03 + Math.random() * 0.07) :
-                      (0.01 + Math.random() * 0.03);
+  const r = Math.random();
+  const pseudoType = r < 0.70 ? 'pseudo_normal' : r < 0.95 ? 'pseudo_long' : 'pseudo_ancient';
+  const pseudoMaxAge = pseudoType === 'pseudo_normal' ? (70 + Math.floor(Math.random() * 21)) :
+                       pseudoType === 'pseudo_long' ? (300 + Math.floor(Math.random() * 301)) :
+                       (600 + Math.floor(Math.random() * 901));
+  const pseudoDecay = pseudoType === 'pseudo_normal' ? 1.0 :
+                      pseudoType === 'pseudo_long' ? (0.05 + Math.random() * 0.05) :
+                      (0.01 + Math.random() * 0.04);
+
+  // 伪人种族参考方向（供LLM生成具体种族时使用）
+  const LI_JIE_RACE_MAP = {
+    '人监': '异化器官和感知器官恐怖（眼球、内脏、活体器官、感知异常、人体零件）',
+    '错位花园': '植物异变恐怖（食人花、寄生植物、变异植物、实验室植物失控）',
+    '疫病区': '瘟疫疾病恐怖（病变、感染、腐化、瘟疫载体、活体病灶）',
+    '白墟之地': '规则污染恐怖（白色废墟、固化概念、古代文明残骸、规则异化）',
+    '童话国': '黑暗童话恐怖（扭曲童话角色、诡异王国、暗黑动物、童话噩梦）',
+    '随心': '高可塑性恐怖（史莱姆、变形、无定形生物、可塑存在、拟态怪物）',
+    '永远的家': '温馨表象恐怖（完美家庭假象、麦田守望者、西陆风格诡异房屋）',
+    '非常电影院': '电影剧场恐怖（银幕中的存在、观众异常、表演诡异、放映室秘辛）',
+    '哨站': '两界夹缝恐怖（边界存在、两界之间、交流站点诡异、跨维度异客）',
+  };
+  // 公寓→城市映射（公寓只是分部，恐怖风格归属所在城市）
+  const APT_TO_CITY = {'槐安公寓':'渊','茶居公寓':'渊'};
+  const PLACE_RACE_HINTS = {
+    '渊': '中式恐怖传说（画皮、替身、冥婚、纸人、古宅怪谈、槐安公寓传说、里界之门）',
+    '茶居': '岭南恐怖传说（水鬼、骑楼怪谈、茶楼诡事、南洋降头、粤式民俗恐怖）',
+    '西陆联盟': '宗教恐怖传说（换生灵、伪天使、告解室、中世纪异端、教会秘辛）',
+    '赤红新星': '斯拉夫恐怖传说（苏联都市传说、工业设施异常、切尔诺贝利异变、西伯利亚怪谈）',
+    '渊东共和国': '日式恐怖传说（隙间女、裂口女、雨夜屠夫、贞子式怨灵、学校怪谈）',
+    '自由联盟': '赛博朋克恐怖（数字幽灵、地铁怪谈、霓虹都市传说、AI觉醒、隧道诡异）',
+  };
+  const liJieRace = Object.entries(LI_JIE_RACE_MAP).find(([k]) => place.includes(k));
+  const resolvedPlace = APT_TO_CITY[place] || place;
+  const cityRace = Object.keys(PLACE_RACE_HINTS).find(k => resolvedPlace.includes(k));
+  const raceHint = liJieRace ? liJieRace[1] :
+    (cityRace ? PLACE_RACE_HINTS[cityRace] : '都市恐怖传说（任何地域的诡异存在）');
 
   if (isPseudoCustom) {
     return {
@@ -584,7 +649,8 @@ function generateLifecycle(name, place, skipCharMatch) {
       isKnownCharacter: false,
       lifecycleType: pseudoType,
       maxAge: pseudoMaxAge,
-      stages: [
+      raceHint: raceHint,
+      stages: pseudoType === 'pseudo_normal' ? HUMAN_LIFECYCLE : [
         { stage: '潜伏期', minAge: 0, maxAge: 30, decayRate: pseudoDecay * 0.5, desc: '外表与常人无异，但隐约感觉不同' },
         { stage: '觉醒期', minAge: 31, maxAge: Math.floor(pseudoMaxAge * 0.3), decayRate: pseudoDecay, desc: '异常能力开始显现' },
         { stage: '成熟期', minAge: Math.floor(pseudoMaxAge * 0.3) + 1, maxAge: Math.floor(pseudoMaxAge * 0.7), decayRate: pseudoDecay * 1.2, desc: '非人本质逐渐显露' },
@@ -804,9 +870,11 @@ function calculateAnnualDecay(lifecycle, age, currentStats) {
 
   // 财富自然衰减（老年更快）
   let wlDecay = 0;
-  if (age > 60) {
+  const maxA = lifecycle.maxAge !== Infinity ? lifecycle.maxAge : 80;
+  const ageRatio = age / maxA;
+  if (ageRatio > 0.6) {
     wlDecay = -(0.2 * decayRate + Math.random() * 0.3);
-  } else if (age > 40) {
+  } else if (ageRatio > 0.4) {
     wlDecay = -(0.1 * decayRate);
   } else if (age < 7) {
     wlDecay = 0; // 小孩不产生财富衰减

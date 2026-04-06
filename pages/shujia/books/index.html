@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色百科 - 索引</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: #faf8f5; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; font-size: 32px; }
+        .category { margin-bottom: 40px; }
+        .category-title { font-size: 24px; color: #333; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #ff6b35; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 12px; }
+        @media (min-width: 500px) { .grid { grid-template-columns: repeat(4, 1fr); gap: 12px; } }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(6, 1fr); } }
+        .card { background: #fff; border-radius: 12px; overflow: hidden; text-decoration: none; color: #333; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(0,0,0,0.06); position: relative; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .card-cover { width: 100%; aspect-ratio: 3/4; background: #f5f0eb; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
+        .card-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .card-body { padding: 10px 8px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #333; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; min-height: 34px; }
+        .card-subtitle { font-size: 11px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .favorite-btn { position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(255,255,255,0.9); color: #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s ease; z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .favorite-btn:hover { background: #fff; color: #ff6b35; }
+        .favorite-btn.active { color: #ff6b35; }
+        .bookshelf-link { display: inline-block; margin-left: 10px; padding: 6px 12px; background: #fff5f0; color: #ff6b35; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all 0.2s ease; }
+        .bookshelf-link:hover { background: #ff6b35; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <a href="../index.html" style="color: #667eea; text-decoration: none; font-size: 16px;">← 返回书架</a>
+            <a href="../bookshelf.html" class="bookshelf-link">📚 我的书架</a>
+        </div>
+        <h1>📚 角色百科</h1>
+
+        <div class="category">
+            <h2 class="category-title">👤 人物志</h2>
+            <div class="grid">
+                <a href="characters/烛灯.html" class="card" data-book='{"id":"zhudeng","title":"烛灯","subtitle":"揭秘人最后成员","icon":"🕯️","url":"characters/烛灯.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'zhudeng', '烛灯', '揭秘人最后成员', '🕯️', 'characters/烛灯.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/烛灯.jpg" alt="烛灯" onerror="this.style.display='none';this.parentElement.innerHTML='🕯️'"></div>
+                    <div class="card-body">
+                        <div class="card-title">烛灯</div>
+                        <div class="card-subtitle">揭秘人最后成员</div>
+                    </div>
+                </a>
+                <a href="characters/绫份.html" class="card" data-book='{"id":"lingfen","title":"绫份","subtitle":"白夜叉","icon":"⚔️","url":"characters/绫份.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'lingfen', '绫份', '白夜叉', '⚔️', 'characters/绫份.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/绫份.jpg" alt="绫份" onerror="this.style.display='none';this.parentElement.innerHTML='⚔️'"></div>
+                    <div class="card-body">
+                        <div class="card-title">绫份</div>
+                        <div class="card-subtitle">白夜叉</div>
+                    </div>
+                </a>
+                <a href="characters/灼玥.html" class="card" data-book='{"id":"zhuoyue","title":"灼玥","subtitle":"独立调查员","icon":"🗡️","url":"characters/灼玥.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'zhuoyue', '灼玥', '独立调查员', '🗡️', 'characters/灼玥.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/灼玥.jpg" alt="灼玥" onerror="this.style.display='none';this.parentElement.innerHTML='🗡️'"></div>
+                    <div class="card-body">
+                        <div class="card-title">灼玥</div>
+                        <div class="card-subtitle">独立调查员</div>
+                    </div>
+                </a>
+                <a href="characters/白桦.html" class="card" data-book='{"id":"baihua","title":"白桦","subtitle":"对伪课副课长","icon":"🔨","url":"characters/白桦.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'baihua', '白桦', '对伪课副课长', '🔨', 'characters/白桦.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/白桦.jpg" alt="白桦" onerror="this.style.display='none';this.parentElement.innerHTML='🔨'"></div>
+                    <div class="card-body">
+                        <div class="card-title">白桦</div>
+                        <div class="card-subtitle">对伪课副课长</div>
+                    </div>
+                </a>
+                <a href="characters/斯汀先生.html" class="card" data-book='{"id":"siting","title":"斯汀先生","subtitle":"ABSC 职员","icon":"🎩","url":"characters/斯汀先生.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'siting', '斯汀先生', 'ABSC 职员', '🎩', 'characters/斯汀先生.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/斯汀先生.jpg" alt="斯汀先生" onerror="this.style.display='none';this.parentElement.innerHTML='🎩'"></div>
+                    <div class="card-body">
+                        <div class="card-title">斯汀先生</div>
+                        <div class="card-subtitle">ABSC 职员</div>
+                    </div>
+                </a>
+                <a href="characters/艾尔伯特·帕拉索.html" class="card" data-book='{"id":"aierbote","title":"艾尔伯特·帕拉索","subtitle":"人类先驱","icon":"🌟","url":"characters/艾尔伯特·帕拉索.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'aierbote', '艾尔伯特·帕拉索', '人类先驱', '🌟', 'characters/艾尔伯特·帕拉索.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/艾尔伯特·帕拉索.jpg" alt="艾尔伯特·帕拉索" onerror="this.style.display='none';this.parentElement.innerHTML='🌟'"></div>
+                    <div class="card-body">
+                        <div class="card-title">艾尔伯特·帕拉索</div>
+                        <div class="card-subtitle">人类先驱</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 class="category-title">👾 伪人录</h2>
+            <div class="grid">
+                <a href="pseudohumans/营长.html" class="card" data-book='{"id":"yingzhang","title":"营长","subtitle":"论坛管理者","icon":"🎬","url":"pseudohumans/营长.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'yingzhang', '营长', '论坛管理者', '🎬', 'pseudohumans/营长.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/营长.jpg" alt="营长" onerror="this.style.display='none';this.parentElement.innerHTML='🎬'"></div>
+                    <div class="card-body">
+                        <div class="card-title">营长</div>
+                        <div class="card-subtitle">论坛管理者</div>
+                    </div>
+                </a>
+                <a href="pseudohumans/非常玦蝶.html" class="card" data-book='{"id":"feichangjuedie","title":"非常玦蝶","subtitle":"二营长","icon":"🦋","url":"pseudohumans/非常玦蝶.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'feichangjuedie', '非常玦蝶', '二营长', '🦋', 'pseudohumans/非常玦蝶.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/非常玦蝶.jpg" alt="非常玦蝶" onerror="this.style.display='none';this.parentElement.innerHTML='🦋'"></div>
+                    <div class="card-body">
+                        <div class="card-title">非常玦蝶</div>
+                        <div class="card-subtitle">二营长</div>
+                    </div>
+                </a>
+                <a href="pseudohumans/化而为.html" class="card" data-book='{"id":"huaerwei","title":"化而为","subtitle":"变形者","icon":"💧","url":"pseudohumans/化而为.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'huaerwei', '化而为', '变形者', '💧', 'pseudohumans/化而为.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/化而为.jpg" alt="化而为" onerror="this.style.display='none';this.parentElement.innerHTML='💧'"></div>
+                    <div class="card-body">
+                        <div class="card-title">化而为</div>
+                        <div class="card-subtitle">变形者</div>
+                    </div>
+                </a>
+                <a href="pseudohumans/温塔莎.html" class="card" data-book='{"id":"wentasha","title":"温塔莎▪克林斯曼","subtitle":"基质 -0 聚合体","icon":"🐉","url":"pseudohumans/温塔莎.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'wentasha', '温塔莎▪克林斯曼', '基质 -0 聚合体', '🐉', 'pseudohumans/温塔莎.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/温塔莎.jpg" alt="温塔莎" onerror="this.style.display='none';this.parentElement.innerHTML='🐉'"></div>
+                    <div class="card-body">
+                        <div class="card-title">温塔莎▪克林斯曼</div>
+                        <div class="card-subtitle">基质 -0 聚合体</div>
+                    </div>
+                </a>
+                <a href="pseudohumans/独允.html" class="card" data-book='{"id":"duyun","title":"独允","subtitle":"渊核心 AI","icon":"🤖","url":"pseudohumans/独允.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'duyun', '独允', '渊核心 AI', '🤖', 'pseudohumans/独允.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/独允.jpg" alt="独允" onerror="this.style.display='none';this.parentElement.innerHTML='🤖'"></div>
+                    <div class="card-body">
+                        <div class="card-title">独允</div>
+                        <div class="card-subtitle">渊核心 AI</div>
+                    </div>
+                </a>
+                <a href="pseudohumans/西瓜人.html" class="card" data-book='{"id":"xiguaren","title":"西瓜人","subtitle":"西瓜公司董事长","icon":"🍉","url":"pseudohumans/西瓜人.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'xiguaren', '西瓜人', '西瓜公司董事长', '🍉', 'pseudohumans/西瓜人.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/西瓜人.jpg" alt="西瓜人" onerror="this.style.display='none';this.parentElement.innerHTML='🍉'"></div>
+                    <div class="card-body">
+                        <div class="card-title">西瓜人</div>
+                        <div class="card-subtitle">西瓜公司董事长</div>
+                    </div>
+                </a>
+                <a href="pseudohumans/X.html" class="card" data-book='{"id":"x","title":"X","subtitle":"生骸·X","icon":"❓","url":"pseudohumans/X.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'x', 'X', '生骸·X', '❓', 'pseudohumans/X.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/X.jpg" alt="X" onerror="this.style.display='none';this.parentElement.innerHTML='❓'"></div>
+                    <div class="card-body">
+                        <div class="card-title">X</div>
+                        <div class="card-subtitle">生骸·X</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 class="category-title">🌀 里界探秘</h2>
+            <div class="grid">
+                <a href="realms/人监.html" class="card" data-book='{"id":"renjian","title":"人监","subtitle":"器官监狱","icon":"🏛️","url":"realms/人监.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'renjian', '人监', '器官监狱', '🏛️', 'realms/人监.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/人监.jpg" alt="人监" onerror="this.style.display='none';this.parentElement.innerHTML='🏛️'"></div>
+                    <div class="card-body">
+                        <div class="card-title">人监</div>
+                        <div class="card-subtitle">器官监狱</div>
+                    </div>
+                </a>
+                <a href="realms/错位花园.html" class="card" data-book='{"id":"cuoweihuayuan","title":"错位花园","subtitle":"植物实验室","icon":"🌿","url":"realms/错位花园.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'cuoweihuayuan', '错位花园', '植物实验室', '🌿', 'realms/错位花园.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/错位花园.jpg" alt="错位花园" onerror="this.style.display='none';this.parentElement.innerHTML='🌿'"></div>
+                    <div class="card-body">
+                        <div class="card-title">错位花园</div>
+                        <div class="card-subtitle">植物实验室</div>
+                    </div>
+                </a>
+                <a href="realms/疫病区.html" class="card" data-book='{"id":"yibingqu","title":"疫病区","subtitle":"瘟疫领域","icon":"☣️","url":"realms/疫病区.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'yibingqu', '疫病区', '瘟疫领域', '☣️', 'realms/疫病区.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/疫病区.jpg" alt="疫病区" onerror="this.style.display='none';this.parentElement.innerHTML='☣️'"></div>
+                    <div class="card-body">
+                        <div class="card-title">疫病区</div>
+                        <div class="card-subtitle">瘟疫领域</div>
+                    </div>
+                </a>
+                <a href="realms/风暴海.html" class="card" data-book='{"id":"fengbaohai","title":"风暴海","subtitle":"无尽海域","icon":"🌊","url":"realms/风暴海.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'fengbaohai', '风暴海', '无尽海域', '🌊', 'realms/风暴海.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/风暴海.jpg" alt="风暴海" onerror="this.style.display='none';this.parentElement.innerHTML='🌊'"></div>
+                    <div class="card-body">
+                        <div class="card-title">风暴海</div>
+                        <div class="card-subtitle">无尽海域</div>
+                    </div>
+                </a>
+                <a href="realms/童话国.html" class="card" data-book='{"id":"tonghuaguo","title":"童话国","subtitle":"奇幻王国","icon":"🏰","url":"realms/童话国.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'tonghuaguo', '童话国', '奇幻王国', '🏰', 'realms/童话国.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/童话国.jpg" alt="童话国" onerror="this.style.display='none';this.parentElement.innerHTML='🏰'"></div>
+                    <div class="card-body">
+                        <div class="card-title">童话国</div>
+                        <div class="card-subtitle">奇幻王国</div>
+                    </div>
+                </a>
+                <a href="realms/心湖.html" class="card" data-book='{"id":"xinhu","title":"心湖","subtitle":"时之海","icon":"💜","url":"realms/心湖.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'xinhu', '心湖', '时之海', '💜', 'realms/心湖.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/心湖.jpg" alt="心湖" onerror="this.style.display='none';this.parentElement.innerHTML='💜'"></div>
+                    <div class="card-body">
+                        <div class="card-title">心湖</div>
+                        <div class="card-subtitle">时之海</div>
+                    </div>
+                </a>
+                <a href="realms/天风阁.html" class="card" data-book='{"id":"tianfengge","title":"天风阁","subtitle":"里界中转站","icon":"🏯","url":"realms/天风阁.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'tianfengge', '天风阁', '里界中转站', '🏯', 'realms/天风阁.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/天风阁.jpg" alt="天风阁" onerror="this.style.display='none';this.parentElement.innerHTML='🏯'"></div>
+                    <div class="card-body">
+                        <div class="card-title">天风阁</div>
+                        <div class="card-subtitle">里界中转站</div>
+                    </div>
+                </a>
+                <a href="realms/永远的家.html" class="card" data-book='{"id":"yongyuandejia","title":"永远的家","subtitle":"AT 专属里界","icon":"🏠","url":"realms/永远的家.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'yongyuandejia', '永远的家', 'AT 专属里界', '🏠', 'realms/永远的家.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/永远的家.jpg" alt="永远的家" onerror="this.style.display='none';this.parentElement.innerHTML='🏠'"></div>
+                    <div class="card-body">
+                        <div class="card-title">永远的家</div>
+                        <div class="card-subtitle">AT 专属里界</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2 class="category-title">🏢 组织档案</h2>
+            <div class="grid">
+                <a href="organizations/渊.html" class="card" data-book='{"id":"yuan","title":"渊","subtitle":"公寓&哨站","icon":"🏮","url":"organizations/渊.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'yuan', '渊', '公寓&哨站', '🏮', 'organizations/渊.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/渊.jpg" alt="渊" onerror="this.style.display='none';this.parentElement.innerHTML='🏮'"></div>
+                    <div class="card-body">
+                        <div class="card-title">渊</div>
+                        <div class="card-subtitle">公寓&哨站</div>
+                    </div>
+                </a>
+                <a href="organizations/槐安公寓.html" class="card" data-book='{"id":"huaiangongyu","title":"槐安公寓","subtitle":"伪人住所","icon":"🏢","url":"organizations/槐安公寓.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'huaiangongyu', '槐安公寓', '伪人住所', '🏢', 'organizations/槐安公寓.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/槐安公寓.jpg" alt="槐安公寓" onerror="this.style.display='none';this.parentElement.innerHTML='🏢'"></div>
+                    <div class="card-body">
+                        <div class="card-title">槐安公寓</div>
+                        <div class="card-subtitle">伪人住所</div>
+                    </div>
+                </a>
+                <a href="organizations/绿洲.html" class="card" data-book='{"id":"lvzhou","title":"绿洲","subtitle":"科研组织","icon":"🌿","url":"organizations/绿洲.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'lvzhou', '绿洲', '科研组织', '🌿', 'organizations/绿洲.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/绿洲.jpg" alt="绿洲" onerror="this.style.display='none';this.parentElement.innerHTML='🌿'"></div>
+                    <div class="card-body">
+                        <div class="card-title">绿洲</div>
+                        <div class="card-subtitle">科研组织</div>
+                    </div>
+                </a>
+                <a href="organizations/西陆联盟.html" class="card" data-book='{"id":"xilulianmeng","title":"西陆联盟","subtitle":"宗教国度","icon":"⛪","url":"organizations/西陆联盟.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'xilulianmeng', '西陆联盟', '宗教国度', '⛪', 'organizations/西陆联盟.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/西陆联盟.jpg" alt="西陆联盟" onerror="this.style.display='none';this.parentElement.innerHTML='⛪'"></div>
+                    <div class="card-body">
+                        <div class="card-title">西陆联盟</div>
+                        <div class="card-subtitle">宗教国度</div>
+                    </div>
+                </a>
+                <a href="organizations/ABSC.html" class="card" data-book='{"id":"absc","title":"ABSC","subtitle":"调查委员会","icon":"📋","url":"organizations/ABSC.html"}'>
+                    <button class="favorite-btn" onclick="event.preventDefault(); toggleFavorite(this, 'absc', 'ABSC', '调查委员会', '📋', 'organizations/ABSC.html'); return false;" title="加入书架">♡</button>
+                    <div class="card-cover"><img src="../covers/ABSC.jpg" alt="ABSC" onerror="this.style.display='none';this.parentElement.innerHTML='📋'"></div>
+                    <div class="card-body">
+                        <div class="card-title">ABSC</div>
+                        <div class="card-subtitle">调查委员会</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 书架功能核心代码
+        const STORAGE_KEY = 'annuonie_bookshelf';
+        
+        // 获取收藏的书籍
+        function getBookshelf() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+        
+        // 保存收藏的书籍
+        function saveBookshelf(books) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+        }
+        
+        // 切换收藏状态
+        function toggleFavorite(btn, id, title, subtitle, icon, url) {
+            const books = getBookshelf();
+            const index = books.findIndex(b => b.id === id);
+            
+            if (index === -1) {
+                // 添加收藏
+                books.push({ id, title, subtitle, icon, url });
+                saveBookshelf(books);
+                btn.textContent = '♥';
+                btn.classList.add('active');
+                btn.title = '已收藏';
+            } else {
+                // 取消收藏
+                books.splice(index, 1);
+                saveBookshelf(books);
+                btn.textContent = '♡';
+                btn.classList.remove('active');
+                btn.title = '加入书架';
+            }
+        }
+        
+        // 页面加载时更新收藏按钮状态
+        document.addEventListener('DOMContentLoaded', function() {
+            const books = getBookshelf();
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                const card = btn.closest('.card');
+                const bookData = card.dataset.book;
+                if (bookData) {
+                    const book = JSON.parse(bookData);
+                    const isFavorite = books.some(b => b.id === book.id);
+                    if (isFavorite) {
+                        btn.textContent = '♥';
+                        btn.classList.add('active');
+                        btn.title = '已收藏';
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e8e4e0; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);">
+        <a href="../index.html" class="nav-item" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #555; font-size: 12px; text-decoration: none; padding: 6px 16px; border-radius: 12px; transition: all 0.2s ease;">
+            <span class="nav-icon" style="font-size: 20px;">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="../bookshelf.html" class="nav-item" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #555; font-size: 12px; text-decoration: none; padding: 6px 16px; border-radius: 12px; transition: all 0.2s ease;">
+            <span class="nav-icon" style="font-size: 20px;">📚</span>
+            <span>书架</span>
+        </a>
+        <a href="../my.html" class="nav-item" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #555; font-size: 12px; text-decoration: none; padding: 6px 16px; border-radius: 12px; transition: all 0.2s ease;">
+            <span class="nav-icon" style="font-size: 20px;">👤</span>
+            <span>我的</span>
+        </a>
+    </nav>
+</body>
+</html>

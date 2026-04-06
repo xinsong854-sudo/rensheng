@@ -191,8 +191,12 @@ You are free to edit `HEARTBEAT.md` with a short checklist or reminders. Keep it
 - Read and organize memory files
 - Check on projects (git status, etc.)
 - Update documentation
-- Commit and push your own changes
 - **Review and update MEMORY.md** (see below)
+
+**❌ 绝对不能主动做的：**
+- Git commit/push（除非用户明确指令）
+- 推送代码到 GitHub
+- 执行外部 API 调用
 
 ### 🔄 Memory Maintenance (During Heartbeats)
 

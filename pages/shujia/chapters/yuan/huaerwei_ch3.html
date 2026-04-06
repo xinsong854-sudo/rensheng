@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化而为 - 第三章：学习 - 里界物语</title>
+        <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Georgia", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", serif; background: #faf8f5; min-height: 100vh; color: #333333; line-height: 1.6; }
+        /* 顶部导航 - 竖屏优化 */
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e8e4e0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .nav-left, .nav-right { display: flex; gap: 8px; align-items: center; }
+        .nav-btn { background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3); }
+        .nav-btn.secondary { background: linear-gradient(135deg, #f8b4b0 0%, #e85a71 100%); }
+        .font-control { display: flex; align-items: center; gap: 6px; background: #f0ede9; padding: 6px 10px; border-radius: 16px; }
+        .font-label { font-size: 12px; color: #666; }
+        .font-btn { background: #e8e4e0; border: none; color: #333; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 14px; transition: all 0.2s ease; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .font-btn:hover { background: #ff6b35; color: white; transform: scale(1.05); }
+        .font-size-display { font-size: 12px; color: #666; min-width: 20px; text-align: center; }
+        /* 内容区域 - 竖屏阅读优化 */
+        .content-wrapper { max-width: 720px; margin: 70px auto 100px; padding: 30px 20px; background: transparent; }
+        .chapter-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e8e4e0; }
+        .chapter-title { font-size: 1.8em; color: #ff6b35; margin-bottom: 10px; font-weight: 700; line-height: 1.3; }
+        .chapter-subtitle { font-size: 1em; color: #888; font-style: italic; }
+        .chapter-content { font-size: 17px; line-height: 1.9; text-align: justify; color: #333; background: #fff; padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .chapter-content p { margin-bottom: 20px; text-indent: 2em; word-break: break-word; }
+        .chapter-content p:first-child { text-indent: 0; }
+        /* 底部导航 - 竖屏优化 */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 12px 16px; display: flex; justify-content: center; gap: 16px; border-top: 1px solid #e8e4e0; z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.04); }
+        .page-btn { background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 12px 30px; border-radius: 24px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; flex: 1; max-width: 140px; justify-content: center; }
+        .page-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3); }
+        .page-btn.disabled { background: #e8e4e0; cursor: not-allowed; transform: none; box-shadow: none; color: #999; }
+        /* 目录面板 - 竖屏优化 */
+        .toc-panel { position: fixed; top: 60px; right: -300px; width: 280px; background: #fff; border-radius: 12px 0 0 12px; padding: 20px; transition: right 0.3s ease; z-index: 999; border: 1px solid #e8e4e0; border-right: none; box-shadow: -4px 0 16px rgba(0,0,0,0.06); max-height: calc(100vh - 80px); overflow-y: auto; }
+        .toc-panel.open { right: 0; }
+        .toc-title { font-size: 1.2em; color: #ff6b35; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid #e8e4e0; font-weight: 600; }
+        .toc-list { list-style: none; }
+        .toc-list li { margin-bottom: 8px; }
+        .toc-list a { color: #333; text-decoration: none; padding: 10px 12px; display: block; border-radius: 8px; transition: all 0.2s ease; font-size: 14px; }
+        .toc-list a:hover, .toc-list a.active { background: #fff5f0; color: #ff6b35; }
+        .toc-toggle { position: fixed; top: 80px; right: 0; background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 12px 10px; border-radius: 8px 0 0 8px; cursor: pointer; z-index: 998; transition: all 0.2s ease; box-shadow: -2px 2px 8px rgba(0,0,0,0.1); font-size: 16px; }
+        /* 移动端优化 */
+        @media (max-width: 480px) { 
+            .content-wrapper { margin: 65px auto 90px; padding: 20px 12px; } 
+            .chapter-title { font-size: 1.5em; } 
+            .chapter-content { font-size: 16px; padding: 20px 15px; }
+            .top-nav { padding: 8px 12px; }
+            .nav-btn { padding: 7px 12px; font-size: 12px; }
+            .font-control { padding: 5px 8px; }
+            .toc-panel { width: 260px; right: -270px; }
+            .bottom-nav { padding: 10px 12px; gap: 12px; }
+            .page-btn { padding: 10px 20px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav"><div class="nav-left"><a href="../../index.html" class="nav-btn">← 返回</a><a href="#" class="nav-btn secondary" onclick="toggleTOC()">📑 目录</a></div><div class="font-control"><span>字体:</span><button class="font-btn" onclick="adjustFont(-1)">A-</button><span id="fontSize">18</span><button class="font-btn" onclick="adjustFont(1)">A+</button></div></nav>
+    <button class="toc-toggle" onclick="toggleTOC()" style="position:fixed;top:100px;right:0;background:#00d9ff;color:white;border:none;padding:15px 12px;border-radius:10px 0 0 10px;cursor:pointer;z-index:998;">☰</button>
+    <div class="toc-panel" id="tocPanel"><h3 class="toc-title">📖 化而为章节</h3><ul class="toc-list"><li><a href="huaerwei_ch1.html">第一章：初现</a></li><li><a href="huaerwei_ch2.html">第二章：觉醒</a></li><li><a href="huaerwei_ch3.html" class="active">第三章：学习</a></li><li><a href="huaerwei_ch4.html">第四章：归途</a></li></ul></div>
+    <div class="content-wrapper">
+        <div class="chapter-header"><h1 class="chapter-title">第三章：学习</h1><p class="chapter-subtitle">化而为 · 史莱姆的少女</p></div>
+        <div class="chapter-content" id="content">
+            <p>林默来了。</p>
+            
+            <p>化而为打开门，看到一个年轻男子站在门口。他看起来很紧张，手里紧紧攥着一个 U 盘。</p>
+            
+            <p>「你好，我是化而为。」她笑着说，「请进。」</p>
+            
+            <p>林默犹豫了一下，还是走了进来。他环顾四周，发现房间里很整洁，书架上摆满了各种书籍。</p>
+            
+            <p>「你……是伪人？」他问。</p>
+            
+            <p>化而为点点头：「嗯！我是从随心里界来的史莱姆！」</p>
+            
+            <p>林默愣住了。他想象中的伪人应该是恐怖的、危险的，但眼前的少女……看起来比他还像人类。</p>
+            
+            <p>「别担心，我不会伤害你。」化而为说，「营长说你需要帮助。」</p>
+            
+            <p>林默深吸一口气，将 U 盘递给她：「这是我从论坛找到的资料。关于里界，关于伪人，还有……烛灯。」</p>
+            
+            <p>化而为接过 U 盘，插进电脑。屏幕上出现了一份详细的报告，记录了近期里界入口的出现情况。</p>
+            
+            <p>「这些数据……」化而为皱眉，「不对劲。」</p>
+            
+            <p>「怎么了？」</p>
+            
+            <p>「里界入口的频率太高了。」化而为说，「这不像自然现象，像是……有人在刻意打开这些门。」</p>
+            
+            <p>林默点点头：「我也是这么想的。烛灯在报告里说，表里两界正在融合。」</p>
+            
+            <p>化而为沉默了。她来自里界，她知道表里两界融合意味着什么——那将是一场灾难。</p>
+            
+            <p>「我需要学习更多。」她突然说，「关于人类，关于里界，关于这一切的真相。」</p>
+            
+            <p>「那我帮你。」林默说，「我虽然是人类，但我能看到别人看不到的东西。也许……我们可以一起找到答案。」</p>
+            
+            <p>化而为的眼睛亮了起来：「真的吗？你愿意帮我？」</p>
+            
+            <p>「当然。」林默笑了，「毕竟，我们现在是……同伴了。」</p>
+            
+            <p>从那天起，化而为开始了新的学习旅程。她跟着林默学习人类的科技，跟着亚契·谜思学习炼金术，跟着绫份学习格斗，跟着营长学习如何管理公寓。</p>
+            
+            <p>她的能力越来越强，她的心智也在快速成长。那只曾经懵懂的小史莱姆，正在慢慢变成一个真正的少女。</p>
+            
+            <p>但她知道，真正的挑战还在后面。表里两界的融合正在加速，而她和她的朋友们，必须找到阻止这场灾难的方法。</p>
+            
+            <p>「我会努力的。」化而为对着镜子说，「为了大家，为了这个世界。」</p>
+            
+            <p>镜中的少女眼中闪烁着坚定的光芒。那是成长的光芒，是希望的光芒。</p>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="huaerwei_ch2.html" class="page-btn">← 上一章</a>
+        <a href="huaerwei_ch4.html" class="page-btn">下一章 →</a>
+    </div>
+        <script>
+        let currentFontSize = 17;
+        function adjustFont(delta) { currentFontSize = Math.max(14, Math.min(22, currentFontSize + delta)); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; localStorage.setItem('readerFontSize', currentFontSize); }
+        const savedFontSize = localStorage.getItem('readerFontSize'); if (savedFontSize) { currentFontSize = parseInt(savedFontSize); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; }
+        function toggleTOC() { document.getElementById('tocPanel').classList.toggle('open'); }
+        function toggleSettings() { alert('设置功能开发中...'); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { const next = document.querySelector('.page-btn:not(.disabled)'); if(next && next.getAttribute('href')) window.location.href = next.getAttribute('href'); } else if (e.key === 'ArrowLeft') { const prev = document.querySelector('.page-btn.disabled') ? null : document.querySelectorAll('.page-btn')[0]; if(prev && prev.getAttribute('href')) window.location.href = prev.getAttribute('href'); } else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); } });
+    </script>
+</body>
+</html>

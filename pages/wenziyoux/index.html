@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>伪人大本营 - 互动视觉小说</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #0a0a1a; color: #eee; overflow: hidden; height: 100vh; }
+        #game-container { width: 100%; height: 100%; max-width: 1280px; max-height: 720px; margin: 0 auto; position: relative; }
+        #background { position: absolute; width: 100%; height: 100%; transition: background 0.5s; }
+        .bg-office { background: linear-gradient(180deg, #2d3436 0%, #1a1a2e 100%); }
+        .bg-street { background: linear-gradient(180deg, #0c0c0c 0%, #1a1a2e 100%); }
+        .bg-home { background: linear-gradient(180deg, #2d3436 0%, #0c0c0c 100%); }
+        .bg-forum { background: linear-gradient(180deg, #1a0a0a 0%, #2a1a1a 100%); }
+        .bg-ending { background: #000; }
+        #dialogue-box { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1000px; background: rgba(20,20,40,0.95); border: 2px solid #4a4a6a; border-radius: 15px; padding: 20px 30px; z-index: 10; display: none; }
+        #speaker-name { font-size: 20px; font-weight: bold; color: #7a7aaa; margin-bottom: 10px; }
+        #dialogue-text { font-size: 18px; line-height: 1.8; color: #fff; min-height: 60px; }
+        #choices-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20; display: none; flex-direction: column; gap: 15px; width: 80%; max-width: 600px; }
+        .choice-btn { background: linear-gradient(180deg, #3a3a5a 0%, #2a2a4a 100%); border: 2px solid #5a5a7a; border-radius: 10px; padding: 20px; color: #fff; font-size: 18px; cursor: pointer; text-align: center; transition: all 0.3s; }
+        .choice-btn:hover { background: linear-gradient(180deg, #4a4a6a 0%, #3a3a5a 100%); border-color: #7a7aaa; transform: scale(1.02); }
+        #title-screen { position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #title-screen h1 { font-size: 48px; color: #7a7aaa; margin-bottom: 20px; text-shadow: 0 0 20px rgba(122,122,170,0.5); }
+        .subtitle { font-size: 18px; color: #5a5a7a; margin-bottom: 30px; }
+        #name-input-container { display: none; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        #player-name-input { background: rgba(30,30,50,0.8); border: 2px solid #5a5a7a; border-radius: 8px; padding: 12px 20px; color: #fff; font-size: 16px; width: 250px; text-align: center; margin-bottom: 15px; }
+        #player-name-input:focus { outline: none; border-color: #7a7aaa; }
+        .name-hint { font-size: 12px; color: #5a5a7a; margin-top: 10px; }
+        .title-btn { background: #3a3a5a; border: 2px solid #5a5a7a; border-radius: 10px; padding: 15px 50px; color: #fff; font-size: 18px; cursor: pointer; margin: 10px; transition: all 0.3s; }
+        .title-btn:hover { background: #4a4a6a; border-color: #7a7aaa; transform: scale(1.05); }
+        #ending-screen { position: absolute; width: 100%; height: 100%; background: #000; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        #ending-screen h2 { font-size: 36px; color: #7a7aaa; margin-bottom: 20px; text-align: center; }
+        #ending-screen .ending-text { font-size: 18px; line-height: 2; color: #aaa; max-width: 700px; text-align: center; white-space: pre-line; }
+        .ending-bad { color: #ff6b6b; }
+        .ending-normal { color: #4ecdc4; }
+        .ending-true { color: #ffe66d; }
+        #check-ui { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; background: rgba(20,20,40,0.98); border: 3px solid #7a7aaa; border-radius: 15px; padding: 25px; z-index: 100; display: none; text-align: center; }
+        #check-ui h3 { color: #7a7aaa; margin-bottom: 15px; font-size: 24px; }
+        .check-info { margin: 10px 0; color: #aaa; font-size: 16px; }
+        #check-result { margin-top: 20px; font-size: 22px; font-weight: bold; white-space: pre-line; line-height: 1.6; }
+        #char-sheet-btn { position: fixed; top: 10px; right: 10px; background: #2a2a4a; border: 2px solid #4a4a6a; color: #4ecdc4; padding: 8px 15px; border-radius: 8px; cursor: pointer; z-index: 100; font-size: 14px; transition: all 0.3s; }
+        #char-sheet-btn:hover { background: #3a3a5a; border-color: #7a7aaa; }
+        #char-sheet { display: none; position: fixed; top: 50px; right: 10px; width: 280px; background: rgba(20,20,40,0.98); border: 2px solid #4a4a6a; border-radius: 10px; padding: 15px; z-index: 99; font-size: 13px; }
+        #char-sheet h3 { color: #4ecdc4; margin: 0 0 10px 0; font-size: 18px; }
+        #char-name { color: #fff; margin-bottom: 10px; }
+        .char-section { border-top: 1px solid #4a4a6a; padding-top: 10px; margin-top: 10px; }
+        .char-section-title { color: #aaa; margin-bottom: 5px; font-size: 12px; }
+        .char-stat-row { display: flex; justify-content: space-between; padding: 3px 0; }
+        .char-stat-label { color: #aaa; }
+        .char-stat-value { color: #4ecdc4; }
+        #menu-buttons { position: absolute; top: 20px; right: 20px; z-index: 30; display: flex; gap: 10px; }
+        .menu-btn { background: rgba(30,30,50,0.8); border: 1px solid #5a5a7a; border-radius: 5px; padding: 8px 15px; color: #aaa; cursor: pointer; transition: all 0.3s; }
+        .menu-btn:hover { background: rgba(50,50,80,0.9); color: #fff; }
+        #continue-indicator { position: absolute; bottom: 15px; right: 30px; font-size: 24px; color: #7a7aaa; animation: blink 1s infinite; }
+        @keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+<div id="game-container">
+    <div id="background" class="bg-office"></div>
+    <div id="menu-buttons">
+        <button class="menu-btn" onclick="showTitle()">🏠 标题</button>
+    </div>
+    <div id="title-screen">
+        <h1>🎭 伪人大本营</h1>
+        <p class="subtitle">你能识破伪装者吗？</p>
+        <div id="name-input-container">
+            <input type="text" id="player-name-input" placeholder="输入你的名字..." maxlength="20">
+            <button class="title-btn" onclick="confirmName()">▶️ 开始游戏</button>
+            <p class="name-hint">💡 输入官方角色名有彩蛋（安诺涅、烛灯等）</p>
+        </div>
+        <button class="title-btn" id="start-btn" onclick="showNameInput()">🎮 开始游戏</button>
+    </div>
+    <div id="dialogue-box" onclick="nextDialogue()">
+        <div id="speaker-name"></div>
+        <div id="dialogue-text"></div>
+        <div id="continue-indicator" style="display: none;">▼</div>
+    </div>
+    <div id="choices-container"></div>
+    <div id="check-ui">
+        <h3>🎲 检定</h3>
+        <div id="check-description" class="check-info"></div>
+        <div id="check-attr" class="check-info"></div>
+        <div id="check-skill" class="check-info"></div>
+        <div id="check-dc" class="check-info"></div>
+        <div id="check-roll" class="check-info"></div>
+        <div id="check-target" class="check-info"></div>
+        <div id="check-result"></div>
+    </div>
+    <button id="char-sheet-btn" onclick="toggleCharSheet(event)">📋 车卡</button>
+    <div id="char-sheet">
+        <h3>📊 角色卡</h3>
+        <div id="char-name"></div>
+        <div class="char-section">
+            <div class="char-section-title">【属性】</div>
+            <div id="char-stats"></div>
+        </div>
+        <div class="char-section">
+            <div class="char-section-title">【技能】</div>
+            <div id="char-skills"></div>
+        </div>
+        <button onclick="toggleCharSheet(event)" style="margin-top:10px;width:100%;background:#3a3a5a;border:none;color:#fff;padding:8px;border-radius:5px;cursor:pointer;">关闭</button>
+    </div>
+    <div id="ending-screen">
+        <h2 id="ending-title"></h2>
+        <div id="ending-text" class="ending-text"></div>
+        <button class="title-btn" onclick="showTitle()" style="margin-top:30px;">🔄 重新开始</button>
+    </div>
+</div>
+<script>
+let playerName = '';
+let isEasterEgg = false;
+let easterEggRole = null;
+let playerCharacter = null;
+let currentScene = null;
+let dialogueIndex = 0;
+let currentText = '';
+
+const easterEggRoles = {
+    '安诺涅': '论坛管理员', '营长': '论坛管理员', '楼长': '论坛管理员',
+    '非常玦蝶': '哨站站长', '二营长': '哨站站长',
+    '烛灯': '揭秘人最后成员',
+    '独允': 'AI 核心', 'AI': 'AI 核心',
+    '西瓜人': '西瓜公司董事长', '西瓜': '西瓜公司董事长',
+    '兔仙': '茶居公寓住户', '兔子': '茶居公寓住户',
+    '赫卡忒': '仿生人', 'Hecate': '仿生人',
+    'AT': '奇迹伪神', '奇迹': '奇迹伪神',
+    '渔夫': '利维坦', '利维坦': '利维坦',
+    '瘟疫': '瘟疫医生', '医生': '瘟疫医生',
+    '手偶': '云蓝', '温柔': '江安', '傀儡': '约斯密特'
+};
+
+const officialChars = {
+    '安诺涅': { name: '安诺涅', background: '槐安公寓楼长', stats: { SAN: 65, INS: 70, DIS: 55, LUK: 50, SUR: 60 } },
+    '营长': { name: '安诺涅', background: '槐安公寓楼长', stats: { SAN: 65, INS: 70, DIS: 55, LUK: 50, SUR: 60 } },
+    '非常玦蝶': { name: '非常玦蝶', background: '非常电影院站长', stats: { SAN: 50, INS: 65, DIS: 45, LUK: 55, SUR: 70 } },
+    '二营长': { name: '非常玦蝶', background: '非常电影院站长', stats: { SAN: 50, INS: 65, DIS: 45, LUK: 55, SUR: 70 } },
+    '烛灯': { name: '烛灯', background: '揭秘人最后成员', stats: { SAN: 40, INS: 70, DIS: 30, LUK: 50, SUR: 80 } },
+    '独允': { name: '独允', background: 'AI 核心', stats: { SAN: 20, INS: 95, DIS: 30, LUK: 40, SUR: 35 } },
+    'AI': { name: '独允', background: 'AI 核心', stats: { SAN: 20, INS: 95, DIS: 30, LUK: 40, SUR: 35 } },
+    '西瓜人': { name: '西瓜人', background: '西瓜公司董事长', stats: { SAN: 40, INS: 60, DIS: 70, LUK: 60, SUR: 55 } },
+    '兔仙': { name: '兔仙', background: '茶居公寓', stats: { SAN: 55, INS: 65, DIS: 60, LUK: 65, SUR: 50 } },
+    '赫卡忒': { name: '赫卡忒', background: '仿生人', stats: { SAN: 25, INS: 85, DIS: 35, LUK: 40, SUR: 60 } }
+};
+
+const scenes = {
+    'start': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '（在这家公司干了三年。）' },
+            { speaker: '我', text: '我叫{{PLAYER_NAME}}，至少……目前还是这个名字。' },
+            { speaker: '我', text: '但最近...我发现同事们有些不对劲。' },
+            { speaker: '我', text: '张明眨眼太规律了，像设定好的程序。李雨说话总是重复最后一句话。' },
+            { speaker: '我', text: '直到那天，我在张明的桌子上发现了一张纸条...' }
+        ],
+        choices: [
+            { text: '📄 查看纸条内容', next: 'read_note' }
+        ]
+    },
+    'read_note': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '', text: '【纸条内容】' },
+            { speaker: '？？？', text: '如果你看到了这张纸条，说明你已经开始怀疑了。' },
+            { speaker: '？？？', text: '【生存指南】' },
+            { speaker: '？？？', text: '1. 伪人会模仿人类，但眨眼频率异常（太规律）' },
+            { speaker: '？？？', text: '2. 他们说话会重复关键词或最后一句话' },
+            { speaker: '？？？', text: '3. 伪人大本营不是具体地点，是论坛（槐安公寓业主论坛）' },
+            { speaker: '？？？', text: '4. 猎人组织联系方式:1062624601' },
+            { speaker: '？？？', text: '5. 如果发现被跟踪，去人多的地方' },
+            { speaker: '？？？', text: '6. 不要报警（警察不会相信你）' },
+            { speaker: '？？？', text: '祝你好运。——烛灯（揭秘人组织最后成员）' },
+            { speaker: '我', text: '（我的心脏开始狂跳...这上面写的，和张明的行为完全吻合！）' },
+            { speaker: '我', text: '（伪人...？这怎么可能...）' },
+            { speaker: '张明', text: '你在看什么？' },
+            { speaker: '我', text: '（他的声音突然从身后传来！我浑身一僵...）' }
+        ],
+        choices: [
+            { text: '「说是工作文件」——假装镇定', next: 'fake_work' },
+            { text: '「直接询问纸条」——正面质问', next: 'ask_note' },
+            { text: '「仔细观察张明」——INS 检定', next: 'observe_result', onclick: 'doInsCheck()' }
+        ]
+    },
+    'observe_zhangming': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '系统', text: '🎲 洞察检定进行中...' },
+            { speaker: '我', text: '（我强作镇定，暗中观察着张明的每一个细节...）' }
+        ],
+        choices: [
+            { text: '继续', next: 'observe_result' }
+        ]
+    },
+    'observe_result': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '（他的眨眼...太规律了。每 3 秒一次，像设定好的程序。）' },
+            { speaker: '我', text: '（还有他的站姿，完美对称，双手下垂角度完全一致...）' },
+            { speaker: '我', text: '（这绝对不是正常人会有的状态！）' }
+        ],
+        choices: [
+            { text: '「说是工作文件」——假装镇定', next: 'fake_work' },
+            { text: '「直接询问纸条」——正面质问', next: 'ask_note' }
+        ]
+    },
+    'fake_work': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '（...说点什么，快说点什么。）' },
+            { speaker: '我', text: '「...会议资料。下周的。」' },
+            { speaker: '我', text: '（我把纸条攥成一团，塞进兜里。）' },
+            { speaker: '我', text: '（他盯着我。一秒。两秒。）' },
+            { speaker: '张明', text: '「...哦。」' },
+            { speaker: '张明', text: '「早点回去吧，你脸色不太好。」' },
+            { speaker: '我', text: '（...这就完了？）' },
+            { speaker: '我', text: '（我抓起包，尽量自然地往门口走。）' },
+            { speaker: '我', text: '（出了门，进电梯，按关门键。）' },
+            { speaker: '我', text: '（门缓缓合上，他还站在那，看着我。）' }
+        ],
+        choices: [
+            { text: '🏃 赶紧离开公司', next: 'leave_company' },
+            { text: '🏠 先回家...得想想怎么办', next: 'go_home' }
+        ]
+    },
+    'ask_note': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '「这张纸条...是你的吗？」' },
+            { speaker: '我', text: '（我把纸条摊开在桌上。）' },
+            { speaker: '张明', text: '「...」' },
+            { speaker: '我', text: '（他的表情...没有任何变化。但那眼神，冷得像冰。）' },
+            { speaker: '张明', text: '「你看到了多少？」' },
+            { speaker: '我', text: '（我的后背开始冒冷汗...）' }
+        ],
+        choices: [
+            { text: '「全部。」——强硬', next: 'confront_hard' },
+            { text: '「一些...关于伪人的？」——试探', next: 'confront_careful' }
+        ]
+    },
+    'confront_hard': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '「全部。你是伪人，对吧？」' },
+            { speaker: '张明', text: '「...」' },
+            { speaker: '我', text: '（他站起身。动作...太流畅了。像精心设计的程序。）' },
+            { speaker: '张明', text: '「你不该知道的。」' },
+            { speaker: '我', text: '（他朝我走来。我下意识地后退...）' }
+        ],
+        choices: [
+            { text: '🏃 逃跑！', next: 'escape_office' },
+            { text: '💪 反抗！', next: 'fight_zhangming' }
+        ]
+    },
+    'confront_careful': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '「一些...关于伪人的？」' },
+            { speaker: '张明', text: '「看来你知道的已经够多了。」' },
+            { speaker: '我', text: '（他叹了口气。这个动作...太人性化了。）' },
+            { speaker: '张明', text: '「听着。我可以让你离开。但你要忘记今天看到的一切。」' },
+            { speaker: '我', text: '（...他在给我机会？）' }
+        ],
+        choices: [
+            { text: '「好，我答应你。」——假装同意', next: 'fake_agree' },
+            { text: '「我想知道更多。」——继续追问', next: 'ask_more' }
+        ]
+    },
+    'leave_company': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我快步走出大楼。）' },
+            { speaker: '我', text: '（街上人来人往。但此刻，我开始怀疑每一个人...）' },
+            { speaker: '我', text: '（那个眨眼的频率...是不是也太规律了？）' },
+            { speaker: '我', text: '（不，别胡思乱想。）' }
+        ],
+        choices: [
+            { text: '🏠 回家', next: 'go_home' },
+            { text: '📱 联系猎人组织', next: 'contact_hunter' }
+        ]
+    },
+    'go_home': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（回到家，我锁上门。）' },
+            { speaker: '我', text: '（坐在沙发上，我掏出手机。）' },
+            { speaker: '我', text: '（纸条上的论坛...伪人大本营？）' },
+            { speaker: '我', text: '（我输入网址，页面加载...）' }
+        ],
+        choices: [
+            { text: '🌐 浏览论坛', next: 'browse_forum' }
+        ]
+    },
+    'browse_forum': {
+        bg: 'bg-forum',
+        dialogues: [
+            { speaker: '', text: '【伪人大本营 - 首页】' },
+            { speaker: '', text: '置顶帖：「生存指南」- 作者：烛灯' },
+            { speaker: '', text: '最新帖：「今天差点被发现」- 作者：匿名用户' },
+            { speaker: '', text: '最新帖：「如何完美模仿人类」- 作者：学习者' },
+            { speaker: '我', text: '（我的手在颤抖...）' },
+            { speaker: '我', text: '（烛灯的帖子...）' }
+        ],
+        choices: [
+            { text: '📖 阅读烛灯的帖子', next: 'read_candlelight_post' }
+        ]
+    },
+    'read_candlelight_post': {
+        bg: 'bg-forum',
+        dialogues: [
+            { speaker: '', text: '【烛灯的第四篇帖子】' },
+            { speaker: '烛灯', text: '如果你读到这里，说明你已经意识到了真相。' },
+            { speaker: '烛灯', text: '伪人不是科幻。他们就在我们身边。' },
+            { speaker: '烛灯', text: '但请记住：不是所有伪装者都是敌人。' },
+            { speaker: '烛灯', text: '槐安公寓是一个特殊的地方。那里有人类，也有伪人。' },
+            { speaker: '烛灯', text: '如果你无处可去，可以去那里寻找庇护。' },
+            { speaker: '烛灯', text: '但小心。不是所有人都值得信任。' },
+            { speaker: '烛灯', text: '包括我。' },
+            { speaker: '烛灯', text: '——这是「揭秘人」组织的最后一条信息。' },
+            { speaker: '我', text: '（帖子到这里戛然而止。）' },
+            { speaker: '我', text: '（揭秘人...那是什么组织？）' }
+        ],
+        choices: [
+            { text: '🔍 搜索「揭秘人」', next: 'search_revealers' },
+            { text: '🏢 前往槐安公寓', next: 'go_apartment' }
+        ]
+    },
+    'search_revealers': {
+        bg: 'bg-forum',
+        dialogues: [
+            { speaker: '我', text: '（我在论坛里搜索「揭秘人」...）' },
+            { speaker: '', text: '【搜索结果】' },
+            { speaker: '', text: '「揭秘人组织已被清除」- 官方公告' },
+            { speaker: '', text: '「最后的揭秘人：烛灯」- 匿名用户' },
+            { speaker: '', text: '「他们知道得太多了」- 已删除帖子' },
+            { speaker: '我', text: '（被清除...？）' },
+            { speaker: '我', text: '（烛灯...是最后一个？）' }
+        ],
+        choices: [
+            { text: '🏢 前往槐安公寓', next: 'go_apartment' },
+            { text: '📞 联系猎人', next: 'contact_hunter' }
+        ]
+    },
+    'contact_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我拨通了纸条上的号码。）' },
+            { speaker: '电话', text: '「喂？」' },
+            { speaker: '我', text: '「我...我看到了纸条。关于伪人的。」' },
+            { speaker: '电话', text: '（沉默）' },
+            { speaker: '电话', text: '「在哪？」' },
+            { speaker: '我', text: '「公司。XX 大厦。」' },
+            { speaker: '电话', text: '「别动。我们派人来。」' },
+            { speaker: '我', text: '（电话挂断了。）' }
+        ],
+        choices: [
+            { text: '⏳ 等待猎人', next: 'wait_hunter' }
+        ]
+    },
+    'wait_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我躲在街角的咖啡厅里。）' },
+            { speaker: '我', text: '（三十分钟后，一辆黑色轿车停在大厦门口。）' },
+            { speaker: '我', text: '（下来三个人。两男一女。都穿着西装。）' },
+            { speaker: '神秘人', text: '「是你打的电话？」' },
+            { speaker: '我', text: '（我点点头。）' }
+        ],
+        choices: [
+            { text: '「是的，我发现了伪人。」', next: 'tell_hunter' },
+            { text: '「你们...真的是猎人吗？」——怀疑', next: 'doubt_hunter' }
+        ]
+    },
+    'tell_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '「是的，我发现了伪人。我的同事。」' },
+            { speaker: '神秘人', text: '「描述一下。」' },
+            { speaker: '我', text: '（我详细描述了张明的异常行为。）' },
+            { speaker: '神秘人', text: '（他点点头。）' },
+            { speaker: '神秘人', text: '「做得好。我们会处理。」' },
+            { speaker: '神秘人', text: '「你想加入我们吗？」' }
+        ],
+        choices: [
+            { text: '「我想。」——加入猎人', next: 'ending_hunter' },
+            { text: '「不了，我只想活下去。」——拒绝', next: 'refuse_hunter' }
+        ]
+    },
+    'refuse_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '神秘人', text: '「理解。」' },
+            { speaker: '神秘人', text: '「拿着这个。」' },
+            { speaker: '我', text: '（他递给我一张名片。）' },
+            { speaker: '神秘人', text: '「如果有危险，打这个号码。」' },
+            { speaker: '神秘人', text: '「祝你好运。」' }
+        ],
+        choices: [
+            { text: '📖 继续', next: 'ending_survivor' }
+        ]
+    },
+    'doubt_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '神秘人', text: '（他盯着我。）' },
+            { speaker: '神秘人', text: '「你觉得我们是什么？」' },
+            { speaker: '我', text: '「我...我只是想确认。」' },
+            { speaker: '神秘人', text: '「理解。谨慎是好事。」' },
+            { speaker: '神秘人', text: '「但我们没时间证明。伪人随时可能出现。」' }
+        ],
+        choices: [
+            { text: '「好吧，我相信你们。」', next: 'tell_hunter' },
+            { text: '「我要走了。」——离开', next: 'leave_hunter' }
+        ]
+    },
+    'leave_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我转身离开。）' },
+            { speaker: '神秘人', text: '「你会回来的。」' },
+            { speaker: '我', text: '（我没有回头。）' }
+        ],
+        choices: [
+            { text: '📖 继续', next: 'ending_alone' }
+        ]
+    },
+    'go_apartment': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我按照论坛上的地址，来到了槐安公寓。）' },
+            { speaker: '我', text: '（这是一栋老式建筑。看起来有些年头了。）' },
+            { speaker: '我', text: '（我按下门铃...）' },
+            { speaker: '？？？', text: '「谁？」' },
+            { speaker: '我', text: '「我...我在论坛上看到了烛灯的帖子。」' },
+            { speaker: '？？？', text: '（沉默）' },
+            { speaker: '？？？', text: '「进来。」' }
+        ],
+        choices: [
+            { text: '🚪 进入公寓', next: 'enter_apartment' }
+        ]
+    },
+    'enter_apartment': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（门开了。一个高挑的女人站在门口。）' },
+            { speaker: '？？？', text: '「我是营长。这里的楼长。」' },
+            { speaker: '我', text: '（营长...论坛管理员？）' },
+            { speaker: '营长', text: '「烛灯的帖子把你引来的？」' },
+            { speaker: '我', text: '（我点点头。）' },
+            { speaker: '营长', text: '「进来吧。外面不安全。」' }
+        ],
+        choices: [
+            { text: '📖 继续', next: 'ending_apartment' }
+        ]
+    },
+    'escape_office': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我转身就跑！）' },
+            { speaker: '张明', text: '「站住！」' },
+            { speaker: '我', text: '（我冲进电梯，疯狂按关门键。）' },
+            { speaker: '我', text: '（门缓缓合上，我看到张明站在办公室门口...）' },
+            { speaker: '我', text: '（他的表情...扭曲了。那绝对不是人类能做出的表情。）' }
+        ],
+        choices: [
+            { text: '🏃 继续逃跑', next: 'ending_escape' }
+        ]
+    },
+    'fight_zhangming': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '（我抓起桌上的剪刀！）' },
+            { speaker: '张明', text: '「...」' },
+            { speaker: '我', text: '（他看着我。然后...笑了。）' },
+            { speaker: '张明', text: '「你以为这有用？」' },
+            { speaker: '我', text: '（他朝我走来。我挥舞剪刀...）' },
+            { speaker: '我', text: '（但他抓住了我的手腕。力量...大得不正常。）' }
+        ],
+        choices: [
+            { text: '💀 挣扎', next: 'ending_captured' }
+        ]
+    },
+    'fake_agree': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '「好，我答应你。」' },
+            { speaker: '张明', text: '（他点点头。）' },
+            { speaker: '张明', text: '「明智的选择。」' },
+            { speaker: '张明', text: '「现在，回家吧。忘记今天的一切。」' },
+            { speaker: '我', text: '（我点点头，转身离开。）' },
+            { speaker: '我', text: '（但我不会忘记。永远不会。）' }
+        ],
+        choices: [
+            { text: '📖 继续', next: 'ending_pretend' }
+        ]
+    },
+    'ask_more': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '「我想知道更多。」' },
+            { speaker: '张明', text: '（他叹了口气。）' },
+            { speaker: '张明', text: '「好奇心会害死猫。」' },
+            { speaker: '张明', text: '「但既然你坚持...」' },
+            { speaker: '张明', text: '「跟我来。」' }
+        ],
+        choices: [
+            { text: '🚶 跟随', next: 'follow_zhangming' }
+        ]
+    },
+    'follow_zhangming': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我跟着张明离开了公司。）' },
+            { speaker: '我', text: '（他带我来到一栋偏僻的建筑。）' },
+            { speaker: '张明', text: '「这里是我们的聚集点。」' },
+            { speaker: '我', text: '（聚集点...？）' },
+            { speaker: '张明', text: '「你想加入我们吗？」' }
+        ],
+        choices: [
+            { text: '「想。」——加入伪人', next: 'join_pseudo' },
+            { text: '「不！」——拒绝', next: 'refuse_pseudo' }
+        ]
+    },
+    'join_pseudo': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '张明', text: '「明智的选择。」' },
+            { speaker: '张明', text: '「但首先...你需要通过测试。」' },
+            { speaker: '我', text: '（测试...？）' },
+            { speaker: '我', text: '（他递给我一个小瓶子。）' },
+            { speaker: '张明', text: '「喝下它。」' }
+        ],
+        choices: [
+            { text: '💊 喝下', next: 'ending_transformed' },
+            { text: '🚫 拒绝', next: 'refuse_pseudo' }
+        ]
+    },
+    'refuse_pseudo': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '「不！」' },
+            { speaker: '张明', text: '（他的表情变了。）' },
+            { speaker: '张明', text: '「那就别怪我了。」' },
+            { speaker: '我', text: '（他朝我扑来！）' }
+        ],
+        choices: [
+            { text: '🏃 逃跑！', next: 'ending_captured' }
+        ]
+    }
+};
+
+const endings = {
+    'ending_hunter': { bg: 'bg-ending', endingType: 'true', endingTitle: '🎯 猎人新成员', endingText: '你加入了猎人组织。\n\n现在，你是猎杀伪人的一员。\n\n这条路充满危险，但至少...你不再孤单。\n\n【TRUE ENDING - 猎人新成员】' },
+    'ending_survivor': { bg: 'bg-ending', endingType: 'normal', endingTitle: '👤 幸存者', endingText: '你成功活了下来。\n\n这个世界依然危险，但至少你现在知道了规则。\n\n也许有一天，你会找到彻底解决的办法。\n但今天，你只是一个幸存者。\n\n【NORMAL ENDING - 幸存者】' },
+    'ending_alone': { bg: 'bg-ending', endingType: 'bad', endingTitle: '🚶 孤身一人', endingText: '你选择了独自离开。\n\n没有盟友，没有庇护。\n\n在这个充满伪人的世界里，你孤身一人...\n\n【BAD ENDING - 孤身一人】' },
+    'ending_apartment': { bg: 'bg-ending', endingType: 'normal', endingTitle: '🏢 槐安公寓', endingText: '你来到了槐安公寓。\n\n这里是人类与伪人共存的地方。\n\n也许...这就是新的开始？\n\n【NORMAL ENDING - 槐安公寓】' },
+    'ending_escape': { bg: 'bg-ending', endingType: 'normal', endingTitle: '🏃 逃脱', endingText: '你成功逃出了办公室。\n\n但你知道，这只是开始。\n\n伪人还在某处...注视着你。\n\n【NORMAL ENDING - 逃脱】' },
+    'ending_captured': { bg: 'bg-ending', endingType: 'bad', endingTitle: '🔒 被捕获', endingText: '你被伪人捕获了。\n\n等待你的命运...无人知晓。\n\n也许你会成为他们的一员。\n也许...你会消失。\n\n【BAD ENDING - 被捕获】' },
+    'ending_pretend': { bg: 'bg-ending', endingType: 'normal', endingTitle: '🎭 假装无知', endingText: '你假装忘记了一切。\n\n生活继续。但你心里清楚...\n\n你知道他们就在身边。\n\n【NORMAL ENDING - 假装无知】' },
+    'ending_transformed': { bg: 'bg-ending', endingType: 'bad', endingTitle: '🧪 成为同类', endingText: '你喝下了那瓶液体。\n\n痛苦。变化。\n\n当你再次睁开眼...\n\n你成为了他们的一员。\n\n【BAD ENDING - 成为同类】' }
+};
+
+function showTitle() {
+    document.getElementById('ending-screen').style.display = 'none';
+    document.getElementById('dialogue-box').style.display = 'none';
+    document.getElementById('choices-container').style.display = 'none';
+    document.getElementById('title-screen').style.display = 'flex';
+    document.getElementById('start-btn').style.display = 'block';
+    document.getElementById('name-input-container').style.display = 'none';
+}
+
+function showNameInput() {
+    document.getElementById('start-btn').style.display = 'none';
+    document.getElementById('name-input-container').style.display = 'flex';
+    document.getElementById('player-name-input').focus();
+}
+
+function confirmName() {
+    try {
+        const input = document.getElementById('player-name-input');
+        const nameValue = input.value.trim();
+        
+        if (!nameValue || nameValue.length === 0) {
+            alert('⚠️ 请输入你的名字！');
+            input.focus();
+            return;
+        }
+        
+        playerName = nameValue;
+        
+        let officialChar = officialChars[playerName];
+        if (!officialChar) {
+            for (const [key, char] of Object.entries(officialChars)) {
+                if (easterEggRoles[playerName] && easterEggRoles[playerName].includes(char.background)) {
+                    officialChar = char;
+                    break;
+                }
+            }
+        }
+        
+        if (officialChar) {
+            isEasterEgg = true;
+            easterEggRole = playerName;
+            playerCharacter = {
+                name: playerName,
+                stats: Object.assign({}, officialChar.stats),
+                skills: { '侦查': 15, '心理学': 15, '伪装': 10, '急救': 5, '生存': 10 },
+                background: officialChar.background
+            };
+            alert('🎉 彩蛋解锁：' + playerName + '\n身份：' + officialChar.background);
+        } else {
+            let remaining = 250;
+            let stats = {};
+            const statKeys = ['SAN', 'INS', 'DIS', 'LUK', 'SUR'];
+            
+            for (let i = 0; i < 4; i++) {
+                const min = Math.max(20, remaining - 60 * (4 - i));
+                const max = Math.min(60, remaining - 20 * (4 - i));
+                const value = Math.floor(Math.random() * (max - min + 1)) + min;
+                stats[statKeys[i]] = value;
+                remaining -= value;
+            }
+            stats[statKeys[4]] = remaining;
+            
+            const skills = { '侦查': 0, '心理学': 0, '伪装': 0, '急救': 0, '生存': 0 };
+            let skillRemaining = 30;
+            const skillKeys = Object.keys(skills);
+            for (let i = 0; i < 4; i++) {
+                const add = Math.floor(Math.random() * (skillRemaining / (5 - i) + 1));
+                skills[skillKeys[i]] = add;
+                skillRemaining -= add;
+            }
+            skills[skillKeys[4]] = skillRemaining;
+            
+            isEasterEgg = false;
+            playerCharacter = {
+                name: playerName,
+                stats: stats,
+                skills: skills,
+                background: '普通人'
+            };
+        }
+        
+        if (!isEasterEgg && easterEggRoles[playerName]) {
+            isEasterEgg = true;
+            easterEggRole = playerName;
+            alert('🎉 彩蛋解锁：' + playerName + '\n身份：' + easterEggRoles[playerName]);
+        }
+        
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('dialogue-box').style.display = 'block';
+        loadScene('start');
+    } catch(e) {
+        console.error('confirmName error:', e);
+        alert('错误：' + e.message);
+    }
+}
+
+function loadScene(sceneId) {
+    const scene = scenes[sceneId];
+    if (!scene) {
+        console.error('Scene not found:', sceneId);
+        return;
+    }
+    
+    currentScene = sceneId;
+    dialogueIndex = 0;
+    
+    document.getElementById('choices-container').style.display = 'none';
+    
+    const bg = document.getElementById('background');
+    bg.className = scene.bg || 'bg-office';
+    
+    if (endings[sceneId]) {
+        showEnding(endings[sceneId]);
+        return;
+    }
+    
+    showDialogue(scene.dialogues[0]);
+    
+    if (scene.dialogues.length === 1 && scene.choices) {
+        showChoices(scene.choices);
+    }
+}
+
+function showDialogue(dialogue) {
+    const speakerEl = document.getElementById('speaker-name');
+    const textEl = document.getElementById('dialogue-text');
+    
+    let speakerName = dialogue.speaker || '';
+    speakerEl.textContent = speakerName;
+    
+    currentText = dialogue.text || '';
+    
+    if (playerName) {
+        currentText = currentText.replace(/\{\{PLAYER_NAME\}\}/g, playerName);
+    }
+    
+    textEl.innerHTML = currentText.replace(/\n/g, '<br>');
+    
+    document.getElementById('dialogue-box').style.display = 'block';
+    document.getElementById('continue-indicator').style.display = 'block';
+}
+
+function showChoices(choices) {
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.text;
+        
+        if (choice.onclick) {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                window[choice.onclick]();
+                setTimeout(() => {
+                    loadScene(choice.next);
+                }, 3500);
+            };
+        } else {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                loadScene(choice.next);
+            };
+        }
+        
+        container.appendChild(btn);
+    });
+    
+    container.style.display = 'flex';
+}
+
+function nextDialogue() {
+    const scene = scenes[currentScene];
+    if (!scene) return;
+    
+    dialogueIndex++;
+    
+    if (dialogueIndex < scene.dialogues.length) {
+        showDialogue(scene.dialogues[dialogueIndex]);
+        
+        if (dialogueIndex === scene.dialogues.length - 1 && scene.choices) {
+            showChoices(scene.choices);
+        }
+    }
+}
+
+function showEnding(ending) {
+    const screen = document.getElementById('ending-screen');
+    const titleEl = document.getElementById('ending-title');
+    const textEl = document.getElementById('ending-text');
+    
+    titleEl.textContent = ending.endingTitle;
+    titleEl.className = ending.endingType === 'bad' ? 'ending-bad' : 
+                        ending.endingType === 'true' ? 'ending-true' : 'ending-normal';
+    
+    textEl.textContent = ending.endingText;
+    textEl.className = 'ending-text ' + (ending.endingType === 'bad' ? 'ending-bad' : 
+                                         ending.endingType === 'true' ? 'ending-true' : 'ending-normal');
+    
+    screen.style.display = 'flex';
+    document.getElementById('dialogue-box').style.display = 'none';
+    document.getElementById('choices-container').style.display = 'none';
+}
+
+function rollCheck(attribute, skill, dc, description) {
+    if (!playerCharacter) return null;
+    
+    const attrValue = playerCharacter.stats[attribute] || 50;
+    const skillValue = playerCharacter.skills[skill] || 0;
+    const targetValue = attrValue + skillValue;
+    const effectiveDC = dc;
+    
+    const roll = Math.floor(Math.random() * 100) + 1;
+    
+    let result;
+    if (roll <= 5) {
+        result = '大成功';
+    } else if (roll >= 96) {
+        result = '大失败';
+    } else if (roll <= targetValue - effectiveDC + 50) {
+        result = '成功';
+    } else {
+        result = '失败';
+    }
+    
+    return {
+        roll: roll,
+        targetValue: targetValue,
+        dc: dc,
+        result: result,
+        description: description,
+        attribute: attribute,
+        attrValue: attrValue,
+        skill: skill,
+        skillValue: skillValue
+    };
+}
+
+function showCheckResult(check) {
+    const ui = document.getElementById('check-ui');
+    const attrLabels = { 'SAN': '理智', 'INS': '洞察', 'DIS': '伪装', 'LUK': '幸运', 'SUR': '生存' };
+    
+    const targetValue = check.attrValue + check.skillValue;
+    const successThreshold = targetValue - check.dc + 50;
+    
+    document.getElementById('check-description').textContent = check.description;
+    document.getElementById('check-attr').textContent = attrLabels[check.attribute] + ': ' + check.attrValue;
+    document.getElementById('check-skill').textContent = check.skill + ': ' + check.skillValue;
+    document.getElementById('check-dc').textContent = 'DC: ' + check.dc;
+    document.getElementById('check-roll').textContent = '🎲 骰子：' + check.roll;
+    document.getElementById('check-target').textContent = '目标值：' + targetValue + ' (成功线：' + successThreshold + ')';
+    
+    const resultEl = document.getElementById('check-result');
+    let resultText = '';
+    if (check.result === '大成功') {
+        resultText = '🎉 大成功！(骰子≤5)\n骰子 ' + check.roll + ' ≤ 成功线 ' + successThreshold + '，完美通过！';
+        resultEl.style.color = '#ffe66d';
+    } else if (check.result === '成功') {
+        resultText = '✅ 成功\n骰子 ' + check.roll + ' ≤ 成功线 ' + successThreshold + '，检定通过！';
+        resultEl.style.color = '#4ecdc4';
+    } else if (check.result === '失败') {
+        resultText = '❌ 失败\n骰子 ' + check.roll + ' > 成功线 ' + successThreshold + '，检定未通过';
+        resultEl.style.color = '#ff6b6b';
+    } else {
+        resultText = '💀 大失败！(骰子≥96)\n骰子 ' + check.roll + '，灾难性失败！';
+        resultEl.style.color = '#ff0000';
+    }
+    resultEl.textContent = resultText;
+    resultEl.style.whiteSpace = 'pre-line';
+    resultEl.style.lineHeight = '1.6';
+    
+    ui.style.display = 'block';
+    
+    setTimeout(() => {
+        ui.style.display = 'none';
+    }, 4000);
+    
+    return check.result;
+}
+
+function doInsCheck() {
+    const check = rollCheck('INS', '侦查', 50, '仔细观察张明的行为');
+    if (check) {
+        showCheckResult(check);
+    }
+}
+
+function toggleCharSheet(event) {
+    if (event) event.stopPropagation();
+    const sheet = document.getElementById('char-sheet');
+    const btn = document.getElementById('char-sheet-btn');
+    
+    if (sheet.style.display === 'none' || !sheet.style.display) {
+        if (playerCharacter) {
+            document.getElementById('char-name').innerHTML = '👤 <b>' + playerCharacter.name + '</b> (' + playerCharacter.background + ')';
+            
+            const statsHtml = Object.entries(playerCharacter.stats).map(([k, v]) => {
+                const labels = { 'SAN': '理智', 'INS': '洞察', 'DIS': '伪装', 'LUK': '幸运', 'SUR': '生存' };
+                return '<div class="char-stat-row"><span class="char-stat-label">' + labels[k] + '</span><span class="char-stat-value">' + v + '</span></div>';
+            }).join('');
+            document.getElementById('char-stats').innerHTML = statsHtml;
+            
+            const skillsHtml = Object.entries(playerCharacter.skills).filter(([_, v]) => v > 0).map(([k, v]) => {
+                return '<div class="char-stat-row"><span class="char-stat-label">' + k + '</span><span class="char-stat-value">' + v + '</span></div>';
+            }).join('') || '<div style="color:#666;">无</div>';
+            document.getElementById('char-skills').innerHTML = skillsHtml;
+        }
+        sheet.style.display = 'block';
+        btn.style.display = 'none';
+    } else {
+        sheet.style.display = 'none';
+        btn.style.display = 'block';
+    }
+}
+
+showTitle();
+</script>
+</body>
+</html>

@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{TITLE}} - 里界物语</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary-color: #ff6b35;
+            --primary-hover: #ff8c5a;
+            --primary-light: rgba(255, 107, 53, 0.08);
+            --primary-gradient: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%);
+            
+            /* 日间模式 */
+            --bg-body: #faf8f5;
+            --bg-card: #ffffff;
+            --bg-content: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #555555;
+            --text-light: #888888;
+            --border-color: #e8e4e0;
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            
+            /* 字体设置 */
+            --font-size-base: 17px;
+            --line-height: 1.9;
+            --paragraph-spacing: 28px;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        /* 夜间模式 */
+        body.dark-mode {
+            --bg-body: #1a1a1a;
+            --bg-card: #242424;
+            --bg-content: #242424;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-light: #666666;
+            --border-color: #333333;
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 护眼模式 */
+        body.eye-protect-mode {
+            --bg-body: #f0f4e8;
+            --bg-card: #f5f9eb;
+            --bg-content: #f5f9eb;
+        }
+
+        body {
+            font-family: 'Georgia', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Serif SC', serif;
+            background: var(--bg-body);
+            min-height: 100vh;
+            color: var(--text-primary);
+            transition: background 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== 顶部导航 ========== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-mode .top-nav {
+            background: rgba(36, 36, 36, 0.95);
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 22px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.35);
+        }
+
+        .nav-btn.secondary {
+            background: #f5f5f5;
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .nav-btn.secondary {
+            background: #333;
+        }
+
+        .nav-btn.secondary:hover {
+            background: #e8e4e0;
+        }
+
+        .nav-btn.icon-only {
+            padding: 10px 14px;
+            font-size: 18px;
+        }
+
+        /* ========== 字体大小调节 ========== */
+        .font-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f5f5f5;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode .font-control {
+            background: #333;
+        }
+
+        .font-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .font-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.08);
+        }
+
+        .font-size-display {
+            font-size: 13px;
+            color: var(--text-secondary);
+            min-width: 28px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* ========== 内容区域 ========== */
+        .content-wrapper {
+            max-width: 720px;
+            margin: 70px auto 120px;
+            padding: 40px 24px;
+            background: var(--bg-content);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--card-shadow);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .content-wrapper {
+                padding: 50px 60px;
+                margin-top: 80px;
+            }
+        }
+
+        .chapter-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .chapter-title {
+            font-size: 1.8em;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        @media (min-width: 768px) {
+            .chapter-title {
+                font-size: 2.2em;
+            }
+        }
+
+        .chapter-subtitle {
+            font-size: 1em;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .chapter-meta {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* ========== 阅读内容 ========== */
+        .chapter-content {
+            font-size: var(--font-size-base);
+            line-height: var(--line-height);
+            color: var(--text-primary);
+            text-align: justify;
+            letter-spacing: 0.02em;
+        }
+
+        .chapter-content p {
+            margin-bottom: var(--paragraph-spacing);
+            text-indent: 2em;
+            word-wrap: break-word;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
+
+        .chapter-content p:first-child {
+            text-indent: 0;
+        }
+
+        .chapter-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 强调文本 */
+        .chapter-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .chapter-content em {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        /* 引用块 */
+        .chapter-content blockquote {
+            margin: 24px 0;
+            padding: 16px 20px;
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary-color);
+            border-radius: var(--radius-sm);
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        /* 分隔线 */
+        .chapter-content hr {
+            border: none;
+            height: 1px;
+            background: var(--border-color);
+            margin: 40px 0;
+        }
+
+        /* ========== 底部导航 ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-mode .bottom-nav {
+            background: rgba(36, 36, 36, 0.95);
+        }
+
+        .page-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 28px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .page-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.35);
+        }
+
+        .page-btn.disabled {
+            background: #e8e4e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+
+        body.dark-mode .page-btn.disabled {
+            background: #333;
+        }
+
+        /* ========== 目录面板 ========== */
+        .toc-panel {
+            position: fixed;
+            top: 0;
+            right: -380px;
+            width: 360px;
+            max-width: 85vw;
+            height: 100vh;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+            padding: 24px;
+            transition: right 0.3s ease;
+            z-index: 1001;
+            border: 1px solid var(--border-color);
+            border-right: none;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode .toc-panel {
+            background: var(--bg-card);
+        }
+
+        .toc-panel.open {
+            right: 0;
+        }
+
+        .toc-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .toc-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .toc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toc-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toc-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        .toc-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #f5f5f5;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .toc-close {
+            background: #333;
+        }
+
+        .toc-close:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .toc-list {
+            list-style: none;
+            flex: 1;
+        }
+
+        .toc-list li {
+            margin-bottom: 4px;
+        }
+
+        .toc-list a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 12px 16px;
+            display: block;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .toc-list a:hover {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .toc-list a.active {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .toc-list a .chapter-num {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-right: 8px;
+        }
+
+        .toc-list a.active .chapter-num {
+            color: var(--primary-color);
+        }
+
+        .toc-toggle {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .toc-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+
+        /* ========== 设置面板 ========== */
+        .settings-panel {
+            position: fixed;
+            top: 70px;
+            right: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            border: 1px solid var(--border-color);
+            display: none;
+            min-width: 200px;
+        }
+
+        body.dark-mode .settings-panel {
+            background: var(--bg-card);
+        }
+
+        .settings-panel.show {
+            display: block;
+        }
+
+        .settings-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .theme-btn {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn:hover, .theme-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* ========== 进度条 ========== */
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent;
+            z-index: 1002;
+        }
+
+        .reading-progress-bar {
+            height: 100%;
+            background: var(--primary-gradient);
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 10px 12px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .nav-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+            
+            .nav-btn span:not(.icon-only) {
+                display: none;
+            }
+            
+            .content-wrapper {
+                padding: 30px 18px;
+                margin-top: 120px;
+            }
+            
+            .chapter-title {
+                font-size: 1.5em;
+            }
+            
+            .chapter-content {
+                font-size: 16px;
+            }
+            
+            .bottom-nav {
+                padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+            }
+            
+            .page-btn {
+                padding: 12px 24px;
+                min-width: 120px;
+                font-size: 14px;
+            }
+        }
+
+        /* ========== 横屏优化 ========== */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .content-wrapper {
+                margin: 60px auto 80px;
+                padding: 20px 30px;
+            }
+            
+            .chapter-header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+            
+            .chapter-title {
+                font-size: 1.4em;
+            }
+            
+            .chapter-content p {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* ========== 平板适配 ========== */
+        @media (min-width: 768px) {
+            body {
+                background: var(--bg-body);
+            }
+            
+            .content-wrapper {
+                border: 1px solid var(--border-color);
+            }
+            
+            .toc-toggle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 阅读进度条 -->
+    <div class="reading-progress">
+        <div class="reading-progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="{{RETURN_URL}}" class="nav-btn">← 返回</a>
+            <button class="nav-btn secondary" onclick="toggleTOC()">📑 目录</button>
+        </div>
+        <div class="nav-right">
+            <div class="font-control">
+                <button class="font-btn" onclick="adjustFont(-1)">A-</button>
+                <span class="font-size-display" id="fontSize">17</span>
+                <button class="font-btn" onclick="adjustFont(1)">A+</button>
+            </div>
+            <button class="nav-btn icon-only" onclick="toggleSettings()" title="设置">⚙️</button>
+        </div>
+    </nav>
+
+    <!-- 目录切换按钮 -->
+    <button class="toc-toggle" onclick="toggleTOC()" title="目录">☰</button>
+
+    <!-- 目录面板 -->
+    <div class="toc-overlay" id="tocOverlay" onclick="toggleTOC()"></div>
+    <div class="toc-panel" id="tocPanel">
+        <div class="toc-header">
+            <h3 class="toc-title">章节目录</h3>
+            <button class="toc-close" onclick="toggleTOC()">×</button>
+        </div>
+        <ul class="toc-list" id="tocList">
+            <!-- 目录将由 JS 动态生成 -->
+        </ul>
+    </div>
+
+    <!-- 设置面板 -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-title">阅读主题</div>
+        <div class="theme-options">
+            <button class="theme-btn active" onclick="setTheme('light')" data-theme="light">☀️ 日间</button>
+            <button class="theme-btn" onclick="setTheme('dark')" data-theme="dark">🌙 夜间</button>
+            <button class="theme-btn" onclick="setTheme('eye')" data-theme="eye">🍃 护眼</button>
+        </div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content-wrapper">
+        <div class="chapter-header">
+            <h1 class="chapter-title">{{CHAPTER_TITLE}}</h1>
+            <p class="chapter-subtitle">{{SUBTITLE}}</p>
+            <div class="chapter-meta">
+                <span>📖 {{CHAPTER_NUM}} / {{TOTAL_CHAPTERS}}</span>
+                <span>⏱️ 预计阅读 {{READ_TIME}} 分钟</span>
+            </div>
+        </div>
+
+        <div class="chapter-content" id="content">
+            {{CONTENT}}
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <a href="{{PREV_URL}}" class="page-btn {{PREV_DISABLED}}" id="prevBtn">
+            <span>←</span>
+            <span>上一章</span>
+        </a>
+        <a href="{{NEXT_URL}}" class="page-btn {{NEXT_DISABLED}}" id="nextBtn">
+            <span>下一章</span>
+            <span>→</span>
+        </a>
+    </nav>
+
+    <script>
+        // 章节数据（示例）
+        const chapters = {{CHAPTERS_JSON}};
+        const currentChapterIndex = {{CURRENT_INDEX}};
+
+        // ========== 目录功能 ==========
+        function toggleTOC() {
+            const panel = document.getElementById('tocPanel');
+            const overlay = document.getElementById('tocOverlay');
+            panel.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        // ========== 设置面板 ==========
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('show');
+        }
+
+        // 点击外部关闭设置面板
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('settingsPanel');
+            const btn = e.target.closest('.nav-btn.icon-only');
+            if (!panel.contains(e.target) && !btn && panel.classList.contains('show')) {
+                panel.classList.remove('show');
+            }
+        });
+
+        // ========== 主题切换 ==========
+        function setTheme(theme) {
+            const body = document.body;
+            body.classList.remove('dark-mode', 'eye-protect-mode');
+            
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+            } else if (theme === 'eye') {
+                body.classList.add('eye-protect-mode');
+            }
+            
+            // 更新按钮状态
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === theme);
+            });
+            
+            // 保存到本地存储
+            localStorage.setItem('reading-theme', theme);
+        }
+
+        // 加载保存的主题
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('reading-theme') || 'light';
+            setTheme(savedTheme);
+        }
+
+        // ========== 字体大小调节 ==========
+        let currentFontSize = 17;
+        
+        function adjustFont(delta) {
+            currentFontSize = Math.max(14, Math.min(24, currentFontSize + delta));
+            document.getElementById('fontSize').textContent = currentFontSize;
+            document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
+            
+            // 保存到本地存储
+            localStorage.setItem('reading-font-size', currentFontSize);
+        }
+
+        // 加载保存的字体大小
+        function loadFontSize() {
+            const savedSize = localStorage.getItem('reading-font-size');
+            if (savedSize) {
+                currentFontSize = parseInt(savedSize);
+                document.getElementById('fontSize').textContent = currentFontSize;
+                document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
+            }
+        }
+
+        // ========== 阅读进度 ==========
+        function updateProgress() {
+            const content = document.getElementById('content');
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.scrollY;
+            
+            const progress = (scrollTop / (documentHeight - windowHeight)) * 100;
+            document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+        }
+
+        // ========== 目录渲染 ==========
+        function renderTOC() {
+            const tocList = document.getElementById('tocList');
+            if (!chapters || chapters.length === 0) return;
+            
+            chapters.forEach((chapter, index) => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = chapter.url;
+                a.innerHTML = `
+                    <span class="chapter-num">第${index + 1}章</span>
+                    ${chapter.title}
+                `;
+                if (chapter.active || index === currentChapterIndex) {
+                    a.classList.add('active');
+                }
+                li.appendChild(a);
+                tocList.appendChild(li);
+            });
+        }
+
+        // ========== 键盘快捷键 ==========
+        document.addEventListener('keydown', (e) => {
+            // 左右箭头切换章节
+            if (e.key === 'ArrowLeft') {
+                const prevBtn = document.getElementById('prevBtn');
+                if (!prevBtn.classList.contains('disabled')) {
+                    prevBtn.click();
+                }
+            } else if (e.key === 'ArrowRight') {
+                const nextBtn = document.getElementById('nextBtn');
+                if (!nextBtn.classList.contains('disabled')) {
+                    nextBtn.click();
+                }
+            }
+            // ESC 关闭面板
+            else if (e.key === 'Escape') {
+                document.getElementById('tocPanel').classList.remove('open');
+                document.getElementById('tocOverlay').classList.remove('show');
+                document.getElementById('settingsPanel').classList.remove('show');
+            }
+        });
+
+        // ========== 初始化 ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+            loadFontSize();
+            renderTOC();
+            
+            // 监听滚动更新进度
+            window.addEventListener('scroll', updateProgress);
+            updateProgress();
+            
+            // 恢复滚动位置
+            const savedScroll = localStorage.getItem('reading-scroll-' + window.location.pathname);
+            if (savedScroll) {
+                setTimeout(() => {
+                    window.scrollTo(0, parseInt(savedScroll));
+                }, 100);
+            }
+            
+            // 定期保存滚动位置
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    localStorage.setItem('reading-scroll-' + window.location.pathname, window.scrollY);
+                }, 500);
+            });
+        });
+
+        // 离开页面时保存滚动位置
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('reading-scroll-' + window.location.pathname, window.scrollY);
+        });
+    </script>
+</body>
+</html>

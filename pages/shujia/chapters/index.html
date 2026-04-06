@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>里界物语 - 小说章节目录</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', serif;
+            background: #faf8f5;
+            min-height: 100vh;
+            color: #333333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 60px 20px;
+            background: #fff;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+        }
+        .header h1 {
+            font-size: 3em;
+            color: #ff6b35;
+            margin-bottom: 20px;
+        }
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        .category {
+            background: #fff;
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+        }
+        .category-title {
+            font-size: 2em;
+            color: #ff6b35;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0ede9;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .category-icon {
+            font-size: 1.5em;
+        }
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .character-card {
+            background: linear-gradient(135deg, #fff5f0 0%, #f0ede9 100%);
+            border: 1px solid #e8e4e0;
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.2);
+            border-color: #ff6b35;
+        }
+        .character-name {
+            font-size: 1.5em;
+            color: #ff6b35;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .character-chapters {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .chapter-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #ff6b35;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            background: #fff5f0;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .chapter-link:hover {
+            background: #ff6b35;
+            color: #fff;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ff6b35;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 10px 20px;
+            background: #fff5f0;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .back-link:hover {
+            background: #ff6b35;
+            color: #fff;
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .character-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">← 返回书架</a>
+        
+        <div class="header">
+            <h1>📖 章节目录</h1>
+            <p>探索里界物语的精彩故事，跟随角色们一起冒险</p>
+        </div>
+
+        <!-- 绫份 -->
+        <div class="category">
+            <h2 class="category-title">
+                <span class="category-icon">⚔️</span>
+                绫份
+            </h2>
+            <div class="character-grid">
+                <a href="huai_an/lingfen_ch1.html" class="character-card">
+                    <div class="character-name">第一章：初现</div>
+                    <div class="character-chapters">深夜的槐安公寓楼顶，绫份等待着战斗的到来...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="huai_an/lingfen_ch2.html" class="character-card">
+                    <div class="character-name">第二章：觉醒</div>
+                    <div class="character-chapters">力量的觉醒，新的威胁悄然逼近...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="huai_an/lingfen_ch3.html" class="character-card">
+                    <div class="character-name">第三章：交锋</div>
+                    <div class="character-chapters">激烈的战斗，白夜叉展现真正实力...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="huai_an/lingfen_ch4.html" class="character-card">
+                    <div class="character-name">第四章：归途</div>
+                    <div class="character-chapters">战斗结束，但故事还在继续...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 烛灯 -->
+        <div class="category">
+            <h2 class="category-title">
+                <span class="category-icon">🕯️</span>
+                烛灯
+            </h2>
+            <div class="character-grid">
+                <a href="yuan/zhudeng_ch1.html" class="character-card">
+                    <div class="character-name">第一章：初现</div>
+                    <div class="character-chapters">深夜的霓虹灯在雨幕中模糊，一个神秘的论坛悄然打开...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="yuan/zhudeng_ch2.html" class="character-card">
+                    <div class="character-name">第二章：觉醒</div>
+                    <div class="character-chapters">揭秘人的过去与真相...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="yuan/zhudeng_ch3.html" class="character-card">
+                    <div class="character-name">第三章：真相</div>
+                    <div class="character-chapters">论坛上的最后帖子...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 化而为 -->
+        <div class="category">
+            <h2 class="category-title">
+                <span class="category-icon">💧</span>
+                化而为
+            </h2>
+            <div class="character-grid">
+                <a href="yuan/huaerwei_ch1.html" class="character-card">
+                    <div class="character-name">第一章：变形</div>
+                    <div class="character-chapters">变形者的秘密...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="yuan/huaerwei_ch2.html" class="character-card">
+                    <div class="character-name">第二章：身份</div>
+                    <div class="character-chapters">真实身份的揭露...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="yuan/huaerwei_ch3.html" class="character-card">
+                    <div class="character-name">第三章：抉择</div>
+                    <div class="character-chapters">站在十字路口...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+                <a href="yuan/huaerwei_ch4.html" class="character-card">
+                    <div class="character-name">第四章：新生</div>
+                    <div class="character-chapters">新的开始...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 灼玥 -->
+        <div class="category">
+            <h2 class="category-title">
+                <span class="category-icon">🔥</span>
+                灼玥
+            </h2>
+            <div class="character-grid">
+                <a href="zhuoyue/zhuoyue_ch1.html" class="character-card">
+                    <div class="character-name">第一章：独立之路</div>
+                    <div class="character-chapters">离开方舟科研组，灼玥踏上了独立调查员的道路...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 白桦 -->
+        <div class="category">
+            <h2 class="category-title">
+                <span class="category-icon">🌲</span>
+                白桦
+            </h2>
+            <div class="character-grid">
+                <a href="baihua/baihua_ch1.html" class="character-card">
+                    <div class="character-name">第一章：沉睡的重锤</div>
+                    <div class="character-chapters">对伪课副课长的一天——实力强悍，但永远在睡觉...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 斯汀先生 -->
+        <div class="category">
+            <h2 class="category-title">
+                <span class="category-icon">🎩</span>
+                斯汀先生
+            </h2>
+            <div class="character-grid">
+                <a href="siting/siting_ch1.html" class="character-card">
+                    <div class="character-name">第一章：超越时间的存在</div>
+                    <div class="character-chapters">ABSC职员斯汀先生的日常与使命...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 艾尔伯特·帕拉索 -->
+        <div class="category">
+            <h2 class="category-title">
+                <span class="category-icon">✨</span>
+                艾尔伯特·帕拉索
+            </h2>
+            <div class="character-grid">
+                <a href="aierbote/aierbote_ch1.html" class="character-card">
+                    <div class="character-name">第一章：先驱者的足迹</div>
+                    <div class="character-chapters">人类先驱的传说——从表界到里界的勇敢探索...</div>
+                    <span class="chapter-link">开始阅读 →</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e8e4e0; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);">
+        <a href="../index.html" class="nav-item" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #555; font-size: 12px; text-decoration: none; padding: 6px 16px; border-radius: 12px; transition: all 0.2s ease;">
+            <span class="nav-icon" style="font-size: 20px;">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="../bookshelf.html" class="nav-item" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #555; font-size: 12px; text-decoration: none; padding: 6px 16px; border-radius: 12px; transition: all 0.2s ease;">
+            <span class="nav-icon" style="font-size: 20px;">📚</span>
+            <span>书架</span>
+        </a>
+        <a href="../my.html" class="nav-item" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #555; font-size: 12px; text-decoration: none; padding: 6px 16px; border-radius: 12px; transition: all 0.2s ease;">
+            <span class="nav-icon" style="font-size: 20px;">👤</span>
+            <span>我的</span>
+        </a>
+    </nav>
+</body>
+</html>

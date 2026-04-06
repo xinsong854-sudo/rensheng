@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绫份 - 第三章：交锋 - 里界物语</title>
+        <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Georgia", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", serif; background: #faf8f5; min-height: 100vh; color: #333333; line-height: 1.6; }
+        /* 顶部导航 - 竖屏优化 */
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e8e4e0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .nav-left, .nav-right { display: flex; gap: 8px; align-items: center; }
+        .nav-btn { background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3); }
+        .nav-btn.secondary { background: linear-gradient(135deg, #f8b4b0 0%, #e85a71 100%); }
+        .font-control { display: flex; align-items: center; gap: 6px; background: #f0ede9; padding: 6px 10px; border-radius: 16px; }
+        .font-label { font-size: 12px; color: #666; }
+        .font-btn { background: #e8e4e0; border: none; color: #333; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 14px; transition: all 0.2s ease; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .font-btn:hover { background: #ff6b35; color: white; transform: scale(1.05); }
+        .font-size-display { font-size: 12px; color: #666; min-width: 20px; text-align: center; }
+        /* 内容区域 - 竖屏阅读优化 */
+        .content-wrapper { max-width: 720px; margin: 70px auto 100px; padding: 30px 20px; background: transparent; }
+        .chapter-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e8e4e0; }
+        .chapter-title { font-size: 1.8em; color: #ff6b35; margin-bottom: 10px; font-weight: 700; line-height: 1.3; }
+        .chapter-subtitle { font-size: 1em; color: #888; font-style: italic; }
+        .chapter-content { font-size: 17px; line-height: 1.9; text-align: justify; color: #333; background: #fff; padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .chapter-content p { margin-bottom: 20px; text-indent: 2em; word-break: break-word; }
+        .chapter-content p:first-child { text-indent: 0; }
+        /* 底部导航 - 竖屏优化 */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 12px 16px; display: flex; justify-content: center; gap: 16px; border-top: 1px solid #e8e4e0; z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.04); }
+        .page-btn { background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 12px 30px; border-radius: 24px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; flex: 1; max-width: 140px; justify-content: center; }
+        .page-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3); }
+        .page-btn.disabled { background: #e8e4e0; cursor: not-allowed; transform: none; box-shadow: none; color: #999; }
+        /* 目录面板 - 竖屏优化 */
+        .toc-panel { position: fixed; top: 60px; right: -300px; width: 280px; background: #fff; border-radius: 12px 0 0 12px; padding: 20px; transition: right 0.3s ease; z-index: 999; border: 1px solid #e8e4e0; border-right: none; box-shadow: -4px 0 16px rgba(0,0,0,0.06); max-height: calc(100vh - 80px); overflow-y: auto; }
+        .toc-panel.open { right: 0; }
+        .toc-title { font-size: 1.2em; color: #ff6b35; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid #e8e4e0; font-weight: 600; }
+        .toc-list { list-style: none; }
+        .toc-list li { margin-bottom: 8px; }
+        .toc-list a { color: #333; text-decoration: none; padding: 10px 12px; display: block; border-radius: 8px; transition: all 0.2s ease; font-size: 14px; }
+        .toc-list a:hover, .toc-list a.active { background: #fff5f0; color: #ff6b35; }
+        .toc-toggle { position: fixed; top: 80px; right: 0; background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 12px 10px; border-radius: 8px 0 0 8px; cursor: pointer; z-index: 998; transition: all 0.2s ease; box-shadow: -2px 2px 8px rgba(0,0,0,0.1); font-size: 16px; }
+        /* 移动端优化 */
+        @media (max-width: 480px) { 
+            .content-wrapper { margin: 65px auto 90px; padding: 20px 12px; } 
+            .chapter-title { font-size: 1.5em; } 
+            .chapter-content { font-size: 16px; padding: 20px 15px; }
+            .top-nav { padding: 8px 12px; }
+            .nav-btn { padding: 7px 12px; font-size: 12px; }
+            .font-control { padding: 5px 8px; }
+            .toc-panel { width: 260px; right: -270px; }
+            .bottom-nav { padding: 10px 12px; gap: 12px; }
+            .page-btn { padding: 10px 20px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left"><a href="../../index.html" class="nav-btn">← 返回</a><a href="#" class="nav-btn secondary" onclick="toggleTOC()">📑 目录</a></div>
+        <div class="font-control"><span>字体:</span><button class="font-btn" onclick="adjustFont(-1)">A-</button><span id="fontSize">18</span><button class="font-btn" onclick="adjustFont(1)">A+</button></div>
+    </nav>
+    <button class="toc-toggle" onclick="toggleTOC()" style="position:fixed;top:100px;right:0;background:#a855f7;color:white;border:none;padding:15px 12px;border-radius:10px 0 0 10px;cursor:pointer;z-index:998;">☰</button>
+    <div class="toc-panel" id="tocPanel">
+        <h3 class="toc-title">📖 绫份章节</h3>
+        <ul class="toc-list">
+            <li><a href="lingfen_ch1.html">第一章：初现</a></li>
+            <li><a href="lingfen_ch2.html">第二章：觉醒</a></li>
+            <li><a href="lingfen_ch3.html" class="active">第三章：交锋</a></li>
+            <li><a href="lingfen_ch4.html">第四章：归途</a></li>
+        </ul>
+    </div>
+    <div class="content-wrapper">
+        <div class="chapter-header">
+            <h1 class="chapter-title">第三章：交锋</h1>
+            <p class="chapter-subtitle">绫份 · 白夜叉的战斗</p>
+        </div>
+        <div class="chapter-content" id="content">
+            <p>绫份冲出公寓，三只 DANGER 级伪人已经呈三角阵型包围了建筑。</p>
+            
+            <p>左边是一只人魈，灰白的皮肤、扭曲的五官，四肢以不自然的角度弯曲着。右边是一只凝胶，半透明的球型身体在不断变形，表面泛着腐蚀性的光泽。</p>
+            
+            <p>而中间……那是一个人类形态的身影，穿着紫黑色风衣，高大的身材在夜色中显得格外醒目。</p>
+            
+            <p>「温塔莎·克林斯曼。」绫份立刻认出了她，「基质 -0 聚合体，危险度未定。」</p>
+            
+            <p>温塔莎笑了：「看来你做过功课。那你也应该知道，你不可能是我的对手。」</p>
+            
+            <p>「那就试试看。」绫份拔出双剑，「凌」在月光下泛着银光，「露」则散发着诡异的暗红色气息。</p>
+            
+            <p>温塔莎抬手，人魈和凝胶同时扑向绫份。绫份身形一闪，先迎向人魈。</p>
+            
+            <p>人魈的攻击毫无章法，但力量惊人。绫份侧身避开一记爪击，长剑横扫，斩断了人魈的手臂。但人魈似乎感觉不到疼痛，另一只手又抓了过来。</p>
+            
+            <p>「难缠的家伙。」绫份皱眉，脚下发力，整个人腾空而起，一脚踢在人魈的头部，将它踢飞出去。</p>
+            
+            <p>但就在这时，凝胶已经悄无声息地绕到她身后，张开大口咬了下来。</p>
+            
+            <p>绫份来不及转身，只能横剑格挡。凝胶的牙齿——如果那能称为牙齿的话——咬在剑身上，发出刺耳的摩擦声。</p>
+            
+            <p>腐蚀性液体顺着剑身流下，滴在绫份的手臂上。她感到一阵灼痛，但很快就被一股奇异的感觉取代。</p>
+            
+            <p>她的身体开始发热，力量在体内涌动。</p>
+            
+            <p>「越挨打越强……」绫份突然明白了自己的能力，「原来如此。」</p>
+            
+            <p>她不再躲避，而是主动迎向凝胶的攻击。每一次被击中，她的力量就增强一分。渐渐地，她的动作越来越快，剑光越来越盛。</p>
+            
+            <p>终于，她一剑刺穿了凝胶的核心。凝胶发出一声凄厉的尖叫，身体开始崩解。</p>
+            
+            <p>「不错。」温塔莎鼓掌，「但真正的战斗，现在才开始。」</p>
+            
+            <p>她身形一闪，瞬间出现在绫份面前。绫份挥剑格挡，但温塔莎的力量远超她的想象。一剑之下，绫份被震退数步，虎口发麻。</p>
+            
+            <p>「你的能力是受到伤害后变强。」温塔莎说，「但如果你受到的伤害超过了你的承受极限呢？」</p>
+            
+            <p>她的身体开始变化，黑色的流体从风衣下涌出，化作一头狰狞的龙型巨兽。</p>
+            
+            <p>「这才是我的本体。」温塔莎的声音从巨龙口中传出，「让我看看，你能承受多少伤害。」</p>
+            
+            <p>巨龙张开大口，一道黑色的能量束射向绫份。绫份举剑格挡，但能量束的冲击力将她整个人轰飞出去，撞在墙上。</p>
+            
+            <p>她吐出一口鲜血，但眼中的光芒却更加炽热。</p>
+            
+            <p>「哈……这才是战斗啊！」她大笑着站起身，手中的「露」开始发出耀眼的光芒，「来啊！继续！」</p>
+            
+            <p>温塔莎眼中闪过一丝惊讶：「你还不打算拔出那把剑吗？你在等什么？」</p>
+            
+            <p>绫份擦去嘴角的血迹，笑容中带着一丝疯狂：「等一个值得我全力以赴的对手。」</p>
+            
+            <p>她握紧「露」的剑柄，缓缓拔出。</p>
+            
+            <p>刹那间，一股恐怖的气息从剑中爆发。绫份的身体被暗红色的光芒笼罩，她的瞳孔变成了血红色，身上的伤口以肉眼可见的速度愈合。</p>
+            
+            <p>「露」的能力——拔出后，所有能力翻倍。</p>
+            
+            <p>「现在。」绫份的声音变得低沉而沙哑，「让我们认真打一场。」</p>
+            
+            <p>温塔莎笑了：「如你所愿。」</p>
+            
+            <p>两道身影在夜空中碰撞，剑光与龙影交织在一起。这一战，将决定绫份的命运，也将揭开一个更大的阴谋。</p>
+            
+            <p>而在远处，一双眼睛正注视着这一切。那是西陆联盟的眼睛，一个与伪神有关的计划，正在悄然推进。</p>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="lingfen_ch2.html" class="page-btn">← 上一章</a>
+        <a href="lingfen_ch4.html" class="page-btn">下一章 →</a>
+    </div>
+        <script>
+        let currentFontSize = 17;
+        function adjustFont(delta) { currentFontSize = Math.max(14, Math.min(22, currentFontSize + delta)); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; localStorage.setItem('readerFontSize', currentFontSize); }
+        const savedFontSize = localStorage.getItem('readerFontSize'); if (savedFontSize) { currentFontSize = parseInt(savedFontSize); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; }
+        function toggleTOC() { document.getElementById('tocPanel').classList.toggle('open'); }
+        function toggleSettings() { alert('设置功能开发中...'); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { const next = document.querySelector('.page-btn:not(.disabled)'); if(next && next.getAttribute('href')) window.location.href = next.getAttribute('href'); } else if (e.key === 'ArrowLeft') { const prev = document.querySelector('.page-btn.disabled') ? null : document.querySelectorAll('.page-btn')[0]; if(prev && prev.getAttribute('href')) window.location.href = prev.getAttribute('href'); } else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); } });
+    </script>
+</body>
+</html>

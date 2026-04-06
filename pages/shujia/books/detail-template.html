@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{TITLE}} - 里界物语</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary-color: #ff6b35;
+            --primary-hover: #ff8c5a;
+            --primary-light: rgba(255, 107, 53, 0.08);
+            --primary-gradient: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%);
+            --background: #faf8f5;
+            --background-card: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #555555;
+            --text-light: #888888;
+            --border-color: #e8e4e0;
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--background);
+            min-height: 100vh;
+        }
+
+        /* ========== 顶部导航 ========== */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(250, 248, 245, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            background: transparent;
+            border: none;
+        }
+
+        .back-btn:hover {
+            background: #f0ede9;
+            transform: translateX(-2px);
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-spacer {
+            width: 40px;
+        }
+
+        /* ========== 封面区域 ========== */
+        .cover-section {
+            display: flex;
+            padding: 24px 20px;
+            gap: 20px;
+            background: var(--background-card);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cover-image {
+            width: 140px;
+            height: 200px;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 52px;
+            flex-shrink: 0;
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cover-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 70%, rgba(0,0,0,0.1));
+        }
+
+        .book-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .book-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .book-author {
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .book-author::before {
+            content: '✍️';
+            font-size: 12px;
+        }
+
+        .book-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .book-status {
+            font-size: 12px;
+            color: var(--primary-color);
+            background: var(--primary-light);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .book-updated {
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ========== 简介区域 ========== */
+        .section {
+            background: var(--background-card);
+            margin: 12px 16px;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        .description-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .description-text p {
+            margin-bottom: 12px;
+        }
+
+        .description-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ========== 标签芯片 ========== */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-chip {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: #f5f5f5;
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .tag-chip:hover {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border-color: rgba(255, 107, 53, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .tag-chip.primary {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border-color: rgba(255, 107, 53, 0.2);
+        }
+
+        /* ========== 可折叠目录 ========== */
+        .chapters-section {
+            background: var(--background-card);
+            margin: 12px 16px;
+            border-radius: var(--radius-lg);
+            padding: 0;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .chapters-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .chapters-header:hover {
+            background: #fafafa;
+        }
+
+        .chapters-header.collapsed {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chapters-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chapters-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        .chapters-count {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        .toggle-icon {
+            font-size: 18px;
+            color: var(--text-light);
+            transition: transform 0.3s ease;
+        }
+
+        .chapters-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .chapters-list {
+            list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
+            transition: max-height 0.3s ease;
+        }
+
+        .chapters-list.collapsed {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .chapter-item {
+            padding: 0 20px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .chapter-item:last-child {
+            border-bottom: none;
+        }
+
+        .chapter-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .chapter-link:hover {
+            color: var(--primary-color);
+        }
+
+        .chapter-link .chapter-num {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-right: 10px;
+            min-width: 24px;
+        }
+
+        .chapter-link .chapter-arrow {
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .chapter-link:hover .chapter-arrow {
+            opacity: 1;
+        }
+
+        /* ========== 相关推荐 ========== */
+        .related-section {
+            background: var(--background-card);
+            margin: 12px 16px;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .related-card {
+            background: #fafafa;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .related-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: rgba(255, 107, 53, 0.2);
+        }
+
+        .related-cover {
+            aspect-ratio: 3/4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e4e0 100%);
+        }
+
+        .related-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .related-info {
+            padding: 10px;
+        }
+
+        .related-title {
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+        }
+
+        /* ========== 操作按钮 ========== */
+        .actions-section {
+            position: sticky;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+            z-index: 100;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #e8e4e0;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+
+        .favorite-btn-large {
+            padding: 14px 18px;
+            border: 2px solid var(--primary-color);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 100px;
+        }
+
+        .favorite-btn-large:hover {
+            background: var(--primary-color);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .favorite-btn-large.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        /* ========== 底部导航 ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            display: none;
+            justify-content: space-around;
+            padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+            z-index: 100;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            text-decoration: none;
+            padding: 6px 16px;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            background: var(--primary-light);
+        }
+
+        .nav-icon {
+            font-size: 22px;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (min-width: 600px) {
+            .cover-section {
+                padding: 32px;
+            }
+            
+            .cover-image {
+                width: 160px;
+                height: 230px;
+            }
+            
+            .book-title {
+                font-size: 28px;
+            }
+            
+            .related-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .cover-section {
+                padding: 16px;
+            }
+            
+            .cover-image {
+                width: 100px;
+                height: 140px;
+            }
+            
+            .book-title {
+                font-size: 20px;
+            }
+            
+            .section {
+                margin: 8px 16px;
+                padding: 16px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                border-left: 1px solid var(--border-color);
+                border-right: 1px solid var(--border-color);
+            }
+            
+            .bottom-nav {
+                display: flex;
+            }
+            
+            .actions-section {
+                display: none;
+            }
+            
+            .desktop-actions {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .desktop-actions {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <a href="../index.html" class="back-btn">←</a>
+            <div class="header-title">书籍详情</div>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- 封面区域 -->
+        <div class="cover-section">
+            <div class="cover-image" id="coverImage">📚</div>
+            <div class="book-info">
+                <h1 class="book-title" id="bookTitle">加载中...</h1>
+                <div class="book-author" id="bookAuthor">未知作者</div>
+                <div class="book-meta">
+                    <span class="book-status" id="bookCategory">分类</span>
+                    <span class="book-updated">📖 共 <span id="chapterCount">0</span> 章</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 简介区域 -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">作品简介</h2>
+            </div>
+            <div class="description-text" id="bookDescription">
+                <p>简介加载中...</p>
+            </div>
+        </div>
+
+        <!-- 标签区域 -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">标签</h2>
+            </div>
+            <div class="tags" id="tagsContainer">
+                <span class="tag-chip primary">精选</span>
+                <span class="tag-chip">里界物语</span>
+                <span class="tag-chip">原创</span>
+            </div>
+        </div>
+
+        <!-- 可折叠章节目录 -->
+        <div class="chapters-section">
+            <div class="chapters-header" onclick="toggleChapters()" id="chaptersHeader">
+                <h2 class="chapters-title">
+                    章节目录
+                    <span class="chapters-count" id="chaptersCount">(共 0 章)</span>
+                </h2>
+                <span class="toggle-icon" id="toggleIcon">▼</span>
+            </div>
+            <ul class="chapters-list" id="chaptersList">
+                <!-- 章节将由 JS 动态生成 -->
+            </ul>
+        </div>
+
+        <!-- 相关推荐 -->
+        <div class="related-section">
+            <div class="section-header">
+                <h2 class="section-title">相关推荐</h2>
+            </div>
+            <div class="related-grid" id="relatedGrid">
+                <!-- 推荐将由 JS 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 桌面端操作按钮 -->
+        <div class="section desktop-actions" style="display: none;">
+            <div style="display: flex; gap: 12px;">
+                <button id="favoriteBtn" class="action-btn favorite-btn-large" onclick="toggleFavorite()">
+                    <span id="favoriteIcon">♡</span>
+                    <span id="favoriteText">加入书架</span>
+                </button>
+                <a href="#" class="action-btn btn-primary" id="readBtn">
+                    📖 开始阅读
+                </a>
+            </div>
+        </div>
+
+        <!-- 移动端操作按钮 -->
+        <div class="actions-section">
+            <button id="favoriteBtnMobile" class="action-btn favorite-btn-large" onclick="toggleFavorite()">
+                <span id="favoriteIconMobile">♡</span>
+            </button>
+            <a href="#" class="action-btn btn-primary" id="readBtnMobile">
+                📖 开始阅读
+            </a>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <a href="../index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="../bookshelf.html" class="nav-item">
+            <span class="nav-icon">📚</span>
+            <span>书架</span>
+        </a>
+        <a href="../my.html" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>我的</span>
+        </a>
+    </nav>
+
+    <script>
+        // 书籍数据（示例，实际使用时替换为真实数据）
+        const BOOK_DATA = {
+            id: 'zhudeng',
+            title: '烛灯',
+            author: '折纸月',
+            category: '人物志',
+            emoji: '🕯️',
+            cover: '../covers/烛灯.jpg',
+            description: `
+                <p><strong>「揭秘人」的最后一名成员</strong></p>
+                <p>论坛上的简介：「揭秘人」的最后一名成员，代号为烛灯的男人。他在现实中的身份已经难以查询。但他在【伪人大本营】论坛中发布的最后四篇帖子，却成为了他和「揭秘人」组织的纪念碑。</p>
+                <p>这些帖子记录了揭秘人对伪人现象的深入调查，以及他们为揭露真相所付出的代价。烛灯作为最后的幸存者，承载着整个组织的记忆与使命。</p>
+            `,
+            chapters: [
+                { title: '第一章：最后的帖子', url: '../chapters/zhudeng-1.html' },
+                { title: '第二章：揭秘人的起源', url: '../chapters/zhudeng-2.html' },
+                { title: '第三章：真相的代价', url: '../chapters/zhudeng-3.html' },
+                { title: '第四章：烛火的传承', url: '../chapters/zhudeng-4.html' }
+            ],
+            related: [
+                { title: '绫份', emoji: '⚔️', url: '绫份.html' },
+                { title: '灼玥', emoji: '🔥', url: '灼玥.html' },
+                { title: '营长', emoji: '👁️', url: '../pseudohumans/营长.html' }
+            ]
+        };
+
+        const STORAGE_KEY = 'annuonie_bookshelf';
+
+        // 初始化页面
+        function initPage() {
+            // 设置书籍信息
+            document.getElementById('bookTitle').textContent = BOOK_DATA.title;
+            document.getElementById('bookAuthor').textContent = `✍️ ${BOOK_DATA.author}`;
+            document.getElementById('bookCategory').textContent = BOOK_DATA.category;
+            document.getElementById('chapterCount').textContent = BOOK_DATA.chapters.length;
+            document.getElementById('chaptersCount').textContent = `(共 ${BOOK_DATA.chapters.length} 章)`;
+            document.getElementById('bookDescription').innerHTML = BOOK_DATA.description;
+            
+            // 设置封面
+            const coverEl = document.getElementById('coverImage');
+            if (BOOK_DATA.cover) {
+                const img = document.createElement('img');
+                img.src = BOOK_DATA.cover;
+                img.alt = BOOK_DATA.title;
+                img.onerror = function() {
+                    this.style.display = 'none';
+                    coverEl.innerHTML = BOOK_DATA.emoji || '📚';
+                };
+                coverEl.innerHTML = '';
+                coverEl.appendChild(img);
+            } else {
+                coverEl.innerHTML = BOOK_DATA.emoji || '📚';
+            }
+            
+            // 渲染章节列表
+            renderChapters();
+            
+            // 渲染相关推荐
+            renderRelated();
+            
+            // 设置阅读按钮链接
+            const firstChapter = BOOK_DATA.chapters[0]?.url || '#';
+            document.getElementById('readBtn').href = firstChapter;
+            document.getElementById('readBtnMobile').href = firstChapter;
+            
+            // 更新收藏状态
+            updateFavoriteStatus();
+        }
+
+        // 渲染章节列表
+        function renderChapters() {
+            const list = document.getElementById('chaptersList');
+            list.innerHTML = '';
+            
+            BOOK_DATA.chapters.forEach((chapter, index) => {
+                const li = document.createElement('li');
+                li.className = 'chapter-item';
+                li.innerHTML = `
+                    <a href="${chapter.url}" class="chapter-link">
+                        <span>
+                            <span class="chapter-num">${index + 1}</span>
+                            ${chapter.title}
+                        </span>
+                        <span class="chapter-arrow">→</span>
+                    </a>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // 渲染相关推荐
+        function renderRelated() {
+            const grid = document.getElementById('relatedGrid');
+            grid.innerHTML = '';
+            
+            BOOK_DATA.related.forEach(book => {
+                const card = document.createElement('a');
+                card.className = 'related-card';
+                card.href = book.url;
+                card.innerHTML = `
+                    <div class="related-cover">${book.emoji}</div>
+                    <div class="related-info">
+                        <div class="related-title">${book.title}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 切换章节列表折叠状态
+        function toggleChapters() {
+            const header = document.getElementById('chaptersHeader');
+            const list = document.getElementById('chaptersList');
+            
+            header.classList.toggle('collapsed');
+            list.classList.toggle('collapsed');
+        }
+
+        // 书架功能
+        function getBookshelf() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+        
+        function saveBookshelf(books) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+        }
+        
+        function toggleFavorite() {
+            const books = getBookshelf();
+            const index = books.findIndex(b => b.id === BOOK_DATA.id);
+            
+            if (index === -1) {
+                books.push({
+                    id: BOOK_DATA.id,
+                    title: BOOK_DATA.title,
+                    subtitle: BOOK_DATA.author,
+                    icon: BOOK_DATA.emoji,
+                    url: window.location.pathname
+                });
+                saveBookshelf(books);
+            } else {
+                books.splice(index, 1);
+                saveBookshelf(books);
+            }
+            
+            updateFavoriteStatus();
+        }
+        
+        function updateFavoriteStatus() {
+            const books = getBookshelf();
+            const isFavorite = books.some(b => b.id === BOOK_DATA.id);
+            
+            const icons = ['favoriteIcon', 'favoriteIconMobile'];
+            const texts = ['favoriteText'];
+            
+            icons.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = isFavorite ? '♥' : '♡';
+                }
+            });
+            
+            texts.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = isFavorite ? '已收藏' : '加入书架';
+                }
+            });
+            
+            ['favoriteBtn', 'favoriteBtnMobile'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.toggle('active', isFavorite);
+                }
+            });
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+</body>
+</html>

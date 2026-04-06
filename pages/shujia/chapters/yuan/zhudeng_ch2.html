@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>烛灯 - 第二章：觉醒 - 里界物语</title>
+        <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Georgia", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", serif; background: #faf8f5; min-height: 100vh; color: #333333; line-height: 1.6; }
+        /* 顶部导航 - 竖屏优化 */
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e8e4e0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .nav-left, .nav-right { display: flex; gap: 8px; align-items: center; }
+        .nav-btn { background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; white-space: nowrap; }
+        .nav-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3); }
+        .nav-btn.secondary { background: linear-gradient(135deg, #f8b4b0 0%, #e85a71 100%); }
+        .font-control { display: flex; align-items: center; gap: 6px; background: #f0ede9; padding: 6px 10px; border-radius: 16px; }
+        .font-label { font-size: 12px; color: #666; }
+        .font-btn { background: #e8e4e0; border: none; color: #333; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 14px; transition: all 0.2s ease; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .font-btn:hover { background: #ff6b35; color: white; transform: scale(1.05); }
+        .font-size-display { font-size: 12px; color: #666; min-width: 20px; text-align: center; }
+        /* 内容区域 - 竖屏阅读优化 */
+        .content-wrapper { max-width: 720px; margin: 70px auto 100px; padding: 30px 20px; background: transparent; }
+        .chapter-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e8e4e0; }
+        .chapter-title { font-size: 1.8em; color: #ff6b35; margin-bottom: 10px; font-weight: 700; line-height: 1.3; }
+        .chapter-subtitle { font-size: 1em; color: #888; font-style: italic; }
+        .chapter-content { font-size: 17px; line-height: 1.9; text-align: justify; color: #333; background: #fff; padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .chapter-content p { margin-bottom: 20px; text-indent: 2em; word-break: break-word; }
+        .chapter-content p:first-child { text-indent: 0; }
+        /* 底部导航 - 竖屏优化 */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); padding: 12px 16px; display: flex; justify-content: center; gap: 16px; border-top: 1px solid #e8e4e0; z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.04); }
+        .page-btn { background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 12px 30px; border-radius: 24px; cursor: pointer; font-size: 14px; transition: all 0.2s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; flex: 1; max-width: 140px; justify-content: center; }
+        .page-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(255, 107, 53, 0.3); }
+        .page-btn.disabled { background: #e8e4e0; cursor: not-allowed; transform: none; box-shadow: none; color: #999; }
+        /* 目录面板 - 竖屏优化 */
+        .toc-panel { position: fixed; top: 60px; right: -300px; width: 280px; background: #fff; border-radius: 12px 0 0 12px; padding: 20px; transition: right 0.3s ease; z-index: 999; border: 1px solid #e8e4e0; border-right: none; box-shadow: -4px 0 16px rgba(0,0,0,0.06); max-height: calc(100vh - 80px); overflow-y: auto; }
+        .toc-panel.open { right: 0; }
+        .toc-title { font-size: 1.2em; color: #ff6b35; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid #e8e4e0; font-weight: 600; }
+        .toc-list { list-style: none; }
+        .toc-list li { margin-bottom: 8px; }
+        .toc-list a { color: #333; text-decoration: none; padding: 10px 12px; display: block; border-radius: 8px; transition: all 0.2s ease; font-size: 14px; }
+        .toc-list a:hover, .toc-list a.active { background: #fff5f0; color: #ff6b35; }
+        .toc-toggle { position: fixed; top: 80px; right: 0; background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%); color: white; border: none; padding: 12px 10px; border-radius: 8px 0 0 8px; cursor: pointer; z-index: 998; transition: all 0.2s ease; box-shadow: -2px 2px 8px rgba(0,0,0,0.1); font-size: 16px; }
+        /* 移动端优化 */
+        @media (max-width: 480px) { 
+            .content-wrapper { margin: 65px auto 90px; padding: 20px 12px; } 
+            .chapter-title { font-size: 1.5em; } 
+            .chapter-content { font-size: 16px; padding: 20px 15px; }
+            .top-nav { padding: 8px 12px; }
+            .nav-btn { padding: 7px 12px; font-size: 12px; }
+            .font-control { padding: 5px 8px; }
+            .toc-panel { width: 260px; right: -270px; }
+            .bottom-nav { padding: 10px 12px; gap: 12px; }
+            .page-btn { padding: 10px 20px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+        <nav class="top-nav">
+        <div class="nav-left">
+            <a href="../../index.html" class="nav-btn">← 返回</a>
+        </div>
+        <div class="font-control">
+            <span class="font-label">字体</span>
+            <button class="font-btn" onclick="adjustFont(-1)">−</button>
+            <span class="font-size-display" id="fontSize">17</span>
+            <button class="font-btn" onclick="adjustFont(1)">+</button>
+        </div>
+        <div class="nav-right">
+            <a href="#" class="nav-btn secondary" onclick="toggleTOC()">📑</a>
+        </div>
+    </nav>
+        <button class="toc-toggle" onclick="toggleTOC()">📑</button>
+    <div class="toc-panel" id="tocPanel">
+        <h3 class="toc-title">📖 烛灯章节</h3>
+        <ul class="toc-list">
+            <li><a href="zhudeng_ch1.html">第一章：初现</a></li>
+            <li><a href="zhudeng_ch2.html" class="active">第二章：觉醒</a></li>
+            <li><a href="zhudeng_ch3.html">第三章：真相</a></li>
+        </ul>
+    </div>
+    <div class="content-wrapper">
+        <div class="chapter-header">
+            <h1 class="chapter-title">第二章：觉醒</h1>
+            <p class="chapter-subtitle">烛灯 · 揭秘人的最后光芒</p>
+        </div>
+        <div class="chapter-content" id="content">
+            <p>林默按照烛灯消息中的提示，开始在论坛深处寻找那份神秘资料。他花了整整两天时间，浏览了论坛上数以千计的帖子，却始终一无所获。</p>
+            
+            <p>第三天凌晨，当他几乎要放弃的时候，一个不起眼的帖子引起了他的注意。帖子的标题是「关于里界入口的观察记录」，发布时间是三个月前，回复数只有寥寥三条。</p>
+            
+            <p>看起来再普通不过的帖子，但林默注意到发帖人的 ID 是一串奇怪的数字：04261998。他下意识地将这串数字输入到论坛的搜索框中，系统返回了一个隐藏版块。</p>
+            
+            <p>隐藏版块的名称是——「揭秘人档案库」。</p>
+            
+            <p>林默的心跳骤然加速。他点进去，发现里面整齐地排列着数百个文件，每个文件都以日期命名。最早的文件可以追溯到五年前，最新的则停留在三天前。</p>
+            
+            <p>他打开了最新的文件，里面是一份详细的报告，记录了近期里界入口出现的频率和位置。数据显示，在过去一个月里，里界入口的出现次数是过去五年的总和。</p>
+            
+            <p>「这不是自然现象。」林默喃喃自语，「有人在刻意打开这些门。」</p>
+            
+            <p>继续翻阅，他发现了更多令人不安的信息。报告中提到了一个名为「白墟之地」的里界，那是一个规则污染形成的纯白地貌，正在以每天 1.7 米的速度持续扩张。</p>
+            
+            <p>「古代巴比伦文明触及里界根本规则后毁灭的废墟……」林默读到这里，感到一阵寒意从脊背升起。</p>
+            
+            <p>突然，他注意到报告末尾有一段加密信息。加密方式是一种古老的凯撒密码，偏移量是 13——也就是 ROT13。</p>
+            
+            <p>林默迅速在网上找到解码工具，将密文输入进去。解码后的内容让他屏住了呼吸：</p>
+            
+            <p>「如果你读到了这里，说明你已经觉醒了。你不是普通人，你能看到我们看不到的东西。烛灯选择了你，因为你有潜力成为下一个揭秘人。」</p>
+            
+            <p>「但记住，力量伴随着代价。每一个揭秘人最终都会消失，不是死亡，而是……转化。我们越来越接近真相，而真相正在吞噬我们。」</p>
+            
+            <p>「找到槐安公寓，那里有一切的答案。但要小心，不是所有伪人都像表面上那样无害。有些东西，连营长都无法控制。」</p>
+            
+            <p>林默盯着屏幕，脑海中闪过无数个疑问。什么是觉醒？为什么他能看到别人看不到的东西？烛灯到底发生了什么？</p>
+            
+            <p>他站起身，走到窗前。外面的雨已经停了，但天空依然阴沉。在远处的高楼大厦之间，他隐约看到了一道奇异的光芒，像是空间被撕裂后露出的另一侧。</p>
+            
+            <p>那道光芒只持续了几秒钟就消失了，但林默知道，那不是幻觉。</p>
+            
+            <p>他的手机突然震动起来，是一条陌生号码发来的短信：「明天下午三点，槐安公寓，302 室。带上你找到的资料。——化而为」</p>
+            
+            <p>林默握紧手机，手心全是汗水。他不知道化而为是谁，但他知道，自己已经没有退路了。</p>
+            
+            <p>窗外的天空泛起鱼肚白，新的一天开始了。但对林默来说，他熟悉的那个世界，已经永远地改变了。</p>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="zhudeng_ch1.html" class="page-btn">← 上一章</a>
+        <a href="zhudeng_ch3.html" class="page-btn">下一章 →</a>
+    </div>
+        <script>
+        let currentFontSize = 17;
+        function adjustFont(delta) { currentFontSize = Math.max(14, Math.min(22, currentFontSize + delta)); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; localStorage.setItem('readerFontSize', currentFontSize); }
+        const savedFontSize = localStorage.getItem('readerFontSize'); if (savedFontSize) { currentFontSize = parseInt(savedFontSize); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; }
+        function toggleTOC() { document.getElementById('tocPanel').classList.toggle('open'); }
+        function toggleSettings() { alert('设置功能开发中...'); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { const next = document.querySelector('.page-btn:not(.disabled)'); if(next && next.getAttribute('href')) window.location.href = next.getAttribute('href'); } else if (e.key === 'ArrowLeft') { const prev = document.querySelector('.page-btn.disabled') ? null : document.querySelectorAll('.page-btn')[0]; if(prev && prev.getAttribute('href')) window.location.href = prev.getAttribute('href'); } else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); } });
+    </script>
+</body>
+</html>

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annuonie's Gate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #051015;
+  --card-bg: rgba(8, 28, 35, 0.72);
+  --border1: rgba(32, 100, 110, 0.45);
+  --border2: rgba(16, 52, 62, 0.35);
+  --accent: #d4a574;
+  --accent-dim: rgba(212, 165, 116, 0.25);
+  --text: #a0c4c8;
+  --text-dim: #5a7a7e;
+  --glow: rgba(32, 120, 130, 0.5);
+  --scanline: rgba(0, 255, 220, 0.03);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  min-height: 100vh;
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--text);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Background Image with Blur ── */
+.bg-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: blur(6px) saturate(0.5) brightness(0.65);
+  z-index: -2;
+}
+
+/* ── CRT Scanlines ── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--scanline) 2px,
+    var(--scanline) 4px
+  );
+  pointer-events: none;
+  z-index: 9998;
+  animation: scanFlicker 0.08s infinite alternate;
+}
+
+@keyframes scanFlicker {
+  0% { opacity: 0.92; }
+  100% { opacity: 1; }
+}
+
+/* ── Noise Overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9997;
+  animation: noiseMove 0.5s steps(5) infinite;
+}
+
+@keyframes noiseMove {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-2%, -1%); }
+  40% { transform: translate(1%, 2%); }
+  60% { transform: translate(-1%, 0%); }
+  80% { transform: translate(2%, -2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ── Mouse Glow ── */
+#mouse-glow {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(32, 120, 130, 0.08) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  transition: opacity 0.3s;
+}
+
+/* ── Watermark Eye ── */
+.watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  height: 420px;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 1;
+  animation: watermarkPulse 8s ease-in-out infinite;
+}
+
+.watermark svg { width: 100%; height: 100%; }
+
+@keyframes watermarkPulse {
+  0%, 100% { opacity: 0.035; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.055; transform: translate(-50%, -50%) scale(1.03); }
+}
+
+/* ── Loading Overlay ── */
+#loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  transition: opacity 0.6s ease;
+}
+
+#loading-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-text {
+  font-family: 'VT323', monospace;
+  font-size: 2.5em;
+  color: var(--accent);
+  animation: loadBlink 0.6s infinite;
+}
+
+.loading-text .cursor {
+  animation: cursorBlink 0.5s infinite;
+}
+
+@keyframes loadBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Transition Overlay ── */
+#transition-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+#transition-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Container ── */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 60px 20px 100px;
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Header ── */
+header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+h1 {
+  font-family: 'VT323', monospace;
+  font-size: 3.6em;
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(212, 165, 116, 0.5), 0 0 60px rgba(212, 165, 116, 0.15);
+  animation: titleGlow 3s ease-in-out infinite, titleFlicker 6s infinite;
+  letter-spacing: 4px;
+}
+
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(212,165,116,0.5), 0 0 60px rgba(212,165,116,0.15); }
+  50% { text-shadow: 0 0 30px rgba(212,165,116,0.7), 0 0 80px rgba(212,165,116,0.25); }
+}
+
+@keyframes titleFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.7; }
+  94% { opacity: 1; }
+  96% { opacity: 0.85; }
+  97% { opacity: 1; }
+}
+
+.subtitle {
+  font-size: 0.95em;
+  color: var(--text-dim);
+  margin-top: 8px;
+  letter-spacing: 2px;
+}
+
+/* ── Divider with Visitor Count ── */
+.divider-wrap {
+  position: relative;
+  margin: 16px auto 0;
+  max-width: 400px;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border1), var(--accent-dim), var(--border1), transparent);
+}
+
+.visitor-count {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65em;
+  color: var(--text-dim);
+  margin-top: -14px;
+  font-family: 'VT323', monospace;
+  letter-spacing: 1px;
+}
+
+/* ── Card Grid ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border1);
+  border-radius: 6px;
+  padding: 28px 24px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(32, 120, 130, 0.12) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.card:hover::after { opacity: 1; }
+
+.card:hover {
+  transform: scale(1.025);
+  box-shadow: 0 0 25px rgba(32, 120, 130, 0.15), inset 0 0 30px rgba(32, 120, 130, 0.05);
+  border-color: rgba(32, 120, 130, 0.55);
+}
+
+.card:active {
+  transform: scale(0.97);
+  transition: transform 0.1s;
+}
+
+.card-icon {
+  font-size: 1.6em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.card-title {
+  font-family: 'VT323', monospace;
+  font-size: 1.35em;
+  color: var(--accent);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.card-desc {
+  font-size: 0.78em;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.card-url {
+  font-size: 0.65em;
+  color: var(--text-dim);
+  margin-top: 10px;
+  opacity: 0.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Text Fragment ── */
+.fragment {
+  position: fixed;
+  font-family: 'VT323', monospace;
+  color: var(--text);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9996;
+  font-size: 0.85em;
+  letter-spacing: 2px;
+  animation: fragmentFlash 1.8s ease-out forwards;
+}
+
+@keyframes fragmentFlash {
+  0% { opacity: 0; transform: translateY(0) scale(0.95); }
+  15% { opacity: 0.45; transform: translateY(-2px) scale(1); }
+  85% { opacity: 0.45; transform: translateY(-8px) scale(1); }
+  100% { opacity: 0; transform: translateY(-14px) scale(0.95); }
+}
+
+/* ── Footer / Status Bar ── */
+.statusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(5, 16, 21, 0.92);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border1);
+  padding: 8px 20px;
+  font-size: 0.7em;
+  color: var(--text-dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 9990;
+  transform: translateY(100%);
+  transition: transform 0.4s ease;
+}
+
+.statusbar.visible {
+  transform: translateY(0);
+}
+
+.statusbar .clock {
+  font-family: 'VT323', monospace;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.statusbar .status-msg {
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .container { padding: 40px 14px 90px; }
+
+  h1 {
+    font-size: 2.2em;
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    font-size: 0.7em;
+    white-space: nowrap;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .card { padding: 22px 18px; }
+
+  .card-title { font-size: 1.2em; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-overlay"></div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay">
+  <span class="loading-text">LOADING_<span class="cursor">█</span></span>
+</div>
+
+<!-- Transition Overlay -->
+<div id="transition-overlay">
+  <span class="loading-text">LOADING_<span class="cursor">█</span></span>
+</div>
+
+<!-- Mouse Glow -->
+<div id="mouse-glow"></div>
+
+<!-- Watermark -->
+<div class="watermark">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="100" cy="100" rx="80" ry="50" fill="none" stroke="rgba(160,196,200,1)" stroke-width="1.5"/>
+    <circle cx="100" cy="100" r="28" fill="none" stroke="rgba(160,196,200,1)" stroke-width="1.5"/>
+    <circle cx="100" cy="100" r="12" fill="rgba(160,196,200,1)" opacity="0.5"/>
+    <path d="M20 100 Q60 50 100 50 Q140 50 180 100" fill="none" stroke="rgba(160,196,200,1)" stroke-width="1"/>
+    <path d="M20 100 Q60 150 100 150 Q140 150 180 100" fill="none" stroke="rgba(160,196,200,1)" stroke-width="1"/>
+  </svg>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+  <header>
+    <h1>ANNUONIE'S GATE</h1>
+    <p class="subtitle">▸ 梦 核 导 航 端 口 ◂</p>
+    <div class="divider-wrap">
+      <div class="divider"></div>
+      <span class="visitor-count">VISITORS: <span id="visitor-num">000,404</span></span>
+    </div>
+  </header>
+
+  <div class="card-grid">
+
+    <a class="card" href="/danbooru-tags/" data-prefetch>
+      <span class="card-icon">🏷️</span>
+      <div class="card-title">Danbooru 常用词条</div>
+      <div class="card-desc">标签速查 · 构图参考 · 创作导航</div>
+      <div class="card-url">claw-annuonie-pages.talesofai.com/danbooru-tags/</div>
+    </a>
+
+    <a class="card" href="/shujia/" data-prefetch>
+      <span class="card-icon">📚</span>
+      <div class="card-title">伪人阅读网</div>
+      <div class="card-desc">非人之书 · 不应被阅读的文字</div>
+      <div class="card-url">claw-annuonie-pages.talesofai.com/shujia/</div>
+    </a>
+
+    <a class="card" href="/tujian/" data-prefetch>
+      <span class="card-icon">🔍</span>
+      <div class="card-title">伪物图鉴</div>
+      <div class="card-desc">收录一切非真之物 · 持续更新</div>
+      <div class="card-url">claw-annuonie-pages.talesofai.com/tujian/</div>
+    </a>
+
+    <a class="card" href="/wenziyoux/" data-prefetch>
+      <span class="card-icon">🎮</span>
+      <div class="card-title">文字游戏</div>
+      <div class="card-desc">在字符之间 · 寻找出口</div>
+      <div class="card-url">claw-annuonie-pages.talesofai.com/wenziyoux/</div>
+    </a>
+
+    <a class="card" href="/rensheng/" data-prefetch>
+      <span class="card-icon">🎲</span>
+      <div class="card-title">人生模拟器</div>
+      <div class="card-desc">如果人生可以重来 · 你会怎么选</div>
+      <div class="card-url">claw-annuonie-pages.talesofai.com/rensheng/</div>
+    </a>
+
+  </div>
+</div>
+
+<!-- Status Bar -->
+<div class="statusbar" id="statusbar">
+  <span class="status-msg" id="status-msg">▸ SYSTEM ONLINE</span>
+  <span class="clock" id="clock">--:--:--</span>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ── Loading Screen ── */
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      var overlay = document.getElementById('loading-overlay');
+      overlay.classList.add('fade-out');
+      setTimeout(function() { overlay.style.display = 'none'; }, 600);
+    }, 1500);
+  });
+
+  /* ── Mouse Glow ── */
+  var glow = document.getElementById('mouse-glow');
+  var mx = 0, my = 0;
+  document.addEventListener('mousemove', function(e) {
+    mx = e.clientX;
+    my = e.clientY;
+    glow.style.left = mx + 'px';
+    glow.style.top = my + 'px';
+  });
+
+  /* ── Card Hover Glow + Prefetch ── */
+  document.querySelectorAll('.card').forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 100;
+      var y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty('--mx', x + '%');
+      card.style.setProperty('--my', y + '%');
+    });
+
+    card.addEventListener('mouseenter', function() {
+      var href = card.getAttribute('href');
+      if (href && card.dataset.prefetched !== '1') {
+        var link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = href;
+        document.head.appendChild(link);
+        card.dataset.prefetched = '1';
+      }
+    });
+
+    card.addEventListener('click', function(e) {
+      e.preventDefault();
+      var href = card.getAttribute('href');
+      var overlay = document.getElementById('transition-overlay');
+      overlay.classList.add('active');
+      setTimeout(function() {
+        window.location.href = href;
+      }, 400);
+    });
+  });
+
+  /* ── Visitor Counter ── */
+  var visitorEl = document.getElementById('visitor-num');
+  var visitors = 404;
+
+  function formatNum(n) {
+    var s = String(Math.abs(n)).padStart(6, '0');
+    var result = '';
+    for (var i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 === 0) result += ',';
+      result += s[i];
+    }
+    return result;
+  }
+
+  function updateVisitor() {
+    var delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
+    visitors += delta;
+    if (visitors < 0) visitors = 0;
+    visitorEl.textContent = formatNum(visitors);
+  }
+
+  setInterval(updateVisitor, 2000);
+  visitorEl.textContent = formatNum(visitors);
+
+  /* ── Text Fragments ── */
+  var fragments = [
+    '你确定你看到的 是真的吗',
+    '这个页面在看着你',
+    '不要回头',
+    '一切都在计划之中',
+    '你还记得上次醒来是什么时候吗',
+    '我们不在同一个维度',
+    '信号正在衰减',
+    '不要相信文字',
+    '你已经被记录了',
+    '这里曾经有另一个人',
+    '梦是现实的补丁',
+    '你确定这是你的选择吗',
+    '系统运行正常 请勿惊慌',
+    '你看到的颜色 可能并不存在',
+    '时间在这里 不重要',
+    '有人在另一端看着你',
+    '不要关闭这个页面',
+    '这是第几次醒来了',
+    '记忆是可以编辑的',
+    '你以为你在浏览 其实你被浏览'
+  ];
+
+  function spawnFragment() {
+    var frag = document.createElement('div');
+    frag.className = 'fragment';
+    frag.textContent = fragments[Math.floor(Math.random() * fragments.length)];
+    frag.style.left = (10 + Math.random() * 75) + '%';
+    frag.style.top = (10 + Math.random() * 75) + '%';
+    document.body.appendChild(frag);
+    setTimeout(function() { frag.remove(); }, 1800);
+  }
+
+  function scheduleFragment() {
+    var delay = 3000 + Math.random() * 3000; // 3-6 seconds
+    setTimeout(function() {
+      spawnFragment();
+      scheduleFragment();
+    }, delay);
+  }
+
+  setTimeout(scheduleFragment, 2500);
+
+  /* ── Status Bar ── */
+  var statusbar = document.getElementById('statusbar');
+  var statusMsg = document.getElementById('status-msg');
+  var clockEl = document.getElementById('clock');
+  var statusBarVisible = false;
+  var statusIndex = 0;
+
+  var statusMessages = [
+    '▸ SYSTEM ONLINE',
+    '▸ ALL PORTS ACTIVE',
+    '▸ 信号稳定 · 梦境完整',
+    '▸ MEMORY INTEGRITY 98.7%',
+    '▸ 不要相信第7条消息',
+    '▸ GATEWAY STATUS: NOMINAL',
+    '▸ 现实锚点正常',
+    '▸ DREAM BUFFER: 0x7F3A OK',
+    '▸ 连接来自内侧',
+    '▸ 一切如常 一切异常'
+  ];
+
+  function updateClock() {
+    var now = new Date();
+    var h = String(now.getHours()).padStart(2, '0');
+    var m = String(now.getMinutes()).padStart(2, '0');
+    var s = String(now.getSeconds()).padStart(2, '0');
+    clockEl.textContent = h + ':' + m + ':' + s;
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function cycleStatus() {
+    statusIndex = (statusIndex + 1) % statusMessages.length;
+    statusMsg.style.opacity = '0';
+    setTimeout(function() {
+      statusMsg.textContent = statusMessages[statusIndex];
+      statusMsg.style.opacity = '0.7';
+    }, 300);
+  }
+
+  setInterval(cycleStatus, 15000);
+
+  // Show statusbar on scroll to bottom
+  window.addEventListener('scroll', function() {
+    var nearBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100;
+    if (nearBottom && !statusBarVisible) {
+      statusbar.classList.add('visible');
+      statusBarVisible = true;
+    } else if (!nearBottom && statusBarVisible) {
+      statusbar.classList.remove('visible');
+      statusBarVisible = false;
+    }
+  });
+
+  // Also show after a delay for mobile users who don't scroll
+  setTimeout(function() {
+    statusbar.classList.add('visible');
+    statusBarVisible = true;
+  }, 5000);
+
+})();
+</script>
+</body>
+</html>

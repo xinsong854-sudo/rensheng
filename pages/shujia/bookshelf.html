@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的书架 - 里界物语</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #ff4d4f;
+            --primary-hover: #ff6b6d;
+            --background: #faf8f5;
+            --text-primary: #333333;
+            --text-secondary: #555555;
+            --text-light: #888888;
+            --border-color: #e8e4e0;
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-bottom: 70px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6d 0%, #ff4d4f 100%);
+            color: white;
+            padding: 40px 16px 60px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .section-title {
+            padding: 0 12px;
+            margin: 20px 0 10px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .book-count {
+            font-size: 13px;
+            font-weight: normal;
+            color: var(--text-light);
+        }
+
+        /* 书架网格 - 竖屏优化 */
+        .bookshelf {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 0 12px;
+        }
+
+        @media (min-width: 500px) {
+            .bookshelf {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 14px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .bookshelf {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 16px;
+            }
+        }
+
+        .book-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-cover {
+            aspect-ratio: 3/4;
+            width: 100%;
+            background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: #ff6b35;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-card:hover .remove-btn {
+            opacity: 1;
+        }
+
+        .remove-btn:hover {
+            background: #ff6b35;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .book-info {
+            padding: 10px 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .book-title {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 34px;
+        }
+
+        .book-author {
+            font-size: 11px;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #f0ede9;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9a76 0%, #ff6b35 100%);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 16px;
+            color: var(--text-light);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-btn {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .empty-state-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 10px;
+            padding: 4px 0;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>📚 我的书架</h1>
+        <p>已收藏的书籍</p>
+    </header>
+
+    <h2 class="section-title">
+        <span>我的收藏</span>
+        <span class="book-count" id="bookCount">0 本</span>
+    </h2>
+    <div class="bookshelf" id="favorites">
+        <!-- 书籍卡片将由 JS 动态生成 -->
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <a href="./index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>首页</span>
+        </a>
+        <a href="./bookshelf.html" class="nav-item active">
+            <span class="nav-icon">📚</span>
+            <span>书架</span>
+        </a>
+        <a href="./my.html" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>我的</span>
+        </a>
+    </nav>
+
+    <script src="js/bookshelf.js"></script>
+    <script>
+        // 渲染书架
+        function renderBookshelf() {
+            const favorites = document.getElementById('favorites');
+            const bookCount = document.getElementById('bookCount');
+            const books = getBookshelf();
+            
+            bookCount.textContent = `${books.length} 本`;
+            
+            if (books.length === 0) {
+                favorites.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📖</div>
+                        <div>书架还是空的</div>
+                        <a href="index.html" class="empty-state-btn">去发现好书</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            favorites.innerHTML = '';
+            books.forEach(book => {
+                const card = document.createElement('a');
+                card.className = 'book-card';
+                card.href = getFirstChapterUrl(book);
+                card.innerHTML = `
+                    <div class="book-cover" style="background: ${book.color || 'linear-gradient(135deg, #ff9a76 0%, #ff6b35 100%)'}">
+                        <button class="remove-btn" onclick="event.preventDefault(); removeBook('${book.id}'); return false;" title="取消收藏">×</button>
+                        ${book.emoji || '📚'}
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.subtitle || book.author || ''}</div>
+                    </div>
+                `;
+                favorites.appendChild(card);
+            });
+        }
+        
+        // 移除书籍
+        function removeBook(bookId) {
+            removeFromBookshelf(bookId);
+            renderBookshelf();
+        }
+        
+        // 页面加载时渲染书架
+        document.addEventListener('DOMContentLoaded', renderBookshelf);
+    </script>
+</body>
+</html>

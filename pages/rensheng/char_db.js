@@ -284,6 +284,16 @@ const CHARDB = {
   region: "渊",
   type: "伪人"
 },
+"月汐": {
+  desc: "诞生于里界的伪人，幼年出现在表界被苍月汐捡到并抚养。苍月汐自杀后入住槐安公寓410室。冷静理智，冷脸萌。能力：吞噬（从影子吞噬一切并获取记忆）、感知（对同族灵敏）、拟态（拟态见过的东西）、幽影（有自我意识的半身）。",
+  region: "渊",
+  type: "伪人"
+},
+"LAZARUS THE LOVED": {
+  desc: "「被蒙爱的轮回者」，原为西陆人类，接受太多「奇迹」后转化为伪人。能力【蒙爱】：荆棘冠吞噬肉体为纯能储存，四日后复生重置状态（每6周一次）。槐安公寓612住民，对楼长有敬畏之情，仍信仰AT（奇迹伪神）。三无电波系，喜欢咸鱼干。使用谦辞自称，部分字用繁体，句尾加……。",
+  region: "渊",
+  type: "伪人"
+},
 
 // ---------- 人物档案 ----------
 "「烛灯」": {
@@ -572,6 +582,14 @@ const CHARDB_ALIASES = {
   "瘟疫医生": ["【瘟疫的病主】医生？", "古老伪人，形象近似中世纪瘟疫医生。"],
   "医生": ["【瘟疫的病主】医生？", "古老伪人，形象近似中世纪瘟疫医生。"],
   "疫病区": ["【瘟疫的病主】医生？", "古老伪人，与「大瘟疫」事件密切相关。"],
+
+  // 月汐
+  "苍月汐": ["月汐", "苍月汐捡到并抚养的里界伪人，入住槐安公寓410。"],
+
+  // LAZARUS THE LOVED
+  "拉撒路": ["LAZARUS THE LOVED", "被蒙爱的轮回者，槐安公寓612住民。"],
+  "被蒙爱的": ["LAZARUS THE LOVED", "荆棘冠复生者，西陆出身的人类转伪人。"],
+  "lazarus": ["LAZARUS THE LOVED", "被蒙爱的轮回者。"],
 };
 
 // ===== 精确匹配函数 =====
@@ -626,48 +644,4 @@ function _fuzzyThreshold(q) {
   if (hasCJK && cjkCount >= 2) return true;
   if (hasEn) return true;
   return false;
-}
-
-// ===== LLM 身份识别（无思考模式 fallback） =====
-async function resolveNameLLM(input) {
-  if (!input || !input.trim() || !window._LLM_RESOLVING) return null;
-  window._LLM_RESOLVING = false;
-  var nameList = CHAR_LIST.map(function(l){return l.split("|")[0];}).join(", ");
-  var prompt = "判断以下名字是否匹配里界世界观中的角色。如果匹配返回JSON：{\"name\":\"规范名称\",\"info\":\"简介(50字内)\",\"region\":\"所属地域\",\"type\":\"人类/伪人/伪神\"}，不匹配返回{\"match\":false}。输入名字：" + input.trim() + " 候选角色列表：" + nameList;
-  try {
-    var ctrl = new AbortController();
-    var tmo = setTimeout(function(){ctrl.abort();}, 15000);
-    var r = await fetch("https://litellm.talesofai.cn/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer sk-fZrLXE0IEs6EDYJCOsLLaQ" },
-      body: JSON.stringify({
-        model: "qwen3.6-plus",
-        messages: [
-          { role: "system", content: "只返回JSON对象。不要其他内容。" },
-          { role: "user", content: prompt }
-        ],
-        max_tokens: 128,
-        temperature: 0.1
-      }),
-      signal: ctrl.signal
-    });
-    clearTimeout(tmo);
-    if (!r.ok) return null;
-    var d = await r.json();
-    var txt = (d.choices && d.choices[0] && d.choices[0].message) ? d.choices[0].message.content : "";
-    txt = txt.replace(/```(?:json)?/g, "").replace(/```/g, "").trim();
-    var j = JSON.parse(txt);
-    if (j && j.match === false) return null;
-    if (j && j.name) {
-      var c = CHARDB[j.name];
-      return {
-        canonicalName: j.name,
-        info: j.info || (c ? c.desc : ""),
-        region: j.region || (c ? c.region : "未知"),
-        type: j.type || (c ? c.type : "未知"),
-        match: "llm"
-      };
-    }
-  } catch (e) {}
-  return null;
 }
