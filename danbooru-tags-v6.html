@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Danbooru 常用词条 - 捏 Ta 新人友好版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --soft-blue: #A8C8E8;
+            --light-blue: #B8D4F0;
+            --pale-blue: #E8F0F8;
+            --text-dark: #2C4A5C;
+            --text-medium: #4A6B7C;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+            background-image: url('page-background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 20px;
+            background: rgba(240, 248, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--light-steel);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--steel-blue);
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 15px;
+            color: #666;
+        }
+
+        .header-banner {
+            width: 100%;
+            max-width: 700px;
+            margin: 20px auto 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .header-banner:hover {
+            opacity: 0.85;
+        }
+
+        .header-banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .toc {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: #fff;
+            border: 1px solid var(--light-blue);
+            border-radius: 8px;
+            padding: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            pointer-events: none;
+            min-width: 120px;
+        }
+
+        .toc.expanded {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .toc h3 {
+            display: none;
+        }
+
+        .toc-toggle {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: var(--soft-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            width: 50px;
+            height: 50px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+        }
+
+        .toc-toggle:hover {
+            background: var(--text-dark);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .toc-toggle:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .toc-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .toc-item {
+            display: block;
+            padding: 10px 14px;
+            background: #fff;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 1px solid var(--light-blue);
+            white-space: nowrap;
+        }
+
+        .toc-item:hover {
+            background: var(--soft-blue);
+            border-color: var(--soft-blue);
+            color: white;
+        }
+
+        .toc-item:active {
+            transform: scale(0.98);
+        }
+
+        .disclaimer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .disclaimer.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .disclaimer-content {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 16px;
+            max-width: 90%;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .disclaimer-content h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .disclaimer-content p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .tutorial-section {
+            background: linear-gradient(135deg, #98B8D8, var(--soft-blue));
+            color: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(168, 200, 232, 0.4);
+        }
+
+        .tutorial-section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tutorial-section h3 {
+            font-size: 16px;
+            margin: 15px 0 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .tutorial-section p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .tutorial-section ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .tutorial-section li {
+            font-size: 14px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.95);
+            margin: 6px 0;
+        }
+
+        .tutorial-section code {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: white;
+        }
+
+        .tutorial-section .badge {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tutorial-content {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .tutorial-content h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            margin-top: 15px;
+        }
+
+        .tutorial-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .tutorial-content ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .tutorial-content li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .example-box {
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+
+        .example-good {
+            border-left: 3px solid #4ade80;
+        }
+
+        .example-bad {
+            border-left: 3px solid #f87171;
+        }
+
+        .recipe-section {
+            margin-bottom: 25px;
+        }
+
+        .recipe-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .recipe-card {
+            background: #fff;
+            border: 1px solid var(--light-blue);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .recipe-card:hover {
+            background: var(--pale-blue);
+            border-color: var(--soft-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(168, 200, 232, 0.3);
+        }
+
+        .recipe-card:active {
+            transform: translateY(0) scale(0.995);
+        }
+
+        .recipe-card h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .recipe-card p {
+            font-size: 13px;
+            color: var(--text-medium);
+            margin-bottom: 10px;
+        }
+
+        .recipe-tags {
+            font-family: monospace;
+            font-size: 11px;
+            background: #fff;
+            padding: 8px;
+            border-radius: 6px;
+            color: var(--steel-blue);
+            word-break: break-all;
+        }
+
+        .recipe-copy {
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: var(--soft-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .recipe-copy:hover {
+            background: var(--text-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 74, 92, 0.3);
+        }
+
+        .recipe-copy:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .recipe-copy.copy-btn {
+            background: #fff;
+            color: var(--text-dark);
+            border: 2px solid var(--soft-blue);
+        }
+
+        .recipe-copy.copy-btn:hover {
+            background: var(--soft-blue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(168, 200, 232, 0.4);
+        }
+
+        .weight-section {
+            margin-bottom: 25px;
+        }
+
+        .weight-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .weight-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f8f9fa;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .weight-table th,
+        .weight-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .weight-table th {
+            background: var(--soft-blue);
+            color: white;
+            font-weight: 500;
+        }
+
+        .weight-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .weight-code {
+            font-family: monospace;
+            background: var(--pale-blue);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .faq-section {
+            margin-bottom: 25px;
+        }
+
+        .faq-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .faq-item {
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 15px 18px;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+
+        .faq-question:hover {
+            background: #e9ecef;
+        }
+
+        .faq-question .icon {
+            font-size: 18px;
+            color: #999;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active .icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fff;
+        }
+
+        .faq-answer-content {
+            padding: 15px 18px;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .faq-answer-content ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .faq-answer-content li {
+            margin-bottom: 5px;
+        }
+
+        .community-section {
+            margin-bottom: 25px;
+        }
+
+        .community-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .community-card {
+            background: var(--soft-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .community-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .community-card .name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .community-card .number {
+            font-family: monospace;
+            font-size: 16px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .community-card .copy-hint {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .category {
+            margin-bottom: 12px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            background: #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            border: 2px solid var(--light-blue);
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .category-header:hover {
+            background: var(--soft-blue);
+            border-color: var(--soft-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(168, 200, 232, 0.4);
+        }
+
+        .category-header:active {
+            background: var(--text-dark);
+            color: white;
+            transform: translateY(0) scale(0.995);
+        }
+
+        .category-header.active {
+            background: var(--soft-blue);
+            color: white;
+            border-color: var(--soft-blue);
+        }
+
+        .category-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chevron {
+            font-size: 20px;
+            color: #999;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chevron.active {
+            transform: rotate(90deg);
+        }
+
+        .subcategory {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 8px;
+        }
+
+        .subcategory.show {
+            max-height: 2000px;
+        }
+
+        .subcategory-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            margin-bottom: 6px;
+            border: 1px solid var(--light-blue);
+            color: var(--text-medium);
+            font-weight: 500;
+        }
+
+        .subcategory-header:hover {
+            background: var(--pale-blue);
+            border-color: var(--soft-blue);
+            color: var(--text-dark);
+            transform: translateX(4px);
+        }
+
+        .subcategory-header:active {
+            background: var(--soft-blue);
+            color: white;
+            transform: translateX(4px) scale(0.995);
+        }
+
+        .subcategory-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #444;
+            margin: 0;
+        }
+
+        .subcategory-chevron {
+            font-size: 18px;
+            color: #888;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .subcategory-chevron.active {
+            transform: rotate(90deg);
+        }
+
+        .subcategory-tags {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 14px;
+        }
+
+        .subcategory-tags.show {
+            max-height: 1500px;
+            padding: 0 14px 10px 14px;
+        }
+
+        .level3-item {
+            margin: 6px 0 6px 20px;
+            padding: 0;
+        }
+
+        .level3-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--pale-blue);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            border: 1px solid var(--light-blue);
+            color: var(--text-medium);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .level3-header:hover {
+            background: var(--light-blue);
+            border-color: var(--soft-blue);
+            color: var(--text-dark);
+            transform: translateX(4px);
+        }
+
+        .level3-header:active {
+            background: var(--soft-blue);
+            color: white;
+            transform: translateX(4px) scale(0.995);
+        }
+
+        .level3-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-medium);
+            margin: 0;
+        }
+
+        .level3-chevron {
+            font-size: 16px;
+            color: var(--light-blue);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .level3-chevron.active {
+            transform: rotate(90deg);
+            color: var(--text-dark);
+        }
+
+        .level3-tags {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 0 10px;
+        }
+
+        .level3-tags.show {
+            max-height: 1500px;
+            padding: 0 10px 8px 10px;
+        }
+
+        .subcategory-item {
+            padding: 0;
+            margin: 0;
+            background: transparent;
+            border: none;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #f0f2f5;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #444;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e4e6e9;
+            user-select: none;
+        }
+
+        .tag:hover {
+            background: #e0e3e8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .tag:active {
+            transform: translateY(0) scale(0.98);
+            background: #d0d5dc;
+        }
+
+        .tag.copied {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .tag.negative {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .sensitive-checker {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .sensitive-checker h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .sensitive-checker textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .sensitive-checker button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .sensitive-checker button:hover {
+            background: #0056b3;
+        }
+
+        .sensitive-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .sensitive-result .warning {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .sensitive-result .safe {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .sensitive-disclaimer {
+            font-size: 11px;
+            color: #999;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .highlighted-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.8;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .highlighted-text .sensitive-high {
+            background: #ffcccc;
+            color: #cc0000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+            border: 1px solid #ff9999;
+        }
+
+        .highlighted-text .sensitive-low {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+            border: 1px solid #ffc107;
+        }
+
+        .sensitive-legend {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .sensitive-legend span {
+            margin-right: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.copied {
+            background: rgba(40, 167, 69, 0.9);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #999;
+            font-size: 12px;
+            border-top: 1px solid #f0f0f0;
+            margin-top: 30px;
+        }
+
+        .footer .promo {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer .promo:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .footer .promo:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .footer .promo strong {
+            color: #007bff;
+            font-size: 14px;
+        }
+
+        .promo-icon {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="disclaimer" id="disclaimer">
+        <div class="disclaimer-content">
+            <h2>⚠️ 免责声明</h2>
+            <p>本内容均由一只小眼睛编写<br>如有疑问请勿找安诺涅</p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">已复制</div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Danbooru 常用词条</h1>
+            <p>捏 Ta 新人友好版 · 点击词条可直接复制</p>
+            <div class="header-banner">
+                <img src="header-banner.jpg" alt="装饰横幅">
+            </div>
+        </div>
+
+        <div id="content"></div>
+
+        <div class="sensitive-checker">
+            <h2>🔍 AI 生图敏感词检测</h2>
+            <textarea id="sensitiveInput" placeholder="输入要检测的提示词..."></textarea>
+            <button onclick="checkSensitive()">检测</button>
+            <div id="sensitiveResult" class="sensitive-result" style="display: none;"></div>
+            <div class="sensitive-legend">
+                <span style="background:#ffcccc;padding:2px 6px;border-radius:4px;">🔴 高置信度</span>
+                <span style="background:#fff3cd;padding:2px 6px;border-radius:4px;">🟡 可能误报</span>
+            </div>
+            <p class="sensitive-disclaimer">⚠️ 我们并没有官方违禁词库，本次检测仅供娱乐并不保真</p>
+        </div>
+
+        <div class="tutorial-section" id="tutorial-section">
+            <h2>📖 新手教程 <span class="badge">必读</span></h2>
+            <div class="tutorial-content">
+                <h3>什么是 Danbooru 标签？</h3>
+                <p>Danbooru 标签是 AI 生图的"提示词"，用来告诉 AI 你想要画什么。每个标签代表一个元素，比如角色特征、服装、姿势、背景等。</p>
+
+                <h3>标签基本格式</h3>
+                <ul>
+                    <li>多个标签用<strong>逗号分隔</strong>：<code>blue_eyes, long_hair, dress</code></li>
+                    <li>标签顺序影响权重：<strong>越靠前的标签权重越高</strong></li>
+                    <li>可以使用<strong>权重语法</strong>：<code>(tag:1.2)</code> 增强，<code>(tag:0.8)</code> 减弱</li>
+                </ul>
+
+                <h3>如何组合标签</h3>
+                <p>推荐公式：<strong>角色描述 + 服装 + 姿势 + 背景 + 光影/风格</strong></p>
+                <div class="example-box example-good">
+                    ✅ 好的例子：<br>
+                    1girl, blue_eyes, long_hair, white_dress, standing, garden, sunset, soft_light
+                </div>
+                <div class="example-box example-bad">
+                    ❌ 坏的例子：<br>
+                    女孩 蓝眼睛 长发 裙子 花园（空格分隔、中文、太简单）
+                </div>
+
+                <h3>常见错误</h3>
+                <ul>
+                    <li>❌ 用空格分隔 → ✅ 用逗号分隔</li>
+                    <li>❌ 使用中文标签 → ✅ 使用英文 Danbooru 标签</li>
+                    <li>❌ 标签太少（只有 2-3 个）→ ✅ 至少 10-15 个标签</li>
+                    <li>❌ 标签矛盾（同时写 day 和 night）→ ✅ 保持一致性</li>
+                    <li>❌ 权重过高（超过 1.5）→ ✅ 一般 0.8-1.3 之间</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="recipe-section">
+            <h2>🎲 随机配方生成器</h2>
+            <p style="margin-bottom: 15px; color: #666; font-size: 14px;">从所有标签分类中随机组合，每次都是新灵感！</p>
+            <div class="recipe-grid">
+                <div class="recipe-card">
+                    <h3>🍼 Q 版角色</h3>
+                    <p>可爱比例 + 随机元素</p>
+                    <div class="recipe-tags" id="recipe-chibi">点击生成配方...</div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button class="recipe-copy" onclick="generateRandomRecipe('chibi')" style="flex: 1;">🎲 随机生成</button>
+                        <button class="recipe-copy copy-btn" onclick="copyRecipeText('recipe-chibi')" style="flex: 1;">📋 复制</button>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <h3>🎨 精美立绘</h3>
+                    <p>高质量 + 随机画师/风格</p>
+                    <div class="recipe-tags" id="recipe-portrait">点击生成配方...</div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button class="recipe-copy" onclick="generateRandomRecipe('portrait')" style="flex: 1;">🎲 随机生成</button>
+                        <button class="recipe-copy copy-btn" onclick="copyRecipeText('recipe-portrait')" style="flex: 1;">📋 复制</button>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <h3>🌸 场景图</h3>
+                    <p>角色 + 背景 + 光影</p>
+                    <div class="recipe-tags" id="recipe-scene">点击生成配方...</div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button class="recipe-copy" onclick="generateRandomRecipe('scene')" style="flex: 1;">🎲 随机生成</button>
+                        <button class="recipe-copy copy-btn" onclick="copyRecipeText('recipe-scene')" style="flex: 1;">📋 复制</button>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <h3>✨ 奇幻风格</h3>
+                    <p>非人特征 + 魔法效果</p>
+                    <div class="recipe-tags" id="recipe-fantasy">点击生成配方...</div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button class="recipe-copy" onclick="generateRandomRecipe('fantasy')" style="flex: 1;">🎲 随机生成</button>
+                        <button class="recipe-copy copy-btn" onclick="copyRecipeText('recipe-fantasy')" style="flex: 1;">📋 复制</button>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <h3>☕ 日常休闲</h3>
+                    <p>服装 + 姿势 + 配饰</p>
+                    <div class="recipe-tags" id="recipe-daily">点击生成配方...</div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button class="recipe-copy" onclick="generateRandomRecipe('daily')" style="flex: 1;">🎲 随机生成</button>
+                        <button class="recipe-copy copy-btn" onclick="copyRecipeText('recipe-daily')" style="flex: 1;">📋 复制</button>
+                    </div>
+                </div>
+                <div class="recipe-card">
+                    <h3>🖼️ 艺术创作</h3>
+                    <p>画师 + 风格 + 特殊效果</p>
+                    <div class="recipe-tags" id="recipe-artistic">点击生成配方...</div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <button class="recipe-copy" onclick="generateRandomRecipe('artistic')" style="flex: 1;">🎲 随机生成</button>
+                        <button class="recipe-copy copy-btn" onclick="copyRecipeText('recipe-artistic')" style="flex: 1;">📋 复制</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="weight-section">
+            <h2>⚖️ 标签权重速查</h2>
+            <table class="weight-table">
+                <thead>
+                    <tr>
+                        <th>语法</th>
+                        <th>效果</th>
+                        <th>使用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="weight-code">tag</span></td>
+                        <td>标准权重 (1.0)</td>
+                        <td>普通标签，不需要特别强调</td>
+                    </tr>
+                    <tr>
+                        <td><span class="weight-code">(tag:1.2)</span></td>
+                        <td>增强 20%</td>
+                        <td>想让某个特征更明显</td>
+                    </tr>
+                    <tr>
+                        <td><span class="weight-code">(tag:1.5)</span></td>
+                        <td>增强 50%</td>
+                        <td>核心特征，必须突出</td>
+                    </tr>
+                    <tr>
+                        <td><span class="weight-code">(tag:0.8)</span></td>
+                        <td>减弱 20%</td>
+                        <td>存在但不想太突出</td>
+                    </tr>
+                    <tr>
+                        <td><span class="weight-code">((tag))</span></td>
+                        <td>增强 (约 1.21 倍)</td>
+                        <td>多层括号叠加增强</td>
+                    </tr>
+                    <tr>
+                        <td><span class="weight-code">-(tag)</span></td>
+                        <td>负面/排除</td>
+                        <td>不想要的内容（放负面词区）</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                💡 <strong>提示：</strong>权重不要超过 1.5，否则可能产生奇怪的效果。核心特征放前面，次要特征放后面。
+            </p>
+        </div>
+
+        <div class="faq-section">
+            <h2>❓ 常见问题 FAQ</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>🖐️ 为什么手总是画不好（多指/变形）？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>这是 AI 生图的常见问题！解决方法：</p>
+                        <ul>
+                            <li><strong>添加负面词：</strong><code>extra_fingers, extra_digits, bad_hands, mutated_hands, bad_anatomy</code></li>
+                            <li><strong>避免复杂手势：</strong>先用简单的手部姿势（自然下垂、放在身侧）</li>
+                            <li><strong>增加手部描述：</strong><code>detailed_hands, beautiful_hands</code>（权重 1.2-1.3）</li>
+                            <li><strong>尝试不同模型：</strong>有些模型对手部处理更好</li>
+                            <li><strong>使用局部重绘：</strong>生成后对手部区域进行重绘修复</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>😰 为什么脸部崩坏/扭曲？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>脸部崩坏可能原因：</p>
+                        <ul>
+                            <li><strong>标签冲突：</strong>检查是否有矛盾的面部描述</li>
+                            <li><strong>权重过高：</strong>降低面部相关标签的权重</li>
+                            <li><strong>角度问题：</strong>某些角度（如 extreme_close-up）容易崩坏</li>
+                            <li><strong>添加质量词：</strong><code>masterpiece, best_quality, highres, detailed_face</code></li>
+                            <li><strong>负面词：</strong><code>bad_face, distorted_face, malformed_face</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>🎨 为什么颜色奇怪/发灰？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>颜色问题解决方法：</p>
+                        <ul>
+                            <li><strong>明确光源：</strong>添加<code>sunlight, moonlight, indoor_light</code>等光源标签</li>
+                            <li><strong>指定颜色：</strong>明确写出<code>blue_eyes, blonde_hair</code>而不是笼统的描述</li>
+                            <li><strong>避免冲突：</strong>不要同时写多个冲突的颜色</li>
+                            <li><strong>添加色彩质量词：</strong><code>vivid_colors, rich_colors, vibrant</code></li>
+                            <li><strong>负面词：</strong><code>washed_out, dull_colors, gray_skin</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>👕 服装总是画不对怎么办？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>服装问题解决方案：</p>
+                        <ul>
+                            <li><strong>使用标准标签：</strong>用 Danbooru 标准服装标签（本页面可查）</li>
+                            <li><strong>具体描述：</strong><code>white_frilled_dress</code> 比<code>dress</code>更准确</li>
+                            <li><strong>添加细节：</strong><code>detailed_clothes, fabric_texture</code></li>
+                            <li><strong>避免过多装饰：</strong>新手先用简单服装，熟练后再加复杂装饰</li>
+                            <li><strong>检查冲突：</strong>不要同时写矛盾的服装（如 swimsuit 和 coat）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>🌫️ 画面模糊/质量低怎么办？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>提升画面质量：</p>
+                        <ul>
+                            <li><strong>添加质量词：</strong><code>masterpiece, best_quality, highres, ultra_detailed</code>（权重 1.2-1.4）</li>
+                            <li><strong>负面词：</strong><code>lowres, low_quality, blurry, jpeg_artifacts, worst_quality</code></li>
+                            <li><strong>增加细节描述：</strong>添加更多具体的细节标签</li>
+                            <li><strong>检查步数/采样：</strong>确保生成参数设置合理</li>
+                            <li><strong>避免过多标签：</strong>一般 20-40 个标签为宜，过多可能稀释权重</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>👥 多人场景总是画崩怎么办？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>多人场景技巧：</p>
+                        <ul>
+                            <li><strong>明确人数：</strong><code>2girls, 3girls</code>等</li>
+                            <li><strong>分别描述：</strong>对每个角色单独描述特征</li>
+                            <li><strong>位置关系：</strong><code>standing_next_to, facing_each_other</code></li>
+                            <li><strong>简化背景：</strong>多人时背景不要太复杂</li>
+                            <li><strong>负面词：</strong><code>extra_persons, missing_person</code></li>
+                            <li><strong>降低难度：</strong>新手建议先从单人开始</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>🎭 表情总是很奇怪怎么办？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>表情问题处理：</p>
+                        <ul>
+                            <li><strong>使用标准表情标签：</strong><code>smile, happy, sad, angry, surprised</code></li>
+                            <li><strong>避免复杂表情：</strong>新手用基础表情，熟练后再试复杂表情</li>
+                            <li><strong>添加眼部描述：</strong><code>smiling_eyes, twinkling_eyes</code></li>
+                            <li><strong>负面词：</strong><code>bad_expression, distorted_expression</code></li>
+                            <li><strong>参考成功案例：</strong>找类似表情的成功图作为参考</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>🌙 光影效果怎么添加？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>光影效果标签：</p>
+                        <ul>
+                            <li><strong>光源方向：</strong><code>from_above, from_below, from_side, backlighting</code></li>
+                            <li><strong>光源类型：</strong><code>sunlight, moonlight, candlelight, neon_lighting</code></li>
+                            <li><strong>特殊效果：</strong><code>rim_light, volumetric_lighting, god_rays, lens_flare</code></li>
+                            <li><strong>时间相关：</strong><code>golden_hour, blue_hour, sunset, sunrise, night</code></li>
+                            <li><strong>氛围：</strong><code>soft_light, dramatic_lighting, cinematic_lighting</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>📐 构图和视角怎么选？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>构图视角选择：</p>
+                        <ul>
+                            <li><strong>基础视角：</strong><code>from_above（俯视）, from_below（仰视）, straight-on（正视）</code></li>
+                            <li><strong>镜头距离：</strong><code>close-up（特写）, full_body（全身）, wide_shot（广角）</code></li>
+                            <li><strong>特殊视角：</strong><code>pov（第一人称）, dutch_angle（倾斜）, selfie（自拍）</code></li>
+                            <li><strong>构图技巧：</strong><code>rule_of_thirds, centered, symmetrical</code></li>
+                            <li><strong>新手建议：</strong>先用<code>full_body, straight-on</code>等基础视角</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <span>💡 还有什么实用小技巧？</span>
+                    <span class="icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>进阶小技巧：</p>
+                        <ul>
+                            <li><strong>标签顺序：</strong>重要的标签放前面（前 10 个权重最高）</li>
+                            <li><strong>逐步添加：</strong>先写核心标签，再逐步添加细节</li>
+                            <li><strong>保存配方：</strong>成功的组合保存下来，下次修改使用</li>
+                            <li><strong>参考他人：</strong>看优秀作品用了什么标签</li>
+                            <li><strong>记录参数：</strong>记录成功的生成参数（步数、采样器等）</li>
+                            <li><strong>不要放弃：</strong>AI 生图需要练习，多尝试多调整</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="community-section">
+            <h2>👥 社区 & 求助</h2>
+            <div class="community-grid">
+                <div class="community-card" onclick="copyCommunity('捏 Ta1 群', '1882725861')">
+                    <div class="name">捏 Ta1 群</div>
+                    <div class="number">1882725861</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta2 群', '2836647356')">
+                    <div class="name">捏 Ta2 群</div>
+                    <div class="number">2836647356</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta3 群', '677406308')">
+                    <div class="name">捏 Ta3 群</div>
+                    <div class="number">677406308</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta4 群', '709365081')">
+                    <div class="name">捏 Ta4 群</div>
+                    <div class="number">709365081</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta5 群', '655624146')">
+                    <div class="name">捏 Ta5 群</div>
+                    <div class="number">655624146</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta6 群', '667633681')">
+                    <div class="name">捏 Ta6 群</div>
+                    <div class="number">667633681</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta7 群', '973380058')">
+                    <div class="name">捏 Ta7 群</div>
+                    <div class="number">973380058</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta8 群', '821977562')">
+                    <div class="name">捏 Ta8 群</div>
+                    <div class="number">821977562</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta9 群', '316832956')">
+                    <div class="name">捏 Ta9 群</div>
+                    <div class="number">316832956</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('捏 Ta10 群', '921706914')">
+                    <div class="name">捏 Ta10 群</div>
+                    <div class="number">921706914</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+                <div class="community-card" onclick="copyCommunity('伪人大本营', '1062624601')">
+                    <div class="name">🏠 伪人大本营</div>
+                    <div class="number">1062624601</div>
+                    <div class="copy-hint">点击复制群号</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            整理自 Danbooru / 共 800+ 标签
+            
+            <div class="promo">
+                <img src="footer-character.png" alt="伪人大本营" class="promo-icon" onclick="footerClick()">
+                <div>
+                    <strong>伪人大本营</strong><br>
+                    群号：1062624601<br>
+                    欢迎加入～
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签数据 - 重构为三级结构
+        const tagData = [
+            {
+                title: "一、画师篇 (Artists)",
+                items: [
+                    {
+                        title: "1.1 捏 Ta 常用画师",
+                        items: [
+                            { title: "捏 Ta 常用 - 热门画师", tags: [{ en: "artist_lack", cn: "lack" }, { en: "artist_ImamiyaPinoko", cn: "今宫雏子" }, { en: "artist_wengwengchim", cn: "翁翁 chim" }, { en: "artist_johnkafka", cn: "约翰卡夫卡" }, { en: "artist_honnryou", cn: "本量" }, { en: "artist_ccroquette", cn: "可洛克" }, { en: "artist_tekito", cn: "手织户" }, { en: "artist_yuji_(fantasia)", cn: "勇二" }, { en: "artist_norizc", cn: "则志" }, { en: "artist_kotarou", cn: "小太郎" }, { en: "artist_yolanda", cn: "尤兰达" }, { en: "artist_yorurokujuu", cn: "夜露九十" }, { en: "artist_MizutameTori", cn: "水溜鸟" }, { en: "artist_eromkk", cn: "eromkk" }, { en: "artist_chongzhen", cn: "重镇" }] },
+                            { title: "捏 Ta 常用 - 其他画师", tags: [{ en: "artist_renjian", cn: "人间" }, { en: "artist_lemtun", cn: "lemtun" }, { en: "artist_nslacka", cn: "nslacka" }, { en: "artist_uenomigi", cn: "uenomigi" }, { en: "artist_WatanabeTomari", cn: "渡边とまり" }, { en: "artist_Rafaelaelaela", cn: "Rafaela" }, { en: "artist_rei_(sanbonzakura)", cn: "rei" }, { en: "artist_ruoganzhao", cn: "若干朝" }, { en: "artist_sugar", cn: "糖牌" }, { en: "artist_betabeet", cn: "betabeet" }, { en: "artist_quasarcake", cn: "quasarcake" }, { en: "artist_akiakane", cn: "akiakane" }, { en: "artist_Cotono", cn: "Cotono" }, { en: "artist_seu", cn: "seu" }, { en: "artist_wanke", cn: "万可" }, { en: "artist_kuroume", cn: "黑梅" }, { en: "artist_remsrar", cn: "remsrar" }, { en: "artist_redum4", cn: "redum4" }, { en: "artist_z3zz4", cn: "z3zz4" }, { en: "artist_youichi", cn: "youichi" }, { en: "artist_Zhibuji", cn: "织布机" }, { en: "artist_AMmatcha", cn: "抹茶专门店" }, { en: "artist_qingchuan", cn: "清川" }, { en: "artist_taowu", cn: "桃乌" }, { en: "artist_qingying", cn: "清透质感" }, { en: "artist_mengspace", cn: "梦空间" }, { en: "artist_renshilian", cn: "renshilian" }, { en: "artist_sansanyu", cn: "三月雨" }] }
+                        ]
+                    },
+
+                ]
+            },
+            {
+                title: "二、艺术风格篇 (Art Styles)",
+                items: [
+                    {
+                        title: "2.1 人物比例",
+                        items: [
+                            { title: "人物比例 - 基础比例", tags: [{ en: "chibi", cn: "Q 版" }, { en: "super_deformed", cn: "SD 化" }, { en: "realistic", cn: "写实" }, { en: "semi_realistic", cn: "半写实" }] },
+                            { title: "人物比例 - 风格化", tags: [{ en: "cartoon", cn: "卡通" }, { en: "anime", cn: "动画" }, { en: "manga", cn: "漫画" }] }
+                        ]
+                    },
+                    {
+                        title: "2.2 绘画媒介",
+                        items: [
+                            { title: "绘画媒介 - 传统媒介", tags: [{ en: "watercolor", cn: "水彩" }, { en: "oil_painting", cn: "油画" }, { en: "acrylic", cn: "丙烯" }, { en: "gouache", cn: "水粉" }, { en: "pastel", cn: "色粉" }, { en: "colored_pencil", cn: "彩铅" }, { en: "pencil_sketch", cn: "铅笔素描" }, { en: "ink", cn: "墨水" }, { en: "marker", cn: "马克笔" }] },
+                            { title: "绘画媒介 - 数字媒介", tags: [{ en: "digital", cn: "数字绘画" }, { en: "digital_art", cn: "数字艺术" }] }
+                        ]
+                    },
+                    {
+                        title: "2.3 特殊风格",
+                        items: [
+                            { title: "特殊风格 - 数字风格", tags: [{ en: "pixel_art", cn: "像素艺术" }, { en: "low_poly", cn: "低多边形" }, { en: "vector", cn: "矢量" }, { en: "flat_color", cn: "平涂" }, { en: "cel_shading", cn: "赛璐璐" }] },
+                            { title: "特殊风格 - 艺术风格", tags: [{ en: "minimalist", cn: "极简主义" }, { en: "abstract", cn: "抽象" }, { en: "geometric", cn: "几何" }, { en: "impasto", cn: "厚涂" }] },
+                            { title: "特殊风格 - 色彩风格", tags: [{ en: "grayscale", cn: "灰度" }, { en: "monochrome", cn: "单色" }, { en: "sepia", cn: "棕褐色" }, { en: "vintage", cn: "复古" }, { en: "retro", cn: "怀旧" }] }
+                        ]
+                    },
+                    {
+                        title: "2.4 东方风格",
+                        items: [
+                            { title: "东方风格 - 中式", tags: [{ en: "ink_wash_painting", cn: "水墨画" }, { en: "chinese_painting", cn: "中国画" }, { en: "traditional_chinese", cn: "传统中式" }] },
+                            { title: "东方风格 - 日式", tags: [{ en: "sumi_e", cn: "日式水墨" }, { en: "japanese_painting", cn: "日本画" }, { en: "ukiyo_e", cn: "浮世绘" }, { en: "traditional_japanese", cn: "传统日式" }] }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // 渲染内容（支持三级嵌套）
+        function renderContent() {
+            const content = document.getElementById('content');
+            let html = '';
+
+            tagData.forEach((category, catIndex) => {
+                html += `
+                    <div class="category" id="cat-${catIndex}">
+                        <div class="category-header" onclick="toggleCategory(${catIndex})">
+                            <span class="category-title">${category.title}</span>
+                            <span class="chevron" id="chevron-${catIndex}">›</span>
+                        </div>
+                        <div class="subcategory" id="subcat-${catIndex}">
+                `;
+
+                category.items.forEach((subcat, subIndex) => {
+                    const subId = `sub-${catIndex}-${subIndex}`;
+                    
+                    if (subcat.items && subcat.items.length > 0) {
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span class="subcategory-title">${subcat.title}</span>
+                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
+                        
+                        subcat.items.forEach((level3, l3Index) => {
+                            const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
+                            html += `
+                                <div class="level3-item">
+                                    <div class="level3-header" onclick="toggleLevel3('${l3Id}', event)">
+                                        <span class="level3-title">${level3.title}</span>
+                                        <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
+                                    </div>
+                                    <div class="level3-tags" id="${l3Id}">
+                            `;
+                            
+                            if (level3.tags) {
+                                level3.tags.forEach(tag => {
+                                    const isNegative = tag.negative;
+                                    const className = isNegative ? 'tag negative' : 'tag';
+                                    html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                                });
+                            }
+                            
+                            html += `
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="subcategory-item">
+                                <div class="subcategory-header" onclick="toggleSubcategory('${subId}', event)">
+                                    <span class="subcategory-title">${subcat.title}</span>
+                                    <span class="subcategory-chevron" id="subchevron-${subId}">›</span>
+                                </div>
+                                <div class="subcategory-tags" id="${subId}">
+                        `;
+
+                        if (subcat.tags) {
+                            subcat.tags.forEach(tag => {
+                                const isNegative = tag.negative;
+                                const className = isNegative ? 'tag negative' : 'tag';
+                                html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                            });
+                        }
+
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            content.innerHTML = html;
+        }
+
+        function toggleCategory(index) {
+            const subcategory = document.getElementById(`subcat-${index}`);
+            const header = subcategory.previousElementSibling;
+            const chevron = document.getElementById(`chevron-${index}`);
+            const wasActive = header.classList.contains('active');
+
+            document.querySelectorAll('.category-header').forEach(h => {
+                h.classList.remove('active');
+                h.nextElementSibling.classList.remove('show');
+            });
+
+            document.querySelectorAll('.chevron').forEach(c => {
+                c.classList.remove('active');
+            });
+
+            if (!wasActive) {
+                header.classList.add('active');
+                subcategory.classList.add('show');
+                chevron.classList.add('active');
+            }
+        }
+
+        function toggleSubcategory(id, event) {
+            event.stopPropagation();
+            const content = document.getElementById(id);
+            const chevronId = id.replace('sub-', 'subchevron-');
+            const chevron = document.getElementById(chevronId);
+            const isActive = content.classList.contains('show');
+
+            if (isActive) {
+                content.classList.remove('show');
+                chevron.classList.remove('active');
+            } else {
+                content.classList.add('show');
+                chevron.classList.add('active');
+            }
+        }
+
+        function toggleLevel3(id, event) {
+            event.stopPropagation();
+            const content = document.getElementById(id);
+            const chevronId = `l3chevron-${id}`;
+            const chevron = document.getElementById(chevronId);
+            const isActive = content.classList.contains('show');
+
+            if (isActive) {
+                content.classList.remove('show');
+                chevron.classList.remove('active');
+            } else {
+                content.classList.add('show');
+                chevron.classList.add('active');
+            }
+        }
+
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const wasActive = element.classList.contains('active');
+
+            document.querySelectorAll('.faq-question').forEach(q => {
+                q.classList.remove('active');
+                q.nextElementSibling.style.maxHeight = '0';
+            });
+
+            if (!wasActive) {
+                element.classList.add('active');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+            }
+        }
+
+        function copyTag(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制：' + text);
+                element.classList.add('copied');
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                }, 500);
+            });
+        }
+
+        function extractTagsByCategory() {
+            const extracted = {
+                artists: [],
+                styles: [],
+                ratios: [],
+                hair: [],
+                clothes: [],
+                poses: [],
+                expressions: [],
+                lighting: [],
+                backgrounds: [],
+                accessories: [],
+                nonhuman: [],
+                effects: [],
+                quality: ['masterpiece', 'best_quality', 'highres', 'ultra_detailed']
+            };
+
+            tagData.forEach(category => {
+                category.items.forEach(item => {
+                    if (item.items) {
+                        item.items.forEach(l3 => {
+                            if (l3.tags) {
+                                l3.tags.forEach(tag => {
+                                    const en = tag.en;
+                                    if (category.title.includes('画师')) extracted.artists.push(en);
+                                    else if (category.title.includes('艺术风格')) extracted.styles.push(en);
+                                    else if (category.title.includes('人物比例')) extracted.ratios.push(en);
+                                });
+                            }
+                        });
+                    } else if (item.tags) {
+                        item.tags.forEach(tag => {
+                            const en = tag.en;
+                            if (category.title.includes('画师')) extracted.artists.push(en);
+                            else if (category.title.includes('艺术风格')) extracted.styles.push(en);
+                        });
+                    }
+                });
+            });
+
+            return extracted;
+        }
+
+        const tagLibrary = extractTagsByCategory();
+
+        function randomChoice(arr, min = 1, max = null) {
+            if (!arr || arr.length === 0) return [];
+            if (max === null) max = min;
+            const count = Math.floor(Math.random() * (max - min + 1)) + min;
+            const shuffled = arr.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, Math.min(count, arr.length));
+        }
+
+        function generateRandomRecipe(type) {
+            let tags = [];
+            const isMale = Math.random() < 0.5;
+            const genderTag = isMale ? '1boy' : '1girl';
+            
+            switch(type) {
+                case 'chibi':
+                    tags = ['chibi', genderTag];
+                    tags = tags.concat(randomChoice(['smile', 'happy', 'cheerful'], 1, 2));
+                    tags = tags.concat(randomChoice(['long_hair', 'short_hair', 'twintails'], 1, 2));
+                    break;
+                case 'portrait':
+                    tags = [genderTag, 'beautiful_face', 'detailed_eyes'];
+                    tags = tags.concat(randomChoice(tagLibrary.artists, 0, 1));
+                    tags = tags.concat(randomChoice(tagLibrary.styles, 0, 1));
+                    tags = tags.concat(randomChoice(tagLibrary.quality, 2, 3));
+                    break;
+                case 'scene':
+                    tags = [genderTag];
+                    tags = tags.concat(randomChoice(tagLibrary.ratios, 0, 1));
+                    tags = tags.concat(randomChoice(['standing', 'sitting', 'walking'], 1, 2));
+                    break;
+                case 'fantasy':
+                    tags = [genderTag];
+                    tags = tags.concat(randomChoice(['animal_ears', 'wings', 'tail', 'horn'], 2, 4));
+                    tags = tags.concat(randomChoice(['glowing', 'magic', 'sparkles'], 2, 3));
+                    break;
+                case 'daily':
+                    tags = [genderTag];
+                    tags = tags.concat(randomChoice(['casual', 'smile', 'standing'], 2, 3));
+                    break;
+                case 'artistic':
+                    tags = [genderTag];
+                    tags = tags.concat(randomChoice(tagLibrary.artists, 1, 2));
+                    tags = tags.concat(randomChoice(tagLibrary.styles, 1, 2));
+                    break;
+            }
+
+            tags = [...new Set(tags)].filter(t => t && t.trim());
+            const recipeString = tags.join(', ');
+            const element = document.getElementById(`recipe-${type}`);
+            if (element) {
+                element.textContent = recipeString;
+            }
+        }
+
+        function copyRecipeText(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element || element.textContent === '点击生成配方...' || !element.textContent.trim()) {
+                showToast('请先生成配方！');
+                return;
+            }
+            navigator.clipboard.writeText(element.textContent).then(() => {
+                showToast('配方已复制！');
+            });
+        }
+
+        function copyCommunity(name, number) {
+            navigator.clipboard.writeText(number).then(() => {
+                showToast(name + ' 群号已复制：' + number);
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        function footerClick() {
+            showToast('别戳啦别戳啦');
+        }
+
+        const sensitiveWordsHigh = ["nude", "nsfw", "porn"];
+        const sensitiveWordsLow = ["lingerie", "underwear"];
+
+        function checkSensitive() {
+            const input = document.getElementById('sensitiveInput').value;
+            const resultDiv = document.getElementById('sensitiveResult');
+            
+            if (!input.trim()) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<span class="warning">请输入要检测的文字</span>';
+                return;
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="safe">✅ 未检测到常见敏感词</span>';
+        }
+
+        function toggleToc() {
+            const toc = document.getElementById('toc');
+            toc.classList.toggle('expanded');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderContent();
+
+            document.querySelectorAll('.toc-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            setTimeout(() => {
+                const disclaimer = document.getElementById('disclaimer');
+                disclaimer.classList.add('hidden');
+                setTimeout(() => {
+                    disclaimer.style.display = 'none';
+                }, 500);
+            }, 2000);
+        });
+    </script>
+
+    <div class="toc" id="toc">
+        <button class="toc-toggle" onclick="toggleToc()">☰</button>
+        <div class="toc-grid">
+            <a href="#tutorial-section" class="toc-item">新手教程</a>
+            <a href="#recipe-section" class="toc-item">快速配方</a>
+            <a href="#content" class="toc-item">词条大全</a>
+            <a href="#weight-section" class="toc-item">权重速查</a>
+            <a href="#faq-section" class="toc-item">常见问题</a>
+            <a href="#sensitive-section" class="toc-item">敏感词检测</a>
+            <a href="#community-section" class="toc-item">社区入口</a>
+        </div>
+    </div>
+</body>
+</html>

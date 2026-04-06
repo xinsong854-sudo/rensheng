@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Danbooru 常用词条</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .disclaimer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .disclaimer.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .disclaimer-content {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 16px;
+            max-width: 90%;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .disclaimer-content h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .disclaimer-content p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .category {
+            margin-bottom: 12px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .category-header:active {
+            background: #e9ecef;
+        }
+
+        .category-header.active {
+            background: #e9ecef;
+        }
+
+        .category-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .category-icon {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .chevron {
+            font-size: 18px;
+            color: #999;
+            transition: transform 0.3s ease;
+        }
+
+        .chevron.active {
+            transform: rotate(90deg);
+        }
+
+        .subcategory {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .subcategory.show {
+            max-height: 2000px;
+        }
+
+        .subcategory-item {
+            padding: 12px 16px;
+            margin: 6px 0;
+            background: #fafbfc;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .subcategory-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f0f2f5;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #e4e6e9;
+        }
+
+        .tag:active {
+            background: #e4e6e9;
+            transform: scale(0.98);
+        }
+
+        .tag.copied {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .tag.negative {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        /* 敏感词检测器样式 */
+        .sensitive-checker {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .sensitive-checker h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .sensitive-checker textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .sensitive-checker button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .sensitive-checker button:hover {
+            background: #0056b3;
+        }
+
+        .sensitive-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .sensitive-result .warning {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .sensitive-result .safe {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .sensitive-disclaimer {
+            font-size: 11px;
+            color: #999;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.copied {
+            background: rgba(40, 167, 69, 0.9);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #999;
+            font-size: 12px;
+            border-top: 1px solid #f0f0f0;
+            margin-top: 30px;
+        }
+
+        .footer .promo {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .footer .promo strong {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 免责声明 -->
+    <div class="disclaimer" id="disclaimer">
+        <div class="disclaimer-content">
+            <h2>⚠️ 免责声明</h2>
+            <p>本内容均由一只小眼睛编写<br>如有疑问请勿找安诺涅</p>
+        </div>
+    </div>
+
+    <!-- 提示框 -->
+    <div class="toast" id="toast">已复制</div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Danbooru 常用词条</h1>
+            <p>点击词条可直接复制</p>
+        </div>
+
+        <div id="content"></div>
+
+        <!-- 敏感词检测器 -->
+        <div class="sensitive-checker">
+            <h2>🔍 AI 生图敏感词检测</h2>
+            <textarea id="sensitiveInput" placeholder="输入要检测的提示词..."></textarea>
+            <button onclick="checkSensitive()">检测</button>
+            <div id="sensitiveResult" class="sensitive-result" style="display: none;"></div>
+            <p class="sensitive-disclaimer">⚠️ 我们并没有官方违禁词库，本次检测仅供娱乐并不保真</p>
+        </div>
+
+        <div class="footer">
+            整理自 Danbooru / 共 1200+ 标签
+            
+            <div class="promo">
+                <strong>🏠 伪人大本营</strong><br>
+                群号：1062624601<br>
+                欢迎加入～
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签数据
+        const tagData = [
+            {
+                title: "一、画师篇 (Artists)",
+                items: [
+                    {
+                        title: "1.1 动画工作室",
+                        tags: [
+                            { en: "studio_ghibli", cn: "吉卜力工作室" },
+                            { en: "kyoto_animation", cn: "京都动画" },
+                            { en: "ufotable", cn: "ufotable" },
+                            { en: "bones", cn: "BONES" },
+                            { en: "madhouse", cn: "MADHOUSE" },
+                            { en: "production_ig", cn: "Production I.G" },
+                            { en: "sunrise", cn: "日升" },
+                            { en: "toei_animation", cn: "东映动画" },
+                            { en: "gainax", cn: "GAINAX" },
+                            { en: "shaft", cn: "SHAFT" },
+                            { en: "trigger", cn: "TRIGGER" },
+                            { en: "mappa", cn: "MAPPA" },
+                            { en: "wit_studio", cn: "WIT STUDIO" },
+                            { en: "a1_pictures", cn: "A-1 Pictures" }
+                        ]
+                    },
+                    {
+                        title: "1.2 游戏公司",
+                        tags: [
+                            { en: "type_moon", cn: "TYPE-MOON" },
+                            { en: "capcom", cn: "CAPCOM" },
+                            { en: "square_enix", cn: "Square Enix" },
+                            { en: "nintendo", cn: "任天堂" },
+                            { en: "konami", cn: "Konami" },
+                            { en: "bandai_namco", cn: "万代南梦宫" },
+                            { en: "koei_tecmo", cn: "光荣特库摩" },
+                            { en: "fromsoftware", cn: "FromSoftware" },
+                            { en: "snk", cn: "SNK" }
+                        ]
+                    },
+                    {
+                        title: "1.3 知名漫画家",
+                        tags: [
+                            { en: "akira_toriyama", cn: "鸟山明" },
+                            { en: "eiichiro_oda", cn: "尾田荣一郎" },
+                            { en: "masashi_kishimoto", cn: "岸本齐史" },
+                            { en: "tite_kubo", cn: "久保带人" },
+                            { en: "hirohiko_araki", cn: "荒木飞吕彦" },
+                            { en: "clamp", cn: "CLAMP" },
+                            { en: "junji_ito", cn: "伊藤润二" },
+                            { en: "osamu_tezuka", cn: "手冢治虫" },
+                            { en: "rumiko_takahashi", cn: "高桥留美子" },
+                            { en: "naoko_takeuchi", cn: "武内直子" }
+                        ]
+                    },
+                    {
+                        title: "1.4 动画监督",
+                        tags: [
+                            { en: "hayao_miyazaki", cn: "宫崎骏" },
+                            { en: "hideaki_anno", cn: "庵野秀明" },
+                            { en: "makoto_shinkai", cn: "新海诚" },
+                            { en: "mamoru_hosoda", cn: "细田守" },
+                            { en: "satoshi_kon", cn: "今敏" },
+                            { en: "mamoru_oshii", cn: "押井守" }
+                        ]
+                    },
+                    {
+                        title: "1.5 欧美画师 (AI 常用)",
+                        tags: [
+                            { en: "artgerm", cn: "Artgerm" },
+                            { en: "greg_rutkowski", cn: "Greg Rutkowski" },
+                            { en: "brom", cn: "Brom" },
+                            { en: "alex_ross", cn: "Alex Ross" },
+                            { en: "jim_lee", cn: "Jim Lee" },
+                            { en: "todd_mcfarlane", cn: "Todd McFarlane" },
+                            { en: "jack_kirby", cn: "Jack Kirby" },
+                            { en: "steve_ditko", cn: "Steve Ditko" },
+                            { en: "mike_mignola", cn: "Mike Mignola" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "二、艺术风格篇 (Art Styles)",
+                items: [
+                    {
+                        title: "2.1 人物比例",
+                        tags: [
+                            { en: "chibi", cn: "Q 版" },
+                            { en: "super_deformed", cn: "SD 化" },
+                            { en: "realistic", cn: "写实" },
+                            { en: "semi_realistic", cn: "半写实" },
+                            { en: "cartoon", cn: "卡通" },
+                            { en: "anime", cn: "动画" },
+                            { en: "manga", cn: "漫画" }
+                        ]
+                    },
+                    {
+                        title: "2.2 绘画媒介",
+                        tags: [
+                            { en: "watercolor", cn: "水彩" },
+                            { en: "oil_painting", cn: "油画" },
+                            { en: "acrylic", cn: "丙烯" },
+                            { en: "gouache", cn: "水粉" },
+                            { en: "pastel", cn: "色粉" },
+                            { en: "colored_pencil", cn: "彩铅" },
+                            { en: "pencil_sketch", cn: "铅笔素描" },
+                            { en: "ink", cn: "墨水" },
+                            { en: "marker", cn: "马克笔" },
+                            { en: "digital", cn: "数字绘画" },
+                            { en: "digital_art", cn: "数字艺术" }
+                        ]
+                    },
+                    {
+                        title: "2.3 特殊风格",
+                        tags: [
+                            { en: "pixel_art", cn: "像素艺术" },
+                            { en: "low_poly", cn: "低多边形" },
+                            { en: "vector", cn: "矢量" },
+                            { en: "minimalist", cn: "极简主义" },
+                            { en: "abstract", cn: "抽象" },
+                            { en: "geometric", cn: "几何" },
+                            { en: "flat_color", cn: "平涂" },
+                            { en: "cel_shading", cn: "赛璐璐" },
+                            { en: "impasto", cn: "厚涂" },
+                            { en: "grayscale", cn: "灰度" },
+                            { en: "monochrome", cn: "单色" },
+                            { en: "sepia", cn: "棕褐色" },
+                            { en: "vintage", cn: "复古" },
+                            { en: "retro", cn: "怀旧" }
+                        ]
+                    },
+                    {
+                        title: "2.4 东方风格",
+                        tags: [
+                            { en: "ink_wash_painting", cn: "水墨画" },
+                            { en: "sumi_e", cn: "日式水墨" },
+                            { en: "chinese_painting", cn: "中国画" },
+                            { en: "japanese_painting", cn: "日本画" },
+                            { en: "ukiyo_e", cn: "浮世绘" },
+                            { en: "traditional_chinese", cn: "传统中式" },
+                            { en: "traditional_japanese", cn: "传统日式" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "三、动作篇 (Poses)",
+                items: [
+                    {
+                        title: "3.1 微动作",
+                        tags: [
+                            { en: "yawning", cn: "打哈欠" },
+                            { en: "stretching", cn: "伸懒腰" },
+                            { en: "sighing", cn: "叹气" },
+                            { en: "sneezing", cn: "打喷嚏" },
+                            { en: "laughing", cn: "大笑" },
+                            { en: "crying", cn: "哭泣" },
+                            { en: "smiling", cn: "微笑" },
+                            { en: "frowning", cn: "皱眉" },
+                            { en: "winking", cn: "眨眼" },
+                            { en: "blushing", cn: "脸红" },
+                            { en: "sleeping", cn: "睡觉" },
+                            { en: "adjusting_hair", cn: "撩头发" },
+                            { en: "playing_with_hair", cn: "玩头发" },
+                            { en: "biting_lip", cn: "咬嘴唇" },
+                            { en: "sticking_out_tongue", cn: "吐舌头" },
+                            { en: "nosebleed", cn: "流鼻血" },
+                            { en: "covering_mouth", cn: "捂嘴" },
+                            { en: "facepalm", cn: "捂脸" },
+                            { en: "wiping_tears", cn: "擦眼泪" },
+                            { en: "wiping_sweat", cn: "擦汗" }
+                        ]
+                    },
+                    {
+                        title: "3.2 手部动作",
+                        tags: [
+                            { en: "waving", cn: "挥手" },
+                            { en: "pointing", cn: "指向" },
+                            { en: "thumbs_up", cn: "竖大拇指" },
+                            { en: "peace_sign", cn: "剪刀手" },
+                            { en: "v_sign", cn: "V 字手势" },
+                            { en: "ok_sign", cn: "OK 手势" },
+                            { en: "finger_heart", cn: "手指心" },
+                            { en: "praying", cn: "祈祷手势" },
+                            { en: "clenched_fist", cn: "握拳" },
+                            { en: "beckoning", cn: "招手" },
+                            { en: "clapping", cn: "鼓掌" },
+                            { en: "holding_hands", cn: "牵手" }
+                        ]
+                    },
+                    {
+                        title: "3.3 头部动作",
+                        tags: [
+                            { en: "tilting_head", cn: "歪头" },
+                            { en: "head_down", cn: "低头" },
+                            { en: "head_up", cn: "抬头" },
+                            { en: "looking_back", cn: "回头看" },
+                            { en: "looking_at_viewer", cn: "看观众" },
+                            { en: "staring", cn: "凝视" },
+                            { en: "resting_chin_on_hand", cn: "手托下巴" },
+                            { en: "resting_cheek_on_hand", cn: "手托腮" },
+                            { en: "headpat", cn: "摸头" }
+                        ]
+                    },
+                    {
+                        title: "3.4 上半身动作",
+                        tags: [
+                            { en: "arms_up", cn: "举起双臂" },
+                            { en: "arms_behind_back", cn: "双手背在身后" },
+                            { en: "arms_behind_head", cn: "双手抱头" },
+                            { en: "crossed_arms", cn: "抱臂" },
+                            { en: "hand_on_hip", cn: "手叉腰" },
+                            { en: "hands_on_hips", cn: "双手叉腰" },
+                            { en: "hand_in_pocket", cn: "手插口袋" },
+                            { en: "hands_in_pockets", cn: "双手插口袋" },
+                            { en: "shrugging", cn: "耸肩" }
+                        ]
+                    },
+                    {
+                        title: "3.5 全身动作",
+                        tags: [
+                            { en: "standing", cn: "站立" },
+                            { en: "sitting", cn: "坐着" },
+                            { en: "kneeling", cn: "跪着" },
+                            { en: "crouching", cn: "蹲着" },
+                            { en: "lying", cn: "躺着" },
+                            { en: "walking", cn: "走路" },
+                            { en: "running", cn: "跑步" },
+                            { en: "jumping", cn: "跳跃" },
+                            { en: "mid-air", cn: "在空中" },
+                            { en: "dancing", cn: "跳舞" },
+                            { en: "flying", cn: "飞行" },
+                            { en: "floating", cn: "漂浮" },
+                            { en: "riding", cn: "骑乘" },
+                            { en: "yoga", cn: "瑜伽" },
+                            { en: "martial_arts", cn: "武术" }
+                        ]
+                    },
+                    {
+                        title: "3.6 特殊姿势",
+                        tags: [
+                            { en: "jojo_pose", cn: "JOJO 立" },
+                            { en: "henshin_pose", cn: "变身姿势" },
+                            { en: "magical_girl_pose", cn: "魔法少女姿势" },
+                            { en: "victory_pose", cn: "胜利姿势" },
+                            { en: "cute_pose", cn: "可爱姿势" },
+                            { en: "dynamic_pose", cn: "动态姿势" },
+                            { en: "action_pose", cn: "动作姿势" },
+                            { en: "fighting_stance", cn: "战斗姿势" },
+                            { en: "casting_spell", cn: "施法" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "四、双人互动篇 (Interactions)",
+                items: [
+                    {
+                        title: "4.1 拥抱/亲密",
+                        tags: [
+                            { en: "hug", cn: "拥抱" },
+                            { en: "hugging", cn: "拥抱中" },
+                            { en: "cuddling", cn: "依偎" },
+                            { en: "back_hug", cn: "背后抱" },
+                            { en: "holding_hands", cn: "牵手" },
+                            { en: "princess_carry", cn: "公主抱" },
+                            { en: "piggyback", cn: "背人" },
+                            { en: "carrying", cn: "搬运" },
+                            { en: "lifting", cn: "举起" }
+                        ]
+                    },
+                    {
+                        title: "4.2 面部互动",
+                        tags: [
+                            { en: "kiss", cn: "亲吻" },
+                            { en: "kissing", cn: "亲吻中" },
+                            { en: "forehead_kiss", cn: "亲额头" },
+                            { en: "cheek_kiss", cn: "亲脸颊" },
+                            { en: "forehead_to_forehead", cn: "额头相抵" },
+                            { en: "cheek_to_cheek", cn: "脸颊相贴" },
+                            { en: "face_to_face", cn: "面对面" },
+                            { en: "nuzzling", cn: "蹭脸" },
+                            { en: "touching_face", cn: "摸脸" }
+                        ]
+                    },
+                    {
+                        title: "4.3 身体互动",
+                        tags: [
+                            { en: "headpat", cn: "摸头" },
+                            { en: "stroking_hair", cn: "抚摸头发" },
+                            { en: "massaging", cn: "按摩" },
+                            { en: "feeding", cn: "喂食" },
+                            { en: "lap_pillow", cn: "膝枕" },
+                            { en: "sitting_on_lap", cn: "坐在腿上" },
+                            { en: "head_on_lap", cn: "头枕在腿上" },
+                            { en: "comforting", cn: "安慰" },
+                            { en: "protecting", cn: "保护" }
+                        ]
+                    },
+                    {
+                        title: "4.4 位置关系",
+                        tags: [
+                            { en: "standing_next_to", cn: "站在旁边" },
+                            { en: "sitting_next_to", cn: "坐在旁边" },
+                            { en: "side_by_side", cn: "并排" },
+                            { en: "back_to_back", cn: "背靠背" },
+                            { en: "facing_each_other", cn: "面对面" },
+                            { en: "looking_at_each_other", cn: "互相看着对方" },
+                            { en: "heads_together", cn: "头靠头" },
+                            { en: "shoulder_to_shoulder", cn: "肩并肩" },
+                            { en: "arm_in_arm", cn: "臂挽臂" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "五、视角与构图篇 (Camera)",
+                items: [
+                    {
+                        title: "5.1 视角",
+                        tags: [
+                            { en: "from_above", cn: "俯视" },
+                            { en: "from_below", cn: "仰视" },
+                            { en: "from_behind", cn: "背后视角" },
+                            { en: "from_side", cn: "侧面视角" },
+                            { en: "straight-on", cn: "正面视角" },
+                            { en: "dutch_angle", cn: "倾斜视角" },
+                            { en: "pov", cn: "第一人称视角" },
+                            { en: "selfie", cn: "自拍视角" },
+                            { en: "reflection", cn: "倒影" },
+                            { en: "silhouette", cn: "剪影" },
+                            { en: "close-up", cn: "特写" },
+                            { en: "full_body", cn: "全身" },
+                            { en: "wide_shot", cn: "广角镜头" },
+                            { en: "profile", cn: "侧面像" }
+                        ]
+                    },
+                    {
+                        title: "5.2 打光效果",
+                        tags: [
+                            { en: "backlighting", cn: "逆光" },
+                            { en: "rim_light", cn: "轮廓光" },
+                            { en: "volumetric_lighting", cn: "体积光" },
+                            { en: "god_rays", cn: "上帝光" },
+                            { en: "spotlight", cn: "聚光灯" },
+                            { en: "neon_lighting", cn: "霓虹灯照明" },
+                            { en: "candlelight", cn: "烛光" },
+                            { en: "moonlight", cn: "月光" },
+                            { en: "sunlight", cn: "阳光" },
+                            { en: "lens_flare", cn: "镜头光晕" },
+                            { en: "natural_light", cn: "自然光" },
+                            { en: "dramatic_lighting", cn: "戏剧性照明" },
+                            { en: "cinematic_lighting", cn: "电影照明" },
+                            { en: "soft_light", cn: "柔光" },
+                            { en: "hard_light", cn: "硬光" },
+                            { en: "three_point_lighting", cn: "三点照明" },
+                            { en: "high_contrast", cn: "高对比度" },
+                            { en: "low_key", cn: "低调" },
+                            { en: "glowing", cn: "发光" },
+                            { en: "shadow", cn: "阴影" },
+                            { en: "cast_shadow", cn: "投射阴影" },
+                            { en: "dappled_light", cn: "斑驳光" },
+                            { en: "window_light", cn: "窗户光" },
+                            { en: "golden_hour", cn: "黄金时刻" },
+                            { en: "blue_hour", cn: "蓝色时刻" },
+                            { en: "sunset", cn: "日落" },
+                            { en: "sunrise", cn: "日出" },
+                            { en: "night", cn: "夜晚" },
+                            { en: "starry_sky", cn: "星空" },
+                            { en: "aurora", cn: "极光" },
+                            { en: "fog", cn: "雾" },
+                            { en: "sparkles", cn: "闪光" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "六、颜色篇 (Colors)",
+                items: [
+                    {
+                        title: "6.1 基础色",
+                        tags: [
+                            { en: "red", cn: "红色" },
+                            { en: "blue", cn: "蓝色" },
+                            { en: "green", cn: "绿色" },
+                            { en: "yellow", cn: "黄色" },
+                            { en: "orange", cn: "橙色" },
+                            { en: "purple", cn: "紫色" },
+                            { en: "pink", cn: "粉色" },
+                            { en: "brown", cn: "棕色" },
+                            { en: "black", cn: "黑色" },
+                            { en: "white", cn: "白色" },
+                            { en: "gray", cn: "灰色" },
+                            { en: "silver", cn: "银色" },
+                            { en: "gold", cn: "金色" }
+                        ]
+                    },
+                    {
+                        title: "6.2 柔和/哑光色",
+                        tags: [
+                            { en: "pastel_colors", cn: "柔和的颜色" },
+                            { en: "pastel_red", cn: "柔和红" },
+                            { en: "pastel_blue", cn: "柔和蓝" },
+                            { en: "pastel_green", cn: "柔和绿" },
+                            { en: "pastel_pink", cn: "柔和粉" },
+                            { en: "pastel_purple", cn: "柔和紫" },
+                            { en: "muted_colors", cn: "哑光色" },
+                            { en: "muted_tone", cn: "哑光调" },
+                            { en: "desaturated", cn: "低饱和度" }
+                        ]
+                    },
+                    {
+                        title: "6.3 特殊色",
+                        tags: [
+                            { en: "iridescent", cn: "镭射色" },
+                            { en: "holographic", cn: "全息色" },
+                            { en: "metallic", cn: "金属色" },
+                            { en: "neon_colors", cn: "霓虹色" },
+                            { en: "fluorescent", cn: "荧光色" },
+                            { en: "pearlescent", cn: "珍珠色" },
+                            { en: "gradient", cn: "渐变色" },
+                            { en: "multicolored", cn: "多彩" },
+                            { en: "colorful", cn: "彩色" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "七、发型篇 (Hairstyles)",
+                items: [
+                    {
+                        title: "7.1 头发长度",
+                        tags: [
+                            { en: "bald", cn: "光头" },
+                            { en: "very_short_hair", cn: "超短发" },
+                            { en: "short_hair", cn: "短发" },
+                            { en: "medium_hair", cn: "中长发" },
+                            { en: "long_hair", cn: "长发" },
+                            { en: "very_long_hair", cn: "超长发" },
+                            { en: "absurdly_long_hair", cn: "夸张长发" }
+                        ]
+                    },
+                    {
+                        title: "7.2 马尾/双马尾",
+                        tags: [
+                            { en: "ponytail", cn: "马尾" },
+                            { en: "high_ponytail", cn: "高马尾" },
+                            { en: "low_ponytail", cn: "低马尾" },
+                            { en: "side_ponytail", cn: "侧马尾" },
+                            { en: "twintails", cn: "双马尾" },
+                            { en: "short_twintails", cn: "短双马尾" },
+                            { en: "low_twintails", cn: "低双马尾" },
+                            { en: "tri_tails", cn: "三马尾" },
+                            { en: "quad_tails", cn: "四马尾" }
+                        ]
+                    },
+                    {
+                        title: "7.3 编发/发髻",
+                        tags: [
+                            { en: "braid", cn: "编发" },
+                            { en: "twin_braids", cn: "双辫" },
+                            { en: "side_braid", cn: "侧辫" },
+                            { en: "crown_braid", cn: "王冠辫" },
+                            { en: "dreadlocks", cn: "脏辫" },
+                            { en: "hair_bun", cn: "发髻" },
+                            { en: "double_bun", cn: "双发髻" },
+                            { en: "hair_up", cn: "盘发" }
+                        ]
+                    },
+                    {
+                        title: "7.4 特殊发型",
+                        tags: [
+                            { en: "ahoge", cn: "呆毛" },
+                            { en: "multiple_ahoge", cn: "多根呆毛" },
+                            { en: "heart_ahoge", cn: "心形呆毛" },
+                            { en: "curly_hair", cn: "卷发" },
+                            { en: "wavy_hair", cn: "波浪发" },
+                            { en: "straight_hair", cn: "直发" },
+                            { en: "messy_hair", cn: "凌乱发型" },
+                            { en: "wet_hair", cn: "湿发" },
+                            { en: "oily_hair", cn: "油性发" },
+                            { en: "bangs", cn: "刘海" },
+                            { en: "blunt_bangs", cn: "齐刘海" },
+                            { en: "hime_cut", cn: "姬发式" },
+                            { en: "see-through_bangs", cn: "空气刘海" },
+                            { en: "side_bangs", cn: "侧刘海" },
+                            { en: "mullet", cn: "鲻鱼头" },
+                            { en: "bob_cut", cn: "波波头" },
+                            { en: "pixie_cut", cn: "精灵头" },
+                            { en: "undercut", cn: "底削" },
+                            { en: "asymmetrical_hair", cn: "不对称发型" },
+                            { en: "half_updo", cn: "半扎发" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "八、服装篇 (Clothing)",
+                items: [
+                    {
+                        title: "8.1 上装 - 外套",
+                        tags: [
+                            { en: "jacket", cn: "夹克" },
+                            { en: "coat", cn: "外套" },
+                            { en: "blazer", cn: "西装外套" },
+                            { en: "cardigan", cn: "开衫" },
+                            { en: "hoodie", cn: "连帽衫" },
+                            { en: "parka", cn: "派克大衣" },
+                            { en: "trench_coat", cn: "风衣" },
+                            { en: "peacoat", cn: "海军大衣" },
+                            { en: "bomber_jacket", cn: "飞行员夹克" },
+                            { en: "denim_jacket", cn: "牛仔夹克" },
+                            { en: "leather_jacket", cn: "皮夹克" },
+                            { en: "fur_coat", cn: "皮草大衣" },
+                            { en: "winter_coat", cn: "冬装外套" }
+                        ]
+                    },
+                    {
+                        title: "8.2 上装 - 内搭/衬衫",
+                        tags: [
+                            { en: "shirt", cn: "衬衫" },
+                            { en: "blouse", cn: "女式衬衫" },
+                            { en: "t-shirt", cn: "T 恤" },
+                            { en: "tank_top", cn: "背心" },
+                            { en: "sleeveless_shirt", cn: "无袖上衣" },
+                            { en: "crop_top", cn: "短款上衣" },
+                            { en: "off_shoulder", cn: "露肩装" },
+                            { en: "halterneck", cn: "挂脖装" },
+                            { en: "tube_top", cn: "抹胸" },
+                            { en: "camisole", cn: "吊带衫" },
+                            { en: "vest", cn: "马甲" },
+                            { en: "sweater", cn: "毛衣" },
+                            { en: "turtleneck", cn: "高领毛衣" },
+                            { en: "polo_shirt", cn: "POLO 衫" },
+                            { en: "henley_shirt", cn: "亨利衫" }
+                        ]
+                    },
+                    {
+                        title: "8.3 下装",
+                        tags: [
+                            { en: "pants", cn: "裤子" },
+                            { en: "jeans", cn: "牛仔裤" },
+                            { en: "shorts", cn: "短裤" },
+                            { en: "skirt", cn: "裙子" },
+                            { en: "miniskirt", cn: "短裙" },
+                            { en: "long_skirt", cn: "长裙" },
+                            { en: "pencil_skirt", cn: "铅笔裙" },
+                            { en: "pleated_skirt", cn: "百褶裙" },
+                            { en: "culottes", cn: "阔腿裤" },
+                            { en: "leggings", cn: "打底裤" },
+                            { en: "cargo_pants", cn: "工装裤" },
+                            { en: "sweatpants", cn: "运动裤" }
+                        ]
+                    },
+                    {
+                        title: "8.4 连衣裙",
+                        tags: [
+                            { en: "dress", cn: "连衣裙" },
+                            { en: "wedding_dress", cn: "婚纱" },
+                            { en: "evening_gown", cn: "晚礼服" },
+                            { en: "cocktail_dress", cn: "鸡尾酒裙" },
+                            { en: "ball_gown", cn: "舞会礼服" },
+                            { en: "maxi_dress", cn: "长裙" },
+                            { en: "sundress", cn: "太阳裙" },
+                            { en: "shift_dress", cn: "直筒裙" },
+                            { en: "bodycon_dress", cn: "紧身裙" },
+                            { en: "wrap_dress", cn: "裹身裙" },
+                            { en: "shirt_dress", cn: "衬衫裙" },
+                            { en: "sweater_dress", cn: "毛衣裙" },
+                            { en: "maid_dress", cn: "女仆装" },
+                            { en: "chinese_dress", cn: "旗袍" },
+                            { en: "kimono", cn: "和服" },
+                            { en: "yukata", cn: "浴衣" },
+                            { en: "hanfu", cn: "汉服" },
+                            { en: "school_uniform", cn: "校服" },
+                            { en: "sailor_suit", cn: "水手服" },
+                            { en: "bunny_suit", cn: "兔女郎装" },
+                            { en: "cheerleader", cn: "啦啦队服" },
+                            { en: "gym_uniform", cn: "体操服" },
+                            { en: "swimsuit", cn: "泳装" },
+                            { en: "bikini", cn: "比基尼" },
+                            { en: "one_piece_swimsuit", cn: "连体泳衣" }
+                        ]
+                    },
+                    {
+                        title: "8.5 内衣",
+                        tags: [
+                            { en: "bra", cn: "文胸" },
+                            { en: "panties", cn: "内裤" },
+                            { en: "lingerie", cn: "内衣" },
+                            { en: "corset", cn: "束腰" },
+                            { en: "bodystocking", cn: "连体衣" },
+                            { en: "leotard", cn: "紧身衣" },
+                            { en: "bodysuit", cn: "连体服" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "九、配饰篇 (Accessories)",
+                items: [
+                    {
+                        title: "9.1 发饰 (头部)",
+                        tags: [
+                            { en: "hairband", cn: "发带" },
+                            { en: "hairclip", cn: "发夹" },
+                            { en: "hairpin", cn: "发卡" },
+                            { en: "hair_ornament", cn: "发饰" },
+                            { en: "hair_flower", cn: "头花" },
+                            { en: "hair_ribbon", cn: "发带" },
+                            { en: "headband", cn: "头带" },
+                            { en: "tiara", cn: "头冠" },
+                            { en: "crown", cn: "王冠" },
+                            { en: "hairpin", cn: "发簪" },
+                            { en: "kanzashi", cn: "日式发簪" },
+                            { en: "bow", cn: "蝴蝶结" },
+                            { en: "large_bow", cn: "大蝴蝶结" }
+                        ]
+                    },
+                    {
+                        title: "9.2 眼镜/面部",
+                        tags: [
+                            { en: "glasses", cn: "眼镜" },
+                            { en: "sunglasses", cn: "太阳镜" },
+                            { en: "eyepatch", cn: "眼罩" },
+                            { en: "monocle", cn: "单片眼镜" },
+                            { en: "blindfold", cn: "眼罩/蒙眼" },
+                            { en: "mask", cn: "面具" },
+                            { en: "face_mask", cn: "口罩" },
+                            { en: "drawn_halo", cn: "绘制光环" },
+                            { en: "drawn_oni_horn", cn: "绘制鬼角" },
+                            { en: "facial_mark", cn: "面部标记" },
+                            { en: "freckles", cn: "雀斑" },
+                            { en: "mole", cn: "痣" },
+                            { en: "scar", cn: "疤痕" },
+                            { en: "bandage", cn: "绷带" },
+                            { en: "facepaint", cn: "面部彩绘" },
+                            { en: "whisker_markings", cn: "胡须纹" },
+                            { en: "tear", cn: "泪珠" }
+                        ]
+                    },
+                    {
+                        title: "9.3 耳饰",
+                        tags: [
+                            { en: "earrings", cn: "耳环" },
+                            { en: "piercing", cn: "耳钉" },
+                            { en: "stud_earrings", cn: "耳钉" },
+                            { en: "hoop_earrings", cn: "圈形耳环" },
+                            { en: "dangle_earrings", cn: "垂坠耳环" }
+                        ]
+                    },
+                    {
+                        title: "9.4 颈部",
+                        tags: [
+                            { en: "necklace", cn: "项链" },
+                            { en: "choker", cn: "项圈" },
+                            { en: "collar", cn: "领子" },
+                            { en: "pendant", cn: "吊坠" },
+                            { en: "beads", cn: "珠串" },
+                            { en: "pearl_necklace", cn: "珍珠项链" },
+                            { en: "cross_necklace", cn: "十字架项链" },
+                            { en: "locket", cn: "盒式项链" },
+                            { en: "ribbon_choker", cn: "丝带项圈" }
+                        ]
+                    },
+                    {
+                        title: "9.5 手部",
+                        tags: [
+                            { en: "gloves", cn: "手套" },
+                            { en: "fingerless_gloves", cn: "露指手套" },
+                            { en: "bracelet", cn: "手链" },
+                            { en: "bangle", cn: "手镯" },
+                            { en: "watch", cn: "手表" },
+                            { en: "ring", cn: "戒指" },
+                            { en: "armband", cn: "臂环" },
+                            { en: "wristband", cn: "腕带" }
+                        ]
+                    },
+                    {
+                        title: "9.6 腰部/腿部",
+                        tags: [
+                            { en: "belt", cn: "腰带" },
+                            { en: "suspender", cn: "吊带" },
+                            { en: "holster", cn: "枪套" },
+                            { en: "pouch", cn: "小包" },
+                            { en: "apron", cn: "围裙" },
+                            { en: "socks", cn: "袜子" },
+                            { en: "knee_high_socks", cn: "过膝袜" },
+                            { en: "thighhighs", cn: "大腿袜" },
+                            { en: "ankle_socks", cn: "短袜" },
+                            { en: "leg_warmers", cn: "腿套" },
+                            { en: "garter_belt", cn: "吊袜带" },
+                            { en: "garter_stitch", cn: "袜带" }
+                        ]
+                    },
+                    {
+                        title: "9.7 鞋子",
+                        tags: [
+                            { en: "shoes", cn: "鞋子" },
+                            { en: "boots", cn: "靴子" },
+                            { en: "sneakers", cn: "运动鞋" },
+                            { en: "loafers", cn: "乐福鞋" },
+                            { en: "high_heels", cn: "高跟鞋" },
+                            { en: "platform_heels", cn: "厚底高跟鞋" },
+                            { en: "sandals", cn: "凉鞋" },
+                            { en: "slippers", cn: "拖鞋" },
+                            { en: "barefoot", cn: "赤脚" },
+                            { en: "ankle_boots", cn: "短靴" },
+                            { en: "knee_boots", cn: "长靴" },
+                            { en: "thigh_boots", cn: "过膝靴" },
+                            { en: "rain_boots", cn: "雨靴" },
+                            { en: "combat_boots", cn: "战斗靴" }
+                        ]
+                    },
+                    {
+                        title: "9.8 包/其他",
+                        tags: [
+                            { en: "bag", cn: "包" },
+                            { en: "backpack", cn: "背包" },
+                            { en: "handbag", cn: "手提包" },
+                            { en: "purse", cn: "钱包" },
+                            { en: "briefcase", cn: "公文包" },
+                            { en: "shopping_bag", cn: "购物袋" },
+                            { en: "umbrella", cn: "伞" },
+                            { en: "parasol", cn: "阳伞" },
+                            { en: "cane", cn: "手杖" },
+                            { en: "walking_stick", cn: "拐杖" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "十、非人特征篇 (Non-human)",
+                items: [
+                    {
+                        title: "10.1 耳朵",
+                        tags: [
+                            { en: "animal_ears", cn: "兽耳" },
+                            { en: "cat_ears", cn: "猫耳" },
+                            { en: "dog_ears", cn: "狗耳" },
+                            { en: "fox_ears", cn: "狐耳" },
+                            { en: "rabbit_ears", cn: "兔耳" },
+                            { en: "demon_ears", cn: "恶魔耳" },
+                            { en: "dragon_ears", cn: "龙耳" },
+                            { en: "fairy_ears", cn: "精灵耳" },
+                            { en: "robot_ears", cn: "机器人耳" },
+                            { en: "pointy_ears", cn: "尖耳" },
+                            { en: "long_ears", cn: "长耳" },
+                            { en: "floppy_ears", cn: "垂耳" }
+                        ]
+                    },
+                    {
+                        title: "10.2 翅膀",
+                        tags: [
+                            { en: "wings", cn: "翅膀" },
+                            { en: "angel_wings", cn: "天使翅膀" },
+                            { en: "demon_wings", cn: "恶魔翅膀" },
+                            { en: "dragon_wings", cn: "龙翅膀" },
+                            { en: "fairy_wings", cn: "精灵翅膀" },
+                            { en: "butterfly_wings", cn: "蝴蝶翅膀" },
+                            { en: "bird_wings", cn: "鸟翅膀" },
+                            { en: "bat_wings", cn: "蝙蝠翅膀" },
+                            { en: "feathered_wings", cn: "羽毛翅膀" },
+                            { en: "mechanical_wings", cn: "机械翅膀" },
+                            { en: "fire_wings", cn: "火焰翅膀" },
+                            { en: "ice_wings", cn: "冰翅膀" },
+                            { en: "glowing_wings", cn: "发光翅膀" },
+                            { en: "spread_wings", cn: "展开翅膀" },
+                            { en: "small_wings", cn: "小翅膀" },
+                            { en: "large_wings", cn: "大翅膀" }
+                        ]
+                    },
+                    {
+                        title: "10.3 尾巴",
+                        tags: [
+                            { en: "tail", cn: "尾巴" },
+                            { en: "cat_tail", cn: "猫尾" },
+                            { en: "dog_tail", cn: "狗尾" },
+                            { en: "fox_tail", cn: "狐尾" },
+                            { en: "rabbit_tail", cn: "兔尾" },
+                            { en: "mermaid_tail", cn: "美人鱼尾" },
+                            { en: "dragon_tail", cn: "龙尾" },
+                            { en: "demon_tail", cn: "恶魔尾" },
+                            { en: "devil_tail", cn: "魔鬼尾" },
+                            { en: "multiple_tails", cn: "多条尾巴" },
+                            { en: "two_tails", cn: "两条尾巴" },
+                            { en: "nine_tails", cn: "九条尾巴" },
+                            { en: "fluffy_tail", cn: "毛茸茸尾" },
+                            { en: "tail_wag", cn: "摇尾巴" }
+                        ]
+                    },
+                    {
+                        title: "10.4 角",
+                        tags: [
+                            { en: "horn", cn: "角" },
+                            { en: "horns", cn: "角（复数）" },
+                            { en: "unicorn_horn", cn: "独角兽角" },
+                            { en: "demon_horn", cn: "恶魔角" },
+                            { en: "devil_horn", cn: "魔鬼角" },
+                            { en: "oni_horn", cn: "鬼角" },
+                            { en: "dragon_horn", cn: "龙角" },
+                            { en: "goat_horn", cn: "山羊角" },
+                            { en: "cow_horn", cn: "牛角" },
+                            { en: "deer_horn", cn: "鹿角" },
+                            { en: "single_horn", cn: "单角" },
+                            { en: "two_horns", cn: "两只角" },
+                            { en: "curved_horns", cn: "弯曲角" },
+                            { en: "small_horns", cn: "小角" },
+                            { en: "large_horns", cn: "大角" }
+                        ]
+                    },
+                    {
+                        title: "10.5 光环",
+                        tags: [
+                            { en: "halo", cn: "光环" },
+                            { en: "angel_halo", cn: "天使光环" },
+                            { en: "demon_halo", cn: "恶魔光环" },
+                            { en: "magic_halo", cn: "魔法光环" },
+                            { en: "fire_halo", cn: "火焰光环" },
+                            { en: "glowing_halo", cn: "发光光环" },
+                            { en: "heart_halo", cn: "心形光环" },
+                            { en: "star_halo", cn: "星形光环" },
+                            { en: "multiple_halos", cn: "多个光环" },
+                            { en: "broken_halo", cn: "破损光环" }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "十一、特殊效果篇 (Special Effects)",
+                items: [
+                    {
+                        title: "11.1 缝合线/拼接",
+                        tags: [
+                            { en: "stitched", cn: "缝合" },
+                            { en: "stitching", cn: "缝线" },
+                            { en: "patchwork", cn: "拼布" },
+                            { en: "frankenstein", cn: "科学怪人风格" },
+                            { en: "doll_joints", cn: "玩偶关节" },
+                            { en: "ball_jointed_doll", cn: "球形关节人偶" },
+                            { en: "seam", cn: "接缝" },
+                            { en: "visible_seam", cn: "可见接缝" }
+                        ]
+                    },
+                    {
+                        title: "11.2 纹身/身体彩绘",
+                        tags: [
+                            { en: "tattoo", cn: "纹身" },
+                            { en: "full_body_tattoo", cn: "全身纹身" },
+                            { en: "tribal_tattoo", cn: "部落纹身" },
+                            { en: "heart_tattoo", cn: "心形纹身" },
+                            { en: "star_tattoo", cn: "星形纹身" },
+                            { en: "dragon_tattoo", cn: "龙纹身" },
+                            { en: "flower_tattoo", cn: "花卉纹身" },
+                            { en: "snake_tattoo", cn: "蛇纹身" },
+                            { en: "body_paint", cn: "身体彩绘" },
+                            { en: "henna", cn: "海娜纹身" },
+                            { en: "magic_circle", cn: "魔法阵" },
+                            { en: "glowing_tattoo", cn: "发光纹身" }
+                        ]
+                    },
+                    {
+                        title: "11.3 负面词 (质量修正)",
+                        tags: [
+                            { en: "extra_fingers", cn: "多余手指", negative: true },
+                            { en: "extra_digits", cn: "多余手指", negative: true },
+                            { en: "fewer_digits", cn: "减少手指", negative: true },
+                            { en: "bad_hands", cn: "糟糕的手", negative: true },
+                            { en: "bad_feet", cn: "糟糕的脚", negative: true },
+                            { en: "missing_fingers", cn: "缺失手指", negative: true },
+                            { en: "mutated_hands", cn: "变异的手", negative: true },
+                            { en: "mutated", cn: "变异", negative: true },
+                            { en: "deformed", cn: "变形", negative: true },
+                            { en: "disfigured", cn: "毁容", negative: true },
+                            { en: "malformed", cn: "畸形", negative: true },
+                            { en: "poorly_drawn", cn: "画得差", negative: true },
+                            { en: "bad_anatomy", cn: "解剖错误", negative: true },
+                            { en: "extra_limbs", cn: "多余肢体", negative: true },
+                            { en: "missing_limbs", cn: "缺失肢体", negative: true },
+                            { en: "watermark", cn: "水印", negative: true },
+                            { en: "text", cn: "文字", negative: true },
+                            { en: "signature", cn: "签名", negative: true },
+                            { en: "username", cn: "用户名", negative: true },
+                            { en: "blurry", cn: "模糊", negative: true },
+                            { en: "low_quality", cn: "低质量", negative: true },
+                            { en: "jpeg_artifacts", cn: "JPEG 伪影", negative: true }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // 敏感词库（示例）
+        const sensitiveWords = [
+            "nude", "naked", "nsfw", "porn", "sex", "xxx", "hentai",
+            "violence", "gore", "blood", "kill", "death",
+            "drugs", "weed", "cocaine", "heroin",
+            "hitler", "nazi", "terrorist",
+            "underage", "loli", "shota",
+            "self-harm", "suicide", "cutting"
+        ];
+
+        const sensitiveCn = [
+            "裸体", "色情", "暴力", "血腥", "毒品",
+            "自杀", "自残", "未成年"
+        ];
+
+        // 渲染内容
+        function renderContent() {
+            const content = document.getElementById('content');
+            let html = '';
+
+            tagData.forEach((category, catIndex) => {
+                html += `
+                    <div class="category">
+                        <div class="category-header" onclick="toggleCategory(${catIndex})">
+                            <span class="category-title">${category.title}</span>
+                            <span class="chevron" id="chevron-${catIndex}">›</span>
+                        </div>
+                        <div class="subcategory" id="cat-${catIndex}">
+                `;
+
+                category.items.forEach((subcat, subIndex) => {
+                    html += `
+                        <div class="subcategory-item">
+                            <div class="subcategory-title">${subcat.title}</div>
+                            <div class="tags">
+                    `;
+
+                    subcat.tags.forEach(tag => {
+                        const isNegative = tag.negative;
+                        const className = isNegative ? 'tag negative' : 'tag';
+                        html += `<span class="${className}" onclick="copyTag('${tag.en}', this)">${tag.cn}</span>`;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            content.innerHTML = html;
+        }
+
+        // 切换大分类
+        function toggleCategory(index) {
+            const subcategory = document.getElementById(`cat-${index}`);
+            const header = subcategory.previousElementSibling;
+            const chevron = document.getElementById(`chevron-${index}`);
+
+            const wasActive = header.classList.contains('active');
+
+            document.querySelectorAll('.category-header').forEach(h => {
+                h.classList.remove('active');
+                h.nextElementSibling.classList.remove('show');
+            });
+
+            document.querySelectorAll('.chevron').forEach(c => {
+                c.classList.remove('active');
+            });
+
+            if (!wasActive) {
+                header.classList.add('active');
+                subcategory.classList.add('show');
+                chevron.classList.add('active');
+            }
+        }
+
+        // 复制标签
+        function copyTag(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制：' + text);
+                element.classList.add('copied');
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                }, 500);
+            });
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        // 敏感词检测
+        function checkSensitive() {
+            const input = document.getElementById('sensitiveInput').value;
+            const resultDiv = document.getElementById('sensitiveResult');
+            
+            if (!input.trim()) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<span class="warning">请输入要检测的文字</span>';
+                return;
+            }
+
+            const foundSensitive = [];
+            const foundSensitiveCn = [];
+
+            sensitiveWords.forEach(word => {
+                if (input.toLowerCase().includes(word.toLowerCase())) {
+                    foundSensitive.push(word);
+                }
+            });
+
+            sensitiveCn.forEach(word => {
+                if (input.includes(word)) {
+                    foundSensitiveCn.push(word);
+                }
+            });
+
+            resultDiv.style.display = 'block';
+            
+            if (foundSensitive.length > 0 || foundSensitiveCn.length > 0) {
+                let html = '<span class="warning">⚠️ 可能包含敏感词：</span><br><br>';
+                if (foundSensitive.length > 0) {
+                    html += '英文：' + foundSensitive.join(', ') + '<br>';
+                }
+                if (foundSensitiveCn.length > 0) {
+                    html += '中文：' + foundSensitiveCn.join(', ');
+                }
+                resultDiv.innerHTML = html;
+            } else {
+                resultDiv.innerHTML = '<span class="safe">✅ 未检测到常见敏感词</span>';
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderContent();
+
+            // 2 秒后隐藏免责声明
+            setTimeout(() => {
+                const disclaimer = document.getElementById('disclaimer');
+                disclaimer.classList.add('hidden');
+                setTimeout(() => {
+                    disclaimer.style.display = 'none';
+                }, 500);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

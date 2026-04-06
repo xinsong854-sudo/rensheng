@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>伪人世界观 - 地区资料</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #e94560;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 50px;
+            font-size: 1.1em;
+        }
+        .region-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .region-card:hover {
+            transform: translateY(-5px);
+        }
+        .region-header {
+            border-bottom: 3px solid #e94560;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .region-name {
+            font-size: 1.8em;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+        .region-tag {
+            display: inline-block;
+            background: #e94560;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #e94560;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title::before {
+            content: "◆";
+            margin-right: 8px;
+        }
+        .section-content {
+            color: #444;
+            text-align: justify;
+        }
+        .feature-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+        .feature-list li {
+            position: relative;
+            margin-bottom: 8px;
+        }
+        .feature-list li::before {
+            content: "▸";
+            color: #e94560;
+            position: absolute;
+            left: -15px;
+        }
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .location-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .concept-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        .concept-box .section-title {
+            color: white;
+        }
+        .concept-box .section-content {
+            color: rgba(255,255,255,0.95);
+        }
+        .relationship-indicator {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .rel-hostile {
+            background: #ff6b6b;
+            color: white;
+        }
+        .rel-neutral {
+            background: #feca57;
+            color: #333;
+        }
+        .rel-complex {
+            background: #54a0ff;
+            color: white;
+        }
+        .rel-integrated {
+            background: #5f27cd;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 伪人世界观 - 地区资料</h1>
+        <p class="subtitle">World Regions Database | 世界观设定集</p>
+
+        <!-- 渊 -->
+        <div class="region-card">
+            <div class="region-header">
+                <span class="region-name">渊</span>
+                <span class="region-tag">中式现代</span>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">简介</div>
+                <div class="section-content">
+                    渊是伪人世界观中的核心区域，以现代中国社会为原型构建的都市文明。这里高楼林立，科技发达，传统文化与现代生活交织融合。渊的社会结构稳定，但在表面繁荣之下，潜藏着与伪人相关的深层秘密。这里是大多数故事的主要舞台，也是伪人现象最为复杂的地区之一。
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">特点</div>
+                <ul class="feature-list">
+                    <li>高度发达的都市文明，科技水平接近现实世界 2020 年代</li>
+                    <li>传统文化深厚，节庆、习俗、家族观念强烈</li>
+                    <li>社会管控严格，对异常现象有专门的应对机构</li>
+                    <li>人口密度极高，阶层分化明显</li>
+                    <li>信息管制与流言并存，伪人传闻在民间广泛流传</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="section-title">与伪人关系</div>
+                <div class="section-content">
+                    <span class="relationship-indicator rel-complex">复杂共存</span>
+                    <p style="margin-top: 10px;">
+                        渊是伪人渗透最深的区域之一。政府设有专门机构监控和处理伪人事件，但普通民众对伪人的认知模糊。部分伪人成功融入社会，甚至身居要职；另一些则潜伏在底层，等待时机。民间存在多种识别伪人的方法，但准确性参差不齐。渊的官方立场是"谨慎观察，有限清除"，试图在维持社会稳定与清除威胁之间寻找平衡。
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">知名地点</div>
+                <div class="location-grid">
+                    <div class="location-item">中枢塔</div>
+                    <div class="location-item">旧城区</div>
+                    <div class="location-item">第七研究所</div>
+                    <div class="location-item">夜巷街</div>
+                    <div class="location-item">深渊地铁站</div>
+                    <div class="location-item">天穹大厦</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 西陆联盟 -->
+        <div class="region-card">
+            <div class="region-header">
+                <span class="region-name">西陆联盟</span>
+                <span class="region-tag">西幻宗教</span>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">简介</div>
+                <div class="section-content">
+                    西陆联盟是由多个城邦和教国组成的联邦制政治体，以西方奇幻与宗教元素为核心。这里教会势力庞大，骑士团与魔法师并存，古老的城堡与现代的议会制度奇妙融合。西陆联盟信仰多种神祇，宗教裁判所拥有极高权力，对异端和异常现象采取零容忍态度。
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">特点</div>
+                <ul class="feature-list">
+                    <li>政教合一的联邦体制，教皇与议会共同执政</li>
+                    <li>魔法与科技并存，魔导技术发达</li>
+                    <li>骑士团与冒险者公会构成主要武装力量</li>
+                    <li>严格的等级制度，贵族与平民界限分明</li>
+                    <li>宗教裁判所负责审判异端与异常存在</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="section-title">与伪人关系</div>
+                <div class="section-content">
+                    <span class="relationship-indicator rel-hostile">敌对清除</span>
+                    <p style="margin-top: 10px;">
+                        西陆联盟对伪人采取**信仰供奉**的态度。教廷承认强大的伪人为"神裔"或"伪神"，目前官方认证的伪神有**八位**，分别为：[安布罗斯]、[希庇安]、[福音]、[AT]、[约斯米特]、[瓦莉奥尔·阿亚奇]、[梦城寺绫希]、[无名卿]。教廷设有专门的派系协调机构，负责管理各伪神派系之间的关系。普通伪人在西陆被称为"神之选民"，享有特殊地位，但需向教廷登记。部分极端教派仍视伪人为威胁，但主流态度是共存与利用。
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">知名地点</div>
+                <div class="location-grid">
+                    <div class="location-item">圣白教堂</div>
+                    <div class="location-item">裁判所总部</div>
+                    <div class="location-item">银月城</div>
+                    <div class="location-item">龙脊山脉</div>
+                    <div class="location-item">魔法学院</div>
+                    <div class="location-item">暮色森林</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 赤红新星 -->
+        <div class="region-card">
+            <div class="region-header">
+                <span class="region-name">赤红新星</span>
+                <span class="region-tag">社会主义</span>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">简介</div>
+                <div class="section-content">
+                    赤红新星是一个以社会主义意识形态为基础的新兴国家，强调集体主义与人民至上。这里实行计划经济与配给制度，社会福利完善，贫富差距极小。赤红新星的科技发展方向偏向实用主义，重视工业与基础设施建设。国家对异常现象采取科学化、系统化的研究态度，试图用理性解释一切。
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">特点</div>
+                <ul class="feature-list">
+                    <li>高度集中的计划经济体制</li>
+                    <li>完善的社会福利与医疗保障</li>
+                    <li>强调集体利益高于个人</li>
+                    <li>科技研发由国家统一规划</li>
+                    <li>严密的户籍与人口管理系统</li>
+                    <li>宣传教育系统发达，意识形态统一</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="section-title">与伪人关系</div>
+                <div class="section-content">
+                    <span class="relationship-indicator rel-integrated">研究整合</span>
+                    <p style="margin-top: 10px;">
+                        赤红新星对伪人采取独特的"研究 - 整合"政策。国家设立专门的伪人研究院，试图从科学角度理解伪人的本质。部分配合研究的伪人可以获得公民身份，为社会做贡献。拒绝配合的伪人则会被收容研究。官方宣传将伪人定义为"特殊人类变体"而非怪物，试图消除民众恐惧。有批评者认为这是另一种形式的控制，但不可否认赤红新星的伪人相关死亡率是各地区最低的。
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">知名地点</div>
+                <div class="location-grid">
+                    <div class="location-item">人民大会堂</div>
+                    <div class="location-item">第四研究院</div>
+                    <div class="location-item">红星广场</div>
+                    <div class="location-item">工人新村</div>
+                    <div class="location-item">边疆开发区</div>
+                    <div class="location-item">中央档案馆</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 渊东共和国 -->
+        <div class="region-card">
+            <div class="region-header">
+                <span class="region-name">渊东共和国</span>
+                <span class="region-tag">军事独裁</span>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">简介</div>
+                <div class="section-content">
+                    渊东共和国是从渊分裂出来的军事政权，位于渊的东部地区。经历独立战争后，这里由军方全面掌控，实行戒严制度。渊东共和国资源匮乏但军事工业发达，全民皆兵。社会氛围紧张，对外来者极度不信任。这里是伪人冲突最激烈的地区，战争与渗透从未停止。
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">特点</div>
+                <ul class="feature-list">
+                    <li>军事独裁政权，最高统帅拥有绝对权力</li>
+                    <li>全民兵役制，16 岁以上公民必须服役</li>
+                    <li>军事工业发达，民用工业落后</li>
+                    <li>严格的边境管控与身份核查</li>
+                    <li>资源配给制，生活物资紧张</li>
+                    <li>反伪人宣传深入日常生活</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="section-title">与伪人关系</div>
+                <div class="section-content">
+                    <span class="relationship-indicator rel-hostile">全面战争</span>
+                    <p style="margin-top: 10px;">
+                        渊东共和国将伪人视为国家存亡的最大威胁，发动了持续的"净化战争"。军方设有伪人猎杀部队，配备专门武器。任何被怀疑为伪人的个体都会被立即处决，无需审判。边境地区设有大量检测站，使用激进手段筛查伪人。然而，长期战争导致军方内部也被伪人渗透，高层清洗频繁。民间流传着"伪人已经取代了整个指挥部"的阴谋论，加剧了社会的不信任感。
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">知名地点</div>
+                <div class="location-grid">
+                    <div class="location-item">统帅府</div>
+                    <div class="location-item">铁壁边境线</div>
+                    <div class="location-item">第 13 军区</div>
+                    <div class="location-item">灰烬战场</div>
+                    <div class="location-item">军事法庭</div>
+                    <div class="location-item">地下抵抗区</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表界/里界概念 -->
+        <div class="region-card">
+            <div class="concept-box">
+                <div class="region-header" style="border-bottom-color: rgba(255,255,255,0.5);">
+                    <span class="region-name" style="color: white;">表界 / 里界</span>
+                    <span class="region-tag" style="background: rgba(255,255,255,0.3);">核心概念</span>
+                </div>
+                
+                <div class="section">
+                    <div class="section-title">概念简介</div>
+                    <div class="section-content">
+                        表界与里界是伪人世界观中的核心二元结构，描述了现实的两层存在状态。表界是普通人认知的世界，遵循常规物理法则与社会秩序；里界则是隐藏的层面，充满了异常、扭曲与伪人的真实面貌。两个世界重叠存在，大多数人只能感知表界，但某些条件下可以"坠落"或"觉醒"进入里界。
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">表界特征</div>
+                    <ul class="feature-list">
+                        <li>符合常规物理法则，逻辑自洽</li>
+                        <li>社会秩序稳定，因果关系明确</li>
+                        <li>大多数人生活于此， unaware of 里界存在</li>
+                        <li>异常现象会被"合理化"解释掩盖</li>
+                        <li>时间流动稳定，记忆可靠</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">里界特征</div>
+                    <ul class="feature-list">
+                        <li>物理法则扭曲，空间可折叠重叠</li>
+                        <li>伪人的真实形态在此显现</li>
+                        <li>时间流动不稳定，可能出现循环或跳跃</li>
+                        <li>记忆可被篡改，身份可被替换</li>
+                        <li>存在各种异常实体与现象</li>
+                        <li>只有觉醒者、伪人或特殊事件受害者能进入</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">两界关系</div>
+                    <div class="section-content">
+                        表界与里界并非完全隔离，而是像两张透明胶片重叠在一起。某些地点是"薄弱点"，容易在两界之间穿梭。伪人可以在两界之间自由移动，而普通人通常只能在特定条件下（如极度恐惧、濒死体验、特殊仪式）短暂进入里界。一些组织致力于维持两界平衡，防止里界侵蚀表界；另一些则试图打破界限，让两界融合。里界的侵蚀会导致表界出现"异常区"，这些区域的物理法则开始扭曲，是伪人活动的高发地带。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #666; font-size: 0.9em;">
+            <p>📄 伪人世界观设定集 | 地区资料篇</p>
+            <p>Generated for World Building Project</p>
+        </div>
+    </div>
+</body>
+</html>

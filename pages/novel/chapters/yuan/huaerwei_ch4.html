@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化而为 - 第四章：归途 - 里界物语</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', '宋体', serif; background: linear-gradient(135deg, #1e3a5f 0%, #0f4c75 50%, #1b262c 100%); min-height: 100vh; color: #e8e8e8; }
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(30, 58, 95, 0.95); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
+        .nav-btn { background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4); }
+        .nav-btn.secondary { background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%); }
+        .font-control { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); padding: 8px 15px; border-radius: 20px; }
+        .font-btn { background: rgba(255,255,255,0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+        .content-wrapper { max-width: 800px; margin: 100px auto 120px; padding: 40px; background: rgba(30, 58, 95, 0.8); border-radius: 20px; }
+        .chapter-header { text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid rgba(255,255,255,0.1); }
+        .chapter-title { font-size: 2.5em; color: #00d9ff; margin-bottom: 15px; }
+        .chapter-subtitle { font-size: 1.2em; color: #a0a0a0; font-style: italic; }
+        .chapter-content { font-size: 18px; line-height: 2; text-align: justify; }
+        .chapter-content p { margin-bottom: 25px; text-indent: 2em; }
+        .chapter-content p:first-child { text-indent: 0; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(30, 58, 95, 0.95); padding: 20px 30px; display: flex; justify-content: center; gap: 30px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
+        .page-btn { background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%); color: white; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; text-decoration: none; }
+        .page-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 217, 255, 0.5); }
+        .page-btn.disabled { background: rgba(255,255,255,0.1); cursor: not-allowed; }
+        .toc-panel { position: fixed; top: 80px; right: -350px; width: 320px; background: rgba(30, 58, 95, 0.98); padding: 30px; transition: right 0.3s ease; z-index: 999; }
+        .toc-panel.open { right: 0; }
+        .toc-title { font-size: 1.5em; color: #00d9ff; margin-bottom: 20px; }
+        .toc-list { list-style: none; }
+        .toc-list a { color: #e8e8e8; text-decoration: none; padding: 10px 15px; display: block; border-radius: 10px; }
+        .toc-list a:hover, .toc-list a.active { background: rgba(0, 217, 255, 0.3); color: #00d9ff; }
+    </style>
+</head>
+<body>
+    <nav class="top-nav"><div class="nav-left"><a href="/pages/index.html" class="nav-btn">← 返回</a><a href="#" class="nav-btn secondary" onclick="toggleTOC()">📑 目录</a></div><div class="font-control"><span>字体:</span><button class="font-btn" onclick="adjustFont(-1)">A-</button><span id="fontSize">18</span><button class="font-btn" onclick="adjustFont(1)">A+</button></div></nav>
+    <button class="toc-toggle" onclick="toggleTOC()" style="position:fixed;top:100px;right:0;background:#00d9ff;color:white;border:none;padding:15px 12px;border-radius:10px 0 0 10px;cursor:pointer;z-index:998;">☰</button>
+    <div class="toc-panel" id="tocPanel"><h3 class="toc-title">📖 化而为章节</h3><ul class="toc-list"><li><a href="huaerwei_ch1.html">第一章：初现</a></li><li><a href="huaerwei_ch2.html">第二章：觉醒</a></li><li><a href="huaerwei_ch3.html">第三章：学习</a></li><li><a href="huaerwei_ch4.html" class="active">第四章：归途</a></li></ul></div>
+    <div class="content-wrapper">
+        <div class="chapter-header"><h1 class="chapter-title">第四章：归途</h1><p class="chapter-subtitle">化而为 · 史莱姆的少女</p></div>
+        <div class="chapter-content" id="content">
+            <p>一年过去了。</p>
+            
+            <p>化而为站在槐安公寓的楼顶，俯瞰着这座她生活了一年的城市。霓虹灯闪烁，车水马龙，这是人类的世界，也是她的家。</p>
+            
+            <p>「在想什么？」林默走到她身边。</p>
+            
+            <p>化而为笑了：「在想我刚来的时候。那时候我什么都不懂，连走路都会摔倒。」</p>
+            
+            <p>「现在你已经是公寓的正式居民了。」林默说，「营长说你的表现很好。」</p>
+            
+            <p>「但还不够。」化而为说，「表里两界的融合还在继续，我们必须找到阻止它的方法。」</p>
+            
+            <p>林默沉默了片刻：「烛灯的档案里提到过一个地方——白墟之地。那是古代巴比伦文明毁灭后留下的废墟，是规则污染的源头。」</p>
+            
+            <p>「所以我们要去那里？」</p>
+            
+            <p>「也许。」林默说，「但那是一个 HAZARD 级的里界，非常危险。」</p>
+            
+            <p>化而为转头看着他：「你害怕吗？」</p>
+            
+            <p>林默笑了：「怕。但我更怕什么都不做，眼睁睁看着世界毁灭。」</p>
+            
+            <p>化而为点点头：「那我也去。我是史莱姆，我可以保护你。」</p>
+            
+            <p>她伸出手，手掌变成了蓝色的流体，然后又变回人类的样子：「看，我现在可以变成任何东西。刀、盾、翅膀……我甚至可以分解成分子，穿过任何障碍。」</p>
+            
+            <p>林默看着她，眼中满是欣慰：「你真的长大了。」</p>
+            
+            <p>化而为的脸红了红：「别说得像我爸爸一样。」</p>
+            
+            <p>两人都笑了。在楼顶的另一边，绫份、营长、还有其他公寓的居民们正在准备着什么。</p>
+            
+            <p>「他们要给我们送行。」林默说。</p>
+            
+            <p>化而为点点头，走下楼去。</p>
+            
+            <p>大厅里，所有人都到了。营长站在最前面，无数双眼睛同时看着化而为。</p>
+            
+            <p>「化而为。」营长说，「你记得你刚来的时候吗？」</p>
+            
+            <p>「记得。」化而为说，「我变成兔子，问你『这个？』」</p>
+            
+            <p>所有人都笑了。</p>
+            
+            <p>「那时候你什么都不懂。」营长说，「但现在，你已经成为了我们中重要的一员。这次任务很危险，但我相信你。」</p>
+            
+            <p>化而为的眼眶湿润了：「谢谢营长。」</p>
+            
+            <p>「活着回来。」绫份走上前，递给她一把匕首，「这是防身的。虽然你可能用不上。」</p>
+            
+            <p>化而为接过匕首，郑重地点点头：「我会的。」</p>
+            
+            <p>送别仪式结束后，化而为和林默踏上了前往白墟之地的旅程。他们不知道前方等待他们的是什么，但他们知道，这是他们必须走的路。</p>
+            
+            <p>在列车上，化而为看着窗外飞逝的风景，轻声说：「林默，你说……我们能成功吗？」</p>
+            
+            <p>林默握住她的手：「不知道。但只要我们在一起，就有希望。」</p>
+            
+            <p>化而为笑了，靠在他的肩膀上：「嗯。」</p>
+            
+            <p>列车驶向远方，驶向未知的命运。但在这个充满危险的世界里，至少他们还有彼此。</p>
+            
+            <p>而这就是归途的意义——无论走多远，无论经历什么，总有一个地方，叫做家。</p>
+            
+            <p>对化而为来说，槐安公寓就是她的家。而她，一定会活着回去。</p>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <a href="huaerwei_ch3.html" class="page-btn">← 上一章</a>
+        <span class="page-btn disabled">下一章 →</span>
+    </div>
+    <script>
+        let currentFontSize = 18;
+        function adjustFont(delta) { currentFontSize = Math.max(14, Math.min(24, currentFontSize + delta)); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; localStorage.setItem('readerFontSize', currentFontSize); }
+        const savedFontSize = localStorage.getItem('readerFontSize'); if (savedFontSize) { currentFontSize = parseInt(savedFontSize); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; }
+        function toggleTOC() { document.getElementById('tocPanel').classList.toggle('open'); }
+        function toggleSettings() { alert('设置功能开发中...'); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') { window.location.href = 'huaerwei_ch3.html'; } else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); } });
+    </script>
+</body>
+</html>

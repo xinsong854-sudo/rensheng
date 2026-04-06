@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片上传 | 伪物图鉴</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .upload-container {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--accent-color);
+            background: var(--bg-tertiary);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+        
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .preview-container {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .preview-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+        
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .preview-label {
+            color: var(--text-secondary);
+        }
+        
+        .preview-value {
+            font-weight: bold;
+        }
+        
+        .compress-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .compress-btn:hover {
+            background: #1a365d;
+        }
+        
+        .compress-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+        
+        .download-btn {
+            background: var(--safe-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            display: none;
+        }
+        
+        .download-btn:hover {
+            background: #008800;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回图鉴</a>
+        
+        <header class="header">
+            <h1 class="title">图片上传</h1>
+            <p class="subtitle">Image Upload & Compression</p>
+        </header>
+        
+        <div class="upload-container">
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">点击或拖拽图片到此处上传</div>
+                <div class="upload-hint">支持 JPG、PNG、WebP 格式，自动压缩至 100KB 以内</div>
+            </div>
+            
+            <input type="file" id="file-input" accept="image/*">
+            
+            <div class="preview-container" id="preview-container">
+                <img class="preview-image" id="preview-img" src="" alt="预览">
+                
+                <div class="preview-info">
+                    <div class="preview-row">
+                        <span class="preview-label">文件名：</span>
+                        <span class="preview-value" id="file-name"></span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">原始大小：</span>
+                        <span class="preview-value" id="file-size"></span>
+                    </div>
+                    <div class="preview-row">
+                        <span class="preview-label">压缩后：</span>
+                        <span class="preview-value" id="compressed-size">-</span>
+                    </div>
+                </div>
+                
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                
+                <button class="compress-btn" id="compress-btn" onclick="compressImage()">压缩图片</button>
+                <button class="download-btn" id="download-btn" onclick="downloadImage()">下载压缩后的图片</button>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>© 2026 伪物档案馆 | 未经授权禁止访问</p>
+        </footer>
+    </div>
+    
+    <script src="js/upload.js"></script>
+</body>
+</html>

@@ -1,0 +1,3280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 生图描述词分类大全 - Danbooru 版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .category {
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .category-header:hover {
+            background: #e9ecef;
+        }
+        
+        .category-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .category-count {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+        
+        .category-icon {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .category.expanded .category-icon {
+            transform: rotate(90deg);
+        }
+        
+        .subcategory {
+            margin: 10px 0;
+        }
+        
+        .subcategory-header {
+            padding: 10px 20px 10px 30px;
+            background: #fafafa;
+            cursor: pointer;
+            font-weight: 500;
+            color: #34495e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .subcategory-header:hover {
+            background: #f0f0f0;
+        }
+        
+        .subcategory-icon {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+        
+        .subcategory.expanded .subcategory-icon {
+            transform: rotate(90deg);
+        }
+        
+        .tags-container {
+            display: none;
+            padding: 10px 20px 10px 40px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .subcategory.expanded > .tags-container {
+            display: flex;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .tag:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tag:active {
+            background: #bbdefb;
+            transform: translateY(0);
+        }
+        
+        .tag-copied {
+            background: #4caf50 !important;
+            color: white;
+            border-color: #4caf50 !important;
+        }
+        
+        .tag-en {
+            font-family: "Consolas", "Monaco", monospace;
+            color: #1976d2;
+            margin-right: 8px;
+        }
+        
+        .tag-cn {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .stats {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .stats-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        
+        .stats-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .expand-all {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .expand-btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+        
+        .expand-btn.primary {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .expand-btn.primary:hover {
+            background: #1976d2;
+        }
+        
+        .expand-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .expand-btn.secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.4em;
+            }
+            
+            .tag {
+                font-size: 0.8em;
+                padding: 4px 8px;
+            }
+            
+            .tag-en {
+                font-size: 0.9em;
+            }
+            
+            .tag-cn {
+                display: none;
+            }
+        }
+    
+        
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            max-width: 300px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            line-height: 1.6;
+            animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        .disclaimer strong {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        .category {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tag {
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .category-header:hover {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            transform: translateX(5px);
+        }
+        .subcategory-header:hover {
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            transform: translateX(3px);
+        }
+        .tag:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-color: #667eea;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .disclaimer strong {
+            color: #ffd700;
+        }
+        .tag {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .tag-en {
+            margin-right: 0;
+            margin-bottom: 2px;
+            font-size: 0.9em;
+        }
+        .tag-cn {
+            font-size: 0.8em;
+            color: #888;
+        }
+
+    
+        .disclaimer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            max-width: 300px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            z-index: 1000;
+            line-height: 1.6;
+            animation: slideIn 0.5s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        .disclaimer strong {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        .category {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tag {
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .category-header:hover {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            transform: translateX(5px);
+        }
+        .subcategory-header:hover {
+            background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+            transform: translateX(3px);
+        }
+        .tag:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-color: #667eea;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI 生图描述词分类大全</h1>
+        <p class="subtitle">Danbooru 风格标签库 · 点击标签复制 · 中文不可复制</p>
+        
+        <div class="stats">
+            <div class="stats-number" id="total-tags">0</div>
+            <div class="stats-label">总标签数</div>
+        </div>
+        
+        <div class="expand-all">
+            <button class="expand-btn primary" onclick="expandAll()">全部展开</button>
+            <button class="expand-btn secondary" onclick="collapseAll()">全部收起</button>
+        </div>
+        
+        <div id="categories"></div>
+    </div>
+    
+    <div class="toast" id="toast">已复制！</div>
+    
+    <script>
+        const tagData = [
+            {
+                name: "零、颜色篇",
+                subcategories: [
+                    {
+                        name: "基础色",
+                        tags: [
+                            ["red", "红色"], ["blue", "蓝色"], ["green", "绿色"], ["yellow", "黄色"],
+                            ["orange", "橙色"], ["purple", "紫色"], ["pink", "粉色"], ["brown", "棕色"],
+                            ["black", "黑色"], ["white", "白色"], ["gray", "灰色"], ["grey", "灰色（英式）"]
+                        ]
+                    },
+                    {
+                        name: "红色系",
+                        tags: [
+                            ["crimson", "深红"], ["scarlet", "绯红"], ["ruby", "红宝石色"], ["maroon", "栗色"],
+                            ["burgundy", "酒红"], ["cherry", "樱桃红"], ["rose", "玫瑰红"], ["coral", "珊瑚红"],
+                            ["salmon", "鲑鱼红"], ["tomato", "番茄红"], ["vermilion", "朱红"], ["cinnabar", "朱砂红"],
+                            ["cardinal", "红衣主教红"], ["brick_red", "砖红"], ["mahogany", "桃花心木色"], ["chestnut", "栗色"],
+                            ["copper", "铜色"], ["bronze", "青铜色"]
+                        ]
+                    },
+                    {
+                        name: "蓝色系",
+                        tags: [
+                            ["navy", "海军蓝"], ["midnight_blue", "午夜蓝"], ["royal_blue", "宝蓝"], ["sapphire", "蓝宝石色"],
+                            ["cobalt", "钴蓝"], ["azure", "天蓝"], ["cerulean", "蔚蓝"], ["sky_blue", "天蓝色"],
+                            ["light_blue", "浅蓝"], ["pale_blue", "淡蓝"], ["powder_blue", "粉末蓝"], ["baby_blue", "婴儿蓝"],
+                            ["ice_blue", "冰蓝"], ["cyan", "青色"], ["turquoise", "绿松石色"], ["teal", "蓝绿色"],
+                            ["aqua", "水蓝色"], ["aquamarine", "海蓝宝石色"], ["ocean", "海洋蓝"], ["indigo", "靛蓝"],
+                            ["slate_blue", "石板蓝"], ["steel_blue", "钢蓝"], ["periwinkle", "紫藤蓝"], ["lavender", "薰衣草色"],
+                            ["violet", "紫罗兰色"], ["plum", "梅子色"], ["amethyst", "紫水晶色"]
+                        ]
+                    },
+                    {
+                        name: "绿色系",
+                        tags: [
+                            ["lime", "青柠绿"], ["chartreuse", "黄绿色"], ["olive", "橄榄绿"], ["forest_green", "森林绿"],
+                            ["emerald", "祖母绿"], ["jade", "玉色"], ["mint", "薄荷绿"], ["seafoam", "海沫绿"],
+                            ["sage", "鼠尾草绿"], ["moss", "苔藓绿"], ["khaki", "卡其绿"], ["army_green", "军绿"],
+                            ["camouflage", "迷彩绿"], ["pine", "松绿"], ["kelly_green", "凯利绿"], ["shamrock", "三叶草绿"],
+                            ["spring_green", "春绿"], ["leaf_green", "叶绿"], ["grass_green", "草绿"], ["yellow_green", "黄绿"],
+                            ["dark_green", "深绿"], ["light_green", "浅绿"], ["neon_green", "荧光绿"]
+                        ]
+                    },
+                    {
+                        name: "黄色系",
+                        tags: [
+                            ["gold", "金色"], ["golden", "金色"], ["yellow", "黄色"], ["lemon", "柠檬黄"],
+                            ["canary", "金丝雀黄"], ["banana", "香蕉黄"], ["cream", "奶油黄"], ["butter", "黄油黄"],
+                            ["wheat", "麦色"], ["beige", "米色"], ["tan", "棕褐色"], ["sand", "沙色"],
+                            ["ochre", "赭石黄"], ["mustard", "芥末黄"], ["amber", "琥珀黄"], ["honey", "蜂蜜黄"],
+                            ["maize", "玉米黄"], ["sunflower", "向日葵黄"], ["egg_yolk", "蛋黄"], ["mango", "芒果黄"],
+                            ["peach", "蜜桃黄"], ["apricot", "杏黄"]
+                        ]
+                    },
+                    {
+                        name: "橙色系",
+                        tags: [
+                            ["orange", "橙色"], ["tangerine", "橘色"], ["mandarin", "柑橘色"], ["cantaloupe", "哈密瓜橙"],
+                            ["persimmon", "柿子橙"], ["papaya", "木瓜橙"], ["carrot", "胡萝卜橙"], ["pumpkin", "南瓜橙"],
+                            ["terracotta", "赤陶橙"], ["burnt_orange", "焦橙"], ["dark_orange", "深橙"], ["light_orange", "浅橙"],
+                            ["neon_orange", "荧光橙"], ["coral", "珊瑚橙"]
+                        ]
+                    },
+                    {
+                        name: "紫色系",
+                        tags: [
+                            ["purple", "紫色"], ["violet", "紫罗兰色"], ["lavender", "薰衣草紫"], ["lilac", "丁香紫"],
+                            ["plum", "梅子紫"], ["eggplant", "茄子紫"], ["aubergine", "茄紫色"], ["grape", "葡萄紫"],
+                            ["wine", "葡萄酒紫"], ["mulberry", "桑葚紫"], ["magenta", "品红"], ["fuchsia", "紫红色"],
+                            ["orchid", "兰花紫"], ["mauve", "淡紫"], ["amethyst", "紫水晶色"], ["royal_purple", "皇家紫"],
+                            ["deep_purple", "深紫"], ["dark_purple", "深紫"], ["light_purple", "浅紫"], ["neon_purple", "荧光紫"]
+                        ]
+                    },
+                    {
+                        name: "粉色系",
+                        tags: [
+                            ["pink", "粉色"], ["hot_pink", "亮粉"], ["deep_pink", "深粉"], ["light_pink", "浅粉"],
+                            ["pale_pink", "淡粉"], ["baby_pink", "婴儿粉"], ["pastel_pink", "柔和粉"], ["dusty_pink", "灰粉"],
+                            ["rose", "玫瑰粉"], ["rose_gold", "玫瑰金"], ["blush", "腮红粉"], ["coral_pink", "珊瑚粉"],
+                            ["salmon_pink", "鲑鱼粉"], ["peach", "蜜桃粉"], ["cherry_blossom", "樱花粉"], ["sakura", "樱花粉"],
+                            ["magenta", "品红粉"], ["fuchsia", "紫红粉"], ["cerise", "樱桃红粉"]
+                        ]
+                    },
+                    {
+                        name: "棕褐色系",
+                        tags: [
+                            ["brown", "棕色"], ["tan", "棕褐色"], ["beige", "米色"], ["cream", "奶油色"],
+                            ["ivory", "象牙色"], ["eggshell", "蛋壳色"], ["off_white", "灰白"], ["snow", "雪白"],
+                            ["pearl", "珍珠白"], ["champagne", "香槟色"], ["nude", "裸色"], ["skin_tone", "肤色"],
+                            ["light_skin", "浅色皮肤"], ["medium_skin", "中等肤色"], ["dark_skin", "深色皮肤"], ["pale_skin", "苍白皮肤"],
+                            ["tanned_skin", "晒黑皮肤"], ["olive_skin", "橄榄色皮肤"], ["honey", "蜂蜜棕"], ["caramel", "焦糖棕"],
+                            ["toffee", "太妃糖棕"], ["chocolate", "巧克力棕"], ["dark_chocolate", "黑巧克力"], ["milk_chocolate", "牛奶巧克力"],
+                            ["white_chocolate", "白巧克力"], ["cocoa", "可可棕"], ["coffee", "咖啡棕"], ["espresso", "浓缩咖啡"],
+                            ["latte", "拿铁棕"], ["mocha", "摩卡棕"], ["chestnut", "栗色"], ["mahogany", "桃花心木色"],
+                            ["walnut", "核桃棕"], ["hazel", "榛色"], ["almond", "杏仁棕"], ["taupe", "灰褐色"],
+                            ["greige", "灰米色"], ["charcoal", "炭色"], ["slate", "石板色"]
+                        ]
+                    },
+                    {
+                        name: "黑白灰色系",
+                        tags: [
+                            ["black", "黑色"], ["jet_black", "煤黑色"], ["onyx", "玛瑙黑"], ["ebony", "乌木黑"],
+                            ["pitch_black", "沥青黑"], ["midnight", "午夜黑"], ["shadow", "阴影黑"], ["charcoal", "炭黑"],
+                            ["soot", "煤烟黑"], ["ink", "墨水黑"], ["obsidian", "黑曜石色"], ["coal", "煤炭黑"],
+                            ["dark_grey", "深灰"], ["grey", "灰色"], ["gray", "灰色（美式）"], ["light_grey", "浅灰"],
+                            ["pale_grey", "淡灰"], ["silver", "银色"], ["platinum", "铂金"], ["sterling", "纯银"],
+                            ["pewter", "白镴色"], ["nickel", "镍色"], ["chrome", "铬色"], ["steel", "钢色"],
+                            ["iron", "铁色"], ["slate", "石板灰"], ["graphite", "石墨灰"], ["ash", "灰白色"],
+                            ["smoke", "烟灰色"], ["mist", "雾灰色"], ["fog", "雾色"], ["cloud", "云灰色"],
+                            ["white", "白色"], ["pure_white", "纯白"], ["frost", "霜白"], ["ice", "冰白"],
+                            ["glacier", "冰川白"], ["vanilla", "香草白"], ["cotton", "棉花白"], ["linen", "亚麻白"],
+                            ["silk", "丝绸白"], ["satin", "缎面白"], ["porcelain", "瓷白"], ["bone", "骨白"],
+                            ["chalk", "粉笔白"], ["lily", "百合白"], ["jasmine", "茉莉白"]
+                        ]
+                    },
+                    {
+                        name: "金属色",
+                        tags: [
+                            ["gold", "金色"], ["silver", "银色"], ["bronze", "青铜色"], ["copper", "铜色"],
+                            ["brass", "黄铜色"], ["platinum", "铂金色"], ["chrome", "铬色"], ["nickel", "镍色"],
+                            ["steel", "钢色"], ["iron", "铁色"], ["titanium", "钛色"], ["aluminum", "铝色"],
+                            ["tin", "锡色"], ["lead", "铅色"], ["zinc", "锌色"], ["mercury", "水银色"],
+                            ["rose_gold", "玫瑰金"], ["white_gold", "白金"], ["yellow_gold", "黄金"], ["red_gold", "红金"],
+                            ["green_gold", "绿金"], ["pink_gold", "粉金"], ["champagne_gold", "香槟金"]
+                        ]
+                    },
+                    {
+                        name: "特殊效果",
+                        tags: [
+                            ["transparent", "透明"], ["translucent", "半透明"], ["opaque", "不透明"],
+                            ["monochrome", "单色"], ["grayscale", "灰度"], ["black_and_white", "黑白"],
+                            ["sepia", "棕褐色"], ["vintage", "复古"], ["retro", "复古"], ["desaturated", "去饱和"],
+                            ["saturated", "饱和"], ["oversaturated", "过饱和"], ["vivid_colors", "鲜艳色彩"],
+                            ["pale_colors", "淡色"], ["muted_colors", "柔和色彩"], ["pastel_colors", "粉彩色"],
+                            ["bright_colors", "明亮色彩"], ["dark_colors", "深色"], ["light_colors", "浅色"],
+                            ["washed_out", "褪色"], ["faded", "褪色"], ["neon_colors", "霓虹色"], ["fluorescent", "荧光"],
+                            ["metallic", "金属色"], ["pearlescent", "珍珠色"], ["iridescent", "彩虹光泽"],
+                            ["holographic", "全息"], ["prismatic", "棱镜色"], ["rainbow", "彩虹色"],
+                            ["glowing", "发光"], ["luminescent", "发光"], ["phosphorescent", "磷光"],
+                            ["warm_colors", "暖色"], ["cool_colors", "冷色"], ["complementary_colors", "互补色"],
+                            ["analogous_colors", "类似色"], ["triadic_colors", "三色配色"], ["monochromatic", "单色配色"],
+                            ["polychromatic", "多色配色"], ["limited_palette", "有限配色"], ["restricted_palette", "限制配色"],
+                            ["palette_swap", "配色交换"], ["color_swap", "颜色交换"], ["inverted_colors", "反转颜色"],
+                            ["negative", "负片"], ["high_contrast", "高对比度"], ["low_contrast", "低对比度"],
+                            ["color_contrast", "颜色对比"], ["tonal_contrast", "色调对比"], ["value_contrast", "明度对比"],
+                            ["gradient", "渐变"], ["ombre", "渐变"], ["two-tone", "双色"], ["multicolored", "多色"],
+                            ["colorful", "多彩"], ["achromatic", "无彩色"], ["chromatic", "彩色"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "一、眼睛篇",
+                subcategories: [
+                    {
+                        name: "眼型",
+                        tags: [
+                            ["tsurime", "吊眼"], ["tareme", "垂眼"], ["round_eyes", "圆眼"], ["narrow_eyes", "细长眼"],
+                            ["closed_eyes", "闭眼"], ["half-closed_eyes", "半睁眼"], ["wide_eyes", "睁大眼"],
+                            ["slit_pupils", "细瞳"], ["dot_eyes", "点状瞳"], ["empty_eyes", "无神眼"],
+                            ["sparkling_eyes", "闪亮眼"], ["dilated_pupils", "放大瞳孔"], ["contracted_pupils", "收缩瞳孔"],
+                            ["ringed_eyes", "环状瞳孔"], ["cross-shaped_pupils", "十字瞳孔"], ["plus-shaped_eyes", "加号眼"],
+                            ["x-shaped_pupils", "X 形瞳孔"], ["swirl_eyes", "漩涡眼"], ["hypnotic_eyes", "催眠眼"],
+                            ["galaxy_eyes", "星系眼"], ["fire_eyes", "火焰眼"], ["ice_eyes", "冰晶眼"], ["lightning_eyes", "闪电眼"]
+                        ]
+                    },
+                    {
+                        name: "瞳孔颜色",
+                        tags: [
+                            ["blue_eyes", "蓝瞳"], ["red_eyes", "红瞳"], ["green_eyes", "绿瞳"], ["purple_eyes", "紫瞳"],
+                            ["yellow_eyes", "黄瞳"], ["orange_eyes", "橙瞳"], ["pink_eyes", "粉瞳"], ["brown_eyes", "棕瞳"],
+                            ["black_eyes", "黑瞳"], ["gray_eyes", "灰瞳"], ["silver_eyes", "银瞳"], ["gold_eyes", "金瞳"],
+                            ["white_eyes", "白瞳"], ["heterochromia", "异色瞳"], ["gradient_eyes", "渐变瞳孔"]
+                        ]
+                    },
+                    {
+                        name: "眼神表情",
+                        tags: [
+                            ["teary_eyes", "含泪眼"], ["crying", "哭泣"], ["smiling_eyes", "笑眼"], ["glaring", "瞪视"],
+                            ["looking_at_viewer", "注视观众"], ["looking_away", "视线移开"], ["looking_up", "向上看"],
+                            ["looking_down", "向下看"], ["looking_sideways", "侧视"], ["eye_reflection", "眼内反光"],
+                            ["covered_eyes", "遮住眼睛"], ["one_eye_covered", "单眼遮盖"]
+                        ]
+                    },
+                    {
+                        name: "睫毛",
+                        tags: [
+                            ["long_eyelashes", "长睫毛"], ["thick_eyelashes", "浓密睫毛"], ["curled_eyelashes", "卷翘睫毛"],
+                            ["lower_lashes", "下睫毛"], ["upper_lashes", "上睫毛"]
+                        ]
+                    },
+                    {
+                        name: "眼部装饰",
+                        tags: [
+                            ["eye_makeup", "眼妆"], ["eyeliner", "眼线"], ["red_eyeliner", "红色眼线"],
+                            ["blue_eyeliner", "蓝色眼线"], ["green_eyeliner", "绿色眼线"], ["purple_eyeliner", "紫色眼线"],
+                            ["pink_eyeliner", "粉色眼线"], ["white_eyeliner", "白色眼线"], ["black_eyeliner", "黑色眼线"],
+                            ["brown_eyeliner", "棕色眼线"], ["silver_eyeliner", "银色眼线"], ["gold_eyeliner", "金色眼线"],
+                            ["glitter_eyeliner", "闪粉眼线"], ["liquid_eyeliner", "液体眼线"], ["pencil_eyeliner", "眼线笔"],
+                            ["gel_eyeliner", "凝胶眼线"], ["winged_eyeliner", "翼状眼线"], ["cat_eyeliner", "猫眼眼线"],
+                            ["smudged_eyeliner", "晕染眼线"], ["thick_eyeliner", "粗眼线"], ["thin_eyeliner", "细眼线"],
+                            ["upper_eyeliner", "上眼线"], ["lower_eyeliner", "下眼线"], ["double_eyeliner", "双层眼线"],
+                            ["graphic_eyeliner", "图形眼线"], ["colored_eyeliner", "彩色眼线"], ["eyeshadow", "眼影"],
+                            ["mascara", "睫毛膏"], ["false_eyelashes", "假睫毛"], ["colored_contacts", "彩色隐形眼镜"],
+                            ["circle_lenses", "美瞳"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "二、头发篇",
+                subcategories: [
+                    {
+                        name: "长度",
+                        tags: [
+                            ["long_hair", "长发"], ["medium_hair", "中长发"], ["short_hair", "短发"],
+                            ["very_long_hair", "超长发"], ["absurdly_long_hair", "夸张长发"]
+                        ]
+                    },
+                    {
+                        name: "质感",
+                        tags: [
+                            ["straight_hair", "直发"], ["curly_hair", "卷发"], ["wavy_hair", "波浪发"],
+                            ["messy_hair", "凌乱发"], ["bed_hair", "睡乱发"], ["afro", "爆炸头"],
+                            ["bouffant", "蓬发"], ["silky_hair", "丝滑发"], ["glossy_hair", "光泽发"],
+                            ["matte_hair", "哑光发"], ["frizzy_hair", "毛躁发"], ["tangled_hair", "纠结发"],
+                            ["smooth_hair", "顺滑发"], ["rough_hair", "粗糙发"], ["fine_hair", "细软发"],
+                            ["thick_hair", "粗硬发"], ["thin_hair", "稀疏发"], ["dense_hair", "浓密发"],
+                            ["oily_hair", "油腻发"], ["dry_hair", "干燥发"], ["damaged_hair", "受损发"],
+                            ["healthy_hair", "健康发"], ["shiny_hair", "闪亮发"], ["dull_hair", "暗淡发"],
+                            ["wet_hair", "湿发"], ["oiled_hair", "油发"], ["powdered_hair", "粉发"],
+                            ["crystal_hair", "水晶发"], ["gem_hair", "宝石发"], ["diamond_hair", "钻石发"],
+                            ["fire_hair", "火焰发"], ["ice_hair", "冰发"], ["lightning_hair", "闪电力"],
+                            ["galaxy_hair", "星系发"], ["rainbow_hair", "彩虹发"], ["holographic_hair", "全息发"],
+                            ["glowing_hair", "发光发"], ["silky_hair", "丝滑发"], ["glossy_hair", "光泽发"]
+                        ]
+                    },
+                    {
+                        name: "刘海",
+                        tags: [
+                            ["bangs", "刘海"], ["blunt_bangs", "齐刘海"], ["side_swept_bangs", "斜刘海"],
+                            ["hime_cut", "姬发式"], ["m-shaped_bangs", "M 字刘海"], ["see-through_bangs", "空气刘海"],
+                            ["baby_bangs", "婴儿刘海"], ["eye_covering_bangs", "遮眼刘海"], ["forehead", "露额头"],
+                            ["widows_peak", "美人尖"], ["hair_intakes", "鬓角发"], ["ahoge", "呆毛"],
+                            ["antenna_hair", "天线发"], ["cowlick", "逆毛"], ["textured_bangs", "纹理刘海"],
+                            ["layered_bangs", "层次刘海"], ["wispy_bangs", "轻薄刘海"], ["curtain_bangs", "窗帘刘海"],
+                            ["birkin_bangs", "伯金刘海"], ["french_bangs", "法式刘海"], ["korean_bangs", "韩式刘海"],
+                            ["japanese_bangs", "日式刘海"], ["chinese_bangs", "中式刘海"], ["vintage_bangs", "复古刘海"],
+                            ["modern_bangs", "现代刘海"], ["classic_bangs", "经典刘海"], ["trendy_bangs", "时尚刘海"],
+                            ["edgy_bangs", "前卫刘海"], ["soft_bangs", "柔和刘海"], ["hard_bangs", "硬朗刘海"],
+                            ["straight_bangs", "直刘海"], ["curly_bangs", "卷刘海"], ["wavy_bangs", "波浪刘海"],
+                            ["spiky_bangs", "尖刺刘海"], ["sleek_bangs", "光滑刘海"], ["messy_bangs", "凌乱刘海"],
+                            ["neat_bangs", "整齐刘海"], ["choppy_bangs", "参差刘海"], ["feathered_bangs", "羽毛刘海"],
+                            ["stacked_bangs", "堆叠刘海"], ["graduated_bangs", "渐变刘海"], ["asymmetric_bangs", "不对称刘海"],
+                            ["symmetric_bangs", "对称刘海"], ["center_parted_bangs", "中分刘海"], ["side_parted_bangs", "侧分刘海"],
+                            ["zigzag_bangs", "锯齿刘海"], ["curved_bangs", "弧形刘海"], ["angled_bangs", "斜角刘海"],
+                            ["rounded_bangs", "圆形刘海"], ["square_bangs", "方形刘海"], ["pointed_bangs", "尖形刘海"],
+                            ["rounded_bangs", "圆形刘海"], ["oval_bangs", "椭圆形刘海"], ["heart_shaped_bangs", "心形刘海"],
+                            ["star_shaped_bangs", "星形刘海"], ["cloud_bangs", "云刘海"], ["smoke_bangs", "烟刘海"],
+                            ["steam_bangs", "蒸汽刘海"], ["vapor_bangs", "蒸汽刘海"], ["fire_bangs", "火刘海"],
+                            ["flame_bangs", "火焰刘海"], ["ember_bangs", "余烬刘海"], ["spark_bangs", "火花刘海"],
+                            ["glow_bangs", "发光刘海"], ["shine_bangs", "闪光刘海"], ["glitter_bangs", "亮片刘海"],
+                            ["sparkle_bangs", "闪耀刘海"], ["twinkle_bangs", "闪烁刘海"], ["glimmer_bangs", "微光刘海"],
+                            ["gleam_bangs", "闪光刘海"], ["radiant_bangs", "辐射刘海"], ["brilliant_bangs", "灿烂刘海"],
+                            ["dazzling_bangs", "耀眼刘海"], ["blazing_bangs", "炽热刘海"], ["burning_bangs", "燃烧刘海"],
+                            ["fiery_bangs", "火焰刘海"], ["icy_bangs", "冰冷刘海"], ["frozen_bangs", "冰冻刘海"],
+                            ["crystal_bangs", "水晶刘海"], ["diamond_bangs", "钻石刘海"], ["gem_bangs", "宝石刘海"],
+                            ["pearl_bangs", "珍珠刘海"], ["jade_bangs", "玉石刘海"], ["amber_bangs", "琥珀刘海"],
+                            ["coral_bangs", "珊瑚刘海"], ["turquoise_bangs", "绿松石刘海"], ["sapphire_bangs", "蓝宝石刘海"],
+                            ["ruby_bangs", "红宝石刘海"], ["emerald_bangs", "祖母绿刘海"], ["topaz_bangs", "黄玉刘海"],
+                            ["amethyst_bangs", "紫水晶刘海"], ["garnet_bangs", "石榴石刘海"], ["opal_bangs", "欧泊刘海"],
+                            ["moonstone_bangs", "月光石刘海"], ["sunstone_bangs", "日光石刘海"], ["labradorite_bangs", "拉长石刘海"],
+                            ["aventurine_bangs", "东陵石刘海"], ["carnelian_bangs", "红玉髓刘海"], ["chrysoprase_bangs", "绿玉髓刘海"],
+                            ["bloodstone_bangs", "血石刘海"], ["heliotrope_bangs", "血石刘海"], ["plasma_bangs", "血浆石刘海"],
+                            ["prase_bangs", "绿石英刘海"], ["rose_quartz_bangs", "粉晶刘海"], ["smoky_quartz_bangs", "烟晶刘海"],
+                            ["citrine_bangs", "黄水晶刘海"], ["tiger_eye_bangs", "虎眼石刘海"], ["hawks_eye_bangs", "鹰眼石刘海"],
+                            ["cats_eye_bangs", "猫眼石刘海"], ["oxs_eye_bangs", "牛眼石刘海"], ["serpentine_bangs", "蛇纹石刘海"],
+                            ["lapis_lazuli_bangs", "青金石刘海"], ["lignite_bangs", "褐煤刘海"], ["anthracite_bangs", "无烟煤刘海"],
+                            ["bituminous_bangs", "烟煤刘海"], ["sub-bituminous_bangs", "次烟煤刘海"], ["peat_bangs", "泥炭刘海"],
+                            ["charcoal_bangs", "木炭刘海"], ["coke_bangs", "焦炭刘海"], ["graphite_bangs", "石墨刘海"],
+                            ["diamond_bangs", "钻石刘海"], ["holographic_bangs", "全息刘海"]
+                        ]
+                    },
+                    {
+                        name: "前发",
+                        tags: [
+                            ["front_hair", "前发"], ["forelock", "额前发"], ["forehead_hair", "额头前发"],
+                            ["temple_hair", "太阳穴发"], ["sideburns", "鬓角"], ["cheek_hair", "脸颊发"],
+                            ["chin_hair", "下巴发"]
+                        ]
+                    },
+                    {
+                        name: "后发",
+                        tags: [
+                            ["back_hair", "后发"], ["nape_hair", "后颈发"], ["occipital_hair", "枕部发"],
+                            ["crown_hair", "头顶发"], ["vertex_hair", "顶点发"], ["back_of_head_hair", "后脑发"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "三、画师篇",
+                subcategories: [
+                    {
+                        name: "日本画师/动画人",
+                        tags: [
+                            ["artist_rella", "Rella"],
+                            ["artist_huke", "Huke"],
+                            ["artist_redjuice", "Redjuice"],
+                            ["artist_kantoku", "监督"],
+                            ["artist_tiv", "Tiv"],
+                            ["artist_buriki", "布理贵"],
+                            ["artist_yoshiyuki_sadamoto", "贞本义行"],
+                            ["artist_hayao_miyazaki", "宫崎骏"],
+                            ["artist_akira_toriyama", "鸟山明"],
+                            ["artist_makoto_shinkai", "新海诚"],
+                            ["artist_satoshi_kon", "今敏"],
+                            ["artist_oshii_mamoru", "押井守"],
+                            ["artist_katsuhiro_otomo", "大友克洋"],
+                            ["artist_yoshitaka_amano", "天野喜孝"],
+                            ["artist_yusuke_murata", "村田雄介"],
+                            ["artist_takehiko_inoue", "井上雄彦"],
+                            ["artist_tsutomu_nihei", "贰瓶勉"],
+                            ["artist_osamu_tezuka", "手冢治虫"],
+                            ["artist_leiji_matsumoto", "松本零士"],
+                            ["artist_hideaki_anno", "庵野秀明"],
+                            ["artist_isao_takahata", "高畑勋"],
+                            ["artist_mamoru_hosoda", "细田守"],
+                            ["artist_kaori_yuki", "由贵香织里"],
+                            ["artist_clamp", "CLAMP"],
+                            ["artist_naoko_takeuchi", "武内直子"],
+                            ["artist_rumiko_takahashi", "高桥留美子"],
+                            ["artist_kiyohiko_azuma", "东清彦"],
+                            ["artist_junji_ito", "伊藤润二"],
+                            ["artist_hiroya_oku", "奥浩哉"],
+                            ["artist_kenshin", "浪客剑心"],
+                            ["artist_berserk", "剑风传奇"],
+                            ["artist_vagabond", "浪客行"],
+                            ["artist_wlopa", "WLOP"],
+                            ["artist_kuvshinov_ilya", "Ilya Kuvshinov"],
+                            ["artist_artgerm", "Artgerm"],
+                            ["artist_greg_rutkowski", "Greg Rutkowski"],
+                            ["artist_alphonse_mucha", "Alphonse Mucha"],
+                            ["artist_gustav_klimt", "Gustav Klimt"],
+                            ["artist_vincent_van_gogh", "Vincent van Gogh"],
+                            ["artist_pablo_picasso", "Pablo Picasso"],
+                            ["artist_leonardo_da_vinci", "Leonardo da Vinci"],
+                            ["artist_michelangelo", "Michelangelo"],
+                            ["artist_raphael", "Raphael"],
+                            ["artist_rembrandt", "Rembrandt"],
+                            ["artist_johannes_vermeer", "Johannes Vermeer"],
+                            ["artist_diego_velazquez", "Diego Velázquez"],
+                            ["artist_francisco_goya", "Francisco Goya"],
+                            ["artist_eugene_delacroix", "Eugène Delacroix"],
+                            ["artist_jacques-louis_david", "Jacques-Louis David"],
+                            ["artist_thomas_gainsborough", "Thomas Gainsborough"],
+                            ["artist_joshua_reynolds", "Joshua Reynolds"],
+                            ["artist_john_constable", "John Constable"],
+                            ["artist_jmw_turner", "J.M.W. Turner"],
+                            ["artist_claude_monet", "Claude Monet"],
+                            ["artist_pierre-auguste_renoir", "Pierre-Auguste Renoir"],
+                            ["artist_edgar_degas", "Edgar Degas"],
+                            ["artist_edouard_manet", "Édouard Manet"],
+                            ["artist_paul_cezanne", "Paul Cézanne"],
+                            ["artist_paul_gauguin", "Paul Gauguin"],
+                            ["artist_henri_matisse", "Henri Matisse"],
+                            ["artist_wassily_kandinsky", "Wassily Kandinsky"],
+                            ["artist_piet_mondrian", "Piet Mondrian"],
+                            ["artist_salvador_dali", "Salvador Dalí"],
+                            ["artist_rene_magritte", "René Magritte"],
+                            ["artist_frida_kahlo", "Frida Kahlo"],
+                            ["artist_georgia_okeeffe", "Georgia O'Keeffe"],
+                            ["artist_andy_warhol", "Andy Warhol"],
+                            ["artist_roy_lichtenstein", "Roy Lichtenstein"],
+                            ["artist_jackson_pollock", "Jackson Pollock"],
+                            ["artist_mark_rothko", "Mark Rothko"],
+                            ["artist_edward_hopper", "Edward Hopper"],
+                            ["artist_norman_rockwell", "Norman Rockwell"],
+                            ["artist_albert_bierstadt", "Albert Bierstadt"],
+                            ["artist_frederic_church", "Frederic Church"],
+                            ["artist_thomas_moran", "Thomas Moran"],
+                            ["artist_winslow_homer", "Winslow Homer"],
+                            ["artist_john_singer_sargent", "John Singer Sargent"],
+                            ["artist_mary_cassatt", "Mary Cassatt"],
+                            ["artist_berthe_morisot", "Berthe Morisot"],
+                            ["artist_camille_pissarro", "Camille Pissarro"],
+                            ["artist_alfred_sisley", "Alfred Sisley"],
+                            ["artist_gustave_caillebotte", "Gustave Caillebotte"],
+                            ["artist_toulouse-lautrec", "Henri de Toulouse-Lautrec"],
+                            ["artist_paul_signac", "Paul Signac"],
+                            ["artist_georges_seurat", "Georges Seurat"],
+                            ["artist_odilon_redon", "Odilon Redon"],
+                            ["artist_pierre_bonnard", "Pierre Bonnard"],
+                            ["artist_edouard_vuillard", "Édouard Vuillard"],
+                            ["artist_gustave_moreau", "Gustave Moreau"],
+                            ["artist_puvis_de_chavannes", "Puvis de Chavannes"],
+                            ["artist_arnold_bocklin", "Arnold Böcklin"],
+                            ["artist_franz_von_stuck", "Franz von Stuck"],
+                            ["artist_gustav_klimt", "Gustav Klimt"],
+                            ["artist_egan_schiele", "Egon Schiele"],
+                            ["artist_kokoschka", "Oskar Kokoschka"],
+                            ["artist_wassily_kandinsky", "Wassily Kandinsky"],
+                            ["artist_franz_marc", "Franz Marc"],
+                            ["artist_august_macke", "August Macke"],
+                            ["artist_paul_klee", "Paul Klee"],
+                            ["artist_lyonel_feininger", "Lyonel Feininger"],
+                            ["artist_alexej_jawlensky", "Alexej von Jawlensky"],
+                            ["artist_marianne_von_werefkin", "Marianne von Werefkin"],
+                            ["artist_gabriele_munter", "Gabriele Münter"],
+                            ["artist_karl_schmidt-rottluff", "Karl Schmidt-Rottluff"],
+                            ["artist_ernst_ludwig_kirchner", "Ernst Ludwig Kirchner"],
+                            ["artist_erich_heckel", "Erich Heckel"],
+                            ["artist_max_pechstein", "Max Pechstein"],
+                            ["artist_emil_nolde", "Emil Nolde"],
+                            ["artist_lovis_corinth", "Lovis Corinth"],
+                            ["artist_max_liebermann", "Max Liebermann"],
+                            ["artist_lesser_ury", "Lesser Ury"],
+                            ["artist_walter_sickert", "Walter Sickert"],
+                            ["artist_duncan_grant", "Duncan Grant"],
+                            ["artist_vanessa_bell", "Vanessa Bell"],
+                            ["artist_wyndham_lewis", "Wyndham Lewis"],
+                            ["artist_david_bomberg", "David Bomberg"],
+                            ["artist_jacob_epstein", "Jacob Epstein"],
+                            ["artist_henry_moore", "Henry Moore"],
+                            ["artist_barbara_hepworth", "Barbara Hepworth"],
+                            ["artist_ben_nicholson", "Ben Nicholson"],
+                            ["artist_paul_nash", "Paul Nash"],
+                            ["artist_john_nash", "John Nash"],
+                            ["artist_stanley_spencer", "Stanley Spencer"],
+                            ["artist_lucian_freud", "Lucian Freud"],
+                            ["artist_francis_bacon", "Francis Bacon"],
+                            ["artist_david_hockney", "David Hockney"],
+                            ["artist_bridget_riley", "Bridget Riley"],
+                            ["artist_victor_vasarely", "Victor Vasarely"],
+                            ["artist_maurits_escher", "M.C. Escher"],
+                            ["artist_salvador_dali", "Salvador Dalí"],
+                            ["artist_joan_miro", "Joan Miró"],
+                            ["artist_marc_chagall", "Marc Chagall"],
+                            ["artist_amedeo_modigliani", "Amedeo Modigliani"],
+                            ["artist_constantin_brancusi", "Constantin Brâncuși"],
+                            ["artist_auguste_rodin", "Auguste Rodin"],
+                            ["artist_camille_claudel", "Camille Claudel"],
+                            ["artist_jean-baptiste_carpeaux", "Jean-Baptiste Carpeaux"],
+                            ["artist_antoine-louis_barye", "Antoine-Louis Barye"],
+                            ["artist_francois_rude", "François Rude"],
+                            ["artist_jean-louis_david", "Jean-Louis David"],
+                            ["artist_jean-auguste-dominique_ingres", "Jean-Auguste-Dominique Ingres"],
+                            ["artist_eugene_delacroix", "Eugène Delacroix"],
+                            ["artist_theodore_gericault", "Théodore Géricault"],
+                            ["artist_jean-baptiste-camille_corot", "Jean-Baptiste-Camille Corot"]
+                        ]
+                    },
+                    {
+                        name: "欧美画师/概念艺术",
+                        tags: [
+                            ["artist_charles-francois_daubigny", "Charles-François Daubigny"],
+                            ["artist_narcisse_virgilio_diaz", "Narcisse Virgilio Díaz"],
+                            ["artist_theodore_rousseau", "Théodore Rousseau"],
+                            ["artist_jules_dupre", "Jules Dupré"],
+                            ["artist_constantin_troyon", "Constantin Troyon"],
+                            ["artist_charles-jacques", "Charles Jacque"],
+                            ["artist_jean-francois_millet", "Jean-François Millet"],
+                            ["artist_gustave_courbet", "Gustave Courbet"],
+                            ["artist_honore_daumier", "Honoré Daumier"],
+                            ["artist_jean-louis-forain", "Jean-Louis Forain"],
+                            ["artist_theophile_steinlen", "Théophile Steinlen"],
+                            ["artist_henri_de_toulouse-lautrec", "Henri de Toulouse-Lautrec"],
+                            ["artist_alphonse_mucha", "Alphonse Mucha"],
+                            ["artist_gustav_klimt", "Gustav Klimt"],
+                            ["artist_egan_schiele", "Egon Schiele"],
+                            ["artist_koloman_moser", "Koloman Moser"],
+                            ["artist_josef_hoffmann", "Josef Hoffmann"],
+                            ["artist_dagobert_peche", "Dagobert Peche"],
+                            ["artist_otto_wagner", "Otto Wagner"],
+                            ["artist_josef_maria_olbrich", "Josef Maria Olbrich"],
+                            ["artist_henry_van_de_velde", "Henry van de Velde"],
+                            ["artist_victor_horta", "Victor Horta"],
+                            ["artist_paul_hankar", "Paul Hankar"],
+                            ["artist_gustave_serrurier-bovy", "Gustave Serrurier-Bovy"],
+                            ["artist_georges_hoentschel", "Georges Hoentschel"],
+                            ["artist_edward_colonna", "Edward Colonna"],
+                            ["artist_eugene_gaillard", "Eugène Gaillard"],
+                            ["artist_edouard_colonna", "Édouard Colonna"],
+                            ["artist_charles_plumet", "Charles Plumet"],
+                            ["artist_tony_selmersheim", "Tony Selmersheim"],
+                            ["artist_francis_jourdain", "Francis Jourdain"],
+                            ["artist_robert_de_souza", "Robert de Souza"],
+                            ["artist_andre_groult", "André Groult"],
+                            ["artist_jacques-emile_ruhlmann", "Jacques-Émile Ruhlmann"],
+                            ["artist_clement_mere", "Clément Mère"],
+                            ["artist_louis_majorelle", "Louis Majorelle"],
+                            ["artist_emile_galle", "Émile Gallé"],
+                            ["artist_daum_freres", "Daum Frères"],
+                            ["artist_lalique", "René Lalique"],
+                            ["artist_fernand_khnopff", "Fernand Khnopff"],
+                            ["artist_james_ensor", "James Ensor"],
+                            ["artist_felix_vallotton", "Félix Vallotton"],
+                            ["artist_pierre_bonnard", "Pierre Bonnard"],
+                            ["artist_edouard_vuillard", "Édouard Vuillard"],
+                            ["artist_maurice_denis", "Maurice Denis"],
+                            ["artist_paul_serusier", "Paul Sérusier"],
+                            ["artist_paul_gauguin", "Paul Gauguin"],
+                            ["artist_emile_bernard", "Émile Bernard"],
+                            ["artist_louis_anquetin", "Louis Anquetin"],
+                            ["artist_henri_de_toulouse-lautrec", "Henri de Toulouse-Lautrec"],
+                            ["artist_vincent_van_gogh", "Vincent van Gogh"],
+                            ["artist_georges_seurat", "Georges Seurat"],
+                            ["artist_paul_signac", "Paul Signac"],
+                            ["artist_camille_pissarro", "Camille Pissarro"],
+                            ["artist_lucien_pissarro", "Lucien Pissarro"],
+                            ["artist_maximilien_luce", "Maximilien Luce"],
+                            ["artist_henri-edmond_cross", "Henri-Edmond Cross"],
+                            ["artist_theo_van_rysselberghe", "Théo van Rysselberghe"],
+                            ["artist_giovanni_segantini", "Giovanni Segantini"],
+                            ["artist_gaetano_previati", "Gaetano Previati"],
+                            ["artist_pellegrino_artusi", "Pellegrino Artusi"],
+                            ["artist_giuseppe_pellizza_da_volpedo", "Giuseppe Pellizza da Volpedo"],
+                            ["artist_giacomo_balla", "Giacomo Balla"],
+                            ["artist_umberto_boccioni", "Umberto Boccioni"],
+                            ["artist_carlo_carra", "Carlo Carrà"],
+                            ["artist_gino_severini", "Gino Severini"],
+                            ["artist_luigi_russolo", "Luigi Russolo"],
+                            ["artist_ardengo_soffici", "Ardengo Soffici"],
+                            ["artist_amadeo_modigliani", "Amedeo Modigliani"],
+                            ["artist_gino_severini", "Gino Severini"],
+                            ["artist_mario_sironi", "Mario Sironi"],
+                            ["artist_giorgio_de_chirico", "Giorgio de Chirico"],
+                            ["artist_carlo_carr", "Carlo Carrà"],
+                            ["artist_filippo_tommaso_marinetti", "Filippo Tommaso Marinetti"],
+                            ["artist_antonio_santelia", "Antonio Sant'Elia"],
+                            ["artist_benedetta_cappa", "Benedetta Cappa"],
+                            ["artist_enrico_prampolini", "Enrico Prampolini"],
+                            ["artist_fortunato_depero", "Fortunato Depero"],
+                            ["artist_giacomo_balla", "Giacomo Balla"],
+                            ["artist_alberto_giacometti", "Alberto Giacometti"],
+                            ["artist_marcel_duchamp", "Marcel Duchamp"],
+                            ["artist_man_ray", "Man Ray"],
+                            ["artist_francis_picabia", "Francis Picabia"],
+                            ["artist_kurt_schwitters", "Kurt Schwitters"],
+                            ["artist_hans_arp", "Hans Arp"],
+                            ["artist_sophie_taeuber-arp", "Sophie Taeuber-Arp"],
+                            ["artist_els_lissitzky", "El Lissitzky"],
+                            ["artist_kazimir_malevich", "Kazimir Malevich"],
+                            ["artist_vladimir_tatlin", "Vladimir Tatlin"],
+                            ["artist_alexander_rodchenko", "Alexander Rodchenko"],
+                            ["artist_lyubov_popova", "Lyubov Popova"],
+                            ["artist_varvara_stepanova", "Varvara Stepanova"],
+                            ["artist_natalia_goncharova", "Natalia Goncharova"],
+                            ["artist_mikhail_larionov", "Mikhail Larionov"],
+                            ["artist_marc_chagall", "Marc Chagall"],
+                            ["artist_wassily_kandinsky", "Wassily Kandinsky"],
+                            ["artist_franz_marc", "Franz Marc"],
+                            ["artist_august_macke", "August Macke"],
+                            ["artist_paul_klee", "Paul Klee"],
+                            ["artist_alexej_jawlensky", "Alexej von Jawlensky"],
+                            ["artist_marianne_von_werefkin", "Marianne von Werefkin"],
+                            ["artist_gabriele_munter", "Gabriele Münter"],
+                            ["artist_ernst_ludwig_kirchner", "Ernst Ludwig Kirchner"],
+                            ["artist_karl_schmidt-rottluff", "Karl Schmidt-Rottluff"],
+                            ["artist_erich_heckel", "Erich Heckel"],
+                            ["artist_max_pechstein", "Max Pechstein"],
+                            ["artist_emil_nolde", "Emil Nolde"],
+                            ["artist_lovis_corinth", "Lovis Corinth"],
+                            ["artist_max_liebermann", "Max Liebermann"],
+                            ["artist_les_nabis", "Les Nabis"],
+                            ["artist_the_nabis", "The Nabis"],
+                            ["artist_pont-aven_school", "Pont-Aven School"],
+                            ["artist_barbizon_school", "Barbizon School"],
+                            ["artist_hague_school", "Hague School"],
+                            ["artist_dusseldorf_school", "Düsseldorf School"],
+                            ["artist_munich_school", "Munich School"],
+                            ["artist_vienna_secession", "Vienna Secession"],
+                            ["artist_bauhaus", "Bauhaus"],
+                            ["artist_de_stijl", "De Stijl"],
+                            ["artist_constructivism", "Constructivism"],
+                            ["artist_suprematism", "Suprematism"],
+                            ["artist_futurism", "Futurism"],
+                            ["artist_cubism", "Cubism"],
+                            ["artist_fauvism", "Fauvism"],
+                            ["artist_expressionism", "Expressionism"],
+                            ["artist_impressionism", "Impressionism"],
+                            ["artist_post-impressionism", "Post-Impressionism"],
+                            ["artist_neo-impressionism", "Neo-Impressionism"],
+                            ["artist_symbolism", "Symbolism"],
+                            ["artist_art_nouveau", "Art Nouveau"],
+                            ["artist_art_deco", "Art Deco"],
+                            ["artist_dada", "Dada"],
+                            ["artist_surrealism", "Surrealism"],
+                            ["artist_abstract_expressionism", "Abstract Expressionism"],
+                            ["artist_pop_art", "Pop Art"],
+                            ["artist_op_art", "Op Art"],
+                            ["artist_minimalism", "Minimalism"],
+                            ["artist_conceptual_art", "Conceptual Art"],
+                            ["artist_performance_art", "Performance Art"],
+                            ["artist_installation_art", "Installation Art"],
+                            ["artist_video_art", "Video Art"],
+                            ["artist_digital_art", "Digital Art"],
+                            ["artist_computer_art", "Computer Art"],
+                            ["artist_algorithmic_art", "Algorithmic Art"]
+                        ]
+                    },
+                    {
+                        name: "古典大师",
+                        tags: [
+                            ["artist_generative_art", "Generative Art"],
+                            ["artist_fractal_art", "Fractal Art"],
+                            ["artist_pixel_art", "Pixel Art"],
+                            ["artist_voxel_art", "Voxel Art"],
+                            ["artist_cgi", "CGI"],
+                            ["artist_vfx", "VFX"],
+                            ["artist_sfx", "SFX"],
+                            ["artist_matte_painting", "Matte Painting"],
+                            ["artist_concept_art", "Concept Art"],
+                            ["artist_character_design", "Character Design"],
+                            ["artist_environment_design", "Environment Design"],
+                            ["artist_prop_design", "Prop Design"],
+                            ["artist_vehicle_design", "Vehicle Design"],
+                            ["artist_creature_design", "Creature Design"],
+                            ["artist_costume_design", "Costume Design"],
+                            ["artist_set_design", "Set Design"],
+                            ["artist_lighting_design", "Lighting Design"],
+                            ["artist_sound_design", "Sound Design"],
+                            ["artist_music_composition", "Music Composition"],
+                            ["artist_game_design", "Game Design"],
+                            ["artist_level_design", "Level Design"],
+                            ["artist_ui_design", "UI Design"],
+                            ["artist_ux_design", "UX Design"],
+                            ["artist_web_design", "Web Design"],
+                            ["artist_graphic_design", "Graphic Design"],
+                            ["artist_typography", "Typography"],
+                            ["artist_illustration", "Illustration"],
+                            ["artist_comic_art", "Comic Art"],
+                            ["artist_manga", "Manga"],
+                            ["artist_anime", "Anime"],
+                            ["artist_cartoon", "Cartoon"],
+                            ["artist_animation", "Animation"],
+                            ["artist_stop_motion", "Stop Motion"],
+                            ["artist_claymation", "Claymation"],
+                            ["artist_puppetry", "Puppetry"],
+                            ["artist_traditional_animation", "Traditional Animation"],
+                            ["artist_digital_animation", "Digital Animation"],
+                            ["artist_flash_animation", "Flash Animation"],
+                            ["artist_motion_graphics", "Motion Graphics"],
+                            ["artist_visual_effects", "Visual Effects"],
+                            ["artist_special_effects", "Special Effects"],
+                            ["artist_practical_effects", "Practical Effects"],
+                            ["artist_miniature_effects", "Miniature Effects"],
+                            ["artist_matte_painting", "Matte Painting"],
+                            ["artist_green_screen", "Green Screen"],
+                            ["artist_blue_screen", "Blue Screen"],
+                            ["artist_chroma_key", "Chroma Key"],
+                            ["artist_rotoscoping", "Rotoscoping"],
+                            ["artist_motion_capture", "Motion Capture"],
+                            ["artist_performance_capture", "Performance Capture"],
+                            ["artist_facial_capture", "Facial Capture"],
+                            ["artist_body_capture", "Body Capture"],
+                            ["artist_hand_capture", "Hand Capture"],
+                            ["artist_voice_capture", "Voice Capture"],
+                            ["artist_audio_capture", "Audio Capture"],
+                            ["artist_sound_capture", "Sound Capture"],
+                            ["artist_music_capture", "Music Capture"],
+                            ["artist_song_capture", "Song Capture"],
+                            ["artist_singing_capture", "Singing Capture"],
+                            ["artist_rapping_capture", "Rapping Capture"],
+                            ["artist_beatboxing_capture", "Beatboxing Capture"],
+                            ["artist_instrument_capture", "Instrument Capture"],
+                            ["artist_guitar_capture", "Guitar Capture"],
+                            ["artist_piano_capture", "Piano Capture"],
+                            ["artist_drums_capture", "Drums Capture"],
+                            ["artist_bass_capture", "Bass Capture"],
+                            ["artist_violin_capture", "Violin Capture"],
+                            ["artist_cello_capture", "Cello Capture"],
+                            ["artist_flute_capture", "Flute Capture"],
+                            ["artist_trumpet_capture", "Trumpet Capture"],
+                            ["artist_saxophone_capture", "Saxophone Capture"],
+                            ["artist_clarinet_capture", "Clarinet Capture"],
+                            ["artist_oboe_capture", "Oboe Capture"],
+                            ["artist_bassoon_capture", "Bassoon Capture"],
+                            ["artist_trombone_capture", "Trombone Capture"],
+                            ["artist_tuba_capture", "Tuba Capture"],
+                            ["artist_harp_capture", "Harp Capture"],
+                            ["artist_organ_capture", "Organ Capture"],
+                            ["artist_synthesizer_capture", "Synthesizer Capture"],
+                            ["artist_drum_machine_capture", "Drum Machine Capture"],
+                            ["artist_sequencer_capture", "Sequencer Capture"],
+                            ["artist_sampler_capture", "Sampler Capture"],
+                            ["artist_midi_capture", "MIDI Capture"],
+                            ["artist_daw_capture", "DAW Capture"],
+                            ["artist_recording_capture", "Recording Capture"],
+                            ["artist_mixing_capture", "Mixing Capture"],
+                            ["artist_mastering_capture", "Mastering Capture"],
+                            ["artist_producing_capture", "Producing Capture"],
+                            ["artist_arranging_capture", "Arranging Capture"],
+                            ["artist_composing_capture", "Composing Capture"],
+                            ["artist_songwriting_capture", "Songwriting Capture"],
+                            ["artist_lyric_writing", "Lyric Writing"],
+                            ["artist_melody_writing", "Melody Writing"],
+                            ["artist_harmony_writing", "Harmony Writing"],
+                            ["artist_rhythm_writing", "Rhythm Writing"],
+                            ["artist_bass_writing", "Bass Writing"],
+                            ["artist_chord_writing", "Chord Writing"],
+                            ["artist_progression_writing", "Progression Writing"],
+                            ["artist_modulation_writing", "Modulation Writing"],
+                            ["artist_transposition_writing", "Transposition Writing"],
+                            ["artist_orchestration_writing", "Orchestration Writing"],
+                            ["artist_arrangement_writing", "Arrangement Writing"],
+                            ["artist_instrumentation_writing", "Instrumentation Writing"],
+                            ["artist_timbre_writing", "Timbre Writing"],
+                            ["artist_texture_writing", "Texture Writing"],
+                            ["artist_dynamics_writing", "Dynamics Writing"],
+                            ["artist_articulation_writing", "Articulation Writing"],
+                            ["artist_phrasing_writing", "Phrasing Writing"],
+                            ["artist_expression_writing", "Expression Writing"],
+                            ["artist_interpretation_writing", "Interpretation Writing"],
+                            ["artist_performance_writing", "Performance Writing"],
+                            ["artist_improvisation_writing", "Improvisation Writing"],
+                            ["artist_composition_writing", "Composition Writing"],
+                            ["artist_creation_writing", "Creation Writing"],
+                            ["artist_invention_writing", "Invention Writing"],
+                            ["artist_innovation_writing", "Innovation Writing"],
+                            ["artist_originality_writing", "Originality Writing"],
+                            ["artist_creativity_writing", "Creativity Writing"],
+                            ["artist_imagination_writing", "Imagination Writing"],
+                            ["artist_inspiration_writing", "Inspiration Writing"],
+                            ["artist_vision_writing", "Vision Writing"],
+                            ["artist_concept_writing", "Concept Writing"],
+                            ["artist_idea_writing", "Idea Writing"],
+                            ["artist_theme_writing", "Theme Writing"],
+                            ["artist_motif_writing", "Motif Writing"],
+                            ["artist_subject_writing", "Subject Writing"],
+                            ["artist_topic_writing", "Topic Writing"],
+                            ["artist_content_writing", "Content Writing"],
+                            ["artist_material_writing", "Material Writing"],
+                            ["artist_substance_writing", "Substance Writing"],
+                            ["artist_matter_writing", "Matter Writing"],
+                            ["artist_element_writing", "Element Writing"],
+                            ["artist_component_writing", "Component Writing"],
+                            ["artist_part_writing", "Part Writing"],
+                            ["artist_piece_writing", "Piece Writing"],
+                            ["artist_fragment_writing", "Fragment Writing"],
+                            ["artist_section_writing", "Section Writing"],
+                            ["artist_segment_writing", "Segment Writing"],
+                            ["artist_portion_writing", "Portion Writing"],
+                            ["artist_division_writing", "Division Writing"],
+                            ["artist_unit_writing", "Unit Writing"],
+                            ["artist_item_writing", "Item Writing"],
+                            ["artist_article_writing", "Article Writing"],
+                            ["artist_object_writing", "Object Writing"]
+                        ]
+                    },
+                    {
+                        name: "现代/当代艺术",
+                        tags: [
+                            ["artist_thing_writing", "Thing Writing"],
+                            ["artist_entity_writing", "Entity Writing"],
+                            ["artist_being_writing", "Being Writing"],
+                            ["artist_creature_writing", "Creature Writing"],
+                            ["artist_organism_writing", "Organism Writing"],
+                            ["artist_life_writing", "Life Writing"],
+                            ["artist_living_writing", "Living Writing"],
+                            ["artist_existence_writing", "Existence Writing"],
+                            ["artist_reality_writing", "Reality Writing"],
+                            ["artist_actuality_writing", "Actuality Writing"],
+                            ["artist_truth_writing", "Truth Writing"],
+                            ["artist_fact_writing", "Fact Writing"],
+                            ["artist_data_writing", "Data Writing"],
+                            ["artist_information_writing", "Information Writing"],
+                            ["artist_knowledge_writing", "Knowledge Writing"],
+                            ["artist_wisdom_writing", "Wisdom Writing"],
+                            ["artist_understanding_writing", "Understanding Writing"],
+                            ["artist_comprehension_writing", "Comprehension Writing"],
+                            ["artist_insight_writing", "Insight Writing"],
+                            ["artist_awareness_writing", "Awareness Writing"],
+                            ["artist_consciousness_writing", "Consciousness Writing"],
+                            ["artist_perception_writing", "Perception Writing"],
+                            ["artist_sensation_writing", "Sensation Writing"],
+                            ["artist_feeling_writing", "Feeling Writing"],
+                            ["artist_emotion_writing", "Emotion Writing"],
+                            ["artist_mood_writing", "Mood Writing"],
+                            ["artist_atmosphere_writing", "Atmosphere Writing"],
+                            ["artist_ambiance_writing", "Ambiance Writing"],
+                            ["artist_tone_writing", "Tone Writing"],
+                            ["artist_style_writing", "Style Writing"],
+                            ["artist_manner_writing", "Manner Writing"],
+                            ["artist_fashion_writing", "Fashion Writing"],
+                            ["artist_trend_writing", "Trend Writing"],
+                            ["artist_craze_writing", "Craze Writing"],
+                            ["artist_fad_writing", "Fad Writing"],
+                            ["artist_vogue_writing", "Vogue Writing"],
+                            ["artist_rage_writing", "Rage Writing"],
+                            ["artist_passion_writing", "Passion Writing"],
+                            ["artist_enthusiasm_writing", "Enthusiasm Writing"],
+                            ["artist_excitement_writing", "Excitement Writing"],
+                            ["artist_thrill_writing", "Thrill Writing"],
+                            ["artist_exhilaration_writing", "Exhilaration Writing"],
+                            ["artist_elation_writing", "Elation Writing"],
+                            ["artist_euphoria_writing", "Euphoria Writing"],
+                            ["artist_ecstasy_writing", "Ecstasy Writing"],
+                            ["artist_rapture_writing", "Rapture Writing"],
+                            ["artist_bliss_writing", "Bliss Writing"],
+                            ["artist_joy_writing", "Joy Writing"],
+                            ["artist_happiness_writing", "Happiness Writing"],
+                            ["artist_gladness_writing", "Gladness Writing"],
+                            ["artist_delight_writing", "Delight Writing"],
+                            ["artist_pleasure_writing", "Pleasure Writing"],
+                            ["artist_enjoyment_writing", "Enjoyment Writing"],
+                            ["artist_amusement_writing", "Amusement Writing"],
+                            ["artist_entertainment_writing", "Entertainment Writing"],
+                            ["artist_fun_writing", "Fun Writing"],
+                            ["artist_play_writing", "Play Writing"],
+                            ["artist_game_writing", "Game Writing"],
+                            ["artist_sport_writing", "Sport Writing"],
+                            ["artist_recreation_writing", "Recreation Writing"],
+                            ["artist_leisure_writing", "Leisure Writing"],
+                            ["artist_relaxation_writing", "Relaxation Writing"],
+                            ["artist_rest_writing", "Rest Writing"],
+                            ["artist_repose_writing", "Repose Writing"],
+                            ["artist_ease_writing", "Ease Writing"],
+                            ["artist_comfort_writing", "Comfort Writing"],
+                            ["artist_solace_writing", "Solace Writing"],
+                            ["artist_consolation_writing", "Consolation Writing"],
+                            ["artist_relief_writing", "Relief Writing"],
+                            ["artist_alleviation_writing", "Alleviation Writing"],
+                            ["artist_mitigation_writing", "Mitigation Writing"],
+                            ["artist_assuagement_writing", "Assuagement Writing"],
+                            ["artist_mollification_writing", "Mollification Writing"],
+                            ["artist_pacification_writing", "Pacification Writing"],
+                            ["artist_placation_writing", "Placation Writing"],
+                            ["artist_appeasement_writing", "Appeasement Writing"],
+                            ["artist_propitiation_writing", "Propitiation Writing"],
+                            ["artist_conciliation_writing", "Conciliation Writing"],
+                            ["artist_reconciliation_writing", "Reconciliation Writing"],
+                            ["artist_harmonization_writing", "Harmonization Writing"],
+                            ["artist_mediation_writing", "Mediation Writing"],
+                            ["artist_arbitration_writing", "Arbitration Writing"],
+                            ["artist_negotiation_writing", "Negotiation Writing"],
+                            ["artist_diplomacy_writing", "Diplomacy Writing"],
+                            ["artist_statesmanship_writing", "Statesmanship Writing"],
+                            ["artist_statecraft_writing", "Statecraft Writing"],
+                            ["artist_craft_writing", "Craft Writing"],
+                            ["artist_skill_writing", "Skill Writing"],
+                            ["artist_ability_writing", "Ability Writing"],
+                            ["artist_talent_writing", "Talent Writing"],
+                            ["artist_gift_writing", "Gift Writing"],
+                            ["artist_aptitude_writing", "Aptitude Writing"],
+                            ["artist_capacity_writing", "Capacity Writing"],
+                            ["artist_capability_writing", "Capability Writing"],
+                            ["artist_competence_writing", "Competence Writing"],
+                            ["artist_proficiency_writing", "Proficiency Writing"],
+                            ["artist_expertise_writing", "Expertise Writing"],
+                            ["artist_mastery_writing", "Mastery Writing"],
+                            ["artist_command_writing", "Command Writing"],
+                            ["artist_control_writing", "Control Writing"],
+                            ["artist_dominion_writing", "Dominion Writing"],
+                            ["artist_authority_writing", "Authority Writing"],
+                            ["artist_power_writing", "Power Writing"],
+                            ["artist_strength_writing", "Strength Writing"],
+                            ["artist_force_writing", "Force Writing"],
+                            ["artist_might_writing", "Might Writing"],
+                            ["artist_potency_writing", "Potency Writing"],
+                            ["artist_efficacy_writing", "Efficacy Writing"],
+                            ["artist_effectiveness_writing", "Effectiveness Writing"],
+                            ["artist_efficiency_writing", "Efficiency Writing"],
+                            ["artist_productivity_writing", "Productivity Writing"],
+                            ["artist_output_writing", "Output Writing"],
+                            ["artist_yield_writing", "Yield Writing"],
+                            ["artist_result_writing", "Result Writing"],
+                            ["artist_outcome_writing", "Outcome Writing"],
+                            ["artist_consequence_writing", "Consequence Writing"],
+                            ["artist_effect_writing", "Effect Writing"],
+                            ["artist_impact_writing", "Impact Writing"],
+                            ["artist_influence_writing", "Influence Writing"],
+                            ["artist_impression_writing", "Impression Writing"],
+                            ["artist_mark_writing", "Mark Writing"],
+                            ["artist_stamp_writing", "Stamp Writing"],
+                            ["artist_seal_writing", "Seal Writing"],
+                            ["artist_brand_writing", "Brand Writing"],
+                            ["artist_label_writing", "Label Writing"],
+                            ["artist_tag_writing", "Tag Writing"],
+                            ["artist_badge_writing", "Badge Writing"],
+                            ["artist_emblem_writing", "Emblem Writing"],
+                            ["artist_symbol_writing", "Symbol Writing"],
+                            ["artist_sign_writing", "Sign Writing"],
+                            ["artist_token_writing", "Token Writing"],
+                            ["artist_character_writing", "Character Writing"],
+                            ["artist_letter_writing", "Letter Writing"],
+                            ["artist_figure_writing", "Figure Writing"],
+                            ["artist_number_writing", "Number Writing"],
+                            ["artist_digit_writing", "Digit Writing"],
+                            ["artist_numeral_writing", "Numeral Writing"],
+                            ["artist_cipher_writing", "Cipher Writing"],
+                            ["artist_code_writing", "Code Writing"],
+                            ["artist_cryptogram_writing", "Cryptogram Writing"],
+                            ["artist_hieroglyph_writing", "Hieroglyph Writing"],
+                            ["artist_glyph_writing", "Glyph Writing"],
+                            ["artist_rune_writing", "Rune Writing"],
+                            ["artist_sigil_writing", "Sigil Writing"]
+                        ]
+                    }
+                ]
+            },
+            {
+                        name: "欧美画师/概念艺术",
+                        tags: [
+                            ["artist_narcisse_virgilio_diaz", "Narcisse Virgilio Díaz"],
+                            ["artist_theodore_rousseau", "Théodore Rousseau"],
+                            ["artist_jules_dupre", "Jules Dupré"],
+                            ["artist_constantin_troyon", "Constantin Troyon"],
+                            ["artist_charles-jacques", "Charles Jacque"],
+                            ["artist_jean-francois_millet", "Jean-François Millet"],
+                            ["artist_gustave_courbet", "Gustave Courbet"],
+                            ["artist_honore_daumier", "Honoré Daumier"],
+                            ["artist_jean-louis-forain", "Jean-Louis Forain"],
+                            ["artist_theophile_steinlen", "Théophile Steinlen"],
+                            ["artist_henri_de_toulouse-lautrec", "Henri de Toulouse-Lautrec"],
+                            ["artist_alphonse_mucha", "Alphonse Mucha"],
+                            ["artist_gustav_klimt", "Gustav Klimt"],
+                            ["artist_egan_schiele", "Egon Schiele"],
+                            ["artist_koloman_moser", "Koloman Moser"],
+                            ["artist_josef_hoffmann", "Josef Hoffmann"],
+                            ["artist_dagobert_peche", "Dagobert Peche"],
+                            ["artist_otto_wagner", "Otto Wagner"],
+                            ["artist_josef_maria_olbrich", "Josef Maria Olbrich"],
+                            ["artist_henry_van_de_velde", "Henry van de Velde"],
+                            ["artist_victor_horta", "Victor Horta"],
+                            ["artist_paul_hankar", "Paul Hankar"],
+                            ["artist_gustave_serrurier-bovy", "Gustave Serrurier-Bovy"],
+                            ["artist_georges_hoentschel", "Georges Hoentschel"],
+                            ["artist_edward_colonna", "Edward Colonna"],
+                            ["artist_eugene_gaillard", "Eugène Gaillard"],
+                            ["artist_edouard_colonna", "Édouard Colonna"],
+                            ["artist_charles_plumet", "Charles Plumet"],
+                            ["artist_tony_selmersheim", "Tony Selmersheim"],
+                            ["artist_francis_jourdain", "Francis Jourdain"],
+                            ["artist_robert_de_souza", "Robert de Souza"],
+                            ["artist_andre_groult", "André Groult"],
+                            ["artist_jacques-emile_ruhlmann", "Jacques-Émile Ruhlmann"],
+                            ["artist_clement_mere", "Clément Mère"],
+                            ["artist_louis_majorelle", "Louis Majorelle"],
+                            ["artist_emile_galle", "Émile Gallé"],
+                            ["artist_daum_freres", "Daum Frères"],
+                            ["artist_lalique", "René Lalique"],
+                            ["artist_fernand_khnopff", "Fernand Khnopff"],
+                            ["artist_james_ensor", "James Ensor"],
+                            ["artist_felix_vallotton", "Félix Vallotton"],
+                            ["artist_pierre_bonnard", "Pierre Bonnard"],
+                            ["artist_edouard_vuillard", "Édouard Vuillard"],
+                            ["artist_maurice_denis", "Maurice Denis"],
+                            ["artist_paul_serusier", "Paul Sérusier"],
+                            ["artist_paul_gauguin", "Paul Gauguin"],
+                            ["artist_emile_bernard", "Émile Bernard"],
+                            ["artist_louis_anquetin", "Louis Anquetin"],
+                            ["artist_henri_de_toulouse-lautrec", "Henri de Toulouse-Lautrec"],
+                            ["artist_vincent_van_gogh", "Vincent van Gogh"],
+                            ["artist_georges_seurat", "Georges Seurat"],
+                            ["artist_paul_signac", "Paul Signac"],
+                            ["artist_camille_pissarro", "Camille Pissarro"],
+                            ["artist_lucien_pissarro", "Lucien Pissarro"],
+                            ["artist_maximilien_luce", "Maximilien Luce"],
+                            ["artist_henri-edmond_cross", "Henri-Edmond Cross"],
+                            ["artist_theo_van_rysselberghe", "Théo van Rysselberghe"],
+                            ["artist_giovanni_segantini", "Giovanni Segantini"],
+                            ["artist_gaetano_previati", "Gaetano Previati"],
+                            ["artist_pellegrino_artusi", "Pellegrino Artusi"],
+                            ["artist_giuseppe_pellizza_da_volpedo", "Giuseppe Pellizza da Volpedo"],
+                            ["artist_giacomo_balla", "Giacomo Balla"],
+                            ["artist_umberto_boccioni", "Umberto Boccioni"],
+                            ["artist_carlo_carra", "Carlo Carrà"],
+                            ["artist_gino_severini", "Gino Severini"],
+                            ["artist_luigi_russolo", "Luigi Russolo"],
+                            ["artist_ardengo_soffici", "Ardengo Soffici"],
+                            ["artist_amadeo_modigliani", "Amedeo Modigliani"],
+                            ["artist_gino_severini", "Gino Severini"],
+                            ["artist_mario_sironi", "Mario Sironi"],
+                            ["artist_giorgio_de_chirico", "Giorgio de Chirico"],
+                            ["artist_carlo_carr", "Carlo Carrà"],
+                            ["artist_filippo_tommaso_marinetti", "Filippo Tommaso Marinetti"],
+                            ["artist_antonio_santelia", "Antonio Sant'Elia"],
+                            ["artist_benedetta_cappa", "Benedetta Cappa"],
+                            ["artist_enrico_prampolini", "Enrico Prampolini"],
+                            ["artist_fortunato_depero", "Fortunato Depero"],
+                            ["artist_giacomo_balla", "Giacomo Balla"],
+                            ["artist_alberto_giacometti", "Alberto Giacometti"],
+                            ["artist_marcel_duchamp", "Marcel Duchamp"],
+                            ["artist_man_ray", "Man Ray"],
+                            ["artist_francis_picabia", "Francis Picabia"],
+                            ["artist_kurt_schwitters", "Kurt Schwitters"],
+                            ["artist_hans_arp", "Hans Arp"],
+                            ["artist_sophie_taeuber-arp", "Sophie Taeuber-Arp"],
+                            ["artist_els_lissitzky", "El Lissitzky"],
+                            ["artist_kazimir_malevich", "Kazimir Malevich"],
+                            ["artist_vladimir_tatlin", "Vladimir Tatlin"],
+                            ["artist_alexander_rodchenko", "Alexander Rodchenko"],
+                            ["artist_lyubov_popova", "Lyubov Popova"],
+                            ["artist_varvara_stepanova", "Varvara Stepanova"],
+                            ["artist_natalia_goncharova", "Natalia Goncharova"],
+                            ["artist_mikhail_larionov", "Mikhail Larionov"],
+                            ["artist_marc_chagall", "Marc Chagall"],
+                            ["artist_wassily_kandinsky", "Wassily Kandinsky"],
+                            ["artist_franz_marc", "Franz Marc"],
+                            ["artist_august_macke", "August Macke"],
+                            ["artist_paul_klee", "Paul Klee"],
+                            ["artist_alexej_jawlensky", "Alexej von Jawlensky"],
+                            ["artist_marianne_von_werefkin", "Marianne von Werefkin"],
+                            ["artist_gabriele_munter", "Gabriele Münter"],
+                            ["artist_ernst_ludwig_kirchner", "Ernst Ludwig Kirchner"],
+                            ["artist_karl_schmidt-rottluff", "Karl Schmidt-Rottluff"],
+                            ["artist_erich_heckel", "Erich Heckel"],
+                            ["artist_max_pechstein", "Max Pechstein"],
+                            ["artist_emil_nolde", "Emil Nolde"],
+                            ["artist_lovis_corinth", "Lovis Corinth"],
+                            ["artist_max_liebermann", "Max Liebermann"],
+                            ["artist_les_nabis", "Les Nabis"],
+                            ["artist_the_nabis", "The Nabis"],
+                            ["artist_pont-aven_school", "Pont-Aven School"],
+                            ["artist_barbizon_school", "Barbizon School"],
+                            ["artist_hague_school", "Hague School"],
+                            ["artist_dusseldorf_school", "Düsseldorf School"],
+                            ["artist_munich_school", "Munich School"],
+                            ["artist_vienna_secession", "Vienna Secession"],
+                            ["artist_bauhaus", "Bauhaus"],
+                            ["artist_de_stijl", "De Stijl"],
+                            ["artist_constructivism", "Constructivism"],
+                            ["artist_suprematism", "Suprematism"],
+                            ["artist_futurism", "Futurism"],
+                            ["artist_cubism", "Cubism"],
+                            ["artist_fauvism", "Fauvism"],
+                            ["artist_expressionism", "Expressionism"],
+                            ["artist_impressionism", "Impressionism"],
+                            ["artist_post-impressionism", "Post-Impressionism"],
+                            ["artist_neo-impressionism", "Neo-Impressionism"],
+                            ["artist_symbolism", "Symbolism"],
+                            ["artist_art_nouveau", "Art Nouveau"],
+                            ["artist_art_deco", "Art Deco"],
+                            ["artist_dada", "Dada"],
+                            ["artist_surrealism", "Surrealism"],
+                            ["artist_abstract_expressionism", "Abstract Expressionism"],
+                            ["artist_pop_art", "Pop Art"],
+                            ["artist_op_art", "Op Art"],
+                            ["artist_minimalism", "Minimalism"],
+                            ["artist_conceptual_art", "Conceptual Art"],
+                            ["artist_performance_art", "Performance Art"],
+                            ["artist_installation_art", "Installation Art"],
+                            ["artist_video_art", "Video Art"],
+                            ["artist_digital_art", "Digital Art"],
+                            ["artist_computer_art", "Computer Art"],
+                            ["artist_algorithmic_art", "Algorithmic Art"],
+                            ["artist_generative_art", "Generative Art"],
+                            ["artist_fractal_art", "Fractal Art"],
+                            ["artist_pixel_art", "Pixel Art"]
+                        ]
+                    },
+                    {
+                        name: "古典大师",
+                        tags: [
+                            ["artist_voxel_art", "Voxel Art"],
+                            ["artist_3d_art", "3D Art"],
+                            ["artist_cgi", "CGI"],
+                            ["artist_vfx", "VFX"],
+                            ["artist_sfx", "SFX"],
+                            ["artist_matte_painting", "Matte Painting"],
+                            ["artist_concept_art", "Concept Art"],
+                            ["artist_character_design", "Character Design"],
+                            ["artist_environment_design", "Environment Design"],
+                            ["artist_prop_design", "Prop Design"],
+                            ["artist_vehicle_design", "Vehicle Design"],
+                            ["artist_creature_design", "Creature Design"],
+                            ["artist_costume_design", "Costume Design"],
+                            ["artist_set_design", "Set Design"],
+                            ["artist_lighting_design", "Lighting Design"],
+                            ["artist_sound_design", "Sound Design"],
+                            ["artist_music_composition", "Music Composition"],
+                            ["artist_game_design", "Game Design"],
+                            ["artist_level_design", "Level Design"],
+                            ["artist_ui_design", "UI Design"],
+                            ["artist_ux_design", "UX Design"],
+                            ["artist_web_design", "Web Design"],
+                            ["artist_graphic_design", "Graphic Design"],
+                            ["artist_typography", "Typography"],
+                            ["artist_illustration", "Illustration"],
+                            ["artist_comic_art", "Comic Art"],
+                            ["artist_manga", "Manga"],
+                            ["artist_anime", "Anime"],
+                            ["artist_cartoon", "Cartoon"],
+                            ["artist_animation", "Animation"],
+                            ["artist_2d_animation", "2D Animation"],
+                            ["artist_3d_animation", "3D Animation"],
+                            ["artist_stop_motion", "Stop Motion"],
+                            ["artist_claymation", "Claymation"],
+                            ["artist_puppetry", "Puppetry"],
+                            ["artist_traditional_animation", "Traditional Animation"],
+                            ["artist_digital_animation", "Digital Animation"],
+                            ["artist_flash_animation", "Flash Animation"],
+                            ["artist_motion_graphics", "Motion Graphics"],
+                            ["artist_visual_effects", "Visual Effects"],
+                            ["artist_special_effects", "Special Effects"],
+                            ["artist_practical_effects", "Practical Effects"],
+                            ["artist_miniature_effects", "Miniature Effects"],
+                            ["artist_matte_painting", "Matte Painting"],
+                            ["artist_green_screen", "Green Screen"],
+                            ["artist_blue_screen", "Blue Screen"],
+                            ["artist_chroma_key", "Chroma Key"],
+                            ["artist_rotoscoping", "Rotoscoping"],
+                            ["artist_motion_capture", "Motion Capture"],
+                            ["artist_performance_capture", "Performance Capture"],
+                            ["artist_facial_capture", "Facial Capture"],
+                            ["artist_body_capture", "Body Capture"],
+                            ["artist_hand_capture", "Hand Capture"],
+                            ["artist_eye_capture", "Eye Capture"],
+                            ["artist_voice_capture", "Voice Capture"],
+                            ["artist_audio_capture", "Audio Capture"],
+                            ["artist_sound_capture", "Sound Capture"],
+                            ["artist_music_capture", "Music Capture"],
+                            ["artist_song_capture", "Song Capture"],
+                            ["artist_singing_capture", "Singing Capture"],
+                            ["artist_rapping_capture", "Rapping Capture"],
+                            ["artist_beatboxing_capture", "Beatboxing Capture"],
+                            ["artist_instrument_capture", "Instrument Capture"],
+                            ["artist_guitar_capture", "Guitar Capture"],
+                            ["artist_piano_capture", "Piano Capture"],
+                            ["artist_drums_capture", "Drums Capture"],
+                            ["artist_bass_capture", "Bass Capture"],
+                            ["artist_violin_capture", "Violin Capture"],
+                            ["artist_cello_capture", "Cello Capture"],
+                            ["artist_flute_capture", "Flute Capture"],
+                            ["artist_trumpet_capture", "Trumpet Capture"],
+                            ["artist_saxophone_capture", "Saxophone Capture"],
+                            ["artist_clarinet_capture", "Clarinet Capture"],
+                            ["artist_oboe_capture", "Oboe Capture"],
+                            ["artist_bassoon_capture", "Bassoon Capture"],
+                            ["artist_trombone_capture", "Trombone Capture"],
+                            ["artist_tuba_capture", "Tuba Capture"],
+                            ["artist_harp_capture", "Harp Capture"],
+                            ["artist_organ_capture", "Organ Capture"],
+                            ["artist_synthesizer_capture", "Synthesizer Capture"],
+                            ["artist_drum_machine_capture", "Drum Machine Capture"],
+                            ["artist_sequencer_capture", "Sequencer Capture"],
+                            ["artist_sampler_capture", "Sampler Capture"],
+                            ["artist_midi_capture", "MIDI Capture"],
+                            ["artist_daw_capture", "DAW Capture"],
+                            ["artist_recording_capture", "Recording Capture"],
+                            ["artist_mixing_capture", "Mixing Capture"],
+                            ["artist_mastering_capture", "Mastering Capture"],
+                            ["artist_producing_capture", "Producing Capture"],
+                            ["artist_arranging_capture", "Arranging Capture"],
+                            ["artist_composing_capture", "Composing Capture"],
+                            ["artist_songwriting_capture", "Songwriting Capture"],
+                            ["artist_lyric_writing", "Lyric Writing"],
+                            ["artist_melody_writing", "Melody Writing"],
+                            ["artist_harmony_writing", "Harmony Writing"],
+                            ["artist_rhythm_writing", "Rhythm Writing"],
+                            ["artist_bass_writing", "Bass Writing"],
+                            ["artist_chord_writing", "Chord Writing"],
+                            ["artist_progression_writing", "Progression Writing"],
+                            ["artist_modulation_writing", "Modulation Writing"],
+                            ["artist_transposition_writing", "Transposition Writing"],
+                            ["artist_orchestration_writing", "Orchestration Writing"],
+                            ["artist_arrangement_writing", "Arrangement Writing"],
+                            ["artist_instrumentation_writing", "Instrumentation Writing"],
+                            ["artist_timbre_writing", "Timbre Writing"],
+                            ["artist_texture_writing", "Texture Writing"],
+                            ["artist_dynamics_writing", "Dynamics Writing"],
+                            ["artist_articulation_writing", "Articulation Writing"],
+                            ["artist_phrasing_writing", "Phrasing Writing"],
+                            ["artist_expression_writing", "Expression Writing"],
+                            ["artist_interpretation_writing", "Interpretation Writing"],
+                            ["artist_performance_writing", "Performance Writing"],
+                            ["artist_improvisation_writing", "Improvisation Writing"],
+                            ["artist_composition_writing", "Composition Writing"],
+                            ["artist_creation_writing", "Creation Writing"],
+                            ["artist_invention_writing", "Invention Writing"],
+                            ["artist_innovation_writing", "Innovation Writing"],
+                            ["artist_originality_writing", "Originality Writing"],
+                            ["artist_creativity_writing", "Creativity Writing"],
+                            ["artist_imagination_writing", "Imagination Writing"],
+                            ["artist_inspiration_writing", "Inspiration Writing"],
+                            ["artist_vision_writing", "Vision Writing"],
+                            ["artist_concept_writing", "Concept Writing"],
+                            ["artist_idea_writing", "Idea Writing"],
+                            ["artist_theme_writing", "Theme Writing"],
+                            ["artist_motif_writing", "Motif Writing"],
+                            ["artist_subject_writing", "Subject Writing"],
+                            ["artist_topic_writing", "Topic Writing"],
+                            ["artist_content_writing", "Content Writing"],
+                            ["artist_material_writing", "Material Writing"],
+                            ["artist_substance_writing", "Substance Writing"],
+                            ["artist_matter_writing", "Matter Writing"],
+                            ["artist_element_writing", "Element Writing"],
+                            ["artist_component_writing", "Component Writing"],
+                            ["artist_part_writing", "Part Writing"],
+                            ["artist_piece_writing", "Piece Writing"],
+                            ["artist_fragment_writing", "Fragment Writing"],
+                            ["artist_section_writing", "Section Writing"],
+                            ["artist_segment_writing", "Segment Writing"],
+                            ["artist_portion_writing", "Portion Writing"],
+                            ["artist_division_writing", "Division Writing"],
+                            ["artist_unit_writing", "Unit Writing"],
+                            ["artist_item_writing", "Item Writing"],
+                            ["artist_article_writing", "Article Writing"],
+                            ["artist_object_writing", "Object Writing"],
+                            ["artist_thing_writing", "Thing Writing"]
+                        ]
+                    },
+                    {
+                        name: "现代/当代艺术",
+                        tags: [
+                            ["artist_entity_writing", "Entity Writing"],
+                            ["artist_being_writing", "Being Writing"],
+                            ["artist_creature_writing", "Creature Writing"],
+                            ["artist_organism_writing", "Organism Writing"],
+                            ["artist_life_writing", "Life Writing"],
+                            ["artist_living_writing", "Living Writing"],
+                            ["artist_existence_writing", "Existence Writing"],
+                            ["artist_reality_writing", "Reality Writing"],
+                            ["artist_actuality_writing", "Actuality Writing"],
+                            ["artist_truth_writing", "Truth Writing"],
+                            ["artist_fact_writing", "Fact Writing"],
+                            ["artist_data_writing", "Data Writing"],
+                            ["artist_information_writing", "Information Writing"],
+                            ["artist_knowledge_writing", "Knowledge Writing"],
+                            ["artist_wisdom_writing", "Wisdom Writing"],
+                            ["artist_understanding_writing", "Understanding Writing"],
+                            ["artist_comprehension_writing", "Comprehension Writing"],
+                            ["artist_insight_writing", "Insight Writing"],
+                            ["artist_awareness_writing", "Awareness Writing"],
+                            ["artist_consciousness_writing", "Consciousness Writing"],
+                            ["artist_perception_writing", "Perception Writing"],
+                            ["artist_sensation_writing", "Sensation Writing"],
+                            ["artist_feeling_writing", "Feeling Writing"],
+                            ["artist_emotion_writing", "Emotion Writing"],
+                            ["artist_mood_writing", "Mood Writing"],
+                            ["artist_atmosphere_writing", "Atmosphere Writing"],
+                            ["artist_ambiance_writing", "Ambiance Writing"],
+                            ["artist_tone_writing", "Tone Writing"],
+                            ["artist_style_writing", "Style Writing"],
+                            ["artist_manner_writing", "Manner Writing"],
+                            ["artist_fashion_writing", "Fashion Writing"],
+                            ["artist_trend_writing", "Trend Writing"],
+                            ["artist_craze_writing", "Craze Writing"],
+                            ["artist_fad_writing", "Fad Writing"],
+                            ["artist_vogue_writing", "Vogue Writing"],
+                            ["artist_rage_writing", "Rage Writing"],
+                            ["artist_passion_writing", "Passion Writing"],
+                            ["artist_enthusiasm_writing", "Enthusiasm Writing"],
+                            ["artist_excitement_writing", "Excitement Writing"],
+                            ["artist_thrill_writing", "Thrill Writing"],
+                            ["artist_exhilaration_writing", "Exhilaration Writing"],
+                            ["artist_elation_writing", "Elation Writing"],
+                            ["artist_euphoria_writing", "Euphoria Writing"],
+                            ["artist_ecstasy_writing", "Ecstasy Writing"],
+                            ["artist_rapture_writing", "Rapture Writing"],
+                            ["artist_bliss_writing", "Bliss Writing"],
+                            ["artist_joy_writing", "Joy Writing"],
+                            ["artist_happiness_writing", "Happiness Writing"],
+                            ["artist_gladness_writing", "Gladness Writing"],
+                            ["artist_delight_writing", "Delight Writing"],
+                            ["artist_pleasure_writing", "Pleasure Writing"],
+                            ["artist_enjoyment_writing", "Enjoyment Writing"],
+                            ["artist_amusement_writing", "Amusement Writing"],
+                            ["artist_entertainment_writing", "Entertainment Writing"],
+                            ["artist_fun_writing", "Fun Writing"],
+                            ["artist_play_writing", "Play Writing"],
+                            ["artist_game_writing", "Game Writing"],
+                            ["artist_sport_writing", "Sport Writing"],
+                            ["artist_recreation_writing", "Recreation Writing"],
+                            ["artist_leisure_writing", "Leisure Writing"],
+                            ["artist_relaxation_writing", "Relaxation Writing"],
+                            ["artist_rest_writing", "Rest Writing"],
+                            ["artist_repose_writing", "Repose Writing"],
+                            ["artist_ease_writing", "Ease Writing"],
+                            ["artist_comfort_writing", "Comfort Writing"],
+                            ["artist_solace_writing", "Solace Writing"],
+                            ["artist_consolation_writing", "Consolation Writing"],
+                            ["artist_relief_writing", "Relief Writing"],
+                            ["artist_alleviation_writing", "Alleviation Writing"],
+                            ["artist_mitigation_writing", "Mitigation Writing"],
+                            ["artist_assuagement_writing", "Assuagement Writing"],
+                            ["artist_mollification_writing", "Mollification Writing"],
+                            ["artist_pacification_writing", "Pacification Writing"],
+                            ["artist_placation_writing", "Placation Writing"],
+                            ["artist_appeasement_writing", "Appeasement Writing"],
+                            ["artist_propitiation_writing", "Propitiation Writing"],
+                            ["artist_conciliation_writing", "Conciliation Writing"],
+                            ["artist_reconciliation_writing", "Reconciliation Writing"],
+                            ["artist_harmonization_writing", "Harmonization Writing"],
+                            ["artist_mediation_writing", "Mediation Writing"],
+                            ["artist_arbitration_writing", "Arbitration Writing"],
+                            ["artist_negotiation_writing", "Negotiation Writing"],
+                            ["artist_diplomacy_writing", "Diplomacy Writing"],
+                            ["artist_statesmanship_writing", "Statesmanship Writing"],
+                            ["artist_statecraft_writing", "Statecraft Writing"],
+                            ["artist_craft_writing", "Craft Writing"],
+                            ["artist_skill_writing", "Skill Writing"],
+                            ["artist_ability_writing", "Ability Writing"],
+                            ["artist_talent_writing", "Talent Writing"],
+                            ["artist_gift_writing", "Gift Writing"],
+                            ["artist_aptitude_writing", "Aptitude Writing"],
+                            ["artist_capacity_writing", "Capacity Writing"],
+                            ["artist_capability_writing", "Capability Writing"],
+                            ["artist_competence_writing", "Competence Writing"],
+                            ["artist_proficiency_writing", "Proficiency Writing"],
+                            ["artist_expertise_writing", "Expertise Writing"],
+                            ["artist_mastery_writing", "Mastery Writing"],
+                            ["artist_command_writing", "Command Writing"],
+                            ["artist_control_writing", "Control Writing"],
+                            ["artist_dominion_writing", "Dominion Writing"],
+                            ["artist_authority_writing", "Authority Writing"],
+                            ["artist_power_writing", "Power Writing"],
+                            ["artist_strength_writing", "Strength Writing"],
+                            ["artist_force_writing", "Force Writing"],
+                            ["artist_might_writing", "Might Writing"],
+                            ["artist_potency_writing", "Potency Writing"],
+                            ["artist_efficacy_writing", "Efficacy Writing"],
+                            ["artist_effectiveness_writing", "Effectiveness Writing"],
+                            ["artist_efficiency_writing", "Efficiency Writing"],
+                            ["artist_productivity_writing", "Productivity Writing"],
+                            ["artist_output_writing", "Output Writing"],
+                            ["artist_yield_writing", "Yield Writing"],
+                            ["artist_result_writing", "Result Writing"],
+                            ["artist_outcome_writing", "Outcome Writing"],
+                            ["artist_consequence_writing", "Consequence Writing"],
+                            ["artist_effect_writing", "Effect Writing"],
+                            ["artist_impact_writing", "Impact Writing"],
+                            ["artist_influence_writing", "Influence Writing"],
+                            ["artist_impression_writing", "Impression Writing"],
+                            ["artist_mark_writing", "Mark Writing"],
+                            ["artist_stamp_writing", "Stamp Writing"],
+                            ["artist_seal_writing", "Seal Writing"],
+                            ["artist_brand_writing", "Brand Writing"],
+                            ["artist_label_writing", "Label Writing"],
+                            ["artist_tag_writing", "Tag Writing"],
+                            ["artist_badge_writing", "Badge Writing"],
+                            ["artist_emblem_writing", "Emblem Writing"],
+                            ["artist_symbol_writing", "Symbol Writing"],
+                            ["artist_sign_writing", "Sign Writing"],
+                            ["artist_token_writing", "Token Writing"],
+                            ["artist_character_writing", "Character Writing"],
+                            ["artist_letter_writing", "Letter Writing"],
+                            ["artist_figure_writing", "Figure Writing"],
+                            ["artist_number_writing", "Number Writing"],
+                            ["artist_digit_writing", "Digit Writing"],
+                            ["artist_numeral_writing", "Numeral Writing"],
+                            ["artist_cipher_writing", "Cipher Writing"],
+                            ["artist_code_writing", "Code Writing"],
+                            ["artist_cryptogram_writing", "Cryptogram Writing"],
+                            ["artist_hieroglyph_writing", "Hieroglyph Writing"],
+                            ["artist_glyph_writing", "Glyph Writing"],
+                            ["artist_rune_writing", "Rune Writing"],
+                            ["artist_sigil_writing", "Sigil Writing"]
+                        ]
+                    }
+                ]
+            },
+            {
+                        name: "欧美画师",
+                        tags: [
+                            ["artist_kenshin", "浪客剑心"],
+                            ["artist_berserk", "剑风传奇"],
+                            ["artist_vagabond", "浪客行"],
+                            ["artist_wlopa", "WLOP"],
+                            ["artist_kuvshinov_ilya", "Ilya Kuvshinov"],
+                            ["artist_artgerm", "Artgerm"],
+                            ["artist_greg_rutkowski", "Greg Rutkowski"],
+                            ["artist_alphonse_mucha", "Alphonse Mucha"],
+                            ["artist_gustav_klimt", "Gustav Klimt"],
+                            ["artist_vincent_van_gogh", "Vincent van Gogh"],
+                            ["artist_pablo_picasso", "Pablo Picasso"],
+                            ["artist_leonardo_da_vinci", "Leonardo da Vinci"],
+                            ["artist_michelangelo", "Michelangelo"],
+                            ["artist_raphael", "Raphael"],
+                            ["artist_rembrandt", "Rembrandt"],
+                            ["artist_johannes_vermeer", "Johannes Vermeer"],
+                            ["artist_diego_velazquez", "Diego Velázquez"],
+                            ["artist_francisco_goya", "Francisco Goya"],
+                            ["artist_eugene_delacroix", "Eugène Delacroix"],
+                            ["artist_jacques-louis_david", "Jacques-Louis David"],
+                            ["artist_thomas_gainsborough", "Thomas Gainsborough"],
+                            ["artist_joshua_reynolds", "Joshua Reynolds"],
+                            ["artist_john_constable", "John Constable"],
+                            ["artist_jmw_turner", "J.M.W. Turner"],
+                            ["artist_claude_monet", "Claude Monet"],
+                            ["artist_pierre-auguste_renoir", "Pierre-Auguste Renoir"],
+                            ["artist_edgar_degas", "Edgar Degas"],
+                            ["artist_edouard_manet", "Édouard Manet"],
+                            ["artist_paul_cezanne", "Paul Cézanne"],
+                            ["artist_paul_gauguin", "Paul Gauguin"]
+                        ]
+                    },
+                    {
+                        name: "古典大师",
+                        tags: [
+                            ["artist_henri_matisse", "Henri Matisse"],
+                            ["artist_wassily_kandinsky", "Wassily Kandinsky"],
+                            ["artist_piet_mondrian", "Piet Mondrian"],
+                            ["artist_salvador_dali", "Salvador Dalí"],
+                            ["artist_rene_magritte", "René Magritte"],
+                            ["artist_frida_kahlo", "Frida Kahlo"],
+                            ["artist_georgia_okeeffe", "Georgia O'Keeffe"],
+                            ["artist_andy_warhol", "Andy Warhol"],
+                            ["artist_roy_lichtenstein", "Roy Lichtenstein"],
+                            ["artist_jackson_pollock", "Jackson Pollock"],
+                            ["artist_mark_rothko", "Mark Rothko"],
+                            ["artist_edward_hopper", "Edward Hopper"],
+                            ["artist_norman_rockwell", "Norman Rockwell"],
+                            ["artist_albert_bierstadt", "Albert Bierstadt"],
+                            ["artist_frederic_church", "Frederic Church"],
+                            ["artist_thomas_moran", "Thomas Moran"],
+                            ["artist_winslow_homer", "Winslow Homer"],
+                            ["artist_john_singer_sargent", "John Singer Sargent"],
+                            ["artist_mary_cassatt", "Mary Cassatt"],
+                            ["artist_berthe_morisot", "Berthe Morisot"],
+                            ["artist_camille_pissarro", "Camille Pissarro"],
+                            ["artist_alfred_sisley", "Alfred Sisley"],
+                            ["artist_gustave_caillebotte", "Gustave Caillebotte"],
+                            ["artist_toulouse-lautrec", "Henri de Toulouse-Lautrec"],
+                            ["artist_paul_signac", "Paul Signac"]
+                        ]
+                    },
+                    {
+                        name: "现代/当代",
+                        tags: [
+                            ["artist_georges_seurat", "Georges Seurat"],
+                            ["artist_odilon_redon", "Odilon Redon"],
+                            ["artist_pierre_bonnard", "Pierre Bonnard"],
+                            ["artist_edouard_vuillard", "Édouard Vuillard"],
+                            ["artist_gustave_moreau", "Gustave Moreau"],
+                            ["artist_puvis_de_chavannes", "Puvis de Chavannes"],
+                            ["artist_arnold_bocklin", "Arnold Böcklin"],
+                            ["artist_franz_von_stuck", "Franz von Stuck"],
+                            ["artist_gustav_klimt", "Gustav Klimt"],
+                            ["artist_egan_schiele", "Egon Schiele"],
+                            ["artist_kokoschka", "Oskar Kokoschka"],
+                            ["artist_wassily_kandinsky", "Wassily Kandinsky"],
+                            ["artist_franz_marc", "Franz Marc"],
+                            ["artist_august_macke", "August Macke"],
+                            ["artist_paul_klee", "Paul Klee"]
+                        ]
+                    }
+                ]
+            },
+            {
+                        name: "欧美画师",
+                        tags: [
+                            ["artist_greg_rutkowski", "Greg Rutkowski"], ["artist_artgerm", "Artgerm"],
+                            ["artist_wlop", "WLOP"], ["artist_rossdraws", "Rossdraws"], ["artist_sakimichan", "Sakimichan"]
+                        ]
+                    },
+                    {
+                        name: "古典大师",
+                        tags: [
+                            ["artist_vincent_van_gogh", "梵高"], ["artist_pablo_picasso", "毕加索"],
+                            ["artist_leonardo_da_vinci", "达芬奇"], ["artist_claude_monet", "莫奈"]
+                        ]
+                    },
+                    {
+                        name: "动画导演",
+                        tags: [
+                            ["artist_hayao_miyazaki", "宫崎骏"], ["artist_makoto_shinkai", "新海诚"],
+                            ["artist_satoshi_kon", "今敏"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "四、构图篇",
+                subcategories: [
+                    {
+                        name: "身体剪裁",
+                        tags: [
+                            ["cropped_torso", "截止上半身"], ["upper_body", "上半身"], ["lower_body", "下半身"],
+                            ["full_body", "全身"], ["head_only", "仅头部"], ["face_only", "仅脸部"],
+                            ["bust", "胸像"], ["waist_up", "腰部以上"], ["knee_up", "膝盖以上"],
+                            ["thigh_up", "大腿以上"], ["cowboy_shot", "牛仔镜头"], ["three-quarter_shot", "四分之三镜头"]
+                        ]
+                    },
+                    {
+                        name: "构图方式",
+                        tags: [
+                            ["portrait", "肖像"], ["landscape", "风景"], ["close-up", "特写"],
+                            ["medium_shot", "中景"], ["long_shot", "远景"], ["extreme_close-up", "极特写"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "五、服装篇",
+                subcategories: [
+                    {
+                        name: "上装",
+                        tags: [
+                            ["t-shirt", "T 恤"], ["shirt", "衬衫"], ["blouse", "女衬衫"], ["tank_top", "背心"],
+                            ["sleeveless_shirt", "无袖衫"], ["crop_top", "短上衣"], ["tube_top", "抹胸"],
+                            ["halter_top", "挂脖上衣"], ["halterneck", "挂脖领"], ["off_shoulder", "露肩装"],
+                            ["long_sleeve", "长袖"], ["short_sleeve", "短袖"], ["sweater", "毛衣"],
+                            ["cardigan", "开衫"], ["hoodie", "连帽衫"], ["jacket", "夹克"], ["coat", "外套"],
+                            ["blazer", "西装外套"], ["vest", "马甲"], ["waistcoat", "西装马甲"],
+                            ["suit", "西装"], ["formal_wear", "正装"], ["casual_wear", "休闲装"]
+                        ]
+                    },
+                    {
+                        name: "领口",
+                        tags: [
+                            ["crew_neck", "圆领"], ["v-neck", "V 领"], ["scoop_neck", "大圆领"], ["boat_neck", "船领"],
+                            ["square_neck", "方领"], ["sweetheart_neck", "心形领"], ["strapless", "无肩带"],
+                            ["one_shoulder", "单肩"], ["asymmetric_neck", "不对称领"], ["mock_neck", "假高领"],
+                            ["turtleneck", "高领"], ["polo_neck", "Polo 领"], ["mandarin_collar", "立领"],
+                            ["shawl_collar", "青果领"], ["notched_collar", "缺口领"], ["spread_collar", "展开领"],
+                            ["button-down_collar", "纽扣领"], ["wing_collar", "翼领"], ["ruffled_collar", "荷叶领"],
+                            ["lace_collar", "蕾丝领"], ["peter_pan_collar", "彼得潘领"], ["bertha_collar", "伯莎领"],
+                            ["jabot", "领饰"], ["cravat", "领巾"], ["ascot", "阿斯科特领巾"],
+                            ["bow_tie", "领结"], ["necktie", "领带"]
+                        ]
+                    },
+                    {
+                        name: "袖口",
+                        tags: [
+                            ["short_sleeves", "短袖"], ["long_sleeves", "长袖"], ["three-quarter_sleeves", "七分袖"],
+                            ["bell_sleeves", "喇叭袖"], ["balloon_sleeves", "气球袖"], ["bishop_sleeves", "主教袖"],
+                            ["leg-of-mutton_sleeves", "羊腿袖"], ["kimono_sleeves", "和服袖"], ["raglan_sleeves", "插肩袖"],
+                            ["cap_sleeves", "盖袖"], ["flutter_sleeves", "飘袖"], ["angel_sleeves", "天使袖"],
+                            ["cape_sleeves", "斗篷袖"], ["slit_sleeves", "开叉袖"], ["detached_sleeves", "分离袖"],
+                            ["puffy_sleeves", "蓬松袖"], ["gathered_sleeves", "褶皱袖"], ["pleated_sleeves", "百褶袖"],
+                            ["ruffled_sleeves", "荷叶袖"], ["lace_sleeves", "蕾丝袖"], ["sheer_sleeves", "透明袖"],
+                            ["mesh_sleeves", "网眼袖"], ["fingerless_sleeves", "无指袖"], ["elbow_patches", "肘部补丁"],
+                            ["rolled_sleeves", "卷袖"], ["cuffed_sleeves", "袖口"]
+                        ]
+                    },
+                    {
+                        name: "下装",
+                        tags: [
+                            ["skirt", "裙子"], ["miniskirt", "超短裙"], ["shorts", "短裤"], ["long_skirt", "长裙"],
+                            ["pencil_skirt", "铅笔裙"], ["a-line_skirt", "A 字裙"], ["pleated_skirt", "百褶裙"],
+                            ["circle_skirt", "圆裙"], ["tulip_skirt", "郁金香裙"], ["wrap_skirt", "裹身裙"],
+                            ["maxi_skirt", "长裙"], ["midi_skirt", "中长裙"], ["mini_skirt", "迷你裙"],
+                            ["denim_skirt", "牛仔裙"], ["leather_skirt", "皮裙"], ["lace_skirt", "蕾丝裙"],
+                            ["tulle_skirt", "薄纱裙"], ["chiffon_skirt", "雪纺裙"], ["satin_skirt", "缎面裙"],
+                            ["velvet_skirt", "天鹅绒裙"], ["wool_skirt", "羊毛裙"], ["cotton_skirt", "棉裙"],
+                            ["linen_skirt", "亚麻裙"], ["silk_skirt", "丝绸裙"], ["polyester_skirt", "聚酯裙"],
+                            ["jeans", "牛仔裤"], ["pants", "裤子"], ["trousers", "长裤"], ["leggings", "打底裤"],
+                            ["yoga_pants", "瑜伽裤"], ["cargo_pants", "工装裤"], ["khakis", "卡其裤"],
+                            ["slacks", "休闲裤"], ["dress_pants", "西裤"], ["capri_pants", "七分裤"],
+                            ["palazzo_pants", "阔腿裤"], ["wide_leg_pants", "宽腿裤"], ["skinny_jeans", "紧身牛仔裤"],
+                            ["bootcut_jeans", "微喇牛仔裤"], ["straight_jeans", "直筒牛仔裤"], ["boyfriend_jeans", "男友牛仔裤"],
+                            ["mom_jeans", "妈妈牛仔裤"], ["high-waisted_jeans", "高腰牛仔裤"], ["low-rise_jeans", "低腰牛仔裤"],
+                            ["distressed_jeans", "破洞牛仔裤"], ["ripped_jeans", "撕裂牛仔裤"], ["faded_jeans", "褪色牛仔裤"],
+                            ["black_jeans", "黑色牛仔裤"], ["white_jeans", "白色牛仔裤"], ["blue_jeans", "蓝色牛仔裤"],
+                            ["colored_jeans", "彩色牛仔裤"], ["printed_jeans", "印花牛仔裤"], ["embroidered_jeans", "刺绣牛仔裤"],
+                            ["patchwork_jeans", "拼布牛仔裤"], ["painted_jeans", "涂鸦牛仔裤"]
+                        ]
+                    },
+                    {
+                        name: "传统服装",
+                        tags: [
+                            ["kimono", "和服"], ["yukata", "浴衣"], ["hanfu", "汉服"], ["cheongsam", "旗袍"],
+                            ["sari", "纱丽"], ["hanbok", "韩服"], ["ao_dai", "越南奥黛"], ["thobe", "长袍"],
+                            ["abaya", "阿巴亚"], ["hijab", "头巾"], ["niqab", "面纱"], ["burqa", "布卡"],
+                            ["turban", "头巾"], ["kilt", "苏格兰裙"], ["poncho", "斗篷"], ["cape", "披风"],
+                            ["cloak", "斗篷"], ["robe", "长袍"], ["gown", "长袍"]
+                        ]
+                    },
+                    {
+                        name: "制服",
+                        tags: [
+                            ["school_uniform", "校服"], ["sailor_suit", "水手服"], ["blazer_uniform", "西装校服"],
+                            ["gakuran", "男式校服"], ["serafuku", "女式校服"], ["maid_dress", "女仆装"],
+                            ["butler_suit", "男管家服"], ["nurse_uniform", "护士服"], ["doctor_coat", "医生外套"],
+                            ["police_uniform", "警察制服"], ["military_uniform", "军装"], ["soldier_uniform", "士兵制服"],
+                            ["pilot_uniform", "飞行员制服"], ["chef_uniform", "厨师服"], ["waitress_uniform", "女侍服"],
+                            ["waiter_uniform", "男侍服"], ["receptionist_uniform", "接待员制服"], ["security_uniform", "保安制服"],
+                            ["firefighter_uniform", "消防员制服"], ["paramedic_uniform", "急救员制服"]
+                        ]
+                    },
+                    {
+                        name: "运动装",
+                        tags: [
+                            ["tracksuit", "运动服"], ["jersey", "运动衫"], ["athletic_uniform", "运动制服"],
+                            ["gym_uniform", "体操服"], ["swimsuit", "泳装"], ["bikini", "比基尼"],
+                            ["one-piece_swimsuit", "连体泳衣"], ["rash_guard", "防晒泳衣"], ["wetsuit", "潜水服"],
+                            ["dive_suit", "潜水服"], ["ski_suit", "滑雪服"], ["snow_suit", "雪装"],
+                            ["yoga_pants", "瑜伽裤"], ["leggings", "打底裤"], ["sports_bra", "运动内衣"],
+                            ["compression_shirt", "压缩衣"]
+                        ]
+                    },
+                    {
+                        name: "内衣",
+                        tags: [
+                            ["bra", "文胸"], ["panties", "内裤"], ["lingerie", "内衣"], ["corset", "紧身胸衣"],
+                            ["bustier", "胸衣"], ["camisole", "吊带背心"], ["chemise", "睡裙"], ["nightgown", "睡衣"],
+                            ["pajamas", "睡衣"], ["sleepwear", "睡衣"], ["underwear", "内衣"], ["boxers", "平角裤"],
+                            ["briefs", "三角裤"], ["thong", "丁字裤"], ["garter_belt", "吊袜带"], ["stockings", "长筒袜"],
+                            ["pantyhose", "连裤袜"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "六、动作篇",
+                subcategories: [
+                    {
+                        name: "基础动作",
+                        tags: [
+                            ["standing", "站立"], ["sitting", "坐着"], ["lying", "躺着"], ["walking", "行走"],
+                            ["running", "跑步"], ["jumping", "跳跃"], ["kneeling", "跪着"], ["crouching", "蹲着"],
+                            ["bending_over", "弯腰"], ["leaning", "倚靠"], ["stretching", "伸展"], ["reaching", "伸手"],
+                            ["pointing", "指向"], ["waving", "挥手"], ["clapping", "拍手"], ["praying", "祈祷"],
+                            ["saluting", "敬礼"], ["bowing", "鞠躬"], ["curtseying", "屈膝礼"], ["tiptoeing", "踮脚"],
+                            ["squatting", "蹲下"], ["crossing_arms", "交叉手臂"], ["crossing_legs", "交叉腿"],
+                            ["hands_on_hips", "手叉腰"], ["hands_in_pockets", "手插口袋"], ["arms_behind_back", "手背在身后"],
+                            ["arms_up", "手臂举起"], ["arms_out", "手臂伸展"], ["one_arm_up", "一只手臂举起"],
+                            ["both_arms_up", "双臂举起"]
+                        ]
+                    },
+                    {
+                        name: "手部动作",
+                        tags: [
+                            ["holding", "拿着"], ["carrying", "携带"], ["lifting", "举起"], ["pushing", "推"],
+                            ["pulling", "拉"], ["throwing", "投掷"], ["catching", "接住"], ["punching", "出拳"],
+                            ["slapping", "拍打"], ["hugging", "拥抱"], ["touching", "触摸"], ["grabbing", "抓住"],
+                            ["gripping", "紧握"], ["squeezing", "挤压"], ["pinching", "捏"], ["stroking", "抚摸"],
+                            ["petting", "轻抚"], ["patting", "轻拍"], ["rubbing", "揉搓"], ["scratching", "抓挠"],
+                            ["tapping", "轻敲"], ["knocking", "敲击"], ["ringing", "摇铃"], ["clapping_hands", "拍手"],
+                            ["wringing_hands", "绞手"], ["folded_hands", "合十"], ["clasped_hands", "握手"],
+                            ["joined_hands", "牵手"], ["interlocked_fingers", "十指相扣"], ["thumb_up", "竖起大拇指"],
+                            ["thumb_down", "拇指向下"], ["peace_sign", "和平手势"], ["v_sign", "V 字手势"],
+                            ["ok_sign", "OK 手势"], ["finger_gun", "手指枪"], ["middle_finger", "中指"],
+                            ["index_finger_raised", "食指举起"], ["shaka_sign", "沙卡手势"], ["rock_on", "摇滚手势"],
+                            ["metal_sign", "金属手势"], ["heart_hands", "心形手势"], ["finger_heart", "手指心"],
+                            ["heart_arms", "手臂心"], ["cheek_poking", "戳脸颊"], ["forehead_poking", "戳额头"],
+                            ["nose_boop", "点鼻子"], ["chin_rest", "托下巴"], ["face_palm", "捂脸"],
+                            ["faceplant", "脸着地"], ["headpat", "摸头"], ["hair_pulling", "拉头发"],
+                            ["ear_pulling", "拉耳朵"], ["cheek_pinching", "捏脸颊"], ["lip_biting", "咬嘴唇"],
+                            ["tongue_out", "伸舌头"], ["mouth_cover", "捂嘴"], ["nose_cover", "捂鼻子"],
+                            ["eye_cover", "捂眼睛"], ["ear_cover", "捂耳朵"], ["face_cover", "捂脸"]
+                        ]
+                    },
+                    {
+                        name: "双人动作 - 亲密",
+                        tags: [
+                            ["hugging", "拥抱"], ["cuddling", "依偎"], ["snuggling", "依偎"], ["holding_hands", "牵手"],
+                            ["kissing", "亲吻"], ["forehead_kiss", "亲额头"], ["cheek_kiss", "亲脸颊"],
+                            ["hand_kiss", "亲 hand"], ["neck_kiss", "亲脖子"], ["shoulder_kiss", "亲肩膀"],
+                            ["lip_kiss", "亲嘴唇"], ["french_kiss", "法式接吻"], ["deep_kiss", "深吻"],
+                            ["gentle_kiss", "温柔亲吻"], ["passionate_kiss", "热情亲吻"], ["romantic_kiss", "浪漫亲吻"],
+                            ["sweet_kiss", "甜蜜亲吻"], ["tender_kiss", "温柔亲吻"], ["loving_kiss", "爱意亲吻"],
+                            ["affectionate_kiss", "深情亲吻"], ["intimate_kiss", "亲密亲吻"], ["sensual_kiss", "性感亲吻"],
+                            ["erotic_kiss", "情色亲吻"], ["biting_kiss", "咬吻"], ["sucking_kiss", "吸吮吻"],
+                            ["licking_kiss", "舔吻"], ["nuzzling", "磨蹭"], ["nuzzling_neck", "磨蹭脖子"],
+                            ["nuzzling_cheek", "磨蹭脸颊"], ["nuzzling_chest", "磨蹭胸口"], ["head_on_shoulder", "头靠肩膀"],
+                            ["head_on_chest", "头靠胸口"], ["head_on_lap", "头靠腿上"], ["lap_pillow", "膝枕"],
+                            ["sleeping_on_lap", "睡在腿上"], ["carrying", "抱着"], ["princess_carry", "公主抱"],
+                            ["piggyback", "背"], ["fireman_carry", "消防员抱"], ["bridal_carry", "新娘抱"],
+                            ["over_shoulder", "扛在肩上"], ["lifting", "举起"], ["lifting_person", "举起人"],
+                            ["lifting_partner", "举起伴侣"], ["dip_dance", "舞蹈下腰"], ["dance_lift", "舞蹈托举"],
+                            ["dance_dip", "舞蹈下腰"], ["partner_lift", "双人托举"], ["acrobatic_lift", "杂技托举"],
+                            ["aerial_silks", "空中绸缎"], ["partner_acrobatics", "双人杂技"], ["counterbalance", "平衡"],
+                            ["weight_sharing", "重量分担"], ["trust_fall", "信任倒"], ["back_to_back", "背靠背"],
+                            ["chest_to_chest", "胸贴胸"], ["face_to_face", "面对面"], ["forehead_to_forehead", "额头对额头"],
+                            ["nose_to_nose", "鼻子对鼻子"], ["lip_to_lip", "嘴唇对嘴唇"], ["cheek_to_cheek", "脸颊贴脸颊"],
+                            ["hand_to_hand", "手对手"], ["finger_to_finger", "手指对手指"], ["intertwined_fingers", "十指相扣"],
+                            ["holding_hands_tightly", "紧紧牵手"], ["clasped_hands", "握手"], ["joined_hands", "牵手"],
+                            ["linked_arms", "挽臂"], ["arm_in_arm", "挽臂"], ["walking_arm_in_arm", "挽臂行走"],
+                            ["linked_fingers", "勾手指"], ["pinky_swear", "拉钩"], ["hand_on_cheek", "手托脸颊"],
+                            ["hand_on_chin", "手托下巴"], ["hand_on_forehead", "手放额头"], ["hand_on_chest", "手放胸口"],
+                            ["hand_on_heart", "手放心脏"], ["hand_on_stomach", "手放腹部"], ["hand_on_waist", "手放腰部"],
+                            ["hand_on_hip", "手放臀部"], ["hand_on_thigh", "手放大腿"], ["hand_on_knee", "手放膝盖"],
+                            ["hand_on_shoulder", "手放肩膀"], ["hand_on_back", "手放背部"], ["hand_on_arm", "手放手臂"],
+                            ["hand_on_leg", "手放腿上"], ["hand_on_foot", "手放脚上"], ["hand_on_head", "手放头上"],
+                            ["hand_on_hair", "手放头发上"], ["caressing_face", "抚摸脸颊"], ["caressing_hair", "抚摸头发"],
+                            ["caressing_cheek", "抚摸脸颊"], ["caressing_chin", "抚摸下巴"], ["stroking_hair", "抚摸头发"],
+                            ["stroking_cheek", "抚摸脸颊"], ["stroking_face", "抚摸脸"], ["petting_head", "摸头"],
+                            ["petting_hair", "摸头发"], ["patting_head", "拍头"], ["patting_back", "拍背"],
+                            ["patting_shoulder", "拍肩膀"], ["rubbing_back", "揉背"], ["rubbing_shoulder", "揉肩膀"],
+                            ["massaging_shoulder", "按摩肩膀"], ["massaging_back", "按摩背部"], ["massaging_leg", "按摩腿部"],
+                            ["massaging_foot", "按摩脚"], ["massaging_hand", "按摩手"], ["massaging_arm", "按摩手臂"],
+                            ["massaging_neck", "按摩脖子"], ["massaging_scalp", "按摩头皮"]
+                        ]
+                    }
+                ]
+            },
+{
+                name: "七、配饰篇",
+                subcategories: [
+                    {
+                        name: "自然景观",
+                        tags: [
+                            ["nature", "自然"], ["landscape", "风景"], ["scenery", "景色"],
+                            ["mountain", "山"], ["mountains", "山脉"], ["hill", "小山"],
+                            ["valley", "山谷"], ["canyon", "峡谷"], ["cliff", "悬崖"],
+                            ["rock", "岩石"], ["stone", "石头"], ["boulder", "巨石"],
+                            ["cave", "洞穴"], ["volcano", "火山"], ["river", "河流"],
+                            ["stream", "小溪"], ["lake", "湖泊"], ["pond", "池塘"],
+                            ["ocean", "海洋"], ["sea", "海"], ["beach", "海滩"],
+                            ["shore", "海岸"], ["coast", "海岸"], ["island", "岛屿"],
+                            ["forest", "森林"], ["woods", "树林"], ["tree", "树"],
+                            ["trees", "树木"], ["flower", "花"], ["flowers", "花朵"],
+                            ["grass", "草"], ["field", "田野"], ["meadow", "草地"],
+                            ["desert", "沙漠"], ["dunes", "沙丘"], ["oasis", "绿洲"],
+                            ["glacier", "冰川"], ["iceberg", "冰山"], ["snow", "雪"],
+                            ["ice", "冰"], ["frost", "霜"]
+                        ]
+                    },
+                    {
+                        name: "天空",
+                        tags: [
+                            ["sky", "天空"], ["cloud", "云"], ["clouds", "云朵"],
+                            ["sun", "太阳"], ["sunrise", "日出"], ["sunset", "日落"],
+                            ["moon", "月亮"], ["full_moon", "满月"], ["crescent_moon", "残月"],
+                            ["new_moon", "新月"], ["star", "星星"], ["stars", "星星"],
+                            ["milky_way", "银河"], ["rainbow", "彩虹"], ["lightning", "闪电"],
+                            ["thunder", "雷"], ["rain", "雨"], ["snow", "雪"],
+                            ["fog", "雾"], ["mist", "薄雾"]
+                        ]
+                    },
+                    {
+                        name: "建筑",
+                        tags: [
+                            ["building", "建筑"], ["house", "房子"], ["home", "家"],
+                            ["apartment", "公寓"], ["mansion", "豪宅"], ["castle", "城堡"],
+                            ["palace", "宫殿"], ["temple", "寺庙"], ["church", "教堂"],
+                            ["mosque", "清真寺"], ["synagogue", "犹太教堂"], ["pagoda", "宝塔"],
+                            ["tower", "塔"], ["skyscraper", "摩天大楼"], ["bridge", "桥"],
+                            ["tunnel", "隧道"], ["wall", "墙"], ["fence", "栅栏"],
+                            ["gate", "门"], ["door", "门"], ["window", "窗户"],
+                            ["roof", "屋顶"], ["balcony", "阳台"], ["porch", "门廊"],
+                            ["patio", "露台"], ["garden", "花园"], ["park", "公园"],
+                            ["plaza", "广场"], ["square", "广场"], ["street", "街道"],
+                            ["road", "路"], ["path", "小径"], ["alley", "小巷"],
+                            ["sidewalk", "人行道"]
+                        ]
+                    },
+                    {
+                        name: "室内",
+                        tags: [
+                            ["room", "房间"], ["bedroom", "卧室"], ["bathroom", "浴室"],
+                            ["kitchen", "厨房"], ["living_room", "客厅"], ["dining_room", "餐厅"],
+                            ["office", "办公室"], ["classroom", "教室"], ["library", "图书馆"],
+                            ["laboratory", "实验室"], ["studio", "工作室"], ["workshop", "车间"],
+                            ["garage", "车库"], ["basement", "地下室"], ["attic", "阁楼"],
+                            ["hallway", "走廊"], ["staircase", "楼梯"], ["elevator", "电梯"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "八、姿势篇",
+                subcategories: [
+                    {
+                        name: "自然光",
+                        tags: [
+                            ["natural_light", "自然光"], ["sunlight", "阳光"], ["sunshine", "阳光"],
+                            ["moonlight", "月光"], ["starlight", "星光"], ["firelight", "火光"],
+                            ["candlelight", "烛光"], ["dawn", "黎明"], ["dusk", "黄昏"],
+                            ["twilight", "暮光"], ["golden_hour", "黄金时刻"], ["blue_hour", "蓝色时刻"],
+                            ["noon", "正午"], ["midnight", "午夜"], ["day", "白天"],
+                            ["night", "夜晚"], ["morning", "早晨"], ["evening", "傍晚"],
+                            ["afternoon", "下午"]
+                        ]
+                    },
+                    {
+                        name: "人造光",
+                        tags: [
+                            ["artificial_light", "人造光"], ["lamp", "灯"], ["light_bulb", "灯泡"],
+                            ["fluorescent_light", "荧光灯"], ["led_light", "LED 灯"], ["neon_light", "霓虹灯"],
+                            ["street_light", "路灯"], ["headlight", "车头灯"], ["flashlight", "手电筒"],
+                            ["lantern", "灯笼"], ["torch", "火把"], ["candle", "蜡烛"],
+                            ["fire", "火"], ["bonfire", "篝火"], ["fireplace", "壁炉"],
+                            ["stove", "炉子"], ["oven", "烤箱"], ["microwave", "微波炉"],
+                            ["refrigerator", "冰箱"], ["television", "电视"], ["computer", "电脑"],
+                            ["monitor", "显示器"], ["screen", "屏幕"], ["phone", "手机"],
+                            ["tablet", "平板"], ["camera", "相机"], ["flash", "闪光灯"]
+                        ]
+                    },
+                    {
+                        name: "特效光",
+                        tags: [
+                            ["glow", "发光"], ["glowing", "发光"], ["luminescent", "发光"],
+                            ["fluorescent", "荧光"], ["phosphorescent", "磷光"], ["incandescent", "白炽"],
+                            ["neon", "霓虹"], ["laser", "激光"], ["holographic", "全息"],
+                            ["iridescent", "彩虹光泽"], ["opalescent", "蛋白石光泽"], ["pearlescent", "珍珠光泽"],
+                            ["metallic", "金属光泽"], ["shimmer", "闪烁"], ["sparkle", "闪耀"],
+                            ["glitter", "亮片"], ["radiant", "辐射"], ["brilliant", "灿烂"],
+                            ["dazzling", "耀眼"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "九、背景篇",
+                subcategories: [
+                    {
+                        name: "魔法特效",
+                        tags: [
+                            ["magic", "魔法"], ["magical", "魔法的"], ["spell", "法术"],
+                            ["sorcery", "巫术"], ["witchcraft", "巫术"], ["wizardry", "巫术"],
+                            ["enchantment", "附魔"], ["charm", "符咒"], ["curse", "诅咒"],
+                            ["hex", "诅咒"], ["jinx", "诅咒"], ["potion", "药水"],
+                            ["elixir", "灵药"], ["scroll", "卷轴"], ["tome", "魔导书"],
+                            ["grimoire", "魔导书"], ["wand", "魔杖"], ["staff", "法杖"],
+                            ["rod", "魔杖"], ["scepter", "权杖"], ["crystal_ball", "水晶球"],
+                            ["tarot_cards", "塔罗牌"], ["runes", "符文"], ["sigil", "符号"],
+                            ["glyph", "刻文"], ["symbol", "符号"], ["circle", "魔法阵"],
+                            ["magic_circle", "魔法阵"], ["summoning_circle", "召唤阵"],
+                            ["teleportation", "传送"], ["teleport", "传送"], ["portal", "传送门"],
+                            ["gateway", "门户"], ["dimensional_gate", "次元门"],
+                            ["time_travel", "时间旅行"], ["time_loop", "时间循环"],
+                            ["time_stop", "时间停止"], ["slow_motion", "慢动作"],
+                            ["fast_motion", "快动作"], ["time_skip", "时间跳跃"]
+                        ]
+                    },
+                    {
+                        name: "元素特效",
+                        tags: [
+                            ["fire", "火"], ["flame", "火焰"], ["burning", "燃烧"],
+                            ["smoke", "烟"], ["ash", "灰"], ["ember", "余烬"],
+                            ["spark", "火花"], ["explosion", "爆炸"], ["blast", "爆炸"],
+                            ["water", "水"], ["splash", "水花"], ["wave", "波浪"],
+                            ["ripple", "涟漪"], ["droplet", "水滴"], ["rain", "雨"],
+                            ["snow", "雪"], ["ice", "冰"], ["frost", "霜"],
+                            ["hail", "冰雹"], ["wind", "风"], ["breeze", "微风"],
+                            ["gust", "阵风"], ["tornado", "龙卷风"], ["hurricane", "飓风"],
+                            ["typhoon", "台风"], ["earth", "土"], ["rock", "岩石"],
+                            ["stone", "石头"], ["sand", "沙"], ["dust", "灰尘"],
+                            ["mud", "泥"], ["clay", "粘土"], ["metal", "金属"],
+                            ["lightning", "闪电"], ["thunder", "雷"], ["electricity", "电"],
+                            ["energy", "能量"], ["plasma", "等离子"], ["radiation", "辐射"],
+                            ["light", "光"], ["darkness", "黑暗"], ["shadow", "阴影"],
+                            ["void", "虚空"], ["space", "空间"], ["time", "时间"],
+                            ["gravity", "重力"], ["force", "力"], ["power", "力量"],
+                            ["aura", "光环"], ["field", "力场"], ["barrier", "屏障"],
+                            ["shield", "护盾"], ["wall", "墙"], ["dome", "穹顶"],
+                            ["sphere", "球体"], ["orb", "宝珠"], ["bubble", "气泡"]
+                        ]
+                    },
+                    {
+                        name: "粒子特效",
+                        tags: [
+                            ["particles", "粒子"], ["sparkles", "闪光"], ["glitter", "亮片"],
+                            ["stars", "星星"], ["hearts", "爱心"], ["flowers", "花朵"],
+                            ["petals", "花瓣"], ["leaves", "叶子"], ["feathers", "羽毛"],
+                            ["snowflakes", "雪花"], ["raindrops", "雨滴"], ["bubbles", "气泡"],
+                            ["smoke", "烟"], ["steam", "蒸汽"], ["mist", "雾"],
+                            ["fog", "雾"], ["clouds", "云"], ["dust", "灰尘"],
+                            ["sand", "沙"], ["debris", "碎片"], ["shards", "碎片"],
+                            ["fragments", "碎片"], ["pieces", "碎片"], ["chunks", "块"],
+                            ["rocks", "岩石"], ["pebbles", "鹅卵石"], ["gravel", "砂砾"],
+                            ["dirt", "泥土"], ["mud", "泥"], ["slime", "粘液"],
+                            ["goo", "粘液"], ["ooze", "粘液"]
+                        ]
+                    }
+                ]
+            },
+{
+                name: "十、灯光篇",
+                subcategories: [
+                    {
+                        name: "鞋子",
+                        tags: [
+                            ["shoes", "鞋子"],
+                            ["sneakers", "运动鞋"],
+                            ["boots", "靴子"],
+                            ["high_heels", "高跟鞋"],
+                            ["sandals", "凉鞋"],
+                            ["slippers", "拖鞋"],
+                            ["flats", "平底鞋"],
+                            ["loafers", "乐福鞋"],
+                            ["oxfords", "牛津鞋"],
+                            ["brogues", "布洛克鞋"],
+                            ["pumps", "浅口鞋"],
+                            ["wedges", "坡跟鞋"],
+                            ["platform_shoes", "厚底鞋"],
+                            ["ankle_boots", "短靴"],
+                            ["knee_high_boots", "高筒靴"],
+                            ["thigh_high_boots", "过膝靴"],
+                            ["combat_boots", "战斗靴"],
+                            ["rain_boots", "雨靴"],
+                            ["snow_boots", "雪靴"],
+                            ["hiking_boots", "登山靴"],
+                            ["work_boots", "工作靴"],
+                            ["steel_toe_boots", "钢头靴"],
+                            ["cowboy_boots", "牛仔靴"],
+                            ["chelsea_boots", "切尔西靴"],
+                            ["desert_boots", "沙漠靴"],
+                            ["chukka_boots", "丘克靴"],
+                            ["dr_martens", "马丁靴"],
+                            ["converse", "匡威"],
+                            ["vans", "万斯"],
+                            ["nike", "耐克"],
+                            ["adidas", "阿迪达斯"],
+                            ["puma", "彪马"],
+                            ["reebok", "锐步"],
+                            ["new_balance", "新百伦"],
+                            ["asics", "亚瑟士"],
+                            ["brooks", "布鲁克斯"],
+                            ["saucony", "索康尼"],
+                            ["mizuno", "美津浓"],
+                            ["under_armour", "安德玛"],
+                            ["crocs", "洞洞鞋"],
+                            ["espadrilles", "草编鞋"],
+                            ["moccasins", "莫卡辛鞋"],
+                            ["mules", "穆勒鞋"],
+                            ["clogs", "木屐"],
+                            ["geta", "木屐（日式）"],
+                            ["zori", "草履"],
+                            ["tabi", "分趾袜鞋"],
+                            ["kung_fu_shoes", "功夫鞋"],
+                            ["canvas_shoes", "帆布鞋"],
+                            ["slip-on", "懒人鞋"],
+                            ["lace-up", "系带鞋"],
+                            ["buckle_shoes", "扣带鞋"],
+                            ["strap_shoes", "绑带鞋"],
+                            ["open_toe", "露趾鞋"],
+                            ["peep_toe", "鱼嘴鞋"],
+                            ["pointed_toe", "尖头鞋"],
+                            ["round_toe", "圆头鞋"],
+                            ["square_toe", "方头鞋"],
+                            ["almond_toe", "杏仁头鞋"],
+                            ["stiletto", "细高跟"],
+                            ["kitten_heels", "小猫跟"],
+                            ["chunky_heels", "粗跟"],
+                            ["block_heels", "方块跟"],
+                            ["cone_heels", "锥形跟"],
+                            ["flared_heels", "喇叭跟"],
+                            ["transparent_heels", "透明跟"],
+                            ["metallic_heels", "金属跟"],
+                            ["wooden_heels", "木质跟"],
+                            ["cork_heels", "软木跟"],
+                            ["leather_soles", "皮底"],
+                            ["rubber_soles", "胶底"],
+                            ["platform_soles", "厚底"],
+                            ["crepe_soles", "绉底"],
+                            ["vibram_soles", "V 底"],
+                            ["antique_shoes", "古董鞋"],
+                            ["vintage_shoes", "复古鞋"],
+                            ["retro_shoes", "复古鞋"],
+                            ["modern_shoes", "现代鞋"],
+                            ["futuristic_shoes", "未来鞋"],
+                            ["cyberpunk_shoes", "赛博朋克鞋"],
+                            ["steampunk_shoes", "蒸汽朋克鞋"],
+                            ["gothic_shoes", "哥特鞋"],
+                            ["lolita_shoes", "洛丽塔鞋"],
+                            ["cosplay_shoes", "Cosplay 鞋"],
+                            ["stage_shoes", "舞台鞋"],
+                            ["dance_shoes", "舞鞋"],
+                            ["ballet_shoes", "芭蕾舞鞋"],
+                            ["pointe_shoes", "足尖鞋"],
+                            ["jazz_shoes", "爵士舞鞋"],
+                            ["tap_shoes", "踢踏舞鞋"],
+                            ["flamenco_shoes", "弗拉明戈舞鞋"],
+                            ["ballroom_shoes", "交谊舞鞋"],
+                            ["latin_shoes", "拉丁舞鞋"],
+                            ["salsa_shoes", "萨尔萨舞鞋"],
+                            ["hip_hop_shoes", "嘻哈舞鞋"],
+                            ["breakdance_shoes", "霹雳舞鞋"],
+                            ["skate_shoes", "滑板鞋"],
+                            ["running_shoes", "跑鞋"],
+                            ["training_shoes", "训练鞋"],
+                            ["basketball_shoes", "篮球鞋"],
+                            ["football_shoes", "足球鞋"],
+                            ["soccer_shoes", "足球鞋"],
+                            ["tennis_shoes", "网球鞋"],
+                            ["golf_shoes", "高尔夫球鞋"],
+                            ["bowling_shoes", "保龄球鞋"],
+                            ["climbing_shoes", "攀岩鞋"],
+                            ["cycling_shoes", "骑行鞋"],
+                            ["ski_boots", "滑雪靴"],
+                            ["snowboard_boots", "单板滑雪靴"],
+                            ["ice_skates", "冰鞋"],
+                            ["roller_skates", "轮滑鞋"],
+                            ["inline_skates", "直排轮滑鞋"],
+                            ["water_shoes", "水上鞋"],
+                            ["aqua_shoes", "水鞋"],
+                            ["beach_shoes", "沙滩鞋"],
+                            ["pool_shoes", "泳池鞋"],
+                            ["shower_shoes", "淋浴鞋"],
+                            ["hospital_shoes", "医院鞋"],
+                            ["safety_shoes", "安全鞋"],
+                            ["work_shoes", "工作鞋"],
+                            ["uniform_shoes", "制服鞋"],
+                            ["school_shoes", "校鞋"],
+                            ["mary_janes", "玛丽珍鞋"],
+                            ["t-strap_shoes", "T 字带鞋"],
+                            ["ankle_strap_shoes", "踝带鞋"],
+                            ["slingback_shoes", "后空带鞋"],
+                            ["d-orsay_shoes", "德奥赛鞋"],
+                            ["spectator_shoes", "观众鞋"],
+                            ["wingtip_shoes", "翼尖鞋"],
+                            ["cap_toe_shoes", "帽头鞋"],
+                            ["plain_toe_shoes", "素头鞋"],
+                            ["apron_toe_shoes", "围头鞋"],
+                            ["moc_toe_shoes", "莫克头鞋"],
+                            ["medallion_toe_shoes", "奖章头鞋"]
+                        ]
+                    },
+                    {
+                        name: "袜子",
+                        tags: [
+                            ["socks", "袜子"],
+                            ["ankle_socks", "短袜"],
+                            ["crew_socks", "中筒袜"],
+                            ["knee_high_socks", "高筒袜"],
+                            ["thigh_high_socks", "过膝袜"],
+                            ["pantyhose", "连裤袜"],
+                            ["stockings", "长筒袜"],
+                            ["tights", "紧身袜"],
+                            ["leggings", "打底裤"],
+                            ["leg_warmers", "腿套"],
+                            ["gaiters", "绑腿"],
+                            ["footwarmers", "暖脚器"],
+                            ["toe_socks", "分趾袜"],
+                            ["five-toe_socks", "五指袜"],
+                            ["no-show_socks", "隐形袜"],
+                            ["liner_socks", "内衬袜"],
+                            ["sports_socks", "运动袜"],
+                            ["compression_socks", "压缩袜"],
+                            ["diabetic_socks", "糖尿病袜"],
+                            ["wool_socks", "羊毛袜"],
+                            ["cotton_socks", "棉袜"],
+                            ["silk_socks", "丝袜"],
+                            ["nylon_socks", "尼龙袜"],
+                            ["lace_socks", "蕾丝袜"],
+                            ["fishnet_socks", "渔网袜"],
+                            ["mesh_socks", "网眼袜"],
+                            ["striped_socks", "条纹袜"],
+                            ["patterned_socks", "图案袜"],
+                            ["argyle_socks", "菱形格袜"],
+                            ["polka_dot_socks", "波点袜"],
+                            ["plaid_socks", "格纹袜"],
+                            ["solid_socks", "纯色袜"],
+                            ["white_socks", "白袜"],
+                            ["black_socks", "黑袜"],
+                            ["gray_socks", "灰袜"],
+                            ["navy_socks", "海军蓝袜"],
+                            ["red_socks", "红袜"],
+                            ["pink_socks", "粉袜"],
+                            ["purple_socks", "紫袜"],
+                            ["green_socks", "绿袜"],
+                            ["blue_socks", "蓝袜"],
+                            ["yellow_socks", "黄袜"],
+                            ["orange_socks", "橙袜"],
+                            ["brown_socks", "棕袜"],
+                            ["beige_socks", "米色袜"],
+                            ["gold_socks", "金袜"],
+                            ["silver_socks", "银袜"],
+                            ["metallic_socks", "金属袜"],
+                            ["shiny_socks", "亮面袜"],
+                            ["matte_socks", "哑光袜"],
+                            ["sheer_socks", "透明袜"],
+                            ["opaque_socks", "不透明袜"],
+                            ["reinforced_toe", "加固趾"],
+                            ["reinforced_heel", "加固跟"],
+                            ["seamless_toe", "无缝趾"],
+                            ["hand-linked_toe", "手工链接趾"],
+                            ["cushioned_sole", "缓冲底"],
+                            ["arch_support", "足弓支撑"],
+                            ["heel_grip", "跟部防滑"],
+                            ["toe_grip", "趾部防滑"],
+                            ["non-slip_socks", "防滑袜"],
+                            ["grip_socks", "抓地袜"],
+                            ["yoga_socks", "瑜伽袜"],
+                            ["pilates_socks", "普拉提袜"],
+                            ["barre_socks", "芭蕾杆袜"],
+                            ["dance_socks", "舞蹈袜"],
+                            ["martial_arts_socks", "武术袜"],
+                            ["tabi_socks", "分趾袜（日式）"],
+                            ["jikatabi", "地下足袋"],
+                            ["kimono_socks", "和服袜"],
+                            ["zori_socks", "草履袜"],
+                            ["geta_socks", "木屐袜"],
+                            ["waraji_socks", "草鞋袜"],
+                            ["kyahan", "脚绑"],
+                            ["momohiki", "股引"],
+                            ["fundoshi", "褌"],
+                            ["sarashi", "晒"],
+                            ["happi", "法被"],
+                            ["hanten", "半缠"],
+                            ["haori", "羽织"],
+                            ["haori_himo", "羽织纽"],
+                            ["obi", "带"],
+                            ["obi_age", "带扬"],
+                            ["obi_jime", "带缔"],
+                            ["obidome", "带留"],
+                            ["kanzashi", "簪"],
+                            ["kogai", "笄"],
+                            ["kanzashi_comb", "簪梳"],
+                            ["hair_stick", "发簪"],
+                            ["hair_fork", "发叉"],
+                            ["hair_clip", "发夹"],
+                            ["hair_pin", "发针"],
+                            ["hair_band", "发带"],
+                            ["headband", "头带"],
+                            ["hachimaki", "头巾"],
+                            ["tenugui", "手拭"],
+                            ["furoshiki", "风吕敷"]
+                        ]
+                    },
+                    {
+                        name: "首饰",
+                        tags: [
+                            ["jewelry", "首饰"],
+                            ["necklace", "项链"],
+                            ["pendant", "吊坠"],
+                            ["choker", "项圈"],
+                            ["collar", "项圈"],
+                            ["bracelet", "手链"],
+                            ["bangle", "手镯"],
+                            ["ring", "戒指"],
+                            ["earrings", "耳环"],
+                            ["brooch", "胸针"],
+                            ["pin", "别针"],
+                            ["tiara", "皇冠"],
+                            ["crown", "王冠"],
+                            ["headband", "发带"],
+                            ["hair_clip", "发夹"],
+                            ["hair_pin", "发簪"],
+                            ["hair_ornament", "发饰"],
+                            ["watch", "手表"],
+                            ["pocket_watch", "怀表"],
+                            ["glasses", "眼镜"],
+                            ["sunglasses", "太阳镜"],
+                            ["monocle", "单片眼镜"],
+                            ["eyepatch", "眼罩"],
+                            ["mask", "面具"],
+                            ["veil", "面纱"],
+                            ["gloves", "手套"],
+                            ["mittens", "连指手套"],
+                            ["fingerless_gloves", "无指手套"],
+                            ["arm_warmers", "臂套"],
+                            ["scarf", "围巾"],
+                            ["shawl", "披肩"],
+                            ["stole", "披肩"],
+                            ["wrap", "包裹"],
+                            ["belt", "腰带"],
+                            ["suspenders", "背带"],
+                            ["garter", "吊袜带"],
+                            ["harness", "挽具"],
+                            ["strap", "带子"],
+                            ["buckle", "扣子"],
+                            ["button", "纽扣"],
+                            ["zipper", "拉链"],
+                            ["lace", "蕾丝"],
+                            ["ribbon", "丝带"],
+                            ["bow", "蝴蝶结"],
+                            ["rosette", "玫瑰花饰"],
+                            ["flower", "花"],
+                            ["corsage", "胸花"],
+                            ["boutonniere", "襟花"],
+                            ["lei", "花环"],
+                            ["wreath", "花环"],
+                            ["garland", "花环"]
+                        ]
+                    },
+                    {
+                        name: "身体特征",
+                        tags: [
+                            ["fangs", "尖牙"],
+                            ["vampire_fangs", "吸血鬼尖牙"],
+                            ["sharp_teeth", "尖牙"],
+                            ["crooked_teeth", "歪牙"],
+                            ["missing_tooth", "缺牙"],
+                            ["braces", "牙套"],
+                            ["retainer", "保持器"],
+                            ["gold_tooth", "金牙"],
+                            ["diamond_tooth", "钻石牙"],
+                            ["capped_tooth", "牙冠"],
+                            ["filled_tooth", "补牙"],
+                            ["rotten_tooth", "蛀牙"],
+                            ["stained_tooth", "染色牙"],
+                            ["yellow_tooth", "黄牙"],
+                            ["white_tooth", "白牙"],
+                            ["perfect_tooth", "完美牙"],
+                            ["buck_teeth", "龅牙"],
+                            ["overbite", "深覆合"],
+                            ["underbite", "地包天"],
+                            ["crossbite", "交叉咬合"],
+                            ["open_bite", "开合"],
+                            ["deep_bite", "深咬"],
+                            ["edge_to_edge_bite", "对刃合"],
+                            ["class_i_bite", "一类咬合"],
+                            ["class_ii_bite", "二类咬合"],
+                            ["class_iii_bite", "三类咬合"],
+                            ["malocclusion", "错合"],
+                            ["orthodontics", "正畸"],
+                            ["endodontics", "牙髓病学"],
+                            ["periodontics", "牙周病学"],
+                            ["prosthodontics", "修复学"],
+                            ["oral_surgery", "口腔外科"],
+                            ["pediatric_dentistry", "儿童牙科"],
+                            ["cosmetic_dentistry", "美容牙科"],
+                            ["implant_dentistry", "种植牙科"],
+                            ["teeth_whitening", "牙齿美白"],
+                            ["veneers", "贴面"],
+                            ["bonding", "粘接"],
+                            ["contouring", "修形"],
+                            ["enamel_microabrasion", "釉质微磨除"],
+                            ["fluoride_treatment", "氟化物治疗"],
+                            ["sealants", "封闭剂"],
+                            ["root_canal", "根管治疗"],
+                            ["extraction", "拔牙"],
+                            ["impacted_wisdom_teeth", "阻生智齿"],
+                            ["erupting_teeth", "萌出牙"],
+                            ["baby_teeth", "乳牙"],
+                            ["permanent_teeth", "恒牙"],
+                            ["mixed_dentition", "混合牙列"],
+                            ["primary_dentition", "乳牙列"],
+                            ["secondary_dentition", "恒牙列"],
+                            ["third_molars", "第三磨牙"],
+                            ["wisdom_teeth", "智齿"],
+                            ["canines", "犬齿"],
+                            ["incisors", "门齿"],
+                            ["premolars", "前磨牙"],
+                            ["molars", "磨牙"],
+                            ["cusps", "牙尖"],
+                            ["roots", "牙根"],
+                            ["crown", "牙冠"],
+                            ["pulp", "牙髓"],
+                            ["dentin", "牙本质"],
+                            ["enamel", "牙釉质"],
+                            ["cementum", "牙骨质"],
+                            ["periodontal_ligament", "牙周韧带"],
+                            ["alveolar_bone", "牙槽骨"],
+                            ["gingiva", "牙龈"],
+                            ["mucosa", "黏膜"],
+                            ["tongue", "舌头"],
+                            ["frenulum", "系带"],
+                            ["palate", "腭"],
+                            ["uvula", "悬雍垂"],
+                            ["tonsils", "扁桃体"],
+                            ["pharynx", "咽"],
+                            ["larynx", "喉"],
+                            ["epiglottis", "会厌"],
+                            ["trachea", "气管"],
+                            ["esophagus", "食管"],
+                            ["stomach", "胃"],
+                            ["intestines", "肠"],
+                            ["liver", "肝"],
+                            ["gallbladder", "胆囊"],
+                            ["pancreas", "胰腺"],
+                            ["spleen", "脾"],
+                            ["kidneys", "肾"],
+                            ["bladder", "膀胱"],
+                            ["heart", "心"],
+                            ["lungs", "肺"],
+                            ["brain", "脑"],
+                            ["spinal_cord", "脊髓"],
+                            ["nerves", "神经"],
+                            ["blood_vessels", "血管"],
+                            ["arteries", "动脉"],
+                            ["veins", "静脉"],
+                            ["capillaries", "毛细血管"],
+                            ["lymphatic_system", "淋巴系统"],
+                            ["immune_system", "免疫系统"],
+                            ["endocrine_system", "内分泌系统"],
+                            ["digestive_system", "消化系统"],
+                            ["respiratory_system", "呼吸系统"],
+                            ["circulatory_system", "循环系统"],
+                            ["nervous_system", "神经系统"],
+                            ["skeletal_system", "骨骼系统"],
+                            ["muscular_system", "肌肉系统"],
+                            ["integumentary_system", "表皮系统"],
+                            ["reproductive_system", "生殖系统"],
+                            ["urinary_system", "泌尿系统"]
+                        ]
+                    },
+                    {
+                        name: "服装结构",
+                        tags: [
+                            ["crinoline", "裙撑"],
+                            ["hoop_skirt", "撑裙"],
+                            ["bustle", "臀垫"],
+                            ["corset", "紧身胸衣"],
+                            ["stays", "紧身衣"],
+                            ["farthingale", "法勤盖尔"],
+                            ["panniers", "侧撑裙"],
+                            ["bum_pad", "臀垫"],
+                            ["hip_pad", "臀垫"],
+                            ["shoulder_pad", "肩垫"],
+                            ["chest_pad", "胸垫"],
+                            ["butt_pad", "臀垫"],
+                            ["thigh_pad", "大腿垫"],
+                            ["calf_pad", "小腿垫"],
+                            ["arm_pad", "手臂垫"],
+                            ["leg_pad", "腿部垫"],
+                            ["waist_cincher", "收腰器"],
+                            ["waist_trainer", "腰部训练器"],
+                            ["belly_band", "腹带"],
+                            ["girdle", "束腰"],
+                            ["shapewear", "塑身衣"],
+                            ["compression_wear", "压缩衣"],
+                            ["support_wear", "支撑衣"],
+                            ["posture_corrector", "姿势矫正器"],
+                            ["back_brace", "背部支架"],
+                            ["knee_brace", "膝盖支架"],
+                            ["ankle_brace", "脚踝支架"],
+                            ["wrist_brace", "手腕支架"],
+                            ["elbow_brace", "肘部支架"],
+                            ["neck_brace", "颈部支架"],
+                            ["shoulder_brace", "肩部支架"],
+                            ["hip_brace", "臀部支架"],
+                            ["spine_brace", "脊柱支架"],
+                            ["rib_brace", "肋骨支架"],
+                            ["chest_brace", "胸部支架"],
+                            ["abdominal_brace", "腹部支架"],
+                            ["pelvic_brace", "骨盆支架"],
+                            ["leg_brace", "腿部支架"],
+                            ["arm_brace", "手臂支架"],
+                            ["hand_brace", "手部支架"],
+                            ["foot_brace", "脚部支架"],
+                            ["toe_brace", "脚趾支架"],
+                            ["finger_brace", "手指支架"],
+                            ["thumb_brace", "拇指支架"],
+                            ["wrist_support", "手腕支撑"],
+                            ["ankle_support", "脚踝支撑"],
+                            ["knee_support", "膝盖支撑"],
+                            ["elbow_support", "肘部支撑"],
+                            ["shoulder_support", "肩部支撑"],
+                            ["back_support", "背部支撑"],
+                            ["neck_support", "颈部支撑"],
+                            ["hip_support", "臀部支撑"],
+                            ["leg_support", "腿部支撑"],
+                            ["arm_support", "手臂支撑"],
+                            ["hand_support", "手部支撑"],
+                            ["foot_support", "脚部支撑"],
+                            ["toe_support", "脚趾支撑"],
+                            ["finger_support", "手指支撑"],
+                            ["thumb_support", "拇指支撑"],
+                            ["compression_stockings", "压缩袜"],
+                            ["support_hose", "支撑袜"],
+                            ["graduated_compression", "渐进压缩"],
+                            ["medical_compression", "医疗压缩"],
+                            ["athletic_compression", "运动压缩"],
+                            ["recovery_compression", "恢复压缩"],
+                            ["travel_compression", "旅行压缩"],
+                            ["pregnancy_compression", "孕期压缩"],
+                            ["diabetic_compression", "糖尿病压缩"],
+                            ["lymphedema_compression", "淋巴水肿压缩"],
+                            ["varicose_vein_compression", "静脉曲张压缩"],
+                            ["dvt_compression", "深静脉血栓压缩"],
+                            ["pe_compression", "肺栓塞压缩"],
+                            ["pai_compression", "外周动脉疾病压缩"],
+                            ["cvd_compression", "心血管疾病压缩"],
+                            ["chf_compression", "充血性心力衰竭压缩"],
+                            ["copd_compression", "慢性阻塞性肺病压缩"],
+                            ["asthma_compression", "哮喘压缩"],
+                            ["sleep_apnea_compression", "睡眠呼吸暂停压缩"],
+                            ["snoring_compression", "打鼾压缩"],
+                            ["gerd_compression", "胃食管反流压缩"],
+                            ["ibs_compression", "肠易激综合征压缩"],
+                            ["fibromyalgia_compression", "纤维肌痛压缩"],
+                            ["arthritis_compression", "关节炎压缩"],
+                            ["osteoporosis_compression", "骨质疏松压缩"],
+                            ["scoliosis_compression", "脊柱侧弯压缩"],
+                            ["kyphosis_compression", "驼背压缩"],
+                            ["lordosis_compression", "前凸压缩"],
+                            ["herniated_disc_compression", "椎间盘突出压缩"],
+                            ["sciatica_compression", "坐骨神经痛压缩"],
+                            ["carpal_tunnel_compression", "腕管综合征压缩"],
+                            ["cubital_tunnel_compression", "肘管综合征压缩"],
+                            ["tarsal_tunnel_compression", "跗管综合征压缩"],
+                            ["plantar_fasciitis_compression", "足底筋膜炎压缩"],
+                            ["achilles_tendonitis_compression", "跟腱炎压缩"],
+                            ["shin_splints_compression", "胫骨夹板压缩"],
+                            ["runners_knee_compression", "跑步膝压缩"],
+                            ["jumpers_knee_compression", "跳跃膝压缩"],
+                            ["swimmers_shoulder_compression", "游泳肩压缩"],
+                            ["tennis_elbow_compression", "网球肘压缩"],
+                            ["golfers_elbow_compression", "高尔夫球肘压缩"],
+                            ["pitchers_shoulder_compression", "投手肩压缩"],
+                            ["catchers_knee_compression", "捕手膝压缩"],
+                            ["linemans_hip_compression", "边线员髋压缩"],
+                            ["blockers_back_compression", "阻挡者背部压缩"],
+                            ["tacklers_neck_compression", "擒抱者颈部压缩"],
+                            ["scrum_caps_compression", "争球帽压缩"],
+                            ["mouthguards_compression", "护齿压缩"],
+                            ["faceguards_compression", "面罩压缩"],
+                            ["headguards_compression", "头盔压缩"],
+                            ["bodyguards_compression", "护身压缩"],
+                            ["legguards_compression", "护腿压缩"],
+                            ["armguards_compression", "护臂压缩"],
+                            ["handguards_compression", "护手压缩"],
+                            ["footguards_compression", "护脚压缩"],
+                            ["toeguards_compression", "护趾压缩"],
+                            ["finger_guards_compression", "护指压缩"],
+                            ["thumbguards_compression", "护拇压缩"],
+                            ["wristguards_compression", "护腕压缩"],
+                            ["elbowguards_compression", "护肘压缩"],
+                            ["shoulderguards_compression", "护肩压缩"],
+                            ["backguards_compression", "护背压缩"],
+                            ["neckguards_compression", "护颈压缩"],
+                            ["hipguards_compression", "护髋压缩"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "十一、特效篇",
+                subcategories: [
+                    {
+                        name: "站姿",
+                        tags: [
+                            ["standing", "站立"],
+                            ["stand", "站立"],
+                            ["upright", "直立"],
+                            ["erect", "直立"],
+                            ["vertical", "垂直"],
+                            ["straight", "笔直"],
+                            ["balanced", "平衡"],
+                            ["stable", "稳定"],
+                            ["steady", "稳定"],
+                            ["firm", "稳固"],
+                            ["solid", "稳固"],
+                            ["grounded", "接地"],
+                            ["rooted", "扎根"],
+                            ["planted", "扎根"],
+                            ["fixed", "固定"],
+                            ["anchored", "锚定"]
+                        ]
+                    },
+                    {
+                        name: "坐姿",
+                        tags: [
+                            ["sitting", "坐"],
+                            ["sit", "坐"],
+                            ["seated", "坐着"],
+                            ["chair", "椅子"],
+                            ["bench", "长椅"],
+                            ["stool", "凳子"],
+                            ["sofa", "沙发"],
+                            ["couch", "沙发"],
+                            ["armchair", "扶手椅"],
+                            ["recliner", "躺椅"],
+                            ["rocking_chair", "摇椅"],
+                            ["wheelchair", "轮椅"],
+                            ["throne", "王座"],
+                            ["ottoman", "脚凳"],
+                            ["beanbag", "豆袋椅"],
+                            ["floor", "地板"],
+                            ["ground", "地面"],
+                            ["mat", "垫子"],
+                            ["cushion", "坐垫"],
+                            ["pillow", "枕头"]
+                        ]
+                    },
+                    {
+                        name: "卧姿",
+                        tags: [
+                            ["lying", "躺"],
+                            ["lay", "躺"],
+                            ["reclining", "斜躺"],
+                            ["prone", "俯卧"],
+                            ["supine", "仰卧"],
+                            ["on_side", "侧卧"],
+                            ["fetal_position", "胎儿姿势"],
+                            ["spread_eagle", "大字形"],
+                            ["starfish", "海星姿势"],
+                            ["curled_up", "蜷缩"],
+                            ["stretched_out", "伸展"],
+                            ["relaxed", "放松"],
+                            ["resting", "休息"],
+                            ["sleeping", "睡觉"],
+                            ["napping", "小睡"],
+                            ["dozing", "打盹"],
+                            ["slumbering", "睡眠"],
+                            ["dreaming", "做梦"]
+                        ]
+                    },
+                    {
+                        name: "动作姿势",
+                        tags: [
+                            ["walking", "走路"],
+                            ["walk", "走路"],
+                            ["running", "跑步"],
+                            ["run", "跑步"],
+                            ["jogging", "慢跑"],
+                            ["sprinting", "冲刺"],
+                            ["dashing", "猛冲"],
+                            ["rushing", "冲"],
+                            ["hurrying", "匆忙"],
+                            ["speeding", "加速"],
+                            ["racing", "比赛"],
+                            ["chasing", "追逐"],
+                            ["fleeing", "逃跑"],
+                            ["escaping", "逃脱"],
+                            ["hiding", "躲藏"],
+                            ["seeking", "寻找"],
+                            ["searching", "搜索"],
+                            ["hunting", "狩猎"],
+                            ["fishing", "钓鱼"],
+                            ["gathering", "收集"],
+                            ["picking", "采摘"],
+                            ["harvesting", "收获"],
+                            ["planting", "种植"],
+                            ["watering", "浇水"],
+                            ["digging", "挖掘"],
+                            ["burying", "埋葬"],
+                            ["climbing", "攀爬"],
+                            ["jumping", "跳跃"],
+                            ["leaping", "跳跃"],
+                            ["hopping", "单脚跳"],
+                            ["skipping", "跳绳"],
+                            ["dancing", "跳舞"],
+                            ["spinning", "旋转"],
+                            ["twirling", "旋转"],
+                            ["turning", "转身"],
+                            ["pivoting", "旋转"],
+                            ["swiveling", "旋转"],
+                            ["rotating", "旋转"],
+                            ["revolving", "旋转"],
+                            ["circling", "环绕"],
+                            ["orbiting", "环绕"],
+                            ["looping", "循环"],
+                            ["rolling", "滚动"],
+                            ["tumbling", "翻滚"],
+                            ["somersaulting", "翻筋斗"],
+                            ["cartwheeling", "侧手翻"],
+                            ["handstand", "倒立"],
+                            ["headstand", "头倒立"],
+                            ["yoga", "瑜伽"],
+                            ["stretching", "拉伸"],
+                            ["bending", "弯曲"],
+                            ["crouching", "蹲伏"],
+                            ["squatting", "蹲下"],
+                            ["kneeling", "跪下"],
+                            ["prostrating", "俯卧"],
+                            ["bowing", "鞠躬"],
+                            ["curtsying", "屈膝礼"],
+                            ["saluting", "敬礼"],
+                            ["waving", "挥手"],
+                            ["pointing", "指向"],
+                            ["gesturing", "手势"],
+                            ["signaling", "信号"],
+                            ["beckoning", "招手"],
+                            ["dismissing", "打发"],
+                            ["applauding", "鼓掌"],
+                            ["clapping", "拍手"],
+                            ["snapping", "打响指"],
+                            ["thumbs_up", "竖起大拇指"],
+                            ["thumbs_down", "向下大拇指"],
+                            ["peace_sign", "和平手势"],
+                            ["v_sign", "V 字手势"],
+                            ["ok_sign", "OK 手势"],
+                            ["rock_on", "摇滚手势"],
+                            ["devil_horns", "恶魔角手势"],
+                            ["finger_gun", "手指枪"],
+                            ["middle_finger", "中指"],
+                            ["rude_gesture", "粗鲁手势"],
+                            ["obscene_gesture", "淫秽手势"],
+                            ["offensive_gesture", "冒犯手势"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "十二、氛围篇",
+                subcategories: [
+                    {
+                        name: "情绪氛围",
+                        tags: [
+                            ["atmosphere", "氛围"],
+                            ["ambiance", "氛围"],
+                            ["mood", "情绪"],
+                            ["tone", "色调"],
+                            ["feeling", "感觉"],
+                            ["sense", "感觉"],
+                            ["vibe", "氛围"],
+                            ["aura", "光环"],
+                            ["presence", "存在"],
+                            ["essence", "本质"],
+                            ["spirit", "精神"],
+                            ["soul", "灵魂"],
+                            ["heart", "心"],
+                            ["core", "核心"],
+                            ["center", "中心"],
+                            ["focus", "焦点"],
+                            ["point", "点"],
+                            ["spot", "点"],
+                            ["place", "地方"],
+                            ["location", "位置"],
+                            ["position", "位置"],
+                            ["site", "地点"],
+                            ["locale", "地点"],
+                            ["venue", "场所"],
+                            ["setting", "场景"],
+                            ["scene", "场景"],
+                            ["scenery", "风景"],
+                            ["backdrop", "背景"],
+                            ["background", "背景"],
+                            ["context", "背景"],
+                            ["environment", "环境"],
+                            ["surroundings", "环境"],
+                            ["milieu", "环境"],
+                            ["habitat", "栖息地"],
+                            ["ecosystem", "生态系统"],
+                            ["biosphere", "生物圈"],
+                            ["ecosphere", "生态圈"],
+                            ["geosphere", "地圈"],
+                            ["lithosphere", "岩石圈"],
+                            ["hydrosphere", "水圈"],
+                            ["atmosphere", "大气圈"],
+                            ["troposphere", "对流层"],
+                            ["stratosphere", "平流层"],
+                            ["mesosphere", "中间层"],
+                            ["thermosphere", "热层"],
+                            ["exosphere", "外层"],
+                            ["ionosphere", "电离层"],
+                            ["magnetosphere", "磁层"],
+                            ["heliosphere", "日球层"],
+                            ["astrosphere", "恒星层"],
+                            ["galactosphere", "星系层"],
+                            ["cosmosphere", "宇宙层"],
+                            ["universphere", "宇宙层"],
+                            ["multisphere", "多层"],
+                            ["omnisphere", "全层"],
+                            ["pansphere", "泛层"],
+                            ["suprasphere", "上层"],
+                            ["infrasphere", "下层"],
+                            ["metasphere", "元层"],
+                            ["parasphere", "旁层"],
+                            ["perisphere", "外层"],
+                            ["epispheres", "偶层"]
+                        ]
+                    },
+                    {
+                        name: "天气氛围",
+                        tags: [
+                            ["sunny", "晴朗"],
+                            ["cloudy", "多云"],
+                            ["overcast", "阴天"],
+                            ["rainy", "下雨"],
+                            ["stormy", "暴风雨"],
+                            ["windy", "有风"],
+                            ["foggy", "有雾"],
+                            ["misty", "有薄雾"],
+                            ["hazy", "有霾"],
+                            ["smoggy", "有烟雾"],
+                            ["dusty", "有灰尘"],
+                            ["sandy", "有沙"],
+                            ["snowy", "下雪"],
+                            ["icy", "结冰"],
+                            ["frosty", "有霜"],
+                            ["cold", "冷"],
+                            ["cool", "凉爽"],
+                            ["warm", "温暖"],
+                            ["hot", "热"],
+                            ["humid", "潮湿"],
+                            ["dry", "干燥"],
+                            ["wet", "湿"],
+                            ["damp", "潮湿"],
+                            ["muggy", "闷热"],
+                            ["sticky", "粘稠"],
+                            ["slick", "滑"],
+                            ["slippery", "滑"],
+                            ["rough", "粗糙"],
+                            ["smooth", "光滑"],
+                            ["soft", "柔软"],
+                            ["hard", "硬"],
+                            ["firm", "坚固"],
+                            ["solid", "固体"],
+                            ["liquid", "液体"],
+                            ["gas", "气体"],
+                            ["plasma", "等离子"],
+                            ["frozen", "冻结"],
+                            ["melted", "融化"],
+                            ["boiling", "沸腾"],
+                            ["steaming", "蒸"],
+                            ["smoking", "冒烟"],
+                            ["burning", "燃烧"],
+                            ["glowing", "发光"],
+                            ["shining", "闪耀"],
+                            ["sparkling", "闪烁"],
+                            ["twinkling", "闪烁"],
+                            ["flickering", "闪烁"],
+                            ["fluttering", "飘动"],
+                            ["waving", "挥舞"],
+                            ["swaying", "摇摆"],
+                            ["swinging", "摆动"],
+                            ["rocking", "摇晃"],
+                            ["rolling", "滚动"],
+                            ["spinning", "旋转"],
+                            ["turning", "转动"],
+                            ["twisting", "扭曲"],
+                            ["bending", "弯曲"],
+                            ["stretching", "伸展"],
+                            ["contracting", "收缩"],
+                            ["expanding", "膨胀"],
+                            ["growing", "生长"],
+                            ["shrinking", "缩小"],
+                            ["increasing", "增加"],
+                            ["decreasing", "减少"],
+                            ["rising", "上升"],
+                            ["falling", "下降"],
+                            ["ascending", "上升"],
+                            ["descending", "下降"],
+                            ["climbing", "攀爬"],
+                            ["dropping", "下降"],
+                            ["plummeting", "暴跌"],
+                            ["soaring", "飙升"],
+                            ["flying", "飞行"],
+                            ["floating", "漂浮"],
+                            ["drifting", "漂流"],
+                            ["sailing", "航行"],
+                            ["swimming", "游泳"],
+                            ["diving", "潜水"],
+                            ["sinking", "下沉"],
+                            ["drowning", "溺水"],
+                            ["surfing", "冲浪"],
+                            ["skiing", "滑雪"],
+                            ["skating", "滑冰"],
+                            ["snowboarding", "单板滑雪"],
+                            ["surfboarding", "冲浪板"],
+                            ["windsurfing", "风帆冲浪"],
+                            ["kitesurfing", "风筝冲浪"],
+                            ["wakeboarding", "尾波冲浪"],
+                            ["waterskiing", "滑水"],
+                            ["jet_skiing", "摩托艇"],
+                            ["parasailing", "拖曳伞"],
+                            ["skydiving", "跳伞"],
+                            ["parachuting", "降落伞"],
+                            ["bungee_jumping", "蹦极"],
+                            ["base_jumping", "极限跳伞"],
+                            ["hang_gliding", "滑翔翼"],
+                            ["paragliding", "滑翔伞"],
+                            ["ultralight_flying", "超轻型飞行"],
+                            ["hot_air_ballooning", "热气球"],
+                            ["ballooning", "气球"],
+                            ["blimp_flying", "飞艇"],
+                            ["dirigible_flying", "飞艇"],
+                            ["zeppelin_flying", "齐柏林飞艇"],
+                            ["airship_flying", "飞艇"],
+                            ["plane_flying", "飞机"],
+                            ["airplane_flying", "飞机"],
+                            ["jet_flying", "喷气机"],
+                            ["helicopter_flying", "直升机"],
+                            ["drone_flying", "无人机"],
+                            ["ufo_flying", "UFO"],
+                            ["spaceship_flying", "宇宙飞船"],
+                            ["rocket_flying", "火箭"],
+                            ["missile_flying", "导弹"],
+                            ["satellite_flying", "卫星"],
+                            ["probe_flying", "探测器"],
+                            ["shuttle_flying", "航天飞机"]
+                        ]
+                    }
+                ]
+            }
+        ];
+        
+        let totalTags = 0;
+        
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            let html = '';
+            
+            tagData.forEach((category, catIndex) => {
+                let subcategoryHtml = '';
+                category.subcategories.forEach((subcat, subcatIndex) => {
+                    totalTags += subcat.tags.length;
+                    let tagsHtml = '';
+                    subcat.tags.forEach(tag => {
+                        tagsHtml += `
+                            <div class="tag" onclick="copyTag('${tag[0]}', this)">
+                                <span class="tag-cn">${tag[1]}</span><span class="tag-en">${tag[0]}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    subcategoryHtml += `
+                        <div class="subcategory" data-cat="${catIndex}" data-subcat="${subcatIndex}">
+                            <div class="subcategory-header" onclick="toggleSubcategory(this)">
+                                <span>${subcat.name}</span>
+                                <span class="subcategory-icon">▶</span>
+                            </div>
+                            <div class="tags-container">
+                                ${tagsHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    <div class="category" data-category="${catIndex}">
+                        <div class="category-header" onclick="toggleCategory(this)">
+                            <div>
+                                <span class="category-title">${category.name}</span>
+                                <span class="category-count">(${category.subcategories.reduce((sum, s) => sum + s.tags.length, 0)} 标签)</span>
+                            </div>
+                            <span class="category-icon">▶</span>
+                        </div>
+                        <div class="category-content">
+                            ${subcategoryHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            document.getElementById('total-tags').textContent = totalTags.toLocaleString();
+        }
+        
+        function toggleCategory(header) {
+            const category = header.parentElement;
+            category.classList.toggle('expanded');
+        }
+        
+        function toggleSubcategory(header) {
+            const subcategory = header.parentElement;
+            subcategory.classList.toggle('expanded');
+        }
+        
+        function copyTag(tag, element) {
+            navigator.clipboard.writeText(tag).then(() => {
+                element.classList.add('tag-copied');
+                showToast(`已复制：${tag}`);
+                setTimeout(() => {
+                    element.classList.remove('tag-copied');
+                }, 1000);
+            });
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+        
+        function expandAll() {
+            document.querySelectorAll('.category').forEach(cat => {
+                cat.classList.add('expanded');
+            });
+            document.querySelectorAll('.subcategory').forEach(subcat => {
+                subcat.classList.add('expanded');
+            });
+        }
+        
+        function collapseAll() {
+            document.querySelectorAll('.category').forEach(cat => {
+                cat.classList.remove('expanded');
+            });
+            document.querySelectorAll('.subcategory').forEach(subcat => {
+                subcat.classList.remove('expanded');
+            });
+        }
+        
+        // 初始化
+        renderCategories();
+        
+        // 不默认展开任何分类，让用户自己点击展开
+    </script>
+
+    <div class="disclaimer">
+        <strong>⚠️ 免责声明</strong><br>
+        所有内容均为<strong>一只小眼睛</strong>编的，如有疑问请<strong>勿找安诺涅</strong>。
+    </div>
+
+</body>
+</html>

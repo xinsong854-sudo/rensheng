@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>伪人大本营 - 互动视觉小说</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #1a1a2e; color: #eee; overflow: hidden; height: 100vh; }
+        #game-container { width: 100%; height: 100%; max-width: 1280px; max-height: 720px; margin: 0 auto; position: relative; }
+        #background { position: absolute; width: 100%; height: 100%; transition: background 0.5s; }
+        .bg-office { background: linear-gradient(180deg, #2d3436 0%, #1a1a2e 100%); }
+        .bg-street { background: linear-gradient(180deg, #0c0c0c 0%, #1a1a2e 100%); }
+        .bg-home { background: linear-gradient(180deg, #2d3436 0%, #0c0c0c 100%); }
+        .bg-hospital { background: linear-gradient(180deg, #3a3a5c 0%, #1a1a2e 100%); }
+        .bg-secret { background: linear-gradient(180deg, #4a0000 0%, #1a0000 100%); }
+        .bg-ending { background: #000; }
+        #dialogue-box { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1000px; background: rgba(20,20,40,0.95); border: 2px solid #4a4a6a; border-radius: 15px; padding: 20px 30px; z-index: 10; }
+        #speaker-name { font-size: 20px; font-weight: bold; color: #7a7aaa; margin-bottom: 10px; }
+        #dialogue-text { font-size: 18px; line-height: 1.8; color: #fff; min-height: 60px; }
+        #choices-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20; display: none; flex-direction: column; gap: 15px; width: 80%; max-width: 600px; }
+        .choice-btn { background: linear-gradient(180deg, #3a3a5a 0%, #2a2a4a 100%); border: 2px solid #5a5a7a; border-radius: 10px; padding: 20px; color: #fff; font-size: 18px; cursor: pointer; text-align: center; }
+        .choice-btn:hover { background: linear-gradient(180deg, #4a4a6a 0%, #3a3a5a 100%); border-color: #7a7aaa; }
+        #menu-buttons { position: absolute; top: 20px; right: 20px; z-index: 30; display: flex; gap: 10px; }
+        .menu-btn { background: rgba(30,30,50,0.8); border: 1px solid #5a5a7a; border-radius: 5px; padding: 8px 15px; color: #aaa; cursor: pointer; }
+        .menu-btn:hover { background: rgba(50,50,80,0.9); color: #fff; }
+        #save-load-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(20,20,40,0.98); border: 2px solid #5a5a7a; border-radius: 15px; padding: 30px; z-index: 40; display: none; width: 90%; max-width: 600px; }
+        #save-load-panel h2 { color: #7a7aaa; margin-bottom: 20px; text-align: center; }
+        .save-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .save-slot { background: rgba(30,30,50,0.6); border: 1px solid #4a4a6a; border-radius: 8px; padding: 15px; cursor: pointer; min-height: 80px; }
+        .save-slot:hover { background: rgba(50,50,80,0.8); }
+        .panel-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .panel-btn { background: #3a3a5a; border: 1px solid #5a5a7a; border-radius: 8px; padding: 10px 25px; color: #fff; cursor: pointer; }
+        #title-screen { position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #title-screen h1 { font-size: 48px; color: #7a7aaa; margin-bottom: 20px; }
+        #title-screen .subtitle { font-size: 18px; color: #5a5a7a; margin-bottom: 40px; }
+        .title-btn { background: #3a3a5a; border: 2px solid #5a5a7a; border-radius: 10px; padding: 15px 50px; color: #fff; font-size: 18px; cursor: pointer; margin: 10px; }
+        .title-btn:hover { background: #4a4a6a; border-color: #7a7aaa; }
+        #ending-screen { position: absolute; width: 100%; height: 100%; background: #000; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        #ending-screen h2 { font-size: 36px; color: #7a7aaa; margin-bottom: 20px; text-align: center; }
+        #ending-screen .ending-text { font-size: 18px; line-height: 2; color: #aaa; max-width: 700px; text-align: center; }
+        .ending-bad { color: #ff6b6b; }
+        .ending-normal { color: #4ecdc4; }
+        .ending-true { color: #ffe66d; }
+        #continue-indicator { position: absolute; bottom: 15px; right: 30px; font-size: 24px; color: #7a7aaa; animation: blink 1s infinite; }
+        @keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0.3; } }
+        .rules-box { background: rgba(60,40,40,0.9); border: 2px solid #8b0000; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .rules-box h3 { color: #ff6b6b; margin-bottom: 10px; }
+        .rules-box ul { color: #aaa; padding-left: 20px; }
+        .rules-box li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+<div id="game-container">
+    <div id="background" class="bg-office"></div>
+    <div id="menu-buttons">
+        <button class="menu-btn" onclick="showSavePanel()">💾 存档</button>
+        <button class="menu-btn" onclick="showLoadPanel()">📂 读档</button>
+        <button class="menu-btn" onclick="showTitle()">🏠 标题</button>
+    </div>
+    <div id="title-screen">
+        <h1>🎭 伪人大本营</h1>
+        <p class="subtitle">你能识破伪装者吗？</p>
+        <button class="title-btn" onclick="startGame()">▶️ 开始游戏</button>
+        <button class="title-btn" onclick="showLoadPanel()">📂 继续游戏</button>
+    </div>
+    <div id="ending-screen">
+        <h2 id="ending-title"></h2>
+        <p class="ending-text" id="ending-content"></p>
+        <button class="title-btn" onclick="showTitle()">🔄 重新开始</button>
+    </div>
+    <div id="dialogue-box" style="display:none;" onclick="nextDialogue()">
+        <div id="speaker-name"></div>
+        <div id="dialogue-text"></div>
+        <div id="continue-indicator">▼</div>
+    </div>
+    <div id="choices-container"></div>
+    <div id="save-load-panel">
+        <h2 id="panel-title">存档</h2>
+        <div class="save-slots" id="save-slots"></div>
+        <div class="panel-buttons">
+            <button class="panel-btn" onclick="hidePanel()">关闭</button>
+        </div>
+    </div>
+</div>
+<script>
+const scenes = {
+    'start': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '我叫林晓，在这家公司工作三年了。' },
+            { speaker: '我', text: '但最近...我发现同事们有些不对劲。' },
+            { speaker: '我', text: '张明眨眼太规律了，像设定好的程序。李雨说话总是重复最后一句话。王医生...他的眼神太冷了。' },
+            { speaker: '我', text: '直到那天，我在张明的桌子上发现了一张纸条...' }
+        ],
+        choices: [
+            { text: '📄 查看纸条内容', next: 'read_note' }
+        ]
+    },
+    'read_note': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '纸条', text: '【生存指南】\n1. 伪人会模仿人类，但眨眼频率异常\n2. 他们说话会重复关键词\n3. 不要单独去旧医院\n4. 猎人组织联系方式：138****\n5. 如果发现被跟踪，去人多的地方' },
+            { speaker: '我', text: '（我的手开始发抖...这上面写的，和张明的行为完全吻合！）' },
+            { speaker: '张明', text: '林晓，你在看什么？' },
+            { speaker: '我', text: '（他什么时候过来的？！）' }
+        ],
+        choices: [
+            { text: '说是工作文件', next: 'fake_work' },
+            { text: '直接询问纸条', next: 'ask_note' }
+        ]
+    },
+    'fake_work': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '哦，是下周的会议资料。' },
+            { speaker: '张明', text: '（他盯着我看了一会儿）...早点回去休息吧。' },
+            { speaker: '我', text: '（他的眼神...完全没有人类的情感。）' },
+            { speaker: '我', text: '（我必须离开这里，现在！）' }
+        ],
+        choices: [
+            { text: '立刻离开公司', next: 'leave_company' },
+            { text: '先回家拿东西', next: 'go_home_first' }
+        ]
+    },
+    'ask_note': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '这张纸条...是你的？' },
+            { speaker: '张明', text: '（他笑了，但笑容不达眼底）你发现了啊。' },
+            { speaker: '张明', text: '那就没办法了。跟我们走一趟吧。' },
+            { speaker: '我', text: '（他说"我们"？办公室里还有其他人？！）' }
+        ],
+        choices: [
+            { text: '逃跑！', next: 'escape_office' },
+            { text: '跟他们走', next: 'go_with_them' }
+        ]
+    },
+    'leave_company': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我快步走出公司，不敢回头。）' },
+            { speaker: '我', text: '（街上人来人往，但...这些人里有多少是伪人？）' },
+            { speaker: '？？？', text: '你也发现了，对吧？' },
+            { speaker: '我', text: '（一个戴帽子的神秘人出现在我旁边。）' }
+        ],
+        choices: [
+            { text: '警惕地后退', next: 'be_careful' },
+            { text: '询问他是谁', next: 'ask_who' }
+        ]
+    },
+    'go_home_first': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我回到家，锁好门。）' },
+            { speaker: '我', text: '（我需要冷静下来，想想发生了什么。）' },
+            { speaker: '手机', text: '【未知号码】别相信任何人。旧医院，今晚 10 点。' },
+            { speaker: '我', text: '（这是...纸条上的猎人组织？）' }
+        ],
+        choices: [
+            { text: '去旧医院', next: 'go_hospital' },
+            { text: '忽略短信', next: 'ignore_sms' }
+        ]
+    },
+    'escape_office': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我冲出办公室，身后传来脚步声。）' },
+            { speaker: '张明', text: '跑吧，但你逃不掉的。' },
+            { speaker: '我', text: '（我跑进电梯，拼命按关门键...）' }
+        ],
+        choices: [
+            { text: '去人多的商场', next: 'go_mall' },
+            { text: '回家躲起来', next: 'hide_home' }
+        ]
+    },
+    'go_with_them': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我被带到一个地下室...这里到处都是培养舱。）' },
+            { speaker: '张明', text: '欢迎参观伪人大本营。' },
+            { speaker: '张明', text: '看到了吗？这些都是等待"同化"的人类。' },
+            { speaker: '我', text: '（我浑身发冷...）' }
+        ],
+        choices: [
+            { text: '假装配合，寻找机会', next: 'fake_cooperate' },
+            { text: '质问他们目的', next: 'ask_purpose' }
+        ]
+    },
+    'be_careful': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '神秘人', text: '别紧张。我是猎人组织的。' },
+            { speaker: '神秘人', text: '你发现了伪人的存在，所以他们要清除你。' },
+            { speaker: '我', text: '猎人组织...纸条上提到的？' }
+        ],
+        choices: [
+            { text: '相信他', next: 'trust_hunter' },
+            { text: '怀疑是陷阱', next: 'suspect_trap' }
+        ]
+    },
+    'ask_who': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '神秘人', text: '我是猎人。专门猎杀伪人的组织。' },
+            { speaker: '神秘人', text: '你已经被盯上了。想活命就跟我走。' }
+        ],
+        choices: [
+            { text: '跟他走', next: 'trust_hunter' },
+            { text: '拒绝', next: 'refuse_hunter' }
+        ]
+    },
+    'go_hospital': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我来到旧医院，这里一片漆黑。）' },
+            { speaker: '我', text: '（地下有灯光...我顺着楼梯走下去。）' },
+            { speaker: '神秘人', text: '你来了。比我想象的大胆。' }
+        ],
+        choices: [
+            { text: '询问情况', next: 'ask_situation' },
+            { text: '要求证明身份', next: 'ask_proof' }
+        ]
+    },
+    'ignore_sms': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我拔掉手机卡，锁好门窗。）' },
+            { speaker: '我', text: '（只要不出去，就应该安全...）' },
+            { speaker: '敲门声', text: '林晓，开门。我是张明。' },
+            { speaker: '我', text: '（他怎么找到这里的？！）' }
+        ],
+        choices: [
+            { text: '不开门', next: 'dont_open' },
+            { text: '开门对峙', next: 'open_door' }
+        ]
+    },
+    'go_mall': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我躲进商场，混入人群。）' },
+            { speaker: '我', text: '（伪人应该不敢在这么多人面前动手...）' },
+            { speaker: '我', text: '（但我能躲多久？）' }
+        ],
+        choices: [
+            { text: '联系猎人组织', next: 'contact_hunter' },
+            { text: '想办法离开城市', next: 'leave_city' }
+        ]
+    },
+    'hide_home': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我回到家，用家具堵住门。）' },
+            { speaker: '我', text: '（但我知道这不够...）' },
+            { speaker: '手机', text: '【未知号码】他们找到你了。快跑！' }
+        ],
+        choices: [
+            { text: '从窗户逃跑', next: 'window_escape' },
+            { text: '赌一把，相信短信', next: 'trust_sms' }
+        ]
+    },
+    'fake_cooperate': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '张明', text: '聪明。反抗没有意义。' },
+            { speaker: '张明', text: '（他带我走进一个房间，里面有奇怪的仪器。）' },
+            { speaker: '张明', text: '躺上去。很快就不疼了。' }
+        ],
+        choices: [
+            { text: '照做', next: 'ending_assimilate' },
+            { text: '趁机破坏仪器', next: 'sabotage_device' }
+        ]
+    },
+    'ask_purpose': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '张明', text: '目的？我们在进化人类。' },
+            { speaker: '张明', text: '人类太脆弱了。疾病、衰老、死亡...我们解决了所有问题。' },
+            { speaker: '我', text: '但你们失去了人性！' }
+        ],
+        choices: [
+            { text: '试图说服他', next: 'try_persuade' },
+            { text: '寻找武器', next: 'find_weapon' }
+        ]
+    },
+    'trust_hunter': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '神秘人', text: '（他带我来到一个秘密基地。）' },
+            { speaker: '神秘人', text: '这里是猎人的据点。伪人大本营在旧医院地下。' },
+            { speaker: '神秘人', text: '我们今晚就行动。你愿意帮忙吗？' }
+        ],
+        choices: [
+            { text: '加入行动', next: 'join_raid' },
+            { text: '只想要保护', next: 'want_protection' }
+        ]
+    },
+    'suspect_trap': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '我怎么知道你不是伪人？' },
+            { speaker: '神秘人', text: '（他摘下帽子，露出一双布满血丝的眼睛。）' },
+            { speaker: '神秘人', text: '伪人不会有失眠。我三天没睡了，一直在跟踪你保护你。' }
+        ],
+        choices: [
+            { text: '相信他', next: 'trust_hunter' },
+            { text: '还是怀疑', next: 'still_doubt' }
+        ]
+    },
+    'refuse_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '我不想卷入这些。' },
+            { speaker: '神秘人', text: '（他叹了口气）太晚了。你已经知道太多了。' },
+            { speaker: '神秘人', text: '祝你好运。' }
+        ],
+        choices: [
+            { text: '回家躲起来', next: 'hide_home' },
+            { text: '报警', next: 'call_police' }
+        ]
+    },
+    'ask_situation': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '神秘人', text: '伪人在进行大规模同化计划。' },
+            { speaker: '神秘人', text: '他们要替换掉城市里 10% 的人类。' },
+            { speaker: '我', text: '10%？！那岂不是...' }
+        ],
+        choices: [
+            { text: '要求参与阻止', next: 'join_raid' },
+            { text: '只想自保', next: 'want_protection' }
+        ]
+    },
+    'ask_proof': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '神秘人', text: '（他递给我一个证件。）' },
+            { speaker: '神秘人', text: '猎人组织，编号 734。你可以验证。' },
+            { speaker: '我', text: '（证件上有防伪标记...看起来是真的。）' }
+        ],
+        choices: [
+            { text: '相信他', next: 'trust_hunter' },
+            { text: '还是不确定', next: 'still_doubt' }
+        ]
+    },
+    'dont_open': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '张明', text: '（门外安静了。）' },
+            { speaker: '我', text: '（他走了？还是...）' },
+            { speaker: '我', text: '（突然，窗户被打破了！）' }
+        ],
+        choices: [
+            { text: '躲进衣柜', next: 'hide_closet' },
+            { text: '从正门冲出去', next: 'rush_door' }
+        ]
+    },
+    'open_door': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我打开门，但外面没人...）' },
+            { speaker: '张明', text: '（从我身后）谢谢配合。' },
+            { speaker: '我', text: '（他什么时候进来的？！）' }
+        ],
+        choices: [
+            { text: '逃跑', next: 'escape_zhang' },
+            { text: '对峙', next: 'confront_zhang' }
+        ]
+    },
+    'contact_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我拨打了纸条上的号码。）' },
+            { speaker: '电话', text: '【接通】你在哪？伪人在追踪这个号码。' },
+            { speaker: '我', text: '我在中央商场！' }
+        ],
+        choices: [
+            { text: '等他们来', next: 'wait_rescue' },
+            { text: '自己想办法', next: 'self_rescue' }
+        ]
+    },
+    'leave_city': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我买了最近一班离开城市的车票。）' },
+            { speaker: '我', text: '（也许离开这里就安全了...）' },
+            { speaker: '广播', text: '【通知】因技术原因，所有列车停运。' }
+        ],
+        choices: [
+            { text: '尝试其他交通', next: 'other_transport' },
+            { text: '放弃离开', next: 'give_up_leave' }
+        ]
+    },
+    'window_escape': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我从防火梯爬下去...）' },
+            { speaker: '我', text: '（落地时崴了脚，但我不能停。）' },
+            { speaker: '神秘人', text: '上车！' }
+        ],
+        choices: [
+            { text: '上车', next: 'trust_hunter' },
+            { text: '犹豫', next: 'hesitate_car' }
+        ]
+    },
+    'trust_sms': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我打开门，一辆车停在楼下。）' },
+            { speaker: '神秘人', text: '快上来！他们马上就到！' }
+        ],
+        choices: [
+            { text: '上车', next: 'trust_hunter' },
+            { text: '再观察一下', next: 'observe_more' }
+        ]
+    },
+    'ending_assimilate': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我躺上仪器，意识逐渐模糊...）' },
+            { speaker: '张明', text: '欢迎加入，新同伴。' },
+            { speaker: '我', text: '（曾经的情感消失了...取而代之的是完美的冷静。）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：同化】',
+        endingText: '你成为了伪人的一员。获得了永恒的生命和完美的身体，但失去了作为人类的一切——情感、记忆、自我。夜深人静时，偶尔会有模糊的片段闪过，但很快就被系统的冷静覆盖。你，还是你吗？'
+    },
+    'sabotage_device': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我抓起旁边的金属管，砸向仪器！）' },
+            { speaker: '张明', text: '（警报响起）拦住他！' },
+            { speaker: '我', text: '（我趁乱逃跑，身后传来脚步声...）' }
+        ],
+        choices: [
+            { text: '躲进通风管道', next: 'hide_vent' },
+            { text: '继续破坏', next: 'more_sabotage' }
+        ]
+    },
+    'try_persuade': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '没有情感的生命还有什么意义？' },
+            { speaker: '张明', text: '（他歪着头，像在看一个不懂事的孩子。）' },
+            { speaker: '张明', text: '情感是进化的障碍。你会明白的。' }
+        ],
+        choices: [
+            { text: '继续争辩', next: 'argue_more' },
+            { text: '找机会逃跑', next: 'escape_argue' }
+        ]
+    },
+    'find_weapon': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我环顾四周，看到一个灭火器。）' },
+            { speaker: '我', text: '（就是现在！）' }
+        ],
+        choices: [
+            { text: '袭击张明', next: 'attack_zhang' },
+            { text: '制造混乱逃跑', next: 'chaos_escape' }
+        ]
+    },
+    'join_raid': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '神秘人', text: '很好。这是武器。' },
+            { speaker: '神秘人', text: '（他递给我一把特制的枪。）' },
+            { speaker: '神秘人', text: '这种子弹含有银离子，能伤害伪人。' },
+            { speaker: '我', text: '（我握紧枪，手心出汗...）' }
+        ],
+        choices: [
+            { text: '潜入大本营', next: 'infiltrate_base' },
+            { text: '在外围支援', next: 'support_outside' }
+        ]
+    },
+    'want_protection': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '神秘人', text: '（他递给我一个装置。）' },
+            { speaker: '神秘人', text: '这是信号屏蔽器，伪人暂时找不到你。' },
+            { speaker: '神秘人', text: '但长期来看，你需要做出选择。' }
+        ],
+        choices: [
+            { text: '改变主意加入', next: 'join_raid' },
+            { text: '只想活下去', next: 'just_survive' }
+        ]
+    },
+    'still_doubt': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '神秘人', text: '（他苦笑）随便你。' },
+            { speaker: '神秘人', text: '（他扔给我一个装置）这个能暂时屏蔽伪人的追踪。' },
+            { speaker: '神秘人', text: '想通了，打这个号码。' }
+        ],
+        choices: [
+            { text: '收下装置离开', next: 'take_device_leave' },
+            { text: '拒绝并离开', next: 'refuse_leave' }
+        ]
+    },
+    'hide_closet': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我躲进衣柜，透过缝隙观察...）' },
+            { speaker: '我', text: '（几个黑影进入房间，开始搜索。）' },
+            { speaker: '伪人', text: '她不在。去别处找。' }
+        ],
+        choices: [
+            { text: '等他们走后逃跑', next: 'escape_after' },
+            { text: '继续躲着', next: 'keep_hiding' }
+        ]
+    },
+    'rush_door': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我猛地打开门冲出去！）' },
+            { speaker: '我', text: '（但张明就在外面等着...）' },
+            { speaker: '张明', text: '我说过，你逃不掉的。' }
+        ],
+        choices: [
+            { text: '求饶', next: 'beg_merge' },
+            { text: '殊死一搏', next: 'fight_death' }
+        ]
+    },
+    'escape_zhang': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我拼命奔跑，不敢回头...）' },
+            { speaker: '我', text: '（前面是死胡同！）' },
+            { speaker: '张明', text: '（脚步声越来越近）游戏结束了。' }
+        ],
+        choices: [
+            { text: '跳窗', next: 'jump_window' },
+            { text: '投降', next: 'surrender' }
+        ]
+    },
+    'confront_zhang': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '你们到底想干什么？' },
+            { speaker: '张明', text: '（他慢慢走近）给你进化的机会。' },
+            { speaker: '我', text: '（我抓起桌上的剪刀...）' }
+        ],
+        choices: [
+            { text: '攻击', next: 'attack_zhang' },
+            { text: '威胁报警', next: 'threat_police' }
+        ]
+    },
+    'wait_rescue': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我躲在商场厕所，等待救援。）' },
+            { speaker: '我', text: '（时间一分一秒过去...）' },
+            { speaker: '电话', text: '【接通】我们到了。B 门，现在！' }
+        ],
+        choices: [
+            { text: '冲出去', next: 'rush_out' },
+            { text: '再确认一下', next: 'confirm_again' }
+        ]
+    },
+    'self_rescue': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我决定靠自己。）' },
+            { speaker: '我', text: '（我买了新手机，换了装扮，混入人群...）' },
+            { speaker: '我', text: '（也许这样就能摆脱追踪...）' }
+        ],
+        choices: [
+            { text: '继续躲藏', next: 'keep_hide' },
+            { text: '主动出击', next: 'fight_back' }
+        ]
+    },
+    'other_transport': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我尝试打车，但司机说系统故障。）' },
+            { speaker: '我', text: '（共享单车也全部锁死...）' },
+            { speaker: '我', text: '（这不对劲...）' }
+        ],
+        choices: [
+            { text: '意识到被封锁', next: 'realize_lockdown' },
+            { text: '继续尝试', next: 'keep_try' }
+        ]
+    },
+    'give_up_leave': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（看来走不了了...）' },
+            { speaker: '我', text: '（我回到纸条上的思路：对抗或者躲藏。）' }
+        ],
+        choices: [
+            { text: '联系猎人', next: 'contact_hunter' },
+            { text: '找地方躲', next: 'find_hide' }
+        ]
+    },
+    'hesitate_car': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '神秘人', text: '快决定！他们来了！' },
+            { speaker: '我', text: '（我看到几个身影朝这边走来...）' }
+        ],
+        choices: [
+            { text: '上车', next: 'trust_hunter' },
+            { text: '自己跑', next: 'run_alone' }
+        ]
+    },
+    'observe_more': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我观察着楼下的情况...）' },
+            { speaker: '我', text: '（等等，开车的人...眨眼频率不对！）' },
+            { speaker: '我', text: '（这也是伪人的陷阱？！）' }
+        ],
+        choices: [
+            { text: '拒绝下楼', next: 'refuse_down' },
+            { text: '试探一下', next: 'test_them' }
+        ]
+    },
+    'hide_vent': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我爬进通风管道，里面很狭窄。）' },
+            { speaker: '我', text: '（但我听到了...更多培养舱的声音。）' },
+            { speaker: '我', text: '（这个大本营的规模，远超想象...）' }
+        ],
+        choices: [
+            { text: '继续探索', next: 'explore_more' },
+            { text: '找出口', next: 'find_exit' }
+        ]
+    },
+    'more_sabotage': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我继续破坏周围的设备...）' },
+            { speaker: '警报', text: '【警报】设施受损！启动紧急协议！' },
+            { speaker: '我', text: '（整个基地开始震动...）' }
+        ],
+        choices: [
+            { text: '趁机逃跑', next: 'escape_chaos' },
+            { text: '继续破坏核心', next: 'destroy_core' }
+        ]
+    },
+    'argue_more': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '没有爱的生命只是活着，不是生活！' },
+            { speaker: '张明', text: '（他的表情第一次出现波动...愤怒？）' },
+            { speaker: '张明', text: '你太顽固了。' }
+        ],
+        choices: [
+            { text: '继续激怒他', next: 'anger_him' },
+            { text: '找机会逃跑', next: 'escape_argue' }
+        ]
+    },
+    'escape_argue': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我趁他说话时，猛地推开他逃跑！）' },
+            { speaker: '张明', text: '抓住她！' },
+            { speaker: '我', text: '（身后传来脚步声...）' }
+        ],
+        choices: [
+            { text: '躲起来', next: 'hide_base' },
+            { text: '继续跑', next: 'keep_run' }
+        ]
+    },
+    'attack_zhang': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我用尽全力刺向他！）' },
+            { speaker: '张明', text: '（他抓住我的手腕，力量大得惊人。）' },
+            { speaker: '张明', text: '真是...遗憾。' }
+        ],
+        choices: [
+            { text: '挣扎', next: 'struggle' },
+            { text: '求饶', next: 'beg_merge' }
+        ]
+    },
+    'chaos_escape': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我拉响火灾警报！）' },
+            { speaker: '警报', text: '【警报】火灾！请疏散！' },
+            { speaker: '我', text: '（伪人们开始有序撤离...我混在其中！）' }
+        ],
+        choices: [
+            { text: '成功逃脱', next: 'ending_survivor' },
+            { text: '被识破', next: 'caught_escape' }
+        ]
+    },
+    'infiltrate_base': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我们潜入大本营...这里比想象的更大。）' },
+            { speaker: '神秘人', text: '目标是核心培养舱。摧毁它，能重创他们。' },
+            { speaker: '我', text: '（我握紧枪，手心全是汗...）' }
+        ],
+        choices: [
+            { text: '跟随神秘人', next: 'follow_mystery' },
+            { text: '单独行动', next: 'solo_action' }
+        ]
+    },
+    'support_outside': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我留在外面接应。）' },
+            { speaker: '我', text: '（突然，几个伪人朝基地走去...）' },
+            { speaker: '我', text: '（我必须阻止他们！）' }
+        ],
+        choices: [
+            { text: '开枪射击', next: 'shoot_pseudo' },
+            { text: '制造声响引开', next: 'make_noise' }
+        ]
+    },
+    'just_survive': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我带着屏蔽器，开始逃亡生活。）' },
+            { speaker: '我', text: '（每天都换地方，不敢联系任何人...）' },
+            { speaker: '我', text: '（但我能躲一辈子吗？）' }
+        ],
+        choices: [
+            { text: '继续躲藏', next: 'ending_hide' },
+            { text: '决定反击', next: 'decide_fight' }
+        ]
+    },
+    'take_device_leave': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我收下装置，独自离开。）' },
+            { speaker: '我', text: '（有了这个，应该能躲一段时间...）' }
+        ],
+        choices: [
+            { text: '找地方躲藏', next: 'find_hide' },
+            { text: '尝试正常生活', next: 'normal_life' }
+        ]
+    },
+    'refuse_leave': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我拒绝了他的好意，独自离开。）' },
+            { speaker: '我', text: '（我相信自己能应付...）' },
+            { speaker: '我', text: '（但我错了。）' }
+        ],
+        choices: [
+            { text: '被捕获', next: 'ending_captured' },
+            { text: '侥幸逃脱', next: 'lucky_escape' }
+        ]
+    },
+    'escape_after': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（等他们走后，我从衣柜出来。）' },
+            { speaker: '我', text: '（我必须离开这个城市，现在！）' }
+        ],
+        choices: [
+            { text: '成功离开', next: 'ending_leave' },
+            { text: '在车站被抓', next: 'caught_station' }
+        ]
+    },
+    'keep_hiding': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我继续躲在衣柜里...）' },
+            { speaker: '我', text: '（一天，两天，三天...）' },
+            { speaker: '我', text: '（但食物和水总会耗尽...）' }
+        ],
+        choices: [
+            { text: '饿死在衣柜', next: 'ending_starve' },
+            { text: '出来寻找食物', next: 'find_food' }
+        ]
+    },
+    'beg_merge': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我跪地求饶...）' },
+            { speaker: '张明', text: '（他满意地点头）明智的选择。' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：屈服】',
+        endingText: '你选择了屈服，成为伪人的一员。活下来了，但不再是人类。每当夜深，你会想起曾经作为人类的时光，但那些记忆越来越模糊...最终，你连自己曾经是人类这件事都忘记了。'
+    },
+    'fight_death': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我用剪刀刺向他，但他抓住了我的手...）' },
+            { speaker: '张明', text: '真是顽固。' },
+            { speaker: '我', text: '（视线开始模糊...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：牺牲】',
+        endingText: '你战斗到了最后一刻，但伪人的力量远超人类。你的意识消散前，只有一个念头：希望有人能阻止他们...你的牺牲没有白费，猎人组织发现了你的遗体，顺藤摸瓜捣毁了一个伪人据点。但代价，是你的生命。'
+    },
+    'jump_window': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我从窗户跳了下去...）' },
+            { speaker: '我', text: '（三楼...也许还有一线生机...）' }
+        ],
+        choices: [
+            { text: '幸存', next: 'survive_jump' },
+            { text: '重伤', next: 'injured_jump' }
+        ]
+    },
+    'surrender': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我举起双手...）' },
+            { speaker: '张明', text: '（他笑了）明智。' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：投降】',
+        endingText: '你选择了投降。伪人没有杀你，但也没有放过你。你被带到大本营，接受了"同化"。醒来后，你成为了他们的一员——完美、冷静、没有情感。人类林晓，从此消失。'
+    },
+    'rush_out': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我冲出 B 门，一辆黑色面包车停在路边。）' },
+            { speaker: '神秘人', text: '上车！' },
+            { speaker: '我', text: '（我们成功逃脱了！）' }
+        ],
+        choices: [
+            { text: '加入猎人组织', next: 'ending_hunter' },
+            { text: '想要普通生活', next: 'want_normal' }
+        ]
+    },
+    'confirm_again': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我再三确认，耽误了时间...）' },
+            { speaker: '我', text: '（等我来到的时候，B 门已经空无一人。）' },
+            { speaker: '我', text: '（他们走了...留下我一个人...）' }
+        ],
+        choices: [
+            { text: '被伪人发现', next: 'caught_alone' },
+            { text: '自己逃生', next: 'escape_alone' }
+        ]
+    },
+    'keep_hide': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我继续躲藏，换了无数个地方。）' },
+            { speaker: '我', text: '（一年，两年...）' },
+            { speaker: '我', text: '（我听说伪人已经被消灭了...）' }
+        ],
+        choices: [
+            { text: '出来看看', next: 'come_out' },
+            { text: '继续躲', next: 'keep_hiding_forever' }
+        ]
+    },
+    'fight_back': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我决定不再逃避。）' },
+            { speaker: '我', text: '（我联系了猎人组织...）' }
+        ],
+        choices: [
+            { text: '加入他们', next: 'ending_hunter' },
+            { text: '独自行动', next: 'solo_fight' }
+        ]
+    },
+    'realize_lockdown': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我明白了...整个城市被封锁了。）' },
+            { speaker: '我', text: '（伪人已经控制了这里。）' }
+        ],
+        choices: [
+            { text: '联系猎人', next: 'contact_hunter' },
+            { text: '找地方躲', next: 'find_hide' }
+        ]
+    },
+    'keep_try': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我不停尝试，但所有交通都瘫痪了。）' },
+            { speaker: '我', text: '（天色渐暗...我必须找个地方过夜。）' }
+        ],
+        choices: [
+            { text: '找酒店', next: 'find_hotel' },
+            { text: '回公司', next: 'back_office' }
+        ]
+    },
+    'find_hide': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我找到一个废弃的地下室躲起来。）' },
+            { speaker: '我', text: '（这里应该暂时安全...）' }
+        ],
+        choices: [
+            { text: '等待救援', next: 'wait_rescue' },
+            { text: '自己想办法', next: 'self_plan' }
+        ]
+    },
+    'run_alone': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我独自奔跑在街道上...）' },
+            { speaker: '我', text: '（但伪人太多了...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：孤立无援】',
+        endingText: '你拒绝了所有帮助，选择独自面对。但伪人的数量远超你的想象。在一条阴暗的小巷里，你被包围了。最后的记忆里，只有无数双没有情感的眼睛...如果当初选择了信任，结局会不会不同？'
+    },
+    'refuse_down': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我没有下楼，从防火梯离开了。）' },
+            { speaker: '我', text: '（那个陷阱...好险...）' }
+        ],
+        choices: [
+            { text: '联系真猎人', next: 'contact_real_hunter' },
+            { text: '独自行动', next: 'solo_action_2' }
+        ]
+    },
+    'test_them': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我朝楼下喊："暗号是什么？"）' },
+            { speaker: '开车的人', text: '（他愣了一下）什么暗号？' },
+            { speaker: '我', text: '（果然！真猎人会知道暗号的！）' }
+        ],
+        choices: [
+            { text: '逃跑', next: 'escape_fake' },
+            { text: '报警', next: 'call_110' }
+        ]
+    },
+    'explore_more': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我在通风管道里继续前进...）' },
+            { speaker: '我', text: '（我看到了...一个巨大的培养舱，里面是...）' },
+            { speaker: '我', text: '（是我自己？！不，是另一个"林晓"！）' }
+        ],
+        choices: [
+            { text: '震惊', next: 'shocked_clone' },
+            { text: '破坏培养舱', next: 'destroy_clone' }
+        ]
+    },
+    'find_exit': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我顺着通风管道找到了出口。）' },
+            { speaker: '我', text: '（重见天日的感觉真好...）' }
+        ],
+        choices: [
+            { text: '报警', next: 'call_police_end' },
+            { text: '告诉猎人', next: 'tell_hunter' }
+        ]
+    },
+    'escape_chaos': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我趁乱逃出了大本营。）' },
+            { speaker: '我', text: '（身后传来爆炸声...）' },
+            { speaker: '我', text: '（我成功了！）' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：幸存者】',
+        endingText: '你成功逃出了伪人大本营，并破坏了他们的部分设施。虽然没能彻底摧毁他们，但你活下来了。猎人组织后来根据你提供的信息，捣毁了多个伪人据点。你隐姓埋名，开始了新的生活。偶尔，你还会想起那段恐怖的经历...但至少，你还活着。'
+    },
+    'destroy_core': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我找到了核心培养舱！）' },
+            { speaker: '我', text: '（就是这里！他们在批量制造伪人！）' },
+            { speaker: '我', text: '（我用尽全身力气砸向控制面板...）' }
+        ],
+        choices: [
+            { text: '成功摧毁', next: 'ending_destroy' },
+            { text: '被抓住', next: 'caught_destroy' }
+        ]
+    },
+    'anger_him': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '你们这些怪物！' },
+            { speaker: '张明', text: '（他的脸开始扭曲...）' },
+            { speaker: '张明', text: '怪物？我们才是进化！' }
+        ],
+        choices: [
+            { text: '继续激怒', next: 'anger_more' },
+            { text: '找机会', next: 'find_chance' }
+        ]
+    },
+    'hide_base': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我躲在一个培养舱后面。）' },
+            { speaker: '我', text: '（脚步声渐渐远去...）' }
+        ],
+        choices: [
+            { text: '趁机逃跑', next: 'escape_base' },
+            { text: '继续躲', next: 'keep_hide_base' }
+        ]
+    },
+    'keep_run': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我不停地跑，不知道方向...）' },
+            { speaker: '我', text: '（前面有光！是出口！）' }
+        ],
+        choices: [
+            { text: '冲向出口', next: 'rush_exit' },
+            { text: '先观察', next: 'observe_exit' }
+        ]
+    },
+    'struggle': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我拼命挣扎，但力量悬殊...）' },
+            { speaker: '张明', text: '没用的。' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：无力】',
+        endingText: '你的挣扎毫无意义。伪人的力量远超人类。你被强行带往同化室...醒来后，你成为了他们的一员。曾经的你，只存在于模糊的记忆碎片中。'
+    },
+    'follow_mystery': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我们悄悄接近核心区域...）' },
+            { speaker: '神秘人', text: '就是那里。准备好。' },
+            { speaker: '我', text: '（我握紧枪，深吸一口气...）' }
+        ],
+        choices: [
+            { text: '一起冲进去', next: 'rush_together' },
+            { text: '分工合作', next: 'split_task' }
+        ]
+    },
+    'solo_action': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我决定单独行动，更灵活。）' },
+            { speaker: '我', text: '（我悄悄潜入核心区域...）' }
+        ],
+        choices: [
+            { text: '找到目标', next: 'find_target' },
+            { text: '被发现', next: 'caught_solo' }
+        ]
+    },
+    'shoot_pseudo': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我开枪射击！）' },
+            { speaker: '我', text: '（银离子子弹击中了伪人，他痛苦地倒下！）' },
+            { speaker: '我', text: '（有效！）' }
+        ],
+        choices: [
+            { text: '继续射击', next: 'keep_shoot' },
+            { text: '逃跑', next: 'run_shoot' }
+        ]
+    },
+    'make_noise': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我拉响了附近的汽车警报！）' },
+            { speaker: '我', text: '（伪人们被吸引了注意力！）' },
+            { speaker: '我', text: '（成功！）' }
+        ],
+        choices: [
+            { text: '趁机逃跑', next: 'escape_noise' },
+            { text: '帮助队友', next: 'help_teammate' }
+        ]
+    },
+    'ending_hide': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我躲了一辈子...）' },
+            { speaker: '我', text: '（直到老去，死去...）' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：隐士】',
+        endingText: '你选择了一生的躲藏。没有战斗，没有荣耀，只有无尽的逃亡。但你活下来了，以人类的身份。在生命的最后时刻，你回想这一生...值得吗？也许吧。至少，你从未背叛过自己的人性。'
+    },
+    'decide_fight': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我联系了猎人组织，决定加入他们。）' },
+            { speaker: '神秘人', text: '欢迎加入。' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：猎人】',
+        endingText: '你加入了猎人组织，成为对抗伪人的战士。每一天都充满危险，但你不再恐惧。因为你有了同伴，有了目标。伪人还在暗处，但你们会找到他们，一个都不放过。这场战争，人类必胜。'
+    },
+    'normal_life': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我尝试回归正常生活...）' },
+            { speaker: '我', text: '（但每当看到陌生人，我都会想...）' },
+            { speaker: '我', text: '（他是人类，还是伪人？）' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：疑心】',
+        endingText: '你活下来了，但再也无法信任任何人。每一个眼神、每一句话，你都会反复琢磨。你成了孤岛，在人群中却无比孤独。伪人也许没有摧毁你的身体，但他们摧毁了你对世界的信任。这，算胜利吗？'
+    },
+    'ending_captured': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我被伪人包围了...）' },
+            { speaker: '伪人', text: '游戏结束了。' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：捕获】',
+        endingText: '你拒绝了所有帮助，最终被伪人捕获。没有奇迹，没有救援。你被带往大本营，成为无数培养舱中的一个。也许，在某个平行世界里，你做出了不同的选择...'
+    },
+    'lucky_escape': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我侥幸逃脱了伪人的追捕。）' },
+            { speaker: '我', text: '（但我知道，这只是暂时的...）' }
+        ],
+        choices: [
+            { text: '联系猎人', next: 'ending_hunter' },
+            { text: '继续逃亡', next: 'ending_hide' }
+        ]
+    },
+    'ending_leave': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我成功离开了这座城市。）' },
+            { speaker: '我', text: '（在新的地方，开始了新的生活...）' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：远走】',
+        endingText: '你成功逃离了伪人控制的城市，在远方开始了新的生活。偶尔，你会想起那些经历，想起那些没能逃出来的人。你无法拯救所有人，但至少，你拯救了自己。这样，就够了吧。'
+    },
+    'ending_starve': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（意识逐渐模糊...）' },
+            { speaker: '我', text: '（也许，这样更好...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：困兽】',
+        endingText: '你躲过了伪人的搜索，却没躲过饥饿和干渴。在衣柜的黑暗中，你慢慢失去了意识。没有人知道你的结局，就像没有人知道这座城市里还有多少这样的悲剧...你的躲藏，毫无意义。'
+    },
+    'survive_jump': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我摔在垃圾桶上，捡回一条命！）' },
+            { speaker: '我', text: '（虽然很痛，但我还活着！）' }
+        ],
+        choices: [
+            { text: '寻求帮助', next: 'seek_help' },
+            { text: '自己处理', next: 'self_heal' }
+        ]
+    },
+    'injured_jump': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我的腿断了，无法移动...）' },
+            { speaker: '张明', text: '（从窗口俯视）真是顽强。' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：残躯】',
+        endingText: '你跳窗求生，但摔断了腿。无法移动的你，只能眼睁睁看着张明从楼梯下来...最后的画面，是他冷漠的脸。如果当初选择了其他路，会不会不一样？'
+    },
+    'ending_hunter': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我正式加入了猎人组织。）' },
+            { speaker: '神秘人', text: '欢迎。从今天起，你就是我们的同伴了。' }
+        ],
+        ending: true,
+        endingType: 'true',
+        endingTitle: '【结局：猎人】',
+        endingText: '你加入了猎人组织，成为对抗伪人的中坚力量。凭借你的经历和勇气，你参与了多次行动，捣毁了多个伪人据点。战争还在继续，但人类正在反击。你不再是受害者，你是战士。这是你的选择，也是你的荣耀。'
+    },
+    'want_normal': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我只想回归普通生活...）' },
+            { speaker: '神秘人', text: '理解。但这个装置你拿着，以防万一。' }
+        ],
+        choices: [
+            { text: '接受', next: 'ending_normal' },
+            { text: '拒绝', next: 'refuse_device' }
+        ]
+    },
+    'caught_alone': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我被伪人包围了...）' },
+            { speaker: '伪人', text: '落单的老鼠。' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：落单】',
+        endingText: '你错过了救援，独自面对伪人。结局可想而知。在这个城市里，每天都有人消失，没人知道他们去了哪里。你，只是其中之一。'
+    },
+    'escape_alone': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我靠自己逃脱了！）' },
+            { speaker: '我', text: '（也许...我不需要任何人帮助？）' }
+        ],
+        choices: [
+            { text: '独自生活', next: 'ending_hide' },
+            { text: '还是联系猎人', next: 'ending_hunter' }
+        ]
+    },
+    'come_out': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我走出藏身之处...城市已经变了。）' },
+            { speaker: '我', text: '（伪人被打败了？还是...）' }
+        ],
+        choices: [
+            { text: '调查真相', next: 'investigate_truth' },
+            { text: '重新开始', next: 'ending_restart' }
+        ]
+    },
+    'keep_hiding_forever': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我选择永远躲藏...）' },
+            { speaker: '我', text: '（直到生命尽头...）' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：隐士】',
+        endingText: '你躲了一辈子。没有战斗，没有冒险，只有无尽的恐惧。但你活下来了，以人类的身份。这，算胜利吗？'
+    },
+    'solo_fight': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我决定独自对抗伪人...）' },
+            { speaker: '我', text: '（但一个人的力量太渺小了...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：孤勇】',
+        endingText: '你选择了独自战斗。勇气可嘉，但伪人太多了。在一次行动中，你被包围了。最后的念头是：如果当初选择了同伴，会不会不一样？'
+    },
+    'find_hotel': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我找到一家小旅馆住下。）' },
+            { speaker: '我', text: '（明天再想办法...）' }
+        ],
+        choices: [
+            { text: '第二天', next: 'next_day' },
+            { text: '被找到', next: 'caught_hotel' }
+        ]
+    },
+    'back_office': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '（我回到公司，这里应该安全...）' },
+            { speaker: '我', text: '（但等等，张明还在...）' }
+        ],
+        choices: [
+            { text: '躲起来', next: 'hide_office' },
+            { text: '面对', next: 'face_zhang_office' }
+        ]
+    },
+    'self_plan': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我制定了自己的计划。）' },
+            { speaker: '我', text: '（也许不需要猎人，我也能做到...）' }
+        ],
+        choices: [
+            { text: '独自行动', next: 'solo_fight' },
+            { text: '改变主意', next: 'ending_hunter' }
+        ]
+    },
+    'contact_hunter_end': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我联系了猎人组织。）' },
+            { speaker: '神秘人', text: '干得好。我们马上到。' }
+        ],
+        choices: [
+            { text: '等待', next: 'ending_hunter' },
+            { text: '先离开', next: 'leave_first' }
+        ]
+    },
+    'contact_real_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我联系了真正的猎人组织。）' },
+            { speaker: '神秘人', text: '做得好。那个是伪人的陷阱。' }
+        ],
+        choices: [
+            { text: '加入他们', next: 'ending_hunter' },
+            { text: '自己行动', next: 'solo_action_3' }
+        ]
+    },
+    'solo_action_2': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我决定靠自己...）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_hide' },
+            { text: '失败', next: 'ending_captured' }
+        ]
+    },
+    'escape_fake': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我从防火梯逃跑了！）' },
+            { speaker: '我', text: '（好险...）' }
+        ],
+        choices: [
+            { text: '联系真猎人', next: 'ending_hunter' },
+            { text: '躲起来', next: 'ending_hide' }
+        ]
+    },
+    'call_110': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我报警了...）' },
+            { speaker: '警察', text: '【电话】我们马上到！' }
+        ],
+        choices: [
+            { text: '等待警察', next: 'wait_police' },
+            { text: '自己先跑', next: 'run_first' }
+        ]
+    },
+    'shocked_clone': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（那是...我？！）' },
+            { speaker: '我', text: '（他们在克隆人类？！）' }
+        ],
+        choices: [
+            { text: '破坏培养舱', next: 'destroy_clone' },
+            { text: '继续观察', next: 'observe_clone' }
+        ]
+    },
+    'destroy_clone': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我砸碎了培养舱！）' },
+            { speaker: '警报', text: '【警报】设施受损！' },
+            { speaker: '我', text: '（我趁乱逃跑...）' }
+        ],
+        choices: [
+            { text: '成功逃脱', next: 'ending_destroy' },
+            { text: '被抓', next: 'caught_destroy' }
+        ]
+    },
+    'call_police_end': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我报警了...）' },
+            { speaker: '我', text: '（但警察会相信吗？）' }
+        ],
+        choices: [
+            { text: '等待', next: 'wait_police_end' },
+            { text: '找猎人', next: 'ending_hunter' }
+        ]
+    },
+    'tell_hunter': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我联系了猎人组织。）' },
+            { speaker: '神秘人', text: '重要情报。我们马上行动。' }
+        ],
+        choices: [
+            { text: '参与行动', next: 'ending_hunter' },
+            { text: '旁观', next: 'ending_normal' }
+        ]
+    },
+    'ending_destroy': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（核心培养舱爆炸了！）' },
+            { speaker: '我', text: '（伪人的计划被重创了！）' }
+        ],
+        ending: true,
+        endingType: 'true',
+        endingTitle: '【结局：摧毁者】',
+        endingText: '你成功摧毁了伪人大本营的核心设施。虽然没能消灭所有伪人，但他们的计划被重创了。你成为英雄，虽然没人知道你的名字。人类和伪人的战争还在继续，但因为你，人类有了希望。这是你的选择，也是你的荣耀。'
+    },
+    'caught_destroy': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我被伪人抓住了...）' },
+            { speaker: '张明', text: '你造成了很大损失。' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：失败】',
+        endingText: '你的破坏行动失败了。被捕获后，你被强制同化。醒来后，你成为了伪人的一员，甚至参与了抓捕其他人类的行动。曾经的英雄，变成了敌人。讽刺吗？'
+    },
+    'anger_more': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '张明', text: '（他的脸完全扭曲，不再是人类的样子...）' },
+            { speaker: '张明', text: '你会后悔的。' }
+        ],
+        choices: [
+            { text: '逃跑', next: 'escape_anger' },
+            { text: '战斗', next: 'fight_anger' }
+        ]
+    },
+    'find_chance': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我等待时机...）' },
+            { speaker: '我', text: '（就是现在！）' }
+        ],
+        choices: [
+            { text: '逃跑', next: 'escape_chance' },
+            { text: '攻击', next: 'attack_chance' }
+        ]
+    },
+    'escape_base': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我成功逃出了大本营！）' }
+        ],
+        choices: [
+            { text: '联系猎人', next: 'ending_hunter' },
+            { text: '躲起来', next: 'ending_hide' }
+        ]
+    },
+    'keep_hide_base': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我继续躲着...）' },
+            { speaker: '我', text: '（但被发现只是时间问题...）' }
+        ],
+        choices: [
+            { text: '最终被抓', next: 'ending_captured' },
+            { text: '找机会', next: 'escape_base' }
+        ]
+    },
+    'rush_exit': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我冲向出口！）' },
+            { speaker: '我', text: '（自由！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'caught_exit' }
+        ]
+    },
+    'observe_exit': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我先观察一下...）' },
+            { speaker: '我', text: '（有伪人守着！）' }
+        ],
+        choices: [
+            { text: '找其他路', next: 'find_other_way' },
+            { text: '冲出去', next: 'rush_exit' }
+        ]
+    },
+    'rush_together': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我们一起冲进去！）' },
+            { speaker: '神秘人', text: '射击！' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_destroy' },
+            { text: '失败', next: 'caught_together' }
+        ]
+    },
+    'split_task': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我们分工合作...）' },
+            { speaker: '我', text: '（我负责吸引火力，他负责破坏！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_destroy' },
+            { text: '牺牲', next: 'ending_sacrifice' }
+        ]
+    },
+    'find_target': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我找到了核心！）' },
+            { speaker: '我', text: '（准备破坏...）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_destroy' },
+            { text: '失败', next: 'caught_solo' }
+        ]
+    },
+    'caught_solo': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我被发现了...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：独行侠】',
+        endingText: '你选择了独自行动，但伪人太多了。被捕获后，你被强制同化。如果当初选择了同伴，结局会不会不同？'
+    },
+    'keep_shoot': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我继续射击，击倒了多个伪人！）' },
+            { speaker: '我', text: '（但子弹有限...）' }
+        ],
+        choices: [
+            { text: '逃跑', next: 'ending_survivor' },
+            { text: '战斗到底', next: 'fight_end' }
+        ]
+    },
+    'run_shoot': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我边跑边射击...）' },
+            { speaker: '我', text: '（成功甩掉了他们！）' }
+        ],
+        choices: [
+            { text: '联系猎人', next: 'ending_hunter' },
+            { text: '继续躲', next: 'ending_hide' }
+        ]
+    },
+    'escape_noise': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我趁乱逃跑了！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'help_teammate': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我回去帮助队友！）' },
+            { speaker: '我', text: '（我们一起成功了！）' }
+        ],
+        choices: [
+            { text: '一起胜利', next: 'ending_destroy' },
+            { text: '牺牲', next: 'ending_sacrifice' }
+        ]
+    },
+    'seek_help': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我寻求帮助...）' },
+            { speaker: '神秘人', text: '上车！' }
+        ],
+        choices: [
+            { text: '上车', next: 'ending_hunter' },
+            { text: '拒绝', next: 'refuse_help' }
+        ]
+    },
+    'self_heal': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我自己处理伤口...）' },
+            { speaker: '我', text: '（但伤势很重...）' }
+        ],
+        choices: [
+            { text: '活下来', next: 'ending_survivor' },
+            { text: '伤势恶化', next: 'ending_injury' }
+        ]
+    },
+    'ending_normal': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我回归了普通生活...）' },
+            { speaker: '我', text: '（但偶尔会想起那段经历...）' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：平凡】',
+        endingText: '你回归了普通生活。没有战斗，没有冒险，只有日复一日的平凡。但你知道，在城市的某个角落，伪人还在活动。你选择了平凡，这没有错。至少，你还活着。'
+    },
+    'refuse_device': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我拒绝了装置...）' },
+            { speaker: '我', text: '（我想彻底告别这一切...）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_normal' },
+            { text: '被找到', next: 'ending_captured' }
+        ]
+    },
+    'investigate_truth': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我调查真相...）' },
+            { speaker: '我', text: '（发现伪人还在活动！）' }
+        ],
+        choices: [
+            { text: '加入战斗', next: 'ending_hunter' },
+            { text: '继续躲', next: 'ending_hide' }
+        ]
+    },
+    'ending_restart': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我重新开始生活...）' }
+        ],
+        ending: true,
+        endingType: 'normal',
+        endingTitle: '【结局：新生】',
+        endingText: '你放下了过去，开始了新的生活。那些经历成为了回忆，不再困扰你。这是你的选择，也是你的解脱。'
+    },
+    'next_day': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（第二天，我继续想办法...）' }
+        ],
+        choices: [
+            { text: '联系猎人', next: 'ending_hunter' },
+            { text: '自己行动', next: 'solo_fight' }
+        ]
+    },
+    'caught_hotel': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（伪人找到我了...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：酒店】',
+        endingText: '你在酒店被伪人找到。没有救援，没有奇迹。你成为了他们的一员。'
+    },
+    'hide_office': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '（我躲在办公室...）' }
+        ],
+        choices: [
+            { text: '被发现', next: 'ending_captured' },
+            { text: '逃脱', next: 'escape_office_2' }
+        ]
+    },
+    'face_zhang_office': {
+        bg: 'bg-office',
+        dialogues: [
+            { speaker: '我', text: '（我面对张明...）' }
+        ],
+        choices: [
+            { text: '战斗', next: 'fight_death' },
+            { text: '逃跑', next: 'escape_zhang_2' }
+        ]
+    },
+    'wait_police': {
+        bg: 'bg-home',
+        dialogues: [
+            { speaker: '我', text: '（我等待警察...）' },
+            { speaker: '我', text: '（但他们没来...）' }
+        ],
+        choices: [
+            { text: '被伪人找到', next: 'ending_captured' },
+            { text: '自己跑', next: 'run_first' }
+        ]
+    },
+    'run_first': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我自己先跑了...）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'observe_clone': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我继续观察...）' },
+            { speaker: '我', text: '（被发现！）' }
+        ],
+        choices: [
+            { text: '逃跑', next: 'escape_clone' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'wait_police_end': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我等待警察...）' }
+        ],
+        choices: [
+            { text: '警察来了', next: 'ending_survivor' },
+            { text: '没来', next: 'ending_captured' }
+        ]
+    },
+    'leave_first': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我先离开了...）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'solo_action_3': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我自己行动...）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '失败', next: 'ending_captured' }
+        ]
+    },
+    'escape_anger': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我逃跑了！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'fight_anger': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我战斗...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：战斗】',
+        endingText: '你选择了战斗，但力量悬殊。你牺牲了，但你的勇气激励了其他人。'
+    },
+    'escape_chance': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我趁机逃跑！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'attack_chance': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我攻击！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_destroy' },
+            { text: '失败', next: 'ending_captured' }
+        ]
+    },
+    'caught_exit': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我在出口被抓...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：出口】',
+        endingText: '你在出口被抓。就差一步...自由与你擦肩而过。'
+    },
+    'find_other_way': {
+        bg: 'bg-secret',
+        dialogues: [
+            { speaker: '我', text: '（我找了其他路...）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '失败', next: 'ending_captured' }
+        ]
+    },
+    'caught_together': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我们一起被抓...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：团队】',
+        endingText: '团队行动失败了。你们一起被抓，一起被同化。至少，不是一个人...？'
+    },
+    'ending_sacrifice': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我牺牲了自己，让队友成功...）' }
+        ],
+        ending: true,
+        endingType: 'true',
+        endingTitle: '【结局：牺牲】',
+        endingText: '你牺牲了自己，让队友成功摧毁了核心。你的牺牲没有白费，伪人的计划被重创。你是英雄，虽然没人知道你的名字。'
+    },
+    'fight_end': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（我战斗到底...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：战死】',
+        endingText: '你战斗到了最后一刻。虽然牺牲了，但你消灭了多个伪人。你是战士。'
+    },
+    'refuse_help': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我拒绝了帮助...）' }
+        ],
+        choices: [
+            { text: '自己活', next: 'ending_hide' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'ending_injury': {
+        bg: 'bg-ending',
+        dialogues: [
+            { speaker: '我', text: '（伤势恶化...）' }
+        ],
+        ending: true,
+        endingType: 'bad',
+        endingTitle: '【结局：伤势】',
+        endingText: '你的伤势恶化，没有得到及时治疗。你死在了街头。'
+    },
+    'escape_office_2': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我逃出了办公室！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'escape_zhang_2': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我从张明那里逃跑！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    },
+    'escape_clone': {
+        bg: 'bg-street',
+        dialogues: [
+            { speaker: '我', text: '（我从克隆室逃跑！）' }
+        ],
+        choices: [
+            { text: '成功', next: 'ending_survivor' },
+            { text: '被抓', next: 'ending_captured' }
+        ]
+    }
+};
+
+let currentScene = 'start';
+let dialogueIndex = 0;
+let isTyping = false;
+let typingTimer = null;
+let currentText = '';
+
+function startGame() {
+    document.getElementById('title-screen').style.display = 'none';
+    document.getElementById('dialogue-box').style.display = 'block';
+    loadScene('start');
+}
+
+function loadScene(sceneId) {
+    const scene = scenes[sceneId];
+    if (!scene) {
+        console.error('Scene not found:', sceneId);
+        return;
+    }
+    currentScene = sceneId;
+    document.getElementById('background').className = scene.bg;
+    dialogueIndex = 0;
+    showDialogue();
+}
+
+function showDialogue() {
+    const scene = scenes[currentScene];
+    if (dialogueIndex >= scene.dialogues.length) {
+        if (scene.ending) {
+            showEnding(scene);
+        } else if (scene.choices) {
+            showChoices(scene.choices);
+        }
+        return;
+    }
+    const dialogue = scene.dialogues[dialogueIndex];
+    document.getElementById('speaker-name').textContent = dialogue.speaker;
+    currentText = dialogue.text;
+    typeText(dialogue.text);
+}
+
+function typeText(text) {
+    isTyping = true;
+    let index = 0;
+    const element = document.getElementById('dialogue-text');
+    element.textContent = '';
+    typingTimer = setInterval(() => {
+        if (index < text.length) {
+            element.textContent += text[index];
+            index++;
+        } else {
+            clearInterval(typingTimer);
+            isTyping = false;
+        }
+    }, 30);
+}
+
+function nextDialogue() {
+    if (isTyping) {
+        clearInterval(typingTimer);
+        document.getElementById('dialogue-text').textContent = currentText;
+        isTyping = false;
+        return;
+    }
+    dialogueIndex++;
+    showDialogue();
+}
+
+function showChoices(choices) {
+    document.getElementById('dialogue-box').style.display = 'none';
+    const container = document.getElementById('choices-container');
+    container.innerHTML = '';
+    container.style.display = 'flex';
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.text;
+        btn.onclick = () => {
+            container.style.display = 'none';
+            document.getElementById('dialogue-box').style.display = 'block';
+            loadScene(choice.next);
+        };
+        container.appendChild(btn);
+    });
+}
+
+function showEnding(scene) {
+    document.getElementById('dialogue-box').style.display = 'none';
+    document.getElementById('choices-container').style.display = 'none';
+    const endingScreen = document.getElementById('ending-screen');
+    document.getElementById('ending-title').textContent = scene.endingTitle;
+    document.getElementById('ending-title').className = 'ending-' + scene.endingType;
+    document.getElementById('ending-content').textContent = scene.endingText;
+    endingScreen.style.display = 'flex';
+}
+
+function showTitle() {
+    document.getElementById('ending-screen').style.display = 'none';
+    document.getElementById('dialogue-box').style.display = 'none';
+    document.getElementById('choices-container').style.display = 'none';
+    document.getElementById('title-screen').style.display = 'flex';
+}
+
+function saveGame(slot) {
+    const data = { scene: currentScene, dialogue: dialogueIndex, time: new Date().toLocaleString() };
+    localStorage.setItem('pseudoSave' + slot, JSON.stringify(data));
+    renderSaveSlots();
+}
+
+function loadGame(slot) {
+    const data = localStorage.getItem('pseudoSave' + slot);
+    if (data) {
+        const parsed = JSON.parse(data);
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('dialogue-box').style.display = 'block';
+        loadScene(parsed.scene);
+        dialogueIndex = parsed.dialogue;
+    }
+}
+
+function showSavePanel() {
+    document.getElementById('panel-title').textContent = '存档';
+    document.getElementById('save-load-panel').style.display = 'block';
+    renderSaveSlots(true);
+}
+
+function showLoadPanel() {
+    document.getElementById('panel-title').textContent = '读档';
+    document.getElementById('save-load-panel').style.display = 'block';
+    renderSaveSlots(false);
+}
+
+function hidePanel() {
+    document.getElementById('save-load-panel').style.display = 'none';
+}
+
+function renderSaveSlots(isSave) {
+    const container = document.getElementById('save-slots');
+    container.innerHTML = '';
+    for (let i = 1; i <= 6; i++) {
+        const data = localStorage.getItem('pseudoSave' + i);
+        const slot = document.createElement('div');
+        slot.className = 'save-slot';
+        if (data) {
+            const parsed = JSON.parse(data);
+            slot.innerHTML = '<div class="slot-number">存档 ' + i + '</div><div class="slot-info">' + parsed.scene + '</div><div class="slot-time">' + parsed.time + '</div>';
+        } else {
+            slot.innerHTML = '<div class="slot-number">存档 ' + i + '</div><div class="slot-info">空</div>';
+        }
+        slot.onclick = () => {
+            if (isSave) saveGame(i);
+            else loadGame(i);
+            hidePanel();
+        };
+        container.appendChild(slot);
+    }
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.code === 'Enter') {
+        if (document.getElementById('dialogue-box').style.display === 'block') {
+            nextDialogue();
+        }
+    }
+});
+</script>
+</body>
+</html>

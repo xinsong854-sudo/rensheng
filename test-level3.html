@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三级分类测试</title>
+    <style>
+        .level3-item {
+            margin: 6px 0 6px 20px;
+            padding: 0;
+        }
+
+        .level3-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: #E8F0F8;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.25s;
+            user-select: none;
+            border: 1px solid #B8D4F0;
+            color: #4A6B7C;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .level3-header:hover {
+            background: #B8D4F0;
+            border-color: #A8C8E8;
+            color: #2C4A5C;
+            transform: translateX(4px);
+        }
+
+        .level3-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4A6B7C;
+            margin: 0;
+        }
+
+        .level3-chevron {
+            font-size: 16px;
+            color: #B8D4F0;
+            transition: transform 0.25s;
+        }
+
+        .level3-chevron.active {
+            transform: rotate(90deg);
+            color: #2C4A5C;
+        }
+
+        .level3-tags {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s;
+            padding: 0 10px;
+        }
+
+        .level3-tags.show {
+            max-height: 1500px;
+            padding: 0 10px 8px 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #f0f2f5;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #444;
+            cursor: pointer;
+            margin: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>三级分类功能测试</h1>
+    <div id="content"></div>
+
+    <script>
+        // 测试数据 - 真正的三级结构
+        const testTagData = [
+            {
+                title: "测试分类",
+                items: [
+                    {
+                        title: "1.1 表情子分类",
+                        items: [
+                            {
+                                title: "1.1.1 开心表情",
+                                tags: [
+                                    { en: "smile", cn: "微笑" },
+                                    { en: "happy", cn: "开心" },
+                                    { en: "laughing", cn: "大笑" }
+                                ]
+                            },
+                            {
+                                title: "1.1.2 生气表情",
+                                tags: [
+                                    { en: "angry", cn: "生气" },
+                                    { en: "mad", cn: "愤怒" },
+                                    { en: "furious", cn: "暴怒" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        function renderContent() {
+            const content = document.getElementById('content');
+            let html = '';
+
+            testTagData.forEach((category, catIndex) => {
+                html += `<div class="category"><h2>${category.title}</h2>`;
+                
+                category.items.forEach((subcat, subIndex) => {
+                    html += `<div class="subcategory"><h3>${subcat.title}</h3>`;
+                    
+                    // 检查是否有三级结构
+                    if (subcat.items && subcat.items.length > 0) {
+                        // 三级结构
+                        subcat.items.forEach((level3, l3Index) => {
+                            const l3Id = `l3-${catIndex}-${subIndex}-${l3Index}`;
+                            html += `
+                                <div class="level3-item">
+                                    <div class="level3-header" onclick="toggleLevel3('${l3Id}', event)">
+                                        <span class="level3-title">${level3.title}</span>
+                                        <span class="level3-chevron" id="l3chevron-${l3Id}">›</span>
+                                    </div>
+                                    <div class="level3-tags" id="${l3Id}">
+                            `;
+                            
+                            if (level3.tags) {
+                                level3.tags.forEach(tag => {
+                                    html += `<span class="tag" onclick="copyTag('${tag.en}', this)">${tag.en} · ${tag.cn}</span>`;
+                                });
+                            }
+                            
+                            html += `</div></div>`;
+                        });
+                    }
+                    
+                    html += `</div>`;
+                });
+                
+                html += `</div>`;
+            });
+
+            content.innerHTML = html;
+        }
+
+        function toggleLevel3(id, event) {
+            event.stopPropagation();
+            const content = document.getElementById(id);
+            const chevronId = `l3chevron-${id}`;
+            const chevron = document.getElementById(chevronId);
+            const isActive = content.classList.contains('show');
+
+            console.log('toggleLevel3 called:', id, 'isActive:', isActive);
+
+            if (isActive) {
+                content.classList.remove('show');
+                chevron.classList.remove('active');
+            } else {
+                content.classList.add('show');
+                chevron.classList.add('active');
+            }
+        }
+
+        function copyTag(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('已复制：' + text);
+                element.style.background = '#28a745';
+                element.style.color = 'white';
+                setTimeout(() => {
+                    element.style.background = '#f0f2f5';
+                    element.style.color = '#444';
+                }, 500);
+            });
+        }
+
+        // 初始化
+        renderContent();
+        console.log('测试页面已加载，三级分类功能就绪');
+    </script>
+</body>
+</html>

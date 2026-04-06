@@ -1,0 +1,18 @@
+# Cloudflare Pages Redirects 配置
+# 文档：https://developers.cloudflare.com/pages/platform/redirects/
+
+# 格式：原路径  目标路径  [状态码]
+
+# 示例：永久重定向
+# /old-page.html  /new-page.html  301
+
+# 示例：临时重定向
+# /temp-page  /new-page  302
+
+# 示例：通配符重定向
+# /blog/*  /news/:splat  301
+
+# 示例：代理规则（将请求转发到外部服务）
+# /api/*  https://api.example.com/:splat  200
+
+# 当前项目无需重定向，保留此文件供未来使用

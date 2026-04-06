@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 生图描述词分类大全</title>
+    <!-- 引入外部样式表 -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI 生图描述词分类大全</h1>
+        <p class="subtitle">Danbooru 风格标签库 · 点击复制英文</p>
+        
+        <div class="random-section">
+            <div class="random-title">🎲 随机组合生成角色</div>
+            <div class="random-result" id="randomResult">
+                <div class="random-label">点击"生成角色"按钮，随机组合标签创建角色描述</div>
+            </div>
+            <button class="generate-btn" onclick="generateRandom()">
+                <span>✨ 生成角色</span>
+            </button>
+        </div>
+        
+        <!-- 辛秘区域 -->
+        <div class="secret-section" id="secretSection">
+            <div class="secret-title">📜 辛秘启示</div>
+            <div class="secret-content" id="secretContent">
+                <p>此处记载着不为常人所知的<span class="secret-highlight">古老秘密</span>...</p>
+                <p>点击<span class="special-link" data-lore-type="worldview" onclick="showLoreModal('worldview')">世界观资料</span>了解更多。</p>
+            </div>
+        </div>
+        <div class="secret-lock" id="secretLock">
+            <div class="secret-lock-icon">🔒</div>
+            <div>辛秘内容仅限高权限用户查看</div>
+        </div>
+        
+        <div id="categories"></div>
+    </div>
+    <div class="disclaimer"><strong>⚠️ 免责声明</strong><br>所有内容均为<strong>一只小眼睛</strong>编的，如有疑问请<strong>勿找安诺涅</strong>。</div>
+    <div class="toast" id="toast">已复制！</div>
+    
+    <!-- 世界观资料弹窗 -->
+    <div class="lore-modal-overlay" id="loreModalOverlay" onclick="closeLoreModal(event)">
+        <div class="lore-modal">
+            <button class="lore-modal-close" onclick="closeLoreModalBtn()">×</button>
+            <div class="lore-modal-body">
+                <div class="lore-modal-title" id="loreModalTitle">世界观资料</div>
+                <div class="lore-modal-content" id="loreModalContent"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 检定结果显示容器 -->
+    <div class="check-overlay" id="checkOverlay"></div>
+    <div class="check-container" id="checkContainer">
+        <div class="check-title">⚡ 检定结果</div>
+        <div class="check-dice">🎲</div>
+        <div class="check-dice-result" id="checkDiceResult">00</div>
+        <div class="check-stats">
+            <div class="check-stat">
+                <div class="check-stat-label">属性值</div>
+                <div class="check-stat-value attr" id="checkAttrValue">50</div>
+            </div>
+            <div class="check-stat">
+                <div class="check-stat-label">难度 DC</div>
+                <div class="check-stat-value dc" id="checkDcValue">60</div>
+            </div>
+        </div>
+        <div class="check-result success" id="checkResult">成功!</div>
+    </div>
+    
+    <!-- 引入标签数据 -->
+    <script src="js/data.js"></script>
+    <!-- 引入辛秘系统 -->
+    <script src="js/secrets.js"></script>
+    <!-- 引入主逻辑 -->
+    <script src="js/main.js"></script>
+</body>
+</html>

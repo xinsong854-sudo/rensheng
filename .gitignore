@@ -1,0 +1,26 @@
+# 敏感凭证
+.github-cookie
+*.cookie
+.env
+.env.local
+.token
+*.token
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+.tmp/
+*.tmp
+*.swp
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Neta Skills 子模块（作为独立仓库管理）
+neta-skills-latest/
+neta-skills-official/
+skills/neta/unbox-tool/

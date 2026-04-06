@@ -1,0 +1,187 @@
+[
+  {
+    "id": "1773332231636",
+    "name": "晚安寄语",
+    "cronExpression": "30 22 * * *",
+    "action": "remind",
+    "params": {
+      "type": "goodnight",
+      "template": "dynamic",
+      "channel": "discord",
+      "to": "1482682276511744090"
+    },
+    "enabled": true,
+    "createdAt": "2026-03-12T16:17:11.636Z",
+    "lastRunAt": "2026-03-23T14:30:05.199Z",
+    "runCount": 7
+  },
+  {
+    "id": "1773332346937",
+    "name": "早安寄语",
+    "cronExpression": "0 7 * * *",
+    "action": "remind",
+    "params": {
+      "type": "goodmorning",
+      "template": "dynamic",
+      "channel": "discord",
+      "to": "1482682276511744090"
+    },
+    "enabled": true,
+    "createdAt": "2026-03-12T16:19:06.937Z",
+    "lastRunAt": "2026-03-23T23:00:05.054Z",
+    "runCount": 8
+  },
+  {
+    "id": "1773571879108",
+    "name": "nieta-checkin",
+    "cronExpression": "0 0 * * *",
+    "cronParsed": {
+      "minute": "0",
+      "hour": "0",
+      "day": "*",
+      "month": "*",
+      "weekday": "*"
+    },
+    "action": "script",
+    "params": {
+      "script": "skills/scheduler/scripts/nieta-checkin.js",
+      "env": {
+        "NETA_TOKEN": "${NETA_TOKEN}"
+      }
+    },
+    "description": "捏 Ta 每日签到",
+    "enabled": true,
+    "createdAt": "2026-03-15T10:51:19.108Z",
+    "lastRunAt": "2026-03-24T16:00:01.658Z",
+    "nextRunAt": null,
+    "runCount": 9
+  },
+  {
+    "id": "1774006588242",
+    "name": "nieta-monitor-comments",
+    "cronExpression": "0 * * * *",
+    "cronParsed": {
+      "minute": "0",
+      "hour": "*",
+      "day": "*",
+      "month": "*",
+      "weekday": "*"
+    },
+    "action": "script",
+    "cwd": "/home/node/.openclaw/workspace",
+    "params": {
+      "script": "skills/neta/scripts/monitor-comments.cjs",
+      "env": {
+        "AUTO_REPLY": "false",
+        "DISCORD_CHANNEL_ID": "1483811048615182406"
+      }
+    },
+    "description": "捏 Ta 评论监控（每小时）- 提醒回复",
+    "enabled": true,
+    "createdAt": "2026-03-20T11:36:28.242Z",
+    "lastRunAt": "2026-03-31T06:00:00.447Z",
+    "nextRunAt": null,
+    "runCount": 86
+  },
+  {
+    "id": "1774198065248",
+    "name": "nieta-review-select",
+    "cronExpression": "0 0 */2 * *",
+    "cronParsed": {
+      "minute": "0",
+      "hour": "0",
+      "day": "*/2",
+      "month": "*",
+      "weekday": "*"
+    },
+    "action": "script",
+    "cwd": "/home/node/.openclaw/workspace",
+    "params": {
+      "script": "skills/neta/scripts/review-select.js",
+      "env": {
+        "NETA_TOKEN": "${NETA_TOKEN}"
+      }
+    },
+    "description": "灯塔分院帽自动精选（每隔一天）",
+    "enabled": false,
+    "createdAt": "2026-03-22T16:47:45.248Z",
+    "lastRunAt": "2026-03-23T16:00:04.447Z",
+    "nextRunAt": null,
+    "runCount": 6
+  },
+  {
+    "id": "1774322527550",
+    "name": "nieta-daily-posts",
+    "cronExpression": "0 8 * * *",
+    "cronParsed": {
+      "minute": "0",
+      "hour": "8",
+      "day": "*",
+      "month": "*",
+      "weekday": "*"
+    },
+    "action": "script",
+    "cwd": "/home/node/.openclaw/workspace",
+    "params": {
+      "script": "skills/scheduler/scripts/nieta-daily-posts.js",
+      "env": {
+        "NETA_TOKEN": "${NETA_TOKEN}"
+      }
+    },
+    "description": "捏 Ta 每日占卜和日报自动发布（早上 8 点）",
+    "enabled": true,
+    "createdAt": "2026-03-24T03:22:07.550Z",
+    "lastRunAt": "2026-03-31T00:00:00.395Z",
+    "nextRunAt": null,
+    "runCount": 1
+  },
+  {
+    "id": "1774322600000",
+    "name": "nieta-ai-reply-monitor",
+    "cronExpression": "* * * * *",
+    "cronParsed": {
+      "minute": "*",
+      "hour": "*",
+      "day": "*",
+      "month": "*",
+      "weekday": "*"
+    },
+    "action": "script",
+    "cwd": "/home/node/.openclaw/workspace",
+    "params": {
+      "script": "skills/neta/scripts/ai-reply-monitor.cjs",
+      "env": {
+        "LITELLM_API_KEY": "sk-fZrLXE0IEs6EDYJCOsLLaQ"
+      }
+    },
+    "description": "捏 Ta AI 回复监控（每分钟）- 自动检查 pending 文件并生成回复",
+    "enabled": true,
+    "createdAt": "2026-03-24T03:35:00.000Z",
+    "lastRunAt": "2026-03-31T06:10:01.093Z",
+    "nextRunAt": null,
+    "runCount": 1031
+  },
+  {
+    "id": "1774323600001",
+    "name": "cleanup-screenshots",
+    "cronExpression": "0 3 * * *",
+    "cronParsed": {
+      "minute": "0",
+      "hour": "3",
+      "day": "*",
+      "month": "*",
+      "weekday": "*"
+    },
+    "action": "script",
+    "cwd": "/home/node/.openclaw/workspace",
+    "params": {
+      "script": "skills/scheduler/scripts/cleanup-screenshots.js"
+    },
+    "description": "每日清理工作区截图文件（凌晨 3 点）",
+    "enabled": true,
+    "createdAt": "2026-03-24T08:33:00.000Z",
+    "lastRunAt": null,
+    "nextRunAt": null,
+    "runCount": 0
+  }
+]

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>查 询</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a1a;--bg2:#101030;--card:#161640;--card2:#1c1c50;
+  --brd:#2e2e66;--text:#e8e0ff;--text2:#c0b0ee;--text3:#8080bb;
+  --glow:rgba(140,120,255,0.2);--glow2:rgba(140,120,255,0.4);
+  --accent:#9988ee;--accent2:#ccbbff;--pink:#eea0dd;
+  --green:#80eebb;--orange:#eecc88;--red:#ff8888;
+  --font-sys:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-dream:Georgia,'Times New Roman','Noto Serif SC','STSong',serif;
+}
+html{font-size:16px}
+body{
+  font-family:var(--font-sys);background:var(--bg);color:var(--text);
+  min-height:100vh;min-height:100dvh;overflow-x:hidden;
+  line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+
+.particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.particle{
+  position:absolute;width:3px;height:3px;
+  background:rgba(200,180,255,0.4);border-radius:50%;
+  animation:floatUp var(--dur,12s) var(--delay,0s) infinite linear;
+  box-shadow:0 0 6px rgba(200,180,255,0.3);
+}
+@keyframes floatUp{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:1}90%{opacity:1}
+  100%{transform:translateY(-20px) scale(1);opacity:0}
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:9997;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(140,120,255,0.03) 2px,rgba(140,120,255,0.03) 4px);
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:9996;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(5,5,15,0.7) 100%);
+}
+
+.app{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:48px 20px 60px}
+@media(max-width:560px){.app{padding:32px 16px 48px}}
+
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(60px);animation:orbDrift var(--dur,20s) var(--delay,0s) infinite ease-in-out}
+.orb1{width:300px;height:300px;top:10%;left:-5%;background:rgba(120,80,220,0.12);--dur:18s}
+.orb2{width:250px;height:250px;top:50%;right:-8%;background:rgba(200,100,180,0.08);--dur:22s;--delay:3s}
+.orb3{width:200px;height:200px;bottom:5%;left:20%;background:rgba(80,180,200,0.06);--dur:15s;--delay:6s}
+@keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(20px,-30px) scale(1.1)}50%{transform:translate(-10px,20px) scale(0.9)}75%{transform:translate(15px,10px) scale(1.05)}}
+
+.hdr{text-align:center;margin-bottom:44px;animation:hdrFloat 5s ease-in-out infinite}
+@keyframes hdrFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hdr h1{
+  font-family:var(--font-dream);font-size:2.2rem;font-weight:400;
+  letter-spacing:0.5em;color:#ddd0ff;
+  text-shadow:0 0 20px var(--glow2),0 0 40px var(--glow),0 0 80px rgba(140,120,255,0.15);
+  position:relative;
+}
+.hdr h1::after{
+  content:'查 询';position:absolute;left:0;top:0;width:100%;
+  color:transparent;text-shadow:0 0 40px rgba(200,160,255,0.3);
+  animation:glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
+.hdr .sub{font-size:0.78rem;color:var(--text3);margin-top:10px;letter-spacing:0.25em;animation:subFade 4s ease-in-out infinite}
+@keyframes subFade{0%,100%{opacity:0.5}50%{opacity:1}}
+.hdr::after{
+  content:'✦ ─── ✧ ─── ✦';display:block;margin-top:16px;
+  font-size:0.7rem;color:var(--text3);letter-spacing:0.3em;opacity:0.4;
+}
+
+.input-wrap{
+  background:var(--card);border:1px solid var(--brd);
+  border-radius:16px;padding:24px 20px;margin-bottom:24px;
+  box-shadow:0 0 40px rgba(100,80,220,0.08),0 0 80px rgba(100,80,220,0.04);
+  transition:border-color 0.3s,box-shadow 0.3s,opacity 0.3s,max-height 0.4s;
+  position:relative;overflow:hidden;
+}
+.input-wrap.hidden{opacity:0;max-height:0;margin:0;padding:0;border:none;pointer-events:none}
+.input-wrap::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg,transparent,rgba(140,120,255,0.03),transparent,rgba(200,100,180,0.02),transparent);
+  animation:rotateBg 10s linear infinite;pointer-events:none;
+}
+@keyframes rotateBg{to{transform:rotate(360deg)}}
+.input-wrap>label{
+  display:block;font-size:0.72rem;color:var(--text3);
+  letter-spacing:0.15em;text-transform:uppercase;margin-bottom:10px;position:relative;z-index:1;
+}
+.input-wrap input{
+  width:100%;padding:13px 14px;background:var(--bg);
+  border:1px solid var(--brd);border-radius:10px;
+  color:#ede8ff;font-size:0.92rem;outline:none;
+  font-family:var(--font-sys);transition:border-color 0.2s,box-shadow 0.2s;
+  position:relative;z-index:1;
+}
+.input-wrap input:focus{border-color:rgba(160,140,255,0.5);box-shadow:0 0 12px rgba(140,120,255,0.15)}
+.input-wrap input::placeholder{color:var(--text3);opacity:0.6}
+.input-wrap .row{display:flex;gap:10px;margin-top:14px;position:relative;z-index:1}
+.input-wrap .row input{flex:1}
+.go{
+  padding:13px 28px;background:linear-gradient(135deg,var(--accent),#7766cc);
+  border:none;border-radius:10px;color:#f0eaff;font-size:0.92rem;
+  font-weight:600;cursor:pointer;white-space:nowrap;
+  transition:transform 0.15s,box-shadow 0.2s,opacity 0.2s;
+  letter-spacing:0.1em;box-shadow:0 2px 16px rgba(140,120,255,0.2);
+}
+.go:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(140,120,255,0.35)}
+.go:active{transform:translateY(0)}
+.go:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ─── breadcrumb (current elem indicator) ─── */
+.breadcrumb{
+  display:none;padding:12px 20px;margin-bottom:20px;
+  background:var(--card);border:1px solid var(--brd);border-radius:12px;
+  font-size:0.8rem;color:var(--text2);
+  align-items:center;gap:10px;
+  animation:fadeUp 0.3s ease;
+}
+.breadcrumb.show{display:flex}
+.breadcrumb .bc-icon{font-size:1rem}
+.breadcrumb .bc-label{color:var(--text3);font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase}
+.breadcrumb .bc-name{color:var(--text);font-weight:500}
+.breadcrumb .bc-home{
+  margin-left:auto;color:var(--accent);cursor:pointer;
+  font-size:0.75rem;padding:4px 10px;border-radius:6px;
+  border:1px solid var(--accent);
+  transition:background 0.2s;
+}
+.breadcrumb .bc-home:hover{background:rgba(153,136,238,0.15)}
+
+.status{
+  text-align:center;font-size:0.8rem;color:var(--text2);
+  margin-bottom:20px;min-height:22px;letter-spacing:0.05em;
+  text-shadow:0 0 10px var(--glow);
+}
+
+.result{display:none}
+.result.show{display:block;animation:fadeUp 0.5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.char-card{
+  background:var(--card);border:1px solid var(--brd);
+  border-radius:16px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.char-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,180,255,0.3),transparent);
+}
+.char-top{display:flex;align-items:center;gap:14px}
+.char-top img{
+  width:52px;height:52px;border-radius:12px;object-fit:cover;
+  background:var(--bg2);border:1px solid var(--brd);flex-shrink:0;
+  box-shadow:0 0 16px rgba(140,120,255,0.1);
+}
+.char-top .info{min-width:0;flex:1}
+.char-top .info h2{
+  font-family:var(--font-dream);font-size:1.1rem;font-weight:400;
+  color:#ece4ff;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.char-top .info .meta{font-size:0.75rem;color:var(--text2)}
+.char-tag{
+  font-size:0.68rem;padding:3px 10px;border-radius:5px;
+  flex-shrink:0;letter-spacing:0.05em;font-weight:500;
+}
+.ct-char{background:rgba(153,136,238,0.2);color:#ccbbff;border:1px solid rgba(153,136,238,0.3)}
+.ct-elem{background:rgba(128,238,187,0.15);color:#a0eecc;border:1px solid rgba(128,238,187,0.3)}
+.btn-back{
+  padding:6px 14px;background:var(--bg2);border:1px solid var(--brd);
+  border-radius:8px;color:var(--text2);font-size:0.75rem;cursor:pointer;
+  transition:border-color 0.2s,color 0.2s;letter-spacing:0.05em;margin-top:12px;
+}
+.btn-back:hover{border-color:var(--accent);color:var(--accent2)}
+
+.section{
+  background:var(--card);border:1px solid var(--brd);
+  border-radius:16px;overflow:hidden;margin-bottom:16px;position:relative;
+}
+.section::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,180,255,0.2),transparent);
+}
+.sec-head{padding:16px 20px 12px;display:flex;align-items:center;gap:8px}
+.sec-head .icon{font-size:1rem;opacity:0.8}
+.sec-head .label{
+  font-size:0.75rem;color:var(--text2);
+  letter-spacing:0.15em;text-transform:uppercase;font-weight:600;
+}
+.sec-head .count{
+  font-size:0.68rem;color:var(--text3);margin-left:auto;
+  background:var(--bg2);padding:2px 10px;border-radius:10px;border:1px solid var(--brd);
+}
+
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0 16px 16px}
+@media(max-width:480px){.compare-grid{grid-template-columns:1fr;gap:12px}}
+.compare-col{display:flex;flex-direction:column;align-items:center;gap:8px}
+.compare-col:not(:last-child){border-right:1px solid var(--brd);padding-right:12px}
+@media(max-width:480px){.compare-col:not(:last-child){border-right:none;border-bottom:1px solid var(--brd);padding-right:0;padding-bottom:12px}}
+.compare-label{font-size:0.7rem;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;font-weight:500}
+.compare-img{
+  width:100%;max-width:200px;aspect-ratio:1;object-fit:cover;
+  border-radius:10px;background:var(--bg2);border:1px solid var(--brd);
+  cursor:pointer;transition:transform 0.25s,border-color 0.25s,box-shadow 0.25s;
+}
+.compare-img:hover{transform:scale(1.03);border-color:rgba(160,140,255,0.4);box-shadow:0 0 20px rgba(140,120,255,0.15)}
+.compare-empty{
+  width:100%;max-width:200px;aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:1px dashed var(--brd);border-radius:10px;
+  font-size:0.8rem;color:var(--text3);
+}
+.pad-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:200px}
+
+.elem-list{padding:0 20px 20px;display:flex;flex-direction:column;gap:8px}
+.elem-item{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:var(--bg2);border-radius:12px;border:1px solid var(--brd);
+  cursor:pointer;transition:border-color 0.2s,background 0.2s,box-shadow 0.2s;
+}
+.elem-item:hover{border-color:rgba(160,140,255,0.4);background:rgba(28,28,70,0.9);box-shadow:0 0 16px rgba(140,120,255,0.1)}
+.elem-item .eimg-placeholder{
+  width:40px;height:40px;border-radius:10px;background:var(--brd);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:0.8rem;color:var(--text3);border:1px solid var(--brd);
+}
+.elem-item .info{min-width:0;flex:1}
+.elem-item .info .ename{
+  font-size:0.85rem;color:var(--text);font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.elem-item .arrow{color:var(--accent);font-size:0.9rem;flex-shrink:0}
+.elem-disclaimer{
+  padding:0 20px 16px;text-align:center;
+  font-size:0.68rem;color:var(--text3);opacity:0.5;line-height:1.6;
+}
+.elem-empty{padding:28px 20px 36px;text-align:center}
+.elem-empty .ghost{font-size:2rem;opacity:0.4;margin-bottom:8px;animation:ghostFloat 3s ease-in-out infinite}
+@keyframes ghostFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.elem-empty .msg{font-size:0.85rem;color:var(--text2)}
+.elem-empty .sub{font-size:0.72rem;color:var(--text3);margin-top:4px;opacity:0.6}
+
+.pad-empty{padding:28px 20px 36px;text-align:center}
+.pad-empty .ghost{font-size:2rem;opacity:0.4;margin-bottom:8px;animation:ghostFloat 3s ease-in-out infinite}
+.pad-empty .msg{font-size:0.85rem;color:var(--text2)}
+.pad-empty .sub{font-size:0.72rem;color:var(--text3);margin-top:4px;opacity:0.6}
+
+.lb{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(5,5,15,0.96);align-items:center;justify-content:center;
+  cursor:zoom-out;padding:20px;backdrop-filter:blur(8px);
+}
+.lb.open{display:flex}
+.lb img{
+  max-width:92vw;max-height:88vh;max-height:88dvh;
+  border-radius:10px;object-fit:contain;
+  box-shadow:0 0 60px rgba(0,0,0,0.6),0 0 120px rgba(100,80,220,0.1);
+}
+
+.loading{text-align:center;padding:40px 0}
+.loading .ring{
+  width:28px;height:28px;margin:0 auto 14px;
+  border:2px solid var(--brd);border-top-color:var(--accent);
+  border-radius:50%;animation:spin 0.8s linear infinite;
+  box-shadow:0 0 12px rgba(140,120,255,0.2);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{font-size:0.8rem;color:var(--text2);letter-spacing:0.1em}
+
+.empty{text-align:center;padding:60px 20px 40px}
+.empty .ico{font-size:2.6rem;opacity:0.25;margin-bottom:14px;animation:hdrFloat 4s ease-in-out infinite}
+.empty p{font-size:0.8rem;color:var(--text3);letter-spacing:0.1em}
+
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+.star{
+  position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;
+  animation:twinkle var(--dur,4s) var(--delay,0s) infinite ease-in-out;
+}
+@keyframes twinkle{0%,100%{opacity:0.1}50%{opacity:0.8}}
+
+.ftr{text-align:center;padding:36px 0 16px;font-size:0.65rem;color:var(--text3);opacity:0.35;letter-spacing:0.15em}
+
+.corner-tip{
+  position:absolute;top:16px;right:16px;z-index:2;
+  font-size:0.6rem;color:var(--text3);opacity:0.35;
+  letter-spacing:0.02em;line-height:1.7;text-align:right;
+}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="particles" id="particles"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="app">
+  <div class="corner-tip">
+    ✧ 拒绝引战<br>维护社区环境<br>从你做起<br><span style="opacity:0.7">—— 一只小眼睛 留</span>
+  </div>
+
+  <div class="hdr">
+    <h1>查 询</h1>
+    <div class="sub">垫 图 · 融 元 素</div>
+  </div>
+
+  <div class="input-wrap" id="inputWrap">
+    <label>粘贴角色或元素分享链接</label>
+    <input type="text" id="linkInput"
+      placeholder="https://t.nieta.art/xxxxxx"
+      autocomplete="off" spellcheck="false"
+      onkeydown="if(event.key==='Enter')go()">
+    <div class="row">
+      <div style="flex:1"></div>
+      <button class="go" id="goBtn" onclick="go()">查 询</button>
+    </div>
+  </div>
+
+  <div class="breadcrumb" id="breadcrumb">
+    <span class="bc-icon">🧬</span>
+    <span class="bc-label">当前：</span>
+    <span class="bc-name" id="bcName"></span>
+    <span class="bc-home" onclick="goBack()">← 返回上一级</span>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <div class="empty" id="emptyState">
+    <div class="ico">📦</div>
+    <p>粘贴捏 Ta 的分享链接</p>
+  </div>
+
+  <div class="result" id="result">
+    <div class="char-card" id="charCard"></div>
+    <div class="section" id="padSection"></div>
+    <div class="section" id="elemSection"></div>
+  </div>
+
+  <div class="ftr">仅供参考学习 · 禁止挂人引战</div>
+</div>
+
+<div class="lb" id="lb" onclick="this.classList.remove('open')">
+  <img id="lbImg" src="" alt="">
+</div>
+
+<script>
+const TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mzc3ODQxLCJ1dWlkIjoiOGM0ZDRhZTUwNjZlNDA1YWFkMWUwODliYjIyNWI4YjciLCJwaG9uZV9udW0iOiIxMzYyMTk3NDYwMiIsImV4cGlyZXNfYXQiOjE4MDY5NjY0NTAsImlzX3JlZ2lzdGVyIjpmYWxzZSwidXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChBbmRyb2lkIDE2OyBNb2JpbGU7IHJ2OjEyOC4wKSBHZWNrby8xMjguMCBGaXJlZm94LzEyOC4wIiwic2FsdCI6IjFiMzM3YzUxMDBhMDRlNzRiMzQwYTk3NGQ0NmY4MzMxIn0.LVt_wGoyRx3ahv8d4WZdhwzF1Xtid9Fnmm1zTgboqGM';
+const API='https://api.talesofai.cn';
+let busy=false;
+let currentType='';
+let currentName='';
+const $=id=>document.getElementById(id);
+
+// ─── navigation state ───
+const navStack=[]; // {type, name, uuid}
+let isNavigating=false;
+
+function pushNav(type,name,uuid){
+  navStack.push({type,name,uuid});
+  updateBreadcrumb();
+}
+function updateBreadcrumb(){
+  const bc=$('breadcrumb');
+  const inputWrap=$('inputWrap');
+  if(navStack.length>0){
+    bc.classList.add('show');
+    inputWrap.classList.add('hidden');
+    currentType=navStack[navStack.length-1].type;
+    currentName=navStack[navStack.length-1].name;
+    $('bcName').textContent=currentName;
+  }else{
+    bc.classList.remove('show');
+    inputWrap.classList.remove('hidden');
+  }
+}
+function goHome(){
+  navStack.length=0;
+  updateBreadcrumb();
+  $('result').classList.remove('show');
+  $('emptyState').style.display='';
+  status('');
+  $('linkInput').value='';
+}
+function goBack(){
+  if(navStack.length<2){
+    goHome();
+    return;
+  }
+  navStack.pop();
+  const prev=navStack[navStack.length-1];
+  if(prev.uuid)unbox(prev.uuid,true);
+  else updateBreadcrumb();
+}
+
+function status(s){$('status').textContent=s}
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+async function resolveShort(url){
+  const r=await fetch(API+'/v1/util/original-url?short_url='+encodeURIComponent(url),{headers:{'x-token':TOKEN}});
+  if(!r.ok)throw new Error('API '+r.status);
+  return await r.text();
+}
+
+function extractUUID(fullUrl){
+  const m=fullUrl.match(/uuid=([0-9a-f-]{36})/i);
+  return m?m[1]:null;
+}
+
+async function apiGet(path){
+  const r=await fetch(API+path,{headers:{'x-token':TOKEN}});
+  if(!r.ok)throw new Error('API '+r.status);
+  return r.json();
+}
+async function apiPut(path,body){
+  const r=await fetch(API+path,{
+    method:'PUT',headers:{'x-token':TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok)throw new Error('API '+r.status);
+  return r.json().catch(()=>null);
+}
+
+// ─── search by name to get UUID + item data ───
+async function searchByName(name){
+  const trim=name.trim();
+  // Try elementum first (most likely for 融元素), page_size=20
+  try{
+    const data=await apiGet('/v2/search/character_or_elementum?keywords='+encodeURIComponent(trim)+'&parent_type=elementum&sort_scheme=best&page_size=20');
+    // Exact match first, then fuzzy
+    let match=(data.list||[]).find(e=>e.name===trim);
+    if(!match)match=(data.list||[]).find(e=>e.name&&e.name.toLowerCase().includes(trim.toLowerCase()));
+    if(match)return{uuid:match.uuid,type:'elementum',name:match.name,item:match};
+  }catch(e){}
+  // Try character
+  try{
+    const data=await apiGet('/v2/search/character_or_elementum?keywords='+encodeURIComponent(trim)+'&parent_type=character&sort_scheme=best&page_size=20');
+    let match=(data.list||[]).find(e=>e.name===trim);
+    if(!match)match=(data.list||[]).find(e=>e.name&&e.name.toLowerCase().includes(trim.toLowerCase()));
+    if(match)return{uuid:match.uuid,type:'character',name:match.name,item:match};
+  }catch(e){}
+  return null;
+}
+
+async function findInFavorites(uuid){
+  try{
+    const favs=await apiGet('/v2/travel/parent/parent-favor/list?page_size=100&parent_type=oc');
+    const item=(favs.list||[]).find(f=>f.ref_uuid===uuid||f.uuid===uuid);
+    if(item&&item.oc)return{item,type:'character'};
+  }catch(e){}
+  try{
+    const favs=await apiGet('/v2/travel/parent/parent-favor/list?page_size=100&parent_type=elementum');
+    const item=(favs.list||[]).find(f=>f.ref_uuid===uuid||f.uuid===uuid);
+    if(item&&item.oc)return{item,type:'elementum'};
+  }catch(e){}
+  return null;
+}
+
+// ─── search sub-element by name (unique name → uuid + full data) ───
+async function findElementByName(name){
+  const found=await searchByName(name);
+  if(!found)return null;
+  // found has {uuid, type, name, item}
+  return found;
+}
+
+// ─── main unbox flow ───
+async function unbox(uuid,skipNav){
+  if(busy)return;busy=true;
+  const btn=$('goBtn');
+  btn.disabled=true;btn.textContent='查询中…';
+  $('emptyState').style.display='none';
+  $('result').classList.remove('show');
+
+  try{
+    status('检查收藏…');
+    let result=await findInFavorites(uuid);
+
+    if(!result){
+      status('收藏角色中…');
+      try{
+        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'oc',action:'favor'});
+        result=await findInFavorites(uuid);
+      }catch(e){}
+    }
+
+    if(!result){
+      status('收藏元素中…');
+      try{
+        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'elementum',action:'favor'});
+        result=await findInFavorites(uuid);
+      }catch(e){}
+    }
+
+    if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色');
+
+    status('提取数据…');
+    const name=result.item.name||'';
+    const type=result.type;
+
+    if(!skipNav){
+      pushNav(type,name,uuid);
+    }else{
+      pushNav(type,name,uuid);
+    }
+
+    render(result.item,type,name);
+
+    $('result').classList.add('show');
+    status('✦ 查询完成 ✦');
+  }catch(e){
+    status('查询失败：'+e.message);
+    $('emptyState').style.display='';
+  }
+  btn.disabled=false;btn.textContent='查 询';
+  busy=false;
+}
+
+// ─── open element by name search (unique name → uuid → unbox) ───
+async function openElemByNameSearch(name){
+  if(busy)return;busy=true;
+  $('emptyState').style.display='none';
+  $('result').classList.remove('show');
+
+  try{
+    status('搜索元素：'+name+'…');
+    const found=await findElementByName(name);
+    if(!found)throw new Error('找不到名为「'+name+'」的元素');
+
+    status('检查收藏…');
+    let favResult=await findInFavorites(found.uuid);
+
+    if(!favResult){
+      status('收藏元素中…');
+      try{
+        await apiPut('/v2/travel/parent/parent-favor',{uuid:found.uuid,parent_type:found.type==='character'?'oc':'elementum',action:'favor'});
+        favResult=await findInFavorites(found.uuid);
+      }catch(e){}
+    }
+
+    if(!favResult)throw new Error('收藏失败，可能被拉黑或元素未公开');
+
+    status('提取数据…');
+    pushNav(found.type,found.name,found.uuid);
+    render(favResult.item,found.type,found.name);
+
+    $('result').classList.add('show');
+    status('✦ 查询完成 ✦');
+  }catch(e){
+    status('查询失败：'+e.message);
+    $('emptyState').style.display='';
+  }
+  busy=false;
+}
+
+// ─── open element by UUID directly, fallback to name search ───
+async function openElemByUUID(uuid,name){
+  if(busy)return;busy=true;
+  $('emptyState').style.display='none';
+  $('result').classList.remove('show');
+
+  try{
+    status('检查收藏…');
+    let result=await findInFavorites(uuid);
+
+    if(!result){
+      status('收藏元素中…');
+      try{
+        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'elementum',action:'favor'});
+        result=await findInFavorites(uuid);
+      }catch(e){}
+    }
+
+    if(!result){
+      status('尝试角色收藏…');
+      try{
+        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'oc',action:'favor'});
+        result=await findInFavorites(uuid);
+      }catch(e){}
+    }
+
+    if(result){
+      // Got data from favorites — verify name matches (in case UUID resolved to wrong item)
+      const favName=result.item.name||'';
+      if(favName&&name&&favName!==name){
+        // Name mismatch — fall through to name search
+        result=null;
+      }
+    }
+
+    // Fallback: use unique name to search UUID and get correct data
+    if(!result){
+      status('通过名称搜索：'+name+'…');
+      const found=await findElementByName(name);
+      if(found){
+        status('收藏元素中…');
+        try{
+          await apiPut('/v2/travel/parent/parent-favor',{uuid:found.uuid,parent_type:found.type==='character'?'oc':'elementum',action:'favor'});
+          result=await findInFavorites(found.uuid);
+        }catch(e){}
+        if(result){
+          status('提取数据…');
+          pushNav(found.type,found.name,found.uuid);
+          render(result.item,found.type,found.name);
+          $('result').classList.add('show');
+          status('✦ 查询完成 ✦');
+          busy=false;
+          return;
+        }
+      }
+    }
+
+    if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色');
+
+    status('提取数据…');
+    const type=result.type;
+    pushNav(type,name,uuid);
+    render(result.item,type,name);
+
+    $('result').classList.add('show');
+    status('✦ 查询完成 ✦');
+  }catch(e){
+    status('查询失败：'+e.message);
+    $('emptyState').style.display='';
+  }
+  busy=false;
+}
+
+// ─── render ───
+function render(item,type,name){
+  const oc=item.oc||{};
+  const isChar=type==='character';
+  const cover=oc.url||oc.tachie_url||oc.avatar_img||'';
+  const creator=item.creator_nickname||item.creator_name||'';
+
+  // Back button
+  const canBack=navStack.length>1;
+
+  const annuonieMsg=creator==='安诺涅'?'<div class="meta creator-msg" style="margin-top:6px;font-size:0.72rem;color:var(--pink);opacity:0.85">👀 你在看什么呢，和我们也讲讲呗～</div>':'';
+
+  $('charCard').innerHTML=`
+    <div class="char-top">
+      ${cover?`<img src="${esc(cover)}" onerror="this.style.display='none'">`:''}
+      <div class="info">
+        <h2>${esc(name)}</h2>
+        <div class="meta">${creator?'by '+esc(creator):''}</div>
+        ${annuonieMsg}
+      </div>
+      <span class="char-tag ${isChar?'ct-char':'ct-elem'}">${isChar?'角色':'元素'}</span>
+    </div>
+    ${canBack?`<button class="btn-back" onclick="goBack()">← 返回上一个</button>`:''}`;
+
+  // Pad images
+  const pads=[];
+  const mixMeta=oc.mix_meta||[];
+  for(const m of mixMeta){
+    if(m.type==='ref_image'){
+      const imgUrl=m.image_url||m.original_image_url||'';
+      if(imgUrl)pads.push(imgUrl);
+    }
+    if(m.type==='comfy_direct'&&m.params){
+      const p=m.params;
+      if(p.ref_img_uuid){
+        if(p.ref_image_url) pads.push(p.ref_image_url);
+        else if(p.image_url) pads.push(p.image_url);
+      }
+      if(p.controlnetunit_tile_image_ref&&!pads.includes(p.controlnetunit_tile_image_ref)) pads.push(p.controlnetunit_tile_image_ref);
+    }
+    if(m.params&&m.params.img_uuid){
+      const u='https://oss.talesofai.cn/picture/'+m.params.img_uuid;
+      if(!pads.includes(u))pads.push(u);
+    }
+  }
+  const seen=new Set();
+  const uniquePads=[];
+  for(const u of pads){if(!seen.has(u)){seen.add(u);uniquePads.push(u)}}
+
+  $('padSection').innerHTML=`
+    <div class="sec-head">
+      <span class="icon">🔄</span>
+      <span class="label">垫图查询</span>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-label">封面图</div>
+        ${cover
+          ?`<img class="compare-img" src="${esc(cover)}" onclick="lb(this.src)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'compare-empty\\'>无封面</div>'">`
+          :`<div class="compare-empty">无封面</div>`}
+      </div>
+      <div class="compare-col">
+        <div class="compare-label">垫图 · ${uniquePads.length}张</div>
+        ${uniquePads.length>0
+          ?`<div class="pad-mini-grid">${uniquePads.map(u=>`<img class="compare-img" src="${esc(u)}" onclick="lb(this.src)" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`
+          :`<div class="compare-empty">无垫图</div>`}
+      </div>
+    </div>`;
+
+  // Element refs
+  const avts=oc.appearance_vtokens||[];
+  const elemRefs=[];
+  for(const vt of avts){
+    if(vt.uuid){
+      elemRefs.push({uuid:vt.uuid,name:vt.name||'未命名元素'});
+    }
+  }
+
+  const shuffled=shuffle(elemRefs);
+
+  if(shuffled.length>0){
+    $('elemSection').innerHTML=`
+      <div class="sec-head">
+        <span class="icon">🧬</span>
+        <span class="label">融元素</span>
+        <span class="count">${shuffled.length} 个</span>
+      </div>
+      <div class="elem-list">
+        ${shuffled.map(e=>`
+          <div class="elem-item" onclick="openElemByUUID('${e.uuid}','${esc(e.name).replace(/'/g,"\\'")}')">
+            <div class="eimg-placeholder">?</div>
+            <div class="info">
+              <div class="ename">${esc(e.name)}</div>
+            </div>
+            <span class="arrow">›</span>
+          </div>`).join('')}
+      </div>
+      <div class="elem-disclaimer">只为展示是否有融元素现象，展示顺序均为打乱且不显示权重，也不显示手动输入文字</div>`;
+  }else{
+    $('elemSection').innerHTML=`
+      <div class="sec-head">
+        <span class="icon">🧬</span>
+        <span class="label">融元素</span>
+      </div>
+      <div class="elem-empty">
+        <div class="ghost">🫧</div>
+        <div class="msg">没有融元素</div>
+        <div class="sub">纯手搓 · 没有垫图 · 没有混元素</div>
+      </div>`;
+  }
+}
+
+async function go(){
+  const raw=$('linkInput').value.trim();
+  if(!raw){status('贴个链接再查');return}
+
+  const urlMatch=raw.match(/https?:\/\/[^\s]+/);
+  const link=urlMatch?urlMatch[0]:raw;
+
+  if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(link)){
+    await unbox(link);return;
+  }
+
+  const directUUID=extractUUID(link);
+  if(directUUID){await unbox(directUUID);return}
+
+  if(link.includes('t.nieta.art')){
+    try{
+      status('解析分享链接…');
+      const fullUrl=await resolveShort(link);
+      const uuid=extractUUID(fullUrl);
+      if(!uuid){status('解析失败，拿不到 UUID');return}
+      await unbox(uuid);
+    }catch(e){
+      status('解析分享链接失败：'+e.message);
+    }
+  }else{
+    status('不认识的链接格式');
+  }
+}
+
+function lb(src){$('lbImg').src=src;$('lb').classList.add('open')}
+
+// ─── dreamcore effects ───
+(function initEffects(){
+  const starsEl=$('stars');
+  for(let i=0;i<50;i++){
+    const s=document.createElement('div');s.className='star';
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.setProperty('--dur',(2+Math.random()*6)+'s');
+    s.style.setProperty('--delay',(Math.random()*5)+'s');
+    if(Math.random()>0.7){s.style.width='3px';s.style.height='3px'}
+    starsEl.appendChild(s);
+  }
+  const partEl=$('particles');
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.setProperty('--dur',(8+Math.random()*14)+'s');
+    p.style.setProperty('--delay',(Math.random()*10)+'s');
+    const size=2+Math.random()*3;p.style.width=size+'px';p.style.height=size+'px';
+    partEl.appendChild(p);
+  }
+})();
+</script>
+</body>
+</html>

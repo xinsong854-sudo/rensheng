@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绫份 - 第一章：初现 - 里界物语</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', '宋体', serif; background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 50%, #0f3460 100%); min-height: 100vh; color: #4a4a4a; }
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(45, 27, 78, 0.95); backdrop-filter: blur(10px); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(74, 74, 74, 0.1); z-index: 1000; }
+        .nav-btn {
+            color: white; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); color: #4a4a4a; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 14px; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(168, 85, 247, 0.4); }
+        .nav-btn.secondary { background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%); }
+        .font-control { display: flex; align-items: center; gap: 10px; background: rgba(231, 76, 60, 0.1); padding: 8px 15px; border-radius: 20px; }
+        .font-btn { background: rgba(231, 76, 60, 0.2); border: none; color: #4a4a4a; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
+        .font-btn:hover { background: rgba(231, 76, 60, 0.3); transform: scale(1.1); }
+        .content-wrapper { max-width: 800px; margin: 100px auto 120px; padding: 50px 60px; background: rgba(45, 27, 78, 0.8); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+        .chapter-header { text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid rgba(231, 76, 60, 0.2); }
+        .chapter-title { font-size: 2.5em; color: #a855f7; margin-bottom: 15px; text-shadow: 0 0 30px rgba(168, 85, 247, 0.5); }
+        .chapter-subtitle { font-size: 1.2em; color: #8a8a8a; font-style: italic; }
+        .chapter-content { font-size: 18px; line-height: 2; text-align: justify; }
+        .chapter-content p { margin-bottom: 25px; text-indent: 2em; }
+        .chapter-content p:first-child { text-indent: 0; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(45, 27, 78, 0.95); backdrop-filter: blur(10px); padding: 20px 30px; display: flex; justify-content: center; gap: 30px; border-top: 1px solid rgba(74, 74, 74, 0.1); z-index: 1000; }
+        .page-btn {
+            color: white; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); color: #4a4a4a; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; }
+        .page-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(168, 85, 247, 0.5); }
+        .page-btn.disabled { background: rgba(231, 76, 60, 0.1); cursor: not-allowed; transform: none; box-shadow: none; }
+        .toc-panel { position: fixed; top: 80px; right: -350px; width: 320px; background: rgba(45, 27, 78, 0.98); border-radius: 20px 0 0 20px; padding: 30px; transition: right 0.3s ease; z-index: 999; border: 1px solid rgba(74, 74, 74, 0.1); border-right: none; box-shadow: -5px 0 20px rgba(0,0,0,0.08); max-height: calc(100vh - 100px); overflow-y: auto; }
+        .toc-panel.open { right: 0; }
+        .toc-title { font-size: 1.5em; color: #a855f7; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(74, 74, 74, 0.1); }
+        .toc-list { list-style: none; }
+        .toc-list li { margin-bottom: 12px; }
+        .toc-list a { color: #4a4a4a; text-decoration: none; padding: 10px 15px; display: block; border-radius: 10px; transition: all 0.3s ease; }
+        .toc-list a:hover, .toc-list a.active { background: rgba(168, 85, 247, 0.3); color: #a855f7; }
+        .toc-toggle { position: fixed; top: 100px; right: 0; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); color: #4a4a4a; border: none; padding: 15px 12px; border-radius: 10px 0 0 10px; cursor: pointer; z-index: 998; transition: all 0.3s ease; }
+        @media (max-width: 768px) { .content-wrapper { margin: 80px auto 100px; padding: 25px; } .chapter-title { font-size: 1.8em; } .chapter-content { font-size: 16px; } .top-nav { padding: 12px 20px; flex-wrap: wrap; gap: 10px; } .toc-panel { width: 280px; right: -300px; } }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="../../index.html" class="nav-btn">← 返回</a>
+            <a href="#" class="nav-btn secondary" onclick="toggleTOC()">📑 目录</a>
+        </div>
+        <div class="font-control">
+            <span>字体:</span>
+            <button class="font-btn" onclick="adjustFont(-1)">A-</button>
+            <span id="fontSize">18</span>
+            <button class="font-btn" onclick="adjustFont(1)">A+</button>
+        </div>
+        <div class="nav-right">
+            <a href="#" class="nav-btn" onclick="toggleSettings()">⚙️ 设置</a>
+        </div>
+    </nav>
+    <button class="toc-toggle" onclick="toggleTOC()">☰</button>
+    <div class="toc-panel" id="tocPanel">
+        <h3 class="toc-title">📖 绫份章节</h3>
+        <ul class="toc-list">
+            <li><a href="lingfen_ch1.html" class="active">第一章：初现</a></li>
+            <li><a href="lingfen_ch2.html">第二章：觉醒</a></li>
+            <li><a href="lingfen_ch3.html">第三章：交锋</a></li>
+            <li><a href="lingfen_ch4.html">第四章：归途</a></li>
+        </ul>
+    </div>
+    <div class="content-wrapper">
+        <div class="chapter-header">
+            <h1 class="chapter-title">第一章：初现</h1>
+            <p class="chapter-subtitle">绫份 · 白夜叉的战斗</p>
+        </div>
+        <div class="chapter-content" id="content">
+            <p>深夜的槐安公寓楼顶，一个纤细的身影静静站立。</p>
+            
+            <p>绫份望着远方城市闪烁的霓虹，夜风吹起她黑色的长发。她脖子上那枚陈旧的银色十字架项链在月光下泛着微光。</p>
+            
+            <p>「有架打吗？」她轻声自语，嘴角扬起一抹期待的笑意。</p>
+            
+            <p>作为槐安公寓的居民，绫份在这里已经住了三个月。表面上，她是个普通的 17 岁少女，但实际上——她是「白夜叉」，一个让高危伪人闻风丧胆的格斗大师。</p>
+            
+            <p>她的手机突然震动起来，是营长发来的消息：「东区废弃工厂，DANGER 级伪人出现。对伪课正在赶来的路上，但你离得更近。」</p>
+            
+            <p>绫份的眼睛亮了起来：「终于来了。」</p>
+            
+            <p>她身形一闪，从九层楼顶一跃而下。在下落的过程中，她的身体在空中翻转，稳稳地落在地面，几乎没有发出任何声音。</p>
+            
+            <p>十五分钟后，绫份到达了废弃工厂。这里曾经是城市的工业区，现在已经荒废多年。破旧的厂房在月光下投出诡异的影子，像是某种潜伏的巨兽。</p>
+            
+            <p>她推开生锈的铁门，走进了厂房内部。</p>
+            
+            <p>里面很黑，但绫份不需要光线。她的直觉告诉她，目标就在前方。</p>
+            
+            <p>突然，一阵腥风扑面而来。绫份侧身闪避，一个巨大的身影从黑暗中扑出——那是一只拟人蝎，四臂结构，蝎尾高高扬起，尾端的毒腺散发着幽绿的光芒。</p>
+            
+            <p>「橙色危险度，夜行性。」绫份迅速分析着，「四臂结构意味着近身战斗有优势，但灵活性不足。」</p>
+            
+            <p>拟人蝎发出一声嘶吼，四只手臂同时挥出。绫份不退反进，身形如鬼魅般穿梭在攻击的缝隙中。</p>
+            
+            <p>「太慢了。」</p>
+            
+            <p>她一拳击中拟人蝎的腹部，力量之大让这只两米高的伪人倒飞出去，撞在墙上。但拟人蝎很快又站了起来，似乎并没有受到太大伤害。</p>
+            
+            <p>「物理攻击效果有限。」绫份皱眉，「需要更强的打击。」</p>
+            
+            <p>她伸手到背后，握住了两把剑的剑柄。一把是普通的长剑「凌」，另一把则是散发着诡异气息的伪物长剑——「露」。</p>
+            
+            <p>「露」是由她父母的骨头制成的伪物，拥有特殊的能力：拔出后，所有能力翻倍，同时在下一次攻击时给予目标绫份所受到的伤害。</p>
+            
+            <p>但她没有立刻拔出「露」。这把剑是最后的底牌，只有在真正危险的时候才能使用。</p>
+            
+            <p>「先来热热身吧。」绫份握住「凌」，摆出战斗姿态。</p>
+            
+            <p>拟人蝎再次扑来，这一次它的速度明显提升了。绫份挥舞长剑，剑光在黑暗中划出一道道银色的轨迹。</p>
+            
+            <p>一剑、两剑、三剑……</p>
+            
+            <p>每一剑都精准地命中拟人蝎的关节处，这是她自创的「绫流体术」的精髓——找到敌人最薄弱的地方，给予致命打击。</p>
+            
+            <p>终于，拟人蝎的蝎尾被斩断，它发出痛苦的嘶吼，想要逃跑。</p>
+            
+            <p>「想跑？」绫份冷笑，「晚了。」</p>
+            
+            <p>她身形如电，瞬间追上拟人蝎，一剑刺穿了它的心脏。伪人的身体开始崩解，化作黑色的颗粒消散在空气中。</p>
+            
+            <p>战斗结束。</p>
+            
+            <p>绫份收起长剑，擦了擦额头的汗水。这时，她的手机再次震动，是营长的消息：「干得不错。不过……有件事需要你注意。」</p>
+            
+            <p>「什么？」</p>
+            
+            <p>「这只拟人蝎不是自然出现的。有人在故意释放高危伪人，而且……目标可能是你。」</p>
+            
+            <p>绫份握紧手机，眼中闪过一丝兴奋的光芒：「终于有像样的对手了。」</p>
+            
+            <p>她不知道的是，在远处的黑暗中，一双眼睛正注视着她。那是来自西陆联盟的眼睛，一个与伪神有关的阴谋，正在悄然展开。</p>
+            
+            <p>而绫份的旅程，才刚刚开始。</p>
+        </div>
+    </div>
+    <div class="bottom-nav">
+        <span class="page-btn disabled">← 上一章</span>
+        <a href="lingfen_ch2.html" class="page-btn">下一章 →</a>
+    </div>
+    <script>
+        let currentFontSize = 18;
+        function adjustFont(delta) { currentFontSize = Math.max(14, Math.min(24, currentFontSize + delta)); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; localStorage.setItem('readerFontSize', currentFontSize); }
+        const savedFontSize = localStorage.getItem('readerFontSize'); if (savedFontSize) { currentFontSize = parseInt(savedFontSize); document.getElementById('fontSize').textContent = currentFontSize; document.getElementById('content').style.fontSize = currentFontSize + 'px'; }
+        function toggleTOC() { document.getElementById('tocPanel').classList.toggle('open'); }
+        function toggleSettings() { alert('设置功能开发中...'); }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { window.location.href = 'lingfen_ch2.html'; } else if (e.key === 'Escape') { document.getElementById('tocPanel').classList.remove('open'); } });
+    </script>
+</body>
+</html>

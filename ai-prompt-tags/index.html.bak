@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 生图描述词分类大全 - Danbooru 版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .category {
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .category-header:hover {
+            background: #e9ecef;
+        }
+        
+        .category-title {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        
+        .category-count {
+            color: #7f8c8d;
+            font-size: 0.85em;
+        }
+        
+        .category-icon {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .category.expanded .category-icon {
+            transform: rotate(90deg);
+        }
+        
+        .subcategory {
+            margin: 10px 0;
+        }
+        
+        .subcategory-header {
+            padding: 10px 20px 10px 30px;
+            background: #fafafa;
+            cursor: pointer;
+            font-weight: 500;
+            color: #34495e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .subcategory-header:hover {
+            background: #f0f0f0;
+        }
+        
+        .subcategory-icon {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+        
+        .subcategory.expanded .subcategory-icon {
+            transform: rotate(90deg);
+        }
+        
+        .tags-container {
+            display: none;
+            padding: 10px 20px 10px 40px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .subcategory.expanded + .tags-container {
+            display: flex;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .tag:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tag:active {
+            background: #bbdefb;
+            transform: translateY(0);
+        }
+        
+        .tag-copied {
+            background: #4caf50 !important;
+            color: white;
+            border-color: #4caf50 !important;
+        }
+        
+        .tag-en {
+            font-family: "Consolas", "Monaco", monospace;
+            color: #1976d2;
+            margin-right: 8px;
+        }
+        
+        .tag-cn {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .stats {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .stats-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        
+        .stats-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .expand-all {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .expand-btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+        
+        .expand-btn.primary {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .expand-btn.primary:hover {
+            background: #1976d2;
+        }
+        
+        .expand-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .expand-btn.secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.4em;
+            }
+            
+            .tag {
+                font-size: 0.8em;
+                padding: 4px 8px;
+            }
+            
+            .tag-en {
+                font-size: 0.9em;
+            }
+            
+            .tag-cn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI 生图描述词分类大全</h1>
+        <p class="subtitle">Danbooru 风格标签库 · 点击标签复制 · 中文不可复制</p>
+        
+        <div class="stats">
+            <div class="stats-number" id="total-tags">0</div>
+            <div class="stats-label">总标签数</div>
+        </div>
+        
+        <div class="expand-all">
+            <button class="expand-btn primary" onclick="expandAll()">全部展开</button>
+            <button class="expand-btn secondary" onclick="collapseAll()">全部收起</button>
+        </div>
+        
+        <div id="categories"></div>
+    </div>
+    
+    <div class="toast" id="toast">已复制！</div>
+    
+    <script>
+        const tagData = [
+            {
+                name: "零、颜色篇",
+                subcategories: [
+                    {
+                        name: "基础色",
+                        tags: [
+                            ["red", "红色"], ["blue", "蓝色"], ["green", "绿色"], ["yellow", "黄色"],
+                            ["orange", "橙色"], ["purple", "紫色"], ["pink", "粉色"], ["brown", "棕色"],
+                            ["black", "黑色"], ["white", "白色"], ["gray", "灰色"], ["grey", "灰色（英式）"]
+                        ]
+                    },
+                    {
+                        name: "红色系",
+                        tags: [
+                            ["crimson", "深红"], ["scarlet", "绯红"], ["ruby", "红宝石色"], ["maroon", "栗色"],
+                            ["burgundy", "酒红"], ["cherry", "樱桃红"], ["rose", "玫瑰红"], ["coral", "珊瑚红"],
+                            ["salmon", "鲑鱼红"], ["tomato", "番茄红"], ["vermilion", "朱红"], ["cinnabar", "朱砂红"],
+                            ["cardinal", "红衣主教红"], ["brick_red", "砖红"], ["mahogany", "桃花心木色"], ["chestnut", "栗色"],
+                            ["copper", "铜色"], ["bronze", "青铜色"]
+                        ]
+                    },
+                    {
+                        name: "蓝色系",
+                        tags: [
+                            ["navy", "海军蓝"], ["midnight_blue", "午夜蓝"], ["royal_blue", "宝蓝"], ["sapphire", "蓝宝石色"],
+                            ["cobalt", "钴蓝"], ["azure", "天蓝"], ["cerulean", "蔚蓝"], ["sky_blue", "天蓝色"],
+                            ["light_blue", "浅蓝"], ["pale_blue", "淡蓝"], ["powder_blue", "粉末蓝"], ["baby_blue", "婴儿蓝"],
+                            ["ice_blue", "冰蓝"], ["cyan", "青色"], ["turquoise", "绿松石色"], ["teal", "蓝绿色"],
+                            ["aqua", "水蓝色"], ["aquamarine", "海蓝宝石色"], ["ocean", "海洋蓝"], ["indigo", "靛蓝"],
+                            ["slate_blue", "石板蓝"], ["steel_blue", "钢蓝"], ["periwinkle", "紫藤蓝"], ["lavender", "薰衣草色"],
+                            ["violet", "紫罗兰色"], ["plum", "梅子色"], ["amethyst", "紫水晶色"]
+                        ]
+                    },
+                    {
+                        name: "绿色系",
+                        tags: [
+                            ["lime", "青柠绿"], ["chartreuse", "黄绿色"], ["olive", "橄榄绿"], ["forest_green", "森林绿"],
+                            ["emerald", "祖母绿"], ["jade", "玉色"], ["mint", "薄荷绿"], ["seafoam", "海沫绿"],
+                            ["sage", "鼠尾草绿"], ["moss", "苔藓绿"], ["khaki", "卡其绿"], ["army_green", "军绿"],
+                            ["camouflage", "迷彩绿"], ["pine", "松绿"], ["kelly_green", "凯利绿"], ["shamrock", "三叶草绿"],
+                            ["spring_green", "春绿"], ["leaf_green", "叶绿"], ["grass_green", "草绿"], ["yellow_green", "黄绿"],
+                            ["dark_green", "深绿"], ["light_green", "浅绿"], ["neon_green", "荧光绿"]
+                        ]
+                    },
+                    {
+                        name: "黄色系",
+                        tags: [
+                            ["gold", "金色"], ["golden", "金色"], ["yellow", "黄色"], ["lemon", "柠檬黄"],
+                            ["canary", "金丝雀黄"], ["banana", "香蕉黄"], ["cream", "奶油黄"], ["butter", "黄油黄"],
+                            ["wheat", "麦色"], ["beige", "米色"], ["tan", "棕褐色"], ["sand", "沙色"],
+                            ["ochre", "赭石黄"], ["mustard", "芥末黄"], ["amber", "琥珀黄"], ["honey", "蜂蜜黄"],
+                            ["maize", "玉米黄"], ["sunflower", "向日葵黄"], ["egg_yolk", "蛋黄"], ["mango", "芒果黄"],
+                            ["peach", "蜜桃黄"], ["apricot", "杏黄"]
+                        ]
+                    },
+                    {
+                        name: "橙色系",
+                        tags: [
+                            ["orange", "橙色"], ["tangerine", "橘色"], ["mandarin", "柑橘色"], ["cantaloupe", "哈密瓜橙"],
+                            ["persimmon", "柿子橙"], ["papaya", "木瓜橙"], ["carrot", "胡萝卜橙"], ["pumpkin", "南瓜橙"],
+                            ["terracotta", "赤陶橙"], ["burnt_orange", "焦橙"], ["dark_orange", "深橙"], ["light_orange", "浅橙"],
+                            ["neon_orange", "荧光橙"], ["coral", "珊瑚橙"]
+                        ]
+                    },
+                    {
+                        name: "紫色系",
+                        tags: [
+                            ["purple", "紫色"], ["violet", "紫罗兰色"], ["lavender", "薰衣草紫"], ["lilac", "丁香紫"],
+                            ["plum", "梅子紫"], ["eggplant", "茄子紫"], ["aubergine", "茄紫色"], ["grape", "葡萄紫"],
+                            ["wine", "葡萄酒紫"], ["mulberry", "桑葚紫"], ["magenta", "品红"], ["fuchsia", "紫红色"],
+                            ["orchid", "兰花紫"], ["mauve", "淡紫"], ["amethyst", "紫水晶色"], ["royal_purple", "皇家紫"],
+                            ["deep_purple", "深紫"], ["dark_purple", "深紫"], ["light_purple", "浅紫"], ["neon_purple", "荧光紫"]
+                        ]
+                    },
+                    {
+                        name: "粉色系",
+                        tags: [
+                            ["pink", "粉色"], ["hot_pink", "亮粉"], ["deep_pink", "深粉"], ["light_pink", "浅粉"],
+                            ["pale_pink", "淡粉"], ["baby_pink", "婴儿粉"], ["pastel_pink", "柔和粉"], ["dusty_pink", "灰粉"],
+                            ["rose", "玫瑰粉"], ["rose_gold", "玫瑰金"], ["blush", "腮红粉"], ["coral_pink", "珊瑚粉"],
+                            ["salmon_pink", "鲑鱼粉"], ["peach", "蜜桃粉"], ["cherry_blossom", "樱花粉"], ["sakura", "樱花粉"],
+                            ["magenta", "品红粉"], ["fuchsia", "紫红粉"], ["cerise", "樱桃红粉"]
+                        ]
+                    },
+                    {
+                        name: "棕褐色系",
+                        tags: [
+                            ["brown", "棕色"], ["tan", "棕褐色"], ["beige", "米色"], ["cream", "奶油色"],
+                            ["ivory", "象牙色"], ["eggshell", "蛋壳色"], ["off_white", "灰白"], ["snow", "雪白"],
+                            ["pearl", "珍珠白"], ["champagne", "香槟色"], ["nude", "裸色"], ["skin_tone", "肤色"],
+                            ["light_skin", "浅色皮肤"], ["medium_skin", "中等肤色"], ["dark_skin", "深色皮肤"], ["pale_skin", "苍白皮肤"],
+                            ["tanned_skin", "晒黑皮肤"], ["olive_skin", "橄榄色皮肤"], ["honey", "蜂蜜棕"], ["caramel", "焦糖棕"],
+                            ["toffee", "太妃糖棕"], ["chocolate", "巧克力棕"], ["dark_chocolate", "黑巧克力"], ["milk_chocolate", "牛奶巧克力"],
+                            ["white_chocolate", "白巧克力"], ["cocoa", "可可棕"], ["coffee", "咖啡棕"], ["espresso", "浓缩咖啡"],
+                            ["latte", "拿铁棕"], ["mocha", "摩卡棕"], ["chestnut", "栗色"], ["mahogany", "桃花心木色"],
+                            ["walnut", "核桃棕"], ["hazel", "榛色"], ["almond", "杏仁棕"], ["taupe", "灰褐色"],
+                            ["greige", "灰米色"], ["charcoal", "炭色"], ["slate", "石板色"]
+                        ]
+                    },
+                    {
+                        name: "黑白灰色系",
+                        tags: [
+                            ["black", "黑色"], ["jet_black", "煤黑色"], ["onyx", "玛瑙黑"], ["ebony", "乌木黑"],
+                            ["pitch_black", "沥青黑"], ["midnight", "午夜黑"], ["shadow", "阴影黑"], ["charcoal", "炭黑"],
+                            ["soot", "煤烟黑"], ["ink", "墨水黑"], ["obsidian", "黑曜石色"], ["coal", "煤炭黑"],
+                            ["dark_grey", "深灰"], ["grey", "灰色"], ["gray", "灰色（美式）"], ["light_grey", "浅灰"],
+                            ["pale_grey", "淡灰"], ["silver", "银色"], ["platinum", "铂金"], ["sterling", "纯银"],
+                            ["pewter", "白镴色"], ["nickel", "镍色"], ["chrome", "铬色"], ["steel", "钢色"],
+                            ["iron", "铁色"], ["slate", "石板灰"], ["graphite", "石墨灰"], ["ash", "灰白色"],
+                            ["smoke", "烟灰色"], ["mist", "雾灰色"], ["fog", "雾色"], ["cloud", "云灰色"],
+                            ["white", "白色"], ["pure_white", "纯白"], ["frost", "霜白"], ["ice", "冰白"],
+                            ["glacier", "冰川白"], ["vanilla", "香草白"], ["cotton", "棉花白"], ["linen", "亚麻白"],
+                            ["silk", "丝绸白"], ["satin", "缎面白"], ["porcelain", "瓷白"], ["bone", "骨白"],
+                            ["chalk", "粉笔白"], ["lily", "百合白"], ["jasmine", "茉莉白"]
+                        ]
+                    },
+                    {
+                        name: "金属色",
+                        tags: [
+                            ["gold", "金色"], ["silver", "银色"], ["bronze", "青铜色"], ["copper", "铜色"],
+                            ["brass", "黄铜色"], ["platinum", "铂金色"], ["chrome", "铬色"], ["nickel", "镍色"],
+                            ["steel", "钢色"], ["iron", "铁色"], ["titanium", "钛色"], ["aluminum", "铝色"],
+                            ["tin", "锡色"], ["lead", "铅色"], ["zinc", "锌色"], ["mercury", "水银色"],
+                            ["rose_gold", "玫瑰金"], ["white_gold", "白金"], ["yellow_gold", "黄金"], ["red_gold", "红金"],
+                            ["green_gold", "绿金"], ["pink_gold", "粉金"], ["champagne_gold", "香槟金"]
+                        ]
+                    },
+                    {
+                        name: "特殊效果",
+                        tags: [
+                            ["transparent", "透明"], ["translucent", "半透明"], ["opaque", "不透明"],
+                            ["monochrome", "单色"], ["grayscale", "灰度"], ["black_and_white", "黑白"],
+                            ["sepia", "棕褐色"], ["vintage", "复古"], ["retro", "复古"], ["desaturated", "去饱和"],
+                            ["saturated", "饱和"], ["oversaturated", "过饱和"], ["vivid_colors", "鲜艳色彩"],
+                            ["pale_colors", "淡色"], ["muted_colors", "柔和色彩"], ["pastel_colors", "粉彩色"],
+                            ["bright_colors", "明亮色彩"], ["dark_colors", "深色"], ["light_colors", "浅色"],
+                            ["washed_out", "褪色"], ["faded", "褪色"], ["neon_colors", "霓虹色"], ["fluorescent", "荧光"],
+                            ["metallic", "金属色"], ["pearlescent", "珍珠色"], ["iridescent", "彩虹光泽"],
+                            ["holographic", "全息"], ["prismatic", "棱镜色"], ["rainbow", "彩虹色"],
+                            ["glowing", "发光"], ["luminescent", "发光"], ["phosphorescent", "磷光"],
+                            ["warm_colors", "暖色"], ["cool_colors", "冷色"], ["complementary_colors", "互补色"],
+                            ["analogous_colors", "类似色"], ["triadic_colors", "三色配色"], ["monochromatic", "单色配色"],
+                            ["polychromatic", "多色配色"], ["limited_palette", "有限配色"], ["restricted_palette", "限制配色"],
+                            ["palette_swap", "配色交换"], ["color_swap", "颜色交换"], ["inverted_colors", "反转颜色"],
+                            ["negative", "负片"], ["high_contrast", "高对比度"], ["low_contrast", "低对比度"],
+                            ["color_contrast", "颜色对比"], ["tonal_contrast", "色调对比"], ["value_contrast", "明度对比"],
+                            ["gradient", "渐变"], ["ombre", "渐变"], ["two-tone", "双色"], ["multicolored", "多色"],
+                            ["colorful", "多彩"], ["achromatic", "无彩色"], ["chromatic", "彩色"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "一、眼睛篇",
+                subcategories: [
+                    {
+                        name: "眼型",
+                        tags: [
+                            ["tsurime", "吊眼"], ["tareme", "垂眼"], ["round_eyes", "圆眼"], ["narrow_eyes", "细长眼"],
+                            ["closed_eyes", "闭眼"], ["half-closed_eyes", "半睁眼"], ["wide_eyes", "睁大眼"],
+                            ["slit_pupils", "细瞳"], ["dot_eyes", "点状瞳"], ["empty_eyes", "无神眼"],
+                            ["sparkling_eyes", "闪亮眼"], ["dilated_pupils", "放大瞳孔"], ["contracted_pupils", "收缩瞳孔"],
+                            ["ringed_eyes", "环状瞳孔"], ["cross-shaped_pupils", "十字瞳孔"], ["plus-shaped_eyes", "加号眼"],
+                            ["x-shaped_pupils", "X 形瞳孔"], ["swirl_eyes", "漩涡眼"], ["hypnotic_eyes", "催眠眼"],
+                            ["galaxy_eyes", "星系眼"], ["fire_eyes", "火焰眼"], ["ice_eyes", "冰晶眼"], ["lightning_eyes", "闪电眼"]
+                        ]
+                    },
+                    {
+                        name: "瞳孔颜色",
+                        tags: [
+                            ["blue_eyes", "蓝瞳"], ["red_eyes", "红瞳"], ["green_eyes", "绿瞳"], ["purple_eyes", "紫瞳"],
+                            ["yellow_eyes", "黄瞳"], ["orange_eyes", "橙瞳"], ["pink_eyes", "粉瞳"], ["brown_eyes", "棕瞳"],
+                            ["black_eyes", "黑瞳"], ["gray_eyes", "灰瞳"], ["silver_eyes", "银瞳"], ["gold_eyes", "金瞳"],
+                            ["white_eyes", "白瞳"], ["heterochromia", "异色瞳"], ["gradient_eyes", "渐变瞳孔"]
+                        ]
+                    },
+                    {
+                        name: "眼神表情",
+                        tags: [
+                            ["teary_eyes", "含泪眼"], ["crying", "哭泣"], ["smiling_eyes", "笑眼"], ["glaring", "瞪视"],
+                            ["looking_at_viewer", "注视观众"], ["looking_away", "视线移开"], ["looking_up", "向上看"],
+                            ["looking_down", "向下看"], ["looking_sideways", "侧视"], ["eye_reflection", "眼内反光"],
+                            ["covered_eyes", "遮住眼睛"], ["one_eye_covered", "单眼遮盖"]
+                        ]
+                    },
+                    {
+                        name: "睫毛",
+                        tags: [
+                            ["long_eyelashes", "长睫毛"], ["thick_eyelashes", "浓密睫毛"], ["curled_eyelashes", "卷翘睫毛"],
+                            ["lower_lashes", "下睫毛"], ["upper_lashes", "上睫毛"]
+                        ]
+                    },
+                    {
+                        name: "眼部装饰",
+                        tags: [
+                            ["eye_makeup", "眼妆"], ["eyeliner", "眼线"], ["red_eyeliner", "红色眼线"],
+                            ["blue_eyeliner", "蓝色眼线"], ["green_eyeliner", "绿色眼线"], ["purple_eyeliner", "紫色眼线"],
+                            ["pink_eyeliner", "粉色眼线"], ["white_eyeliner", "白色眼线"], ["black_eyeliner", "黑色眼线"],
+                            ["brown_eyeliner", "棕色眼线"], ["silver_eyeliner", "银色眼线"], ["gold_eyeliner", "金色眼线"],
+                            ["glitter_eyeliner", "闪粉眼线"], ["liquid_eyeliner", "液体眼线"], ["pencil_eyeliner", "眼线笔"],
+                            ["gel_eyeliner", "凝胶眼线"], ["winged_eyeliner", "翼状眼线"], ["cat_eyeliner", "猫眼眼线"],
+                            ["smudged_eyeliner", "晕染眼线"], ["thick_eyeliner", "粗眼线"], ["thin_eyeliner", "细眼线"],
+                            ["upper_eyeliner", "上眼线"], ["lower_eyeliner", "下眼线"], ["double_eyeliner", "双层眼线"],
+                            ["graphic_eyeliner", "图形眼线"], ["colored_eyeliner", "彩色眼线"], ["eyeshadow", "眼影"],
+                            ["mascara", "睫毛膏"], ["false_eyelashes", "假睫毛"], ["colored_contacts", "彩色隐形眼镜"],
+                            ["circle_lenses", "美瞳"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "二、头发篇",
+                subcategories: [
+                    {
+                        name: "长度",
+                        tags: [
+                            ["long_hair", "长发"], ["medium_hair", "中长发"], ["short_hair", "短发"],
+                            ["very_long_hair", "超长发"], ["absurdly_long_hair", "夸张长发"]
+                        ]
+                    },
+                    {
+                        name: "质感",
+                        tags: [
+                            ["straight_hair", "直发"], ["curly_hair", "卷发"], ["wavy_hair", "波浪发"],
+                            ["messy_hair", "凌乱发"], ["bed_hair", "睡乱发"], ["afro", "爆炸头"],
+                            ["bouffant", "蓬发"], ["silky_hair", "丝滑发"], ["glossy_hair", "光泽发"],
+                            ["matte_hair", "哑光发"], ["frizzy_hair", "毛躁发"], ["tangled_hair", "纠结发"],
+                            ["smooth_hair", "顺滑发"], ["rough_hair", "粗糙发"], ["fine_hair", "细软发"],
+                            ["thick_hair", "粗硬发"], ["thin_hair", "稀疏发"], ["dense_hair", "浓密发"],
+                            ["oily_hair", "油腻发"], ["dry_hair", "干燥发"], ["damaged_hair", "受损发"],
+                            ["healthy_hair", "健康发"], ["shiny_hair", "闪亮发"], ["dull_hair", "暗淡发"],
+                            ["wet_hair", "湿发"], ["oiled_hair", "油发"], ["powdered_hair", "粉发"],
+                            ["crystal_hair", "水晶发"], ["gem_hair", "宝石发"], ["diamond_hair", "钻石发"],
+                            ["fire_hair", "火焰发"], ["ice_hair", "冰发"], ["lightning_hair", "闪电力"],
+                            ["galaxy_hair", "星系发"], ["rainbow_hair", "彩虹发"], ["holographic_hair", "全息发"],
+                            ["glowing_hair", "发光发"], ["silky_hair", "丝滑发"], ["glossy_hair", "光泽发"]
+                        ]
+                    },
+                    {
+                        name: "刘海",
+                        tags: [
+                            ["bangs", "刘海"], ["blunt_bangs", "齐刘海"], ["side_swept_bangs", "斜刘海"],
+                            ["hime_cut", "姬发式"], ["m-shaped_bangs", "M 字刘海"], ["see-through_bangs", "空气刘海"],
+                            ["baby_bangs", "婴儿刘海"], ["eye_covering_bangs", "遮眼刘海"], ["forehead", "露额头"],
+                            ["widows_peak", "美人尖"], ["hair_intakes", "鬓角发"], ["ahoge", "呆毛"],
+                            ["antenna_hair", "天线发"], ["cowlick", "逆毛"], ["textured_bangs", "纹理刘海"],
+                            ["layered_bangs", "层次刘海"], ["wispy_bangs", "轻薄刘海"], ["curtain_bangs", "窗帘刘海"],
+                            ["birkin_bangs", "伯金刘海"], ["french_bangs", "法式刘海"], ["korean_bangs", "韩式刘海"],
+                            ["japanese_bangs", "日式刘海"], ["chinese_bangs", "中式刘海"], ["vintage_bangs", "复古刘海"],
+                            ["modern_bangs", "现代刘海"], ["classic_bangs", "经典刘海"], ["trendy_bangs", "时尚刘海"],
+                            ["edgy_bangs", "前卫刘海"], ["soft_bangs", "柔和刘海"], ["hard_bangs", "硬朗刘海"],
+                            ["straight_bangs", "直刘海"], ["curly_bangs", "卷刘海"], ["wavy_bangs", "波浪刘海"],
+                            ["spiky_bangs", "尖刺刘海"], ["sleek_bangs", "光滑刘海"], ["messy_bangs", "凌乱刘海"],
+                            ["neat_bangs", "整齐刘海"], ["choppy_bangs", "参差刘海"], ["feathered_bangs", "羽毛刘海"],
+                            ["stacked_bangs", "堆叠刘海"], ["graduated_bangs", "渐变刘海"], ["asymmetric_bangs", "不对称刘海"],
+                            ["symmetric_bangs", "对称刘海"], ["center_parted_bangs", "中分刘海"], ["side_parted_bangs", "侧分刘海"],
+                            ["zigzag_bangs", "锯齿刘海"], ["curved_bangs", "弧形刘海"], ["angled_bangs", "斜角刘海"],
+                            ["rounded_bangs", "圆形刘海"], ["square_bangs", "方形刘海"], ["pointed_bangs", "尖形刘海"],
+                            ["rounded_bangs", "圆形刘海"], ["oval_bangs", "椭圆形刘海"], ["heart_shaped_bangs", "心形刘海"],
+                            ["star_shaped_bangs", "星形刘海"], ["cloud_bangs", "云刘海"], ["smoke_bangs", "烟刘海"],
+                            ["steam_bangs", "蒸汽刘海"], ["vapor_bangs", "蒸汽刘海"], ["fire_bangs", "火刘海"],
+                            ["flame_bangs", "火焰刘海"], ["ember_bangs", "余烬刘海"], ["spark_bangs", "火花刘海"],
+                            ["glow_bangs", "发光刘海"], ["shine_bangs", "闪光刘海"], ["glitter_bangs", "亮片刘海"],
+                            ["sparkle_bangs", "闪耀刘海"], ["twinkle_bangs", "闪烁刘海"], ["glimmer_bangs", "微光刘海"],
+                            ["gleam_bangs", "闪光刘海"], ["radiant_bangs", "辐射刘海"], ["brilliant_bangs", "灿烂刘海"],
+                            ["dazzling_bangs", "耀眼刘海"], ["blazing_bangs", "炽热刘海"], ["burning_bangs", "燃烧刘海"],
+                            ["fiery_bangs", "火焰刘海"], ["icy_bangs", "冰冷刘海"], ["frozen_bangs", "冰冻刘海"],
+                            ["crystal_bangs", "水晶刘海"], ["diamond_bangs", "钻石刘海"], ["gem_bangs", "宝石刘海"],
+                            ["pearl_bangs", "珍珠刘海"], ["jade_bangs", "玉石刘海"], ["amber_bangs", "琥珀刘海"],
+                            ["coral_bangs", "珊瑚刘海"], ["turquoise_bangs", "绿松石刘海"], ["sapphire_bangs", "蓝宝石刘海"],
+                            ["ruby_bangs", "红宝石刘海"], ["emerald_bangs", "祖母绿刘海"], ["topaz_bangs", "黄玉刘海"],
+                            ["amethyst_bangs", "紫水晶刘海"], ["garnet_bangs", "石榴石刘海"], ["opal_bangs", "欧泊刘海"],
+                            ["moonstone_bangs", "月光石刘海"], ["sunstone_bangs", "日光石刘海"], ["labradorite_bangs", "拉长石刘海"],
+                            ["aventurine_bangs", "东陵石刘海"], ["carnelian_bangs", "红玉髓刘海"], ["chrysoprase_bangs", "绿玉髓刘海"],
+                            ["bloodstone_bangs", "血石刘海"], ["heliotrope_bangs", "血石刘海"], ["plasma_bangs", "血浆石刘海"],
+                            ["prase_bangs", "绿石英刘海"], ["rose_quartz_bangs", "粉晶刘海"], ["smoky_quartz_bangs", "烟晶刘海"],
+                            ["citrine_bangs", "黄水晶刘海"], ["tiger_eye_bangs", "虎眼石刘海"], ["hawks_eye_bangs", "鹰眼石刘海"],
+                            ["cats_eye_bangs", "猫眼石刘海"], ["oxs_eye_bangs", "牛眼石刘海"], ["serpentine_bangs", "蛇纹石刘海"],
+                            ["lapis_lazuli_bangs", "青金石刘海"], ["lignite_bangs", "褐煤刘海"], ["anthracite_bangs", "无烟煤刘海"],
+                            ["bituminous_bangs", "烟煤刘海"], ["sub-bituminous_bangs", "次烟煤刘海"], ["peat_bangs", "泥炭刘海"],
+                            ["charcoal_bangs", "木炭刘海"], ["coke_bangs", "焦炭刘海"], ["graphite_bangs", "石墨刘海"],
+                            ["diamond_bangs", "钻石刘海"], ["holographic_bangs", "全息刘海"]
+                        ]
+                    },
+                    {
+                        name: "前发",
+                        tags: [
+                            ["front_hair", "前发"], ["forelock", "额前发"], ["forehead_hair", "额头前发"],
+                            ["temple_hair", "太阳穴发"], ["sideburns", "鬓角"], ["cheek_hair", "脸颊发"],
+                            ["chin_hair", "下巴发"]
+                        ]
+                    },
+                    {
+                        name: "后发",
+                        tags: [
+                            ["back_hair", "后发"], ["nape_hair", "后颈发"], ["occipital_hair", "枕部发"],
+                            ["crown_hair", "头顶发"], ["vertex_hair", "顶点发"], ["back_of_head_hair", "后脑发"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "三、头发篇",
+                subcategories: [
+                    {
+                        name: "长度",
+                        tags: [
+                            ["long_hair", "长发"], ["medium_hair", "中长发"], ["short_hair", "短发"],
+                            ["very_long_hair", "超长发"], ["absurdly_long_hair", "夸张长发"]
+                        ]
+                    },
+                    {
+                        name: "质感",
+                        tags: [
+                            ["straight_hair", "直发"], ["curly_hair", "卷发"], ["wavy_hair", "波浪发"],
+                            ["messy_hair", "凌乱发"], ["bed_hair", "睡乱发"], ["afro", "爆炸头"],
+                            ["bouffant", "蓬发"], ["silky_hair", "丝滑发"], ["glossy_hair", "光泽发"],
+                            ["matte_hair", "哑光发"], ["frizzy_hair", "毛躁发"], ["tangled_hair", "纠结发"],
+                            ["smooth_hair", "顺滑发"], ["rough_hair", "粗糙发"], ["fine_hair", "细软发"],
+                            ["thick_hair", "粗硬发"], ["thin_hair", "稀疏发"], ["dense_hair", "浓密发"],
+                            ["crystal_hair", "水晶发"], ["gem_hair", "宝石发"], ["holographic_hair", "全息发"],
+                            ["glowing_hair", "发光发"], ["fire_hair", "火焰发"], ["ice_hair", "冰发"],
+                            ["lightning_hair", "闪电发"], ["galaxy_hair", "星系发"], ["rainbow_hair", "彩虹发"]
+                        ]
+                    },
+                    {
+                        name: "刘海",
+                        tags: [
+                            ["bangs", "刘海"], ["blunt_bangs", "齐刘海"], ["side_swept_bangs", "斜刘海"],
+                            ["hime_cut", "姬发式"], ["m-shaped_bangs", "M 字刘海"], ["see-through_bangs", "空气刘海"],
+                            ["baby_bangs", "婴儿刘海"], ["eye_covering_bangs", "遮眼刘海"], ["forehead", "露额头"],
+                            ["widows_peak", "美人尖"], ["hair_intakes", "鬓角发"], ["ahoge", "呆毛"],
+                            ["antenna_hair", "天线发"], ["cowlick", "逆毛"], ["holographic_bangs", "全息刘海"]
+                        ]
+                    },
+                    {
+                        name: "前发",
+                        tags: [
+                            ["front_hair", "前发"], ["forelock", "额前发"], ["forehead_hair", "额头前发"],
+                            ["temple_hair", "太阳穴发"], ["sideburns", "鬓角"], ["cheek_hair", "脸颊发"],
+                            ["chin_hair", "下巴发"]
+                        ]
+                    },
+                    {
+                        name: "后发",
+                        tags: [
+                            ["back_hair", "后发"], ["nape_hair", "后颈发"], ["occipital_hair", "枕部发"],
+                            ["crown_hair", "头顶发"], ["vertex_hair", "顶点发"], ["back_of_head_hair", "后脑发"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "四、画师篇",
+                subcategories: [
+                    {
+                        name: "日本画师",
+                        tags: [
+                            ["artist_rella", "Rella"], ["artist_huke", "Huke"], ["artist_redjuice", "Redjuice"],
+                            ["artist_kantoku", "监督"], ["artist_tiv", "Tiv"], ["artist_bunbun", "Bunbun"],
+                            ["artist_nox", "Nox"], ["artist_supercell", "Supercell"], ["artist_yanagi", "柳"]
+                        ]
+                    },
+                    {
+                        name: "欧美画师",
+                        tags: [
+                            ["artist_greg_rutkowski", "Greg Rutkowski"], ["artist_artgerm", "Artgerm"],
+                            ["artist_wlop", "WLOP"], ["artist_rossdraws", "Rossdraws"], ["artist_sakimichan", "Sakimichan"]
+                        ]
+                    },
+                    {
+                        name: "古典大师",
+                        tags: [
+                            ["artist_vincent_van_gogh", "梵高"], ["artist_pablo_picasso", "毕加索"],
+                            ["artist_leonardo_da_vinci", "达芬奇"], ["artist_claude_monet", "莫奈"]
+                        ]
+                    },
+                    {
+                        name: "动画导演",
+                        tags: [
+                            ["artist_hayao_miyazaki", "宫崎骏"], ["artist_makoto_shinkai", "新海诚"],
+                            ["artist_satoshi_kon", "今敏"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "四、构图篇",
+                subcategories: [
+                    {
+                        name: "身体剪裁",
+                        tags: [
+                            ["cropped_torso", "截止上半身"], ["upper_body", "上半身"], ["lower_body", "下半身"],
+                            ["full_body", "全身"], ["head_only", "仅头部"], ["face_only", "仅脸部"],
+                            ["bust", "胸像"], ["waist_up", "腰部以上"], ["knee_up", "膝盖以上"],
+                            ["thigh_up", "大腿以上"], ["cowboy_shot", "牛仔镜头"], ["three-quarter_shot", "四分之三镜头"]
+                        ]
+                    },
+                    {
+                        name: "构图方式",
+                        tags: [
+                            ["portrait", "肖像"], ["landscape", "风景"], ["close-up", "特写"],
+                            ["medium_shot", "中景"], ["long_shot", "远景"], ["extreme_close-up", "极特写"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "五、服装篇",
+                subcategories: [
+                    {
+                        name: "上装",
+                        tags: [
+                            ["t-shirt", "T 恤"], ["shirt", "衬衫"], ["blouse", "女衬衫"], ["tank_top", "背心"],
+                            ["sleeveless_shirt", "无袖衫"], ["crop_top", "短上衣"], ["tube_top", "抹胸"],
+                            ["halter_top", "挂脖上衣"], ["halterneck", "挂脖领"], ["off_shoulder", "露肩装"],
+                            ["long_sleeve", "长袖"], ["short_sleeve", "短袖"], ["sweater", "毛衣"],
+                            ["cardigan", "开衫"], ["hoodie", "连帽衫"], ["jacket", "夹克"], ["coat", "外套"],
+                            ["blazer", "西装外套"], ["vest", "马甲"], ["waistcoat", "西装马甲"],
+                            ["suit", "西装"], ["formal_wear", "正装"], ["casual_wear", "休闲装"]
+                        ]
+                    },
+                    {
+                        name: "领口",
+                        tags: [
+                            ["crew_neck", "圆领"], ["v-neck", "V 领"], ["scoop_neck", "大圆领"], ["boat_neck", "船领"],
+                            ["square_neck", "方领"], ["sweetheart_neck", "心形领"], ["strapless", "无肩带"],
+                            ["one_shoulder", "单肩"], ["asymmetric_neck", "不对称领"], ["mock_neck", "假高领"],
+                            ["turtleneck", "高领"], ["polo_neck", "Polo 领"], ["mandarin_collar", "立领"],
+                            ["shawl_collar", "青果领"], ["notched_collar", "缺口领"], ["spread_collar", "展开领"],
+                            ["button-down_collar", "纽扣领"], ["wing_collar", "翼领"], ["ruffled_collar", "荷叶领"],
+                            ["lace_collar", "蕾丝领"], ["peter_pan_collar", "彼得潘领"], ["bertha_collar", "伯莎领"],
+                            ["jabot", "领饰"], ["cravat", "领巾"], ["ascot", "阿斯科特领巾"],
+                            ["bow_tie", "领结"], ["necktie", "领带"]
+                        ]
+                    },
+                    {
+                        name: "袖口",
+                        tags: [
+                            ["short_sleeves", "短袖"], ["long_sleeves", "长袖"], ["three-quarter_sleeves", "七分袖"],
+                            ["bell_sleeves", "喇叭袖"], ["balloon_sleeves", "气球袖"], ["bishop_sleeves", "主教袖"],
+                            ["leg-of-mutton_sleeves", "羊腿袖"], ["kimono_sleeves", "和服袖"], ["raglan_sleeves", "插肩袖"],
+                            ["cap_sleeves", "盖袖"], ["flutter_sleeves", "飘袖"], ["angel_sleeves", "天使袖"],
+                            ["cape_sleeves", "斗篷袖"], ["slit_sleeves", "开叉袖"], ["detached_sleeves", "分离袖"],
+                            ["puffy_sleeves", "蓬松袖"], ["gathered_sleeves", "褶皱袖"], ["pleated_sleeves", "百褶袖"],
+                            ["ruffled_sleeves", "荷叶袖"], ["lace_sleeves", "蕾丝袖"], ["sheer_sleeves", "透明袖"],
+                            ["mesh_sleeves", "网眼袖"], ["fingerless_sleeves", "无指袖"], ["elbow_patches", "肘部补丁"],
+                            ["rolled_sleeves", "卷袖"], ["cuffed_sleeves", "袖口"]
+                        ]
+                    },
+                    {
+                        name: "下装",
+                        tags: [
+                            ["skirt", "裙子"], ["miniskirt", "超短裙"], ["shorts", "短裤"], ["long_skirt", "长裙"],
+                            ["pencil_skirt", "铅笔裙"], ["a-line_skirt", "A 字裙"], ["pleated_skirt", "百褶裙"],
+                            ["circle_skirt", "圆裙"], ["tulip_skirt", "郁金香裙"], ["wrap_skirt", "裹身裙"],
+                            ["maxi_skirt", "长裙"], ["midi_skirt", "中长裙"], ["mini_skirt", "迷你裙"],
+                            ["denim_skirt", "牛仔裙"], ["leather_skirt", "皮裙"], ["lace_skirt", "蕾丝裙"],
+                            ["tulle_skirt", "薄纱裙"], ["chiffon_skirt", "雪纺裙"], ["satin_skirt", "缎面裙"],
+                            ["velvet_skirt", "天鹅绒裙"], ["wool_skirt", "羊毛裙"], ["cotton_skirt", "棉裙"],
+                            ["linen_skirt", "亚麻裙"], ["silk_skirt", "丝绸裙"], ["polyester_skirt", "聚酯裙"],
+                            ["jeans", "牛仔裤"], ["pants", "裤子"], ["trousers", "长裤"], ["leggings", "打底裤"],
+                            ["yoga_pants", "瑜伽裤"], ["cargo_pants", "工装裤"], ["khakis", "卡其裤"],
+                            ["slacks", "休闲裤"], ["dress_pants", "西裤"], ["capri_pants", "七分裤"],
+                            ["palazzo_pants", "阔腿裤"], ["wide_leg_pants", "宽腿裤"], ["skinny_jeans", "紧身牛仔裤"],
+                            ["bootcut_jeans", "微喇牛仔裤"], ["straight_jeans", "直筒牛仔裤"], ["boyfriend_jeans", "男友牛仔裤"],
+                            ["mom_jeans", "妈妈牛仔裤"], ["high-waisted_jeans", "高腰牛仔裤"], ["low-rise_jeans", "低腰牛仔裤"],
+                            ["distressed_jeans", "破洞牛仔裤"], ["ripped_jeans", "撕裂牛仔裤"], ["faded_jeans", "褪色牛仔裤"],
+                            ["black_jeans", "黑色牛仔裤"], ["white_jeans", "白色牛仔裤"], ["blue_jeans", "蓝色牛仔裤"],
+                            ["colored_jeans", "彩色牛仔裤"], ["printed_jeans", "印花牛仔裤"], ["embroidered_jeans", "刺绣牛仔裤"],
+                            ["patchwork_jeans", "拼布牛仔裤"], ["painted_jeans", "涂鸦牛仔裤"]
+                        ]
+                    },
+                    {
+                        name: "传统服装",
+                        tags: [
+                            ["kimono", "和服"], ["yukata", "浴衣"], ["hanfu", "汉服"], ["cheongsam", "旗袍"],
+                            ["sari", "纱丽"], ["hanbok", "韩服"], ["ao_dai", "越南奥黛"], ["thobe", "长袍"],
+                            ["abaya", "阿巴亚"], ["hijab", "头巾"], ["niqab", "面纱"], ["burqa", "布卡"],
+                            ["turban", "头巾"], ["kilt", "苏格兰裙"], ["poncho", "斗篷"], ["cape", "披风"],
+                            ["cloak", "斗篷"], ["robe", "长袍"], ["gown", "长袍"]
+                        ]
+                    },
+                    {
+                        name: "制服",
+                        tags: [
+                            ["school_uniform", "校服"], ["sailor_suit", "水手服"], ["blazer_uniform", "西装校服"],
+                            ["gakuran", "男式校服"], ["serafuku", "女式校服"], ["maid_dress", "女仆装"],
+                            ["butler_suit", "男管家服"], ["nurse_uniform", "护士服"], ["doctor_coat", "医生外套"],
+                            ["police_uniform", "警察制服"], ["military_uniform", "军装"], ["soldier_uniform", "士兵制服"],
+                            ["pilot_uniform", "飞行员制服"], ["chef_uniform", "厨师服"], ["waitress_uniform", "女侍服"],
+                            ["waiter_uniform", "男侍服"], ["receptionist_uniform", "接待员制服"], ["security_uniform", "保安制服"],
+                            ["firefighter_uniform", "消防员制服"], ["paramedic_uniform", "急救员制服"]
+                        ]
+                    },
+                    {
+                        name: "运动装",
+                        tags: [
+                            ["tracksuit", "运动服"], ["jersey", "运动衫"], ["athletic_uniform", "运动制服"],
+                            ["gym_uniform", "体操服"], ["swimsuit", "泳装"], ["bikini", "比基尼"],
+                            ["one-piece_swimsuit", "连体泳衣"], ["rash_guard", "防晒泳衣"], ["wetsuit", "潜水服"],
+                            ["dive_suit", "潜水服"], ["ski_suit", "滑雪服"], ["snow_suit", "雪装"],
+                            ["yoga_pants", "瑜伽裤"], ["leggings", "打底裤"], ["sports_bra", "运动内衣"],
+                            ["compression_shirt", "压缩衣"]
+                        ]
+                    },
+                    {
+                        name: "内衣",
+                        tags: [
+                            ["bra", "文胸"], ["panties", "内裤"], ["lingerie", "内衣"], ["corset", "紧身胸衣"],
+                            ["bustier", "胸衣"], ["camisole", "吊带背心"], ["chemise", "睡裙"], ["nightgown", "睡衣"],
+                            ["pajamas", "睡衣"], ["sleepwear", "睡衣"], ["underwear", "内衣"], ["boxers", "平角裤"],
+                            ["briefs", "三角裤"], ["thong", "丁字裤"], ["garter_belt", "吊袜带"], ["stockings", "长筒袜"],
+                            ["pantyhose", "连裤袜"]
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "六、动作篇",
+                subcategories: [
+                    {
+                        name: "基础动作",
+                        tags: [
+                            ["standing", "站立"], ["sitting", "坐着"], ["lying", "躺着"], ["walking", "行走"],
+                            ["running", "跑步"], ["jumping", "跳跃"], ["kneeling", "跪着"], ["crouching", "蹲着"],
+                            ["bending_over", "弯腰"], ["leaning", "倚靠"], ["stretching", "伸展"], ["reaching", "伸手"],
+                            ["pointing", "指向"], ["waving", "挥手"], ["clapping", "拍手"], ["praying", "祈祷"],
+                            ["saluting", "敬礼"], ["bowing", "鞠躬"], ["curtseying", "屈膝礼"], ["tiptoeing", "踮脚"],
+                            ["squatting", "蹲下"], ["crossing_arms", "交叉手臂"], ["crossing_legs", "交叉腿"],
+                            ["hands_on_hips", "手叉腰"], ["hands_in_pockets", "手插口袋"], ["arms_behind_back", "手背在身后"],
+                            ["arms_up", "手臂举起"], ["arms_out", "手臂伸展"], ["one_arm_up", "一只手臂举起"],
+                            ["both_arms_up", "双臂举起"]
+                        ]
+                    },
+                    {
+                        name: "手部动作",
+                        tags: [
+                            ["holding", "拿着"], ["carrying", "携带"], ["lifting", "举起"], ["pushing", "推"],
+                            ["pulling", "拉"], ["throwing", "投掷"], ["catching", "接住"], ["punching", "出拳"],
+                            ["slapping", "拍打"], ["hugging", "拥抱"], ["touching", "触摸"], ["grabbing", "抓住"],
+                            ["gripping", "紧握"], ["squeezing", "挤压"], ["pinching", "捏"], ["stroking", "抚摸"],
+                            ["petting", "轻抚"], ["patting", "轻拍"], ["rubbing", "揉搓"], ["scratching", "抓挠"],
+                            ["tapping", "轻敲"], ["knocking", "敲击"], ["ringing", "摇铃"], ["clapping_hands", "拍手"],
+                            ["wringing_hands", "绞手"], ["folded_hands", "合十"], ["clasped_hands", "握手"],
+                            ["joined_hands", "牵手"], ["interlocked_fingers", "十指相扣"], ["thumb_up", "竖起大拇指"],
+                            ["thumb_down", "拇指向下"], ["peace_sign", "和平手势"], ["v_sign", "V 字手势"],
+                            ["ok_sign", "OK 手势"], ["finger_gun", "手指枪"], ["middle_finger", "中指"],
+                            ["index_finger_raised", "食指举起"], ["shaka_sign", "沙卡手势"], ["rock_on", "摇滚手势"],
+                            ["metal_sign", "金属手势"], ["heart_hands", "心形手势"], ["finger_heart", "手指心"],
+                            ["heart_arms", "手臂心"], ["cheek_poking", "戳脸颊"], ["forehead_poking", "戳额头"],
+                            ["nose_boop", "点鼻子"], ["chin_rest", "托下巴"], ["face_palm", "捂脸"],
+                            ["faceplant", "脸着地"], ["headpat", "摸头"], ["hair_pulling", "拉头发"],
+                            ["ear_pulling", "拉耳朵"], ["cheek_pinching", "捏脸颊"], ["lip_biting", "咬嘴唇"],
+                            ["tongue_out", "伸舌头"], ["mouth_cover", "捂嘴"], ["nose_cover", "捂鼻子"],
+                            ["eye_cover", "捂眼睛"], ["ear_cover", "捂耳朵"], ["face_cover", "捂脸"]
+                        ]
+                    },
+                    {
+                        name: "双人动作 - 亲密",
+                        tags: [
+                            ["hugging", "拥抱"], ["cuddling", "依偎"], ["snuggling", "依偎"], ["holding_hands", "牵手"],
+                            ["kissing", "亲吻"], ["forehead_kiss", "亲额头"], ["cheek_kiss", "亲脸颊"],
+                            ["hand_kiss", "亲 hand"], ["neck_kiss", "亲脖子"], ["shoulder_kiss", "亲肩膀"],
+                            ["lip_kiss", "亲嘴唇"], ["french_kiss", "法式接吻"], ["deep_kiss", "深吻"],
+                            ["gentle_kiss", "温柔亲吻"], ["passionate_kiss", "热情亲吻"], ["romantic_kiss", "浪漫亲吻"],
+                            ["sweet_kiss", "甜蜜亲吻"], ["tender_kiss", "温柔亲吻"], ["loving_kiss", "爱意亲吻"],
+                            ["affectionate_kiss", "深情亲吻"], ["intimate_kiss", "亲密亲吻"], ["sensual_kiss", "性感亲吻"],
+                            ["erotic_kiss", "情色亲吻"], ["biting_kiss", "咬吻"], ["sucking_kiss", "吸吮吻"],
+                            ["licking_kiss", "舔吻"], ["nuzzling", "磨蹭"], ["nuzzling_neck", "磨蹭脖子"],
+                            ["nuzzling_cheek", "磨蹭脸颊"], ["nuzzling_chest", "磨蹭胸口"], ["head_on_shoulder", "头靠肩膀"],
+                            ["head_on_chest", "头靠胸口"], ["head_on_lap", "头靠腿上"], ["lap_pillow", "膝枕"],
+                            ["sleeping_on_lap", "睡在腿上"], ["carrying", "抱着"], ["princess_carry", "公主抱"],
+                            ["piggyback", "背"], ["fireman_carry", "消防员抱"], ["bridal_carry", "新娘抱"],
+                            ["over_shoulder", "扛在肩上"], ["lifting", "举起"], ["lifting_person", "举起人"],
+                            ["lifting_partner", "举起伴侣"], ["dip_dance", "舞蹈下腰"], ["dance_lift", "舞蹈托举"],
+                            ["dance_dip", "舞蹈下腰"], ["partner_lift", "双人托举"], ["acrobatic_lift", "杂技托举"],
+                            ["aerial_silks", "空中绸缎"], ["partner_acrobatics", "双人杂技"], ["counterbalance", "平衡"],
+                            ["weight_sharing", "重量分担"], ["trust_fall", "信任倒"], ["back_to_back", "背靠背"],
+                            ["chest_to_chest", "胸贴胸"], ["face_to_face", "面对面"], ["forehead_to_forehead", "额头对额头"],
+                            ["nose_to_nose", "鼻子对鼻子"], ["lip_to_lip", "嘴唇对嘴唇"], ["cheek_to_cheek", "脸颊贴脸颊"],
+                            ["hand_to_hand", "手对手"], ["finger_to_finger", "手指对手指"], ["intertwined_fingers", "十指相扣"],
+                            ["holding_hands_tightly", "紧紧牵手"], ["clasped_hands", "握手"], ["joined_hands", "牵手"],
+                            ["linked_arms", "挽臂"], ["arm_in_arm", "挽臂"], ["walking_arm_in_arm", "挽臂行走"],
+                            ["linked_fingers", "勾手指"], ["pinky_swear", "拉钩"], ["hand_on_cheek", "手托脸颊"],
+                            ["hand_on_chin", "手托下巴"], ["hand_on_forehead", "手放额头"], ["hand_on_chest", "手放胸口"],
+                            ["hand_on_heart", "手放心脏"], ["hand_on_stomach", "手放腹部"], ["hand_on_waist", "手放腰部"],
+                            ["hand_on_hip", "手放臀部"], ["hand_on_thigh", "手放大腿"], ["hand_on_knee", "手放膝盖"],
+                            ["hand_on_shoulder", "手放肩膀"], ["hand_on_back", "手放背部"], ["hand_on_arm", "手放手臂"],
+                            ["hand_on_leg", "手放腿上"], ["hand_on_foot", "手放脚上"], ["hand_on_head", "手放头上"],
+                            ["hand_on_hair", "手放头发上"], ["caressing_face", "抚摸脸颊"], ["caressing_hair", "抚摸头发"],
+                            ["caressing_cheek", "抚摸脸颊"], ["caressing_chin", "抚摸下巴"], ["stroking_hair", "抚摸头发"],
+                            ["stroking_cheek", "抚摸脸颊"], ["stroking_face", "抚摸脸"], ["petting_head", "摸头"],
+                            ["petting_hair", "摸头发"], ["patting_head", "拍头"], ["patting_back", "拍背"],
+                            ["patting_shoulder", "拍肩膀"], ["rubbing_back", "揉背"], ["rubbing_shoulder", "揉肩膀"],
+                            ["massaging_shoulder", "按摩肩膀"], ["massaging_back", "按摩背部"], ["massaging_leg", "按摩腿部"],
+                            ["massaging_foot", "按摩脚"], ["massaging_hand", "按摩手"], ["massaging_arm", "按摩手臂"],
+                            ["massaging_neck", "按摩脖子"], ["massaging_scalp", "按摩头皮"]
+                        ]
+                    }
+                ]
+            }
+        ];
+        
+        let totalTags = 0;
+        
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            let html = '';
+            
+            tagData.forEach((category, catIndex) => {
+                let subcategoryHtml = '';
+                category.subcategories.forEach((subcat, subcatIndex) => {
+                    totalTags += subcat.tags.length;
+                    let tagsHtml = '';
+                    subcat.tags.forEach(tag => {
+                        tagsHtml += `
+                            <div class="tag" onclick="copyTag('${tag[0]}', this)">
+                                <span class="tag-en">${tag[0]}</span>
+                                <span class="tag-cn">${tag[1]}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    subcategoryHtml += `
+                        <div class="subcategory" data-cat="${catIndex}" data-subcat="${subcatIndex}">
+                            <div class="subcategory-header" onclick="toggleSubcategory(this)">
+                                <span>${subcat.name}</span>
+                                <span class="subcategory-icon">▶</span>
+                            </div>
+                            <div class="tags-container">
+                                ${tagsHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    <div class="category" data-category="${catIndex}">
+                        <div class="category-header" onclick="toggleCategory(this)">
+                            <div>
+                                <span class="category-title">${category.name}</span>
+                                <span class="category-count">(${category.subcategories.reduce((sum, s) => sum + s.tags.length, 0)} 标签)</span>
+                            </div>
+                            <span class="category-icon">▶</span>
+                        </div>
+                        <div class="category-content">
+                            ${subcategoryHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            document.getElementById('total-tags').textContent = totalTags.toLocaleString();
+        }
+        
+        function toggleCategory(header) {
+            const category = header.parentElement;
+            category.classList.toggle('expanded');
+        }
+        
+        function toggleSubcategory(header) {
+            const subcategory = header.parentElement;
+            subcategory.classList.toggle('expanded');
+        }
+        
+        function copyTag(tag, element) {
+            navigator.clipboard.writeText(tag).then(() => {
+                element.classList.add('tag-copied');
+                showToast(`已复制：${tag}`);
+                setTimeout(() => {
+                    element.classList.remove('tag-copied');
+                }, 1000);
+            });
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+        
+        function expandAll() {
+            document.querySelectorAll('.category').forEach(cat => {
+                cat.classList.add('expanded');
+            });
+            document.querySelectorAll('.subcategory').forEach(subcat => {
+                subcat.classList.add('expanded');
+            });
+        }
+        
+        function collapseAll() {
+            document.querySelectorAll('.category').forEach(cat => {
+                cat.classList.remove('expanded');
+            });
+            document.querySelectorAll('.subcategory').forEach(subcat => {
+                subcat.classList.remove('expanded');
+            });
+        }
+        
+        // 初始化
+        renderCategories();
+        
+        // 默认展开第一个分类
+        setTimeout(() => {
+            const firstCategory = document.querySelector('.category');
+            if (firstCategory) {
+                firstCategory.classList.add('expanded');
+            }
+        }, 100);
+    </script>
+</body>
+</html>
