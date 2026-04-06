@@ -552,7 +552,7 @@ function render(item,type,name){
   const oc=item.oc||{};
   const isChar=type==='character';
   const cover=oc.url||oc.tachie_url||oc.avatar_img||'';
-  const creator=item.creator_nickname||item.creator_name||'';
+  const creator=item.oc?.creator_nickname||item.oc?.creator_name||'';
   const canBack=navStack.length>1;
   const annuonieMsg=creator==='安诺涅'
     ?'<div class="meta creator-msg" style="margin-top:6px;font-size:0.72rem;color:var(--pink);opacity:0.85">👀 你在看什么呢，和我们也讲讲呗～</div>'
