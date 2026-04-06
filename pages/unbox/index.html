@@ -361,9 +361,10 @@ let currentType='';
 let currentName='';
 const $=id=>document.getElementById(id);
 
-// ─── navigation state ───
+// ═══════════════════════════════════════════
+//  navigation
+// ═══════════════════════════════════════════
 const navStack=[]; // {type, name, uuid}
-let isNavigating=false;
 
 function pushNav(type,name,uuid){
   navStack.push({type,name,uuid});
@@ -392,18 +393,16 @@ function goHome(){
   $('linkInput').value='';
 }
 function goBack(){
-  if(navStack.length<2){
-    goHome();
-    return;
-  }
+  if(navStack.length<2){goHome();return}
   navStack.pop();
   const prev=navStack[navStack.length-1];
-  if(prev.uuid)unbox(prev.uuid,true);
+  if(prev.uuid)unbox(prev.uuid);
   else updateBreadcrumb();
 }
 
 function status(s){$('status').textContent=s}
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function escAttr(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'\\\'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
 function shuffle(arr){
   const a=[...arr];
@@ -439,27 +438,40 @@ async function apiPut(path,body){
   return r.json().catch(()=>null);
 }
 
-// ─── search by name to get UUID + item data ───
-async function searchByName(name){
+// ═══════════════════════════════════════════
+//  🅱 搜索精准化
+// ═══════════════════════════════════════════
+
+/** 专用搜索子元素（elementum only，精确匹配优先，不模糊匹配子元素） */
+async function searchElementOnly(name){
   const trim=name.trim();
-  // Try elementum first (most likely for 融元素), page_size=20
+  if(!trim)return null;
   try{
-    const data=await apiGet('/v2/search/character_or_elementum?keywords='+encodeURIComponent(trim)+'&parent_type=elementum&sort_scheme=best&page_size=20');
-    // Exact match first, then fuzzy
-    let match=(data.list||[]).find(e=>e.name===trim);
-    if(!match)match=(data.list||[]).find(e=>e.name&&e.name.toLowerCase().includes(trim.toLowerCase()));
+    const data=await apiGet('/v2/search/character_or_elementum?keywords='+encodeURIComponent(trim)+'&parent_type=elementum&sort_scheme=best&page_size=50');
+    const list=data.list||[];
+    let match=list.find(e=>e.name===trim);
+    if(!match)match=list.find(e=>e.name&&e.name.toLowerCase()===trim.toLowerCase());
     if(match)return{uuid:match.uuid,type:'elementum',name:match.name,item:match};
   }catch(e){}
-  // Try character
+  return null;
+}
+
+/** 通用搜索（角色+元素），用于首次链接查询 */
+async function searchByName(name){
+  const trim=name.trim();
+  if(!trim)return null;
+  const elem=await searchElementOnly(trim);
+  if(elem)return elem;
   try{
     const data=await apiGet('/v2/search/character_or_elementum?keywords='+encodeURIComponent(trim)+'&parent_type=character&sort_scheme=best&page_size=20');
     let match=(data.list||[]).find(e=>e.name===trim);
-    if(!match)match=(data.list||[]).find(e=>e.name&&e.name.toLowerCase().includes(trim.toLowerCase()));
+    if(!match)match=(data.list||[]).find(e=>e.name&&e.name.toLowerCase()===trim.toLowerCase());
     if(match)return{uuid:match.uuid,type:'character',name:match.name,item:match};
   }catch(e){}
   return null;
 }
 
+/** 从收藏夹查找 */
 async function findInFavorites(uuid){
   try{
     const favs=await apiGet('/v2/travel/parent/parent-favor/list?page_size=100&parent_type=oc');
@@ -474,187 +486,77 @@ async function findInFavorites(uuid){
   return null;
 }
 
-// ─── search sub-element by name (unique name → uuid + full data) ───
-async function findElementByName(name){
-  const found=await searchByName(name);
-  if(!found)return null;
-  // found has {uuid, type, name, item}
-  return found;
+async function favorItem(uuid,parentType){
+  try{await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:parentType,action:'favor'})}catch(e){}
 }
 
-// ─── main unbox flow ───
-async function unbox(uuid,skipNav){
-  if(busy)return;busy=true;
-  const btn=$('goBtn');
-  btn.disabled=true;btn.textContent='查询中…';
-  $('emptyState').style.display='none';
-  $('result').classList.remove('show');
+// ═══════════════════════════════════════════
+//  🅰 子元素查询修复（核心 bug）
+// ═══════════════════════════════════════════
 
+/** 主查询：通过 UUID 查询角色或元素 */
+async function unbox(uuid){
+  if(busy)return;busy=true;
+  const btn=$('goBtn');btn.disabled=true;btn.textContent='查询中…';
+  $('emptyState').style.display='none';$('result').classList.remove('show');
   try{
     status('检查收藏…');
     let result=await findInFavorites(uuid);
-
-    if(!result){
-      status('收藏角色中…');
-      try{
-        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'oc',action:'favor'});
-        result=await findInFavorites(uuid);
-      }catch(e){}
-    }
-
-    if(!result){
-      status('收藏元素中…');
-      try{
-        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'elementum',action:'favor'});
-        result=await findInFavorites(uuid);
-      }catch(e){}
-    }
-
+    if(!result){status('收藏角色中…');await favorItem(uuid,'oc');result=await findInFavorites(uuid)}
+    if(!result){status('收藏元素中…');await favorItem(uuid,'elementum');result=await findInFavorites(uuid)}
     if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色');
-
     status('提取数据…');
-    const name=result.item.name||'';
-    const type=result.type;
-
-    if(!skipNav){
-      pushNav(type,name,uuid);
-    }else{
-      pushNav(type,name,uuid);
-    }
-
-    render(result.item,type,name);
-
+    pushNav(result.type,result.item.name||'',uuid);
+    render(result.item,result.type,result.item.name||'');
     $('result').classList.add('show');
     status('✦ 查询完成 ✦');
-  }catch(e){
-    status('查询失败：'+e.message);
-    $('emptyState').style.display='';
-  }
-  btn.disabled=false;btn.textContent='查 询';
-  busy=false;
+  }catch(e){status('查询失败：'+e.message);$('emptyState').style.display=''}
+  btn.disabled=false;btn.textContent='查 询';busy=false;
 }
 
-// ─── open element by name search (unique name → uuid → unbox) ───
-async function openElemByNameSearch(name){
-  if(busy)return;busy=true;
-  $('emptyState').style.display='none';
-  $('result').classList.remove('show');
-
-  try{
-    status('搜索元素：'+name+'…');
-    const found=await findElementByName(name);
-    if(!found)throw new Error('找不到名为「'+name+'」的元素');
-
-    status('检查收藏…');
-    let favResult=await findInFavorites(found.uuid);
-
-    if(!favResult){
-      status('收藏元素中…');
-      try{
-        await apiPut('/v2/travel/parent/parent-favor',{uuid:found.uuid,parent_type:found.type==='character'?'oc':'elementum',action:'favor'});
-        favResult=await findInFavorites(found.uuid);
-      }catch(e){}
-    }
-
-    if(!favResult)throw new Error('收藏失败，可能被拉黑或元素未公开');
-
-    status('提取数据…');
-    pushNav(found.type,found.name,found.uuid);
-    render(favResult.item,found.type,found.name);
-
-    $('result').classList.add('show');
-    status('✦ 查询完成 ✦');
-  }catch(e){
-    status('查询失败：'+e.message);
-    $('emptyState').style.display='';
-  }
-  busy=false;
-}
-
-// ─── open element by UUID directly, fallback to name search ───
+/** 子元素查询：唯一名称 → UUID → 收藏 → 渲染 */
 async function openElemByUUID(uuid,name){
   if(busy)return;busy=true;
-  $('emptyState').style.display='none';
-  $('result').classList.remove('show');
-
+  $('emptyState').style.display='none';$('result').classList.remove('show');
   try{
-    status('检查收藏…');
-    let result=await findInFavorites(uuid);
-
-    if(!result){
-      status('收藏元素中…');
-      try{
-        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'elementum',action:'favor'});
-        result=await findInFavorites(uuid);
-      }catch(e){}
+    // 第一步：用唯一名称搜索，获取准确数据
+    status('搜索元素：'+name+'…');
+    const found=await searchElementOnly(name);
+    // UUID 校验
+    if(found&&found.uuid!==uuid){
+      status('UUID 校验不一致，使用搜索结果：'+found.name+'…');
+      uuid=found.uuid;name=found.name;
     }
-
-    if(!result){
-      status('尝试角色收藏…');
-      try{
-        await apiPut('/v2/travel/parent/parent-favor',{uuid,parent_type:'oc',action:'favor'});
-        result=await findInFavorites(uuid);
-      }catch(e){}
-    }
-
-    if(result){
-      // Got data from favorites — verify name matches (in case UUID resolved to wrong item)
-      const favName=result.item.name||'';
-      if(favName&&name&&favName!==name){
-        // Name mismatch — fall through to name search
-        result=null;
-      }
-    }
-
-    // Fallback: use unique name to search UUID and get correct data
-    if(!result){
-      status('通过名称搜索：'+name+'…');
-      const found=await findElementByName(name);
-      if(found){
-        status('收藏元素中…');
-        try{
-          await apiPut('/v2/travel/parent/parent-favor',{uuid:found.uuid,parent_type:found.type==='character'?'oc':'elementum',action:'favor'});
-          result=await findInFavorites(found.uuid);
-        }catch(e){}
-        if(result){
-          status('提取数据…');
-          pushNav(found.type,found.name,found.uuid);
-          render(result.item,found.type,found.name);
-          $('result').classList.add('show');
-          status('✦ 查询完成 ✦');
-          busy=false;
-          return;
-        }
-      }
-    }
-
+    // 第二步：如果名称搜索失败，尝试直接查收藏夹
+    let result=null;
+    if(!found){status('名称搜索未命中，尝试直接查询…');result=await findInFavorites(uuid)}
+    // 第三步：收藏
+    if(!result){status('收藏元素中…');await favorItem(uuid,'elementum');result=await findInFavorites(uuid)}
+    if(!result){status('尝试角色收藏…');await favorItem(uuid,'oc');result=await findInFavorites(uuid)}
     if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色');
-
+    // 第四步：渲染
     status('提取数据…');
-    const type=result.type;
-    pushNav(type,name,uuid);
-    render(result.item,type,name);
-
+    pushNav(result.type,result.item.name||name,uuid);
+    render(result.item,result.type,result.item.name||name);
     $('result').classList.add('show');
     status('✦ 查询完成 ✦');
-  }catch(e){
-    status('查询失败：'+e.message);
-    $('emptyState').style.display='';
-  }
+  }catch(e){status('查询失败：'+e.message);$('emptyState').style.display=''}
   busy=false;
 }
 
-// ─── render ───
+// ═══════════════════════════════════════════
+//  🅳 创作者显示 + 🅲 渲染
+// ═══════════════════════════════════════════
+
 function render(item,type,name){
   const oc=item.oc||{};
   const isChar=type==='character';
   const cover=oc.url||oc.tachie_url||oc.avatar_img||'';
   const creator=item.creator_nickname||item.creator_name||'';
-
-  // Back button
   const canBack=navStack.length>1;
-
-  const annuonieMsg=creator==='安诺涅'?'<div class="meta creator-msg" style="margin-top:6px;font-size:0.72rem;color:var(--pink);opacity:0.85">👀 你在看什么呢，和我们也讲讲呗～</div>':'';
+  const annuonieMsg=creator==='安诺涅'
+    ?'<div class="meta creator-msg" style="margin-top:6px;font-size:0.72rem;color:var(--pink);opacity:0.85">👀 你在看什么呢，和我们也讲讲呗～</div>'
+    :'';
 
   $('charCard').innerHTML=`
     <div class="char-top">
@@ -668,29 +570,19 @@ function render(item,type,name){
     </div>
     ${canBack?`<button class="btn-back" onclick="goBack()">← 返回上一个</button>`:''}`;
 
-  // Pad images
+  // 垫图
   const pads=[];
   const mixMeta=oc.mix_meta||[];
   for(const m of mixMeta){
-    if(m.type==='ref_image'){
-      const imgUrl=m.image_url||m.original_image_url||'';
-      if(imgUrl)pads.push(imgUrl);
-    }
+    if(m.type==='ref_image'){const u=m.image_url||m.original_image_url||'';if(u)pads.push(u)}
     if(m.type==='comfy_direct'&&m.params){
       const p=m.params;
-      if(p.ref_img_uuid){
-        if(p.ref_image_url) pads.push(p.ref_image_url);
-        else if(p.image_url) pads.push(p.image_url);
-      }
-      if(p.controlnetunit_tile_image_ref&&!pads.includes(p.controlnetunit_tile_image_ref)) pads.push(p.controlnetunit_tile_image_ref);
+      if(p.ref_img_uuid){if(p.ref_image_url)pads.push(p.ref_image_url);else if(p.image_url)pads.push(p.image_url)}
+      if(p.controlnetunit_tile_image_ref&&!pads.includes(p.controlnetunit_tile_image_ref))pads.push(p.controlnetunit_tile_image_ref);
     }
-    if(m.params&&m.params.img_uuid){
-      const u='https://oss.talesofai.cn/picture/'+m.params.img_uuid;
-      if(!pads.includes(u))pads.push(u);
-    }
+    if(m.params&&m.params.img_uuid){const u='https://oss.talesofai.cn/picture/'+m.params.img_uuid;if(!pads.includes(u))pads.push(u)}
   }
-  const seen=new Set();
-  const uniquePads=[];
+  const seen=new Set(),uniquePads=[];
   for(const u of pads){if(!seen.has(u)){seen.add(u);uniquePads.push(u)}}
 
   $('padSection').innerHTML=`
@@ -701,27 +593,18 @@ function render(item,type,name){
     <div class="compare-grid">
       <div class="compare-col">
         <div class="compare-label">封面图</div>
-        ${cover
-          ?`<img class="compare-img" src="${esc(cover)}" onclick="lb(this.src)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'compare-empty\\'>无封面</div>'">`
-          :`<div class="compare-empty">无封面</div>`}
+        ${cover?`<img class="compare-img" src="${esc(cover)}" onclick="lb(this.src)" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'compare-empty\\'>无封面</div>'">`:`<div class="compare-empty">无封面</div>`}
       </div>
       <div class="compare-col">
         <div class="compare-label">垫图 · ${uniquePads.length}张</div>
-        ${uniquePads.length>0
-          ?`<div class="pad-mini-grid">${uniquePads.map(u=>`<img class="compare-img" src="${esc(u)}" onclick="lb(this.src)" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`
-          :`<div class="compare-empty">无垫图</div>`}
+        ${uniquePads.length>0?`<div class="pad-mini-grid">${uniquePads.map(u=>`<img class="compare-img" src="${esc(u)}" onclick="lb(this.src)" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`:`<div class="compare-empty">无垫图</div>`}
       </div>
     </div>`;
 
-  // Element refs
+  // 融元素
   const avts=oc.appearance_vtokens||[];
   const elemRefs=[];
-  for(const vt of avts){
-    if(vt.uuid){
-      elemRefs.push({uuid:vt.uuid,name:vt.name||'未命名元素'});
-    }
-  }
-
+  for(const vt of avts){if(vt.uuid)elemRefs.push({uuid:vt.uuid,name:vt.name||'未命名元素'})}
   const shuffled=shuffle(elemRefs);
 
   if(shuffled.length>0){
@@ -733,21 +616,16 @@ function render(item,type,name){
       </div>
       <div class="elem-list">
         ${shuffled.map(e=>`
-          <div class="elem-item" onclick="openElemByUUID('${e.uuid}','${esc(e.name).replace(/'/g,"\\'")}')">
+          <div class="elem-item" onclick="openElemByUUID('${escAttr(e.uuid)}','${escAttr(e.name)}')">
             <div class="eimg-placeholder">?</div>
-            <div class="info">
-              <div class="ename">${esc(e.name)}</div>
-            </div>
+            <div class="info"><div class="ename">${esc(e.name)}</div></div>
             <span class="arrow">›</span>
           </div>`).join('')}
       </div>
       <div class="elem-disclaimer">只为展示是否有融元素现象，展示顺序均为打乱且不显示权重，也不显示手动输入文字</div>`;
   }else{
     $('elemSection').innerHTML=`
-      <div class="sec-head">
-        <span class="icon">🧬</span>
-        <span class="label">融元素</span>
-      </div>
+      <div class="sec-head"><span class="icon">🧬</span><span class="label">融元素</span></div>
       <div class="elem-empty">
         <div class="ghost">🫧</div>
         <div class="msg">没有融元素</div>
@@ -756,20 +634,18 @@ function render(item,type,name){
   }
 }
 
+// ═══════════════════════════════════════════
+//  入口
+// ═══════════════════════════════════════════
+
 async function go(){
   const raw=$('linkInput').value.trim();
   if(!raw){status('贴个链接再查');return}
-
   const urlMatch=raw.match(/https?:\/\/[^\s]+/);
   const link=urlMatch?urlMatch[0]:raw;
-
-  if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(link)){
-    await unbox(link);return;
-  }
-
+  if(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(link)){await unbox(link);return}
   const directUUID=extractUUID(link);
   if(directUUID){await unbox(directUUID);return}
-
   if(link.includes('t.nieta.art')){
     try{
       status('解析分享链接…');
@@ -777,24 +653,18 @@ async function go(){
       const uuid=extractUUID(fullUrl);
       if(!uuid){status('解析失败，拿不到 UUID');return}
       await unbox(uuid);
-    }catch(e){
-      status('解析分享链接失败：'+e.message);
-    }
-  }else{
-    status('不认识的链接格式');
-  }
+    }catch(e){status('解析分享链接失败：'+e.message)}
+  }else{status('不认识的链接格式')}
 }
 
 function lb(src){$('lbImg').src=src;$('lb').classList.add('open')}
 
-// ─── dreamcore effects ───
 (function initEffects(){
   const starsEl=$('stars');
   for(let i=0;i<50;i++){
     const s=document.createElement('div');s.className='star';
     s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
-    s.style.setProperty('--dur',(2+Math.random()*6)+'s');
-    s.style.setProperty('--delay',(Math.random()*5)+'s');
+    s.style.setProperty('--dur',(2+Math.random()*6)+'s');s.style.setProperty('--delay',(Math.random()*5)+'s');
     if(Math.random()>0.7){s.style.width='3px';s.style.height='3px'}
     starsEl.appendChild(s);
   }
@@ -802,8 +672,7 @@ function lb(src){$('lbImg').src=src;$('lb').classList.add('open')}
   for(let i=0;i<20;i++){
     const p=document.createElement('div');p.className='particle';
     p.style.left=Math.random()*100+'%';
-    p.style.setProperty('--dur',(8+Math.random()*14)+'s');
-    p.style.setProperty('--delay',(Math.random()*10)+'s');
+    p.style.setProperty('--dur',(8+Math.random()*14)+'s');p.style.setProperty('--delay',(Math.random()*10)+'s');
     const size=2+Math.random()*3;p.style.width=size+'px';p.style.height=size+'px';
     partEl.appendChild(p);
   }
