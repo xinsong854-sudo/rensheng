@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>捏 Ta 调试工具</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+      background:linear-gradient(135deg,#1a1a2e,#16213e);
+      min-height:100vh;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      text-align:center;
+    }
+    .container{max-width:400px}
+    h1{font-size:1.5rem;margin-bottom:20px;color:#e94560}
+    p{margin-bottom:15px;line-height:1.6;color:#ccc}
+    .spinner{
+      width:50px;height:50px;
+      border:4px solid rgba(255,255,255,0.1);
+      border-top-color:#e94560;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin:0 auto 20px;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .btn{
+      display:inline-block;
+      padding:12px 30px;
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      color:#fff;
+      text-decoration:none;
+      border-radius:10px;
+      font-weight:600;
+      margin-top:20px;
+    }
+    .code-box{
+      background:rgba(0,0,0,0.3);
+      border-radius:8px;
+      padding:12px;
+      margin:15px 0;
+      font-family:monospace;
+      font-size:0.7rem;
+      word-break:break-all;
+      text-align:left;
+      max-height:150px;
+      overflow-y:auto;
+    }
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="loading">
+      <div class="spinner"></div>
+      <h1>正在准备调试工具...</h1>
+      <p>即将打开捏 Ta</p>
+      <p style="color:#888;font-size:0.85rem">请允许弹窗</p>
+    </div>
+    
+    <div id="manual" class="hidden">
+      <h1>🔧 调试工具</h1>
+      <p>请手动复制下面的代码</p>
+      
+      <div class="code-box" id="codeBox">javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';s.onload=function(){eruda.init();eruda.show();console.log('🐞 调试工具已加载');};document.body.appendChild(s);})();</div>
+      
+      <button class="btn" onclick="copyAndOpen()">📋 复制并打开捏 Ta</button>
+      
+      <p style="margin-top:20px;font-size:0.85rem;color:#888">
+        打开捏 Ta 后，长按地址栏 → 粘贴 → 运行
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const CODE = `javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';s.onload=function(){eruda.init();eruda.show();console.log('🐞 调试工具已加载');};document.body.appendChild(s);})();`;
+    
+    const NIETA_URL = 'https://app.nieta.art/mine';
+    
+    // 页面加载后自动尝试
+    window.onload = function() {
+      setTimeout(() => {
+        tryOpen();
+      }, 1000);
+    };
+    
+    function tryOpen() {
+      // 尝试打开新窗口
+      const newWin = window.open(NIETA_URL, '_blank');
+      
+      if (newWin) {
+        // 成功打开，显示手动页面
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('manual').classList.remove('hidden');
+      } else {
+        // 弹窗被阻止，直接跳转
+        window.location.href = NIETA_URL;
+      }
+    }
+    
+    function copyAndOpen() {
+      navigator.clipboard.writeText(CODE).then(() => {
+        alert('✅ 代码已复制！\n\n打开捏 Ta 后：\n1. 长按地址栏\n2. 粘贴\n3. 点击运行（Go）');
+        window.open(NIETA_URL, '_blank');
+      }).catch(() => {
+        alert('❌ 复制失败，请手动复制');
+      });
+    }
+  </script>
+</body>
+</html>
