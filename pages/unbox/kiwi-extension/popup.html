@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>捏 Ta 调试助手</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      width:280px;
+      padding:15px;
+      font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#1a1a2e;
+      color:#fff;
+    }
+    h2{
+      font-size:1rem;
+      margin-bottom:10px;
+      color:#e94560;
+    }
+    p{
+      font-size:0.85rem;
+      color:#ccc;
+      line-height:1.5;
+      margin-bottom:10px;
+    }
+    .status{
+      padding:8px 12px;
+      background:rgba(0,184,148,0.1);
+      border:1px solid #00b894;
+      border-radius:6px;
+      font-size:0.8rem;
+      color:#00b894;
+      margin-bottom:15px;
+    }
+    .btn{
+      display:block;
+      width:100%;
+      padding:10px;
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      color:#fff;
+      border:none;
+      border-radius:6px;
+      font-size:0.85rem;
+      cursor:pointer;
+      margin-bottom:8px;
+    }
+    .btn:active{opacity:0.8}
+    .code-box{
+      background:rgba(0,0,0,0.3);
+      border-radius:4px;
+      padding:8px;
+      font-family:monospace;
+      font-size:0.7rem;
+      word-break:break-all;
+      margin:10px 0;
+      max-height:100px;
+      overflow-y:auto;
+    }
+    .copy-btn{
+      background:rgba(255,255,255,0.1);
+      border:none;
+      color:#fff;
+      padding:4px 8px;
+      border-radius:4px;
+      font-size:0.75rem;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔧 捏 Ta 调试助手</h2>
+  <div class="status" id="status">✅ 扩展已激活</div>
+  
+  <p>打开捏 Ta 页面后，调试工具会自动加载！</p>
+  
+  <button class="btn" onclick="openNieta()">🔓 打开捏 Ta</button>
+  <button class="btn" onclick="copyTokenCode()">📋 复制 Token 代码</button>
+  
+  <div class="code-box" id="tokenCode" style="display:none"></div>
+  
+  <p style="margin-top:15px;font-size:0.75rem;color:#888">
+    💡 点击右下角 🐞 按钮 → Console → 运行 Token 代码
+  </p>
+  
+  <script>
+    function openNieta() {
+      chrome.tabs.create({url: 'https://app.nieta.art/mine'});
+    }
+    
+    function copyTokenCode() {
+      const code = `const token = localStorage.getItem('token') || sessionStorage.getItem('token') || document.cookie.match(/token=([^;]+)/)?.[1];
+if (token) {
+  console.log('✅ Token:', token);
+  navigator.clipboard.writeText(token);
+  console.log('📋 已复制！');
+} else {
+  console.log('❌ 未找到 Token');
+}`;
+      
+      navigator.clipboard.writeText(code).then(() => {
+        document.getElementById('tokenCode').textContent = code;
+        document.getElementById('tokenCode').style.display = 'block';
+      });
+    }
+  </script>
+</body>
+</html>

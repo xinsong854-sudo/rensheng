@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "捏 Ta 调试助手",
+  "version": "1.0.0",
+  "description": "为捏 Ta 页面自动加载 Eruda 调试工具，手机端可用",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://app.nieta.art/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "捏 Ta 调试助手"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://app.nieta.art/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

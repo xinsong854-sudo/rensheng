@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>捏 Ta 调试助手 - Kiwi 扩展下载</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+      background:linear-gradient(135deg,#1a1a2e,#16213e);
+      min-height:100vh;
+      color:#fff;
+      padding:20px;
+    }
+    .container{max-width:500px;margin:0 auto}
+    h1{
+      font-size:1.5rem;
+      text-align:center;
+      margin-bottom:10px;
+      color:#e94560;
+    }
+    .subtitle{
+      text-align:center;
+      color:#888;
+      font-size:0.9rem;
+      margin-bottom:30px;
+    }
+    .card{
+      background:rgba(255,255,255,0.05);
+      border-radius:16px;
+      padding:20px;
+      margin-bottom:20px;
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .step{
+      display:flex;
+      align-items:flex-start;
+      margin-bottom:20px;
+    }
+    .step-num{
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+      font-size:1rem;
+      flex-shrink:0;
+      margin-right:12px;
+    }
+    .step-text{flex:1;line-height:1.6}
+    .btn{
+      display:block;
+      width:100%;
+      padding:14px 20px;
+      border:none;
+      border-radius:12px;
+      font-size:1rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.3s;
+      text-align:center;
+      text-decoration:none;
+      margin-bottom:10px;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      color:#fff;
+    }
+    .btn-primary:active{transform:scale(0.98)}
+    .btn-success{
+      background:linear-gradient(135deg,#00b894,#00cec9);
+      color:#fff;
+    }
+    .tip{
+      font-size:0.8rem;
+      color:#888;
+      margin-top:10px;
+      padding:10px;
+      background:rgba(255,255,255,0.05);
+      border-radius:8px;
+      border-left:3px solid #00b894;
+    }
+    .download-box{
+      background:rgba(0,184,148,0.1);
+      border:1px solid #00b894;
+      border-radius:12px;
+      padding:20px;
+      text-align:center;
+      margin:20px 0;
+    }
+    .download-box h3{color:#00b894;margin-bottom:10px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 捏 Ta 调试助手</h1>
+    <p class="subtitle">Kiwi Browser 扩展 · 自动注入控制台</p>
+
+    <div class="download-box">
+      <h3>📦 扩展已准备好！</h3>
+      <p style="color:#ccc;margin-bottom:15px">点击下面按钮下载扩展文件</p>
+      <a href="nieta-debug-kiwi-extension.zip" class="btn btn-success" download>
+        📥 下载扩展 (.zip)
+      </a>
+      <p style="font-size:0.8rem;color:#888;margin-top:10px">
+        文件大小：约 4KB
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">📋 安装步骤</h3>
+      
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong>下载并安装 Kiwi Browser</strong>
+          <a href="https://play.google.com/store/apps/details?id=com.kiwibrowser.browser" class="btn btn-primary" style="margin-top:10px" target="_blank">
+            📲 去 Google Play 下载
+          </a>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong>下载上面的扩展文件</strong>
+          <p>点击绿色按钮下载 .zip 文件</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong>在 Kiwi 中安装扩展</strong>
+          <p>打开 Kiwi → 右上角 ⋮ → Extensions → + (from .zip) → 选择下载的文件</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">
+          <strong>打开捏 Ta</strong>
+          <a href="https://app.nieta.art/mine" class="btn btn-primary" style="margin-top:10px" target="_blank">
+            🔓 打开捏 Ta
+          </a>
+          <div class="tip">
+            ✅ 扩展会自动注入 Eruda 调试工具！点击右下角 🐞 按钮打开控制台
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">🔑 获取 Token</h3>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <p>点击右下角 🐞 按钮 → Console 标签</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <p>粘贴并运行：</p>
+          <div style="background:rgba(0,0,0,0.3);border-radius:6px;padding:10px;margin-top:8px;font-family:monospace;font-size:0.7rem;word-break:break-all">
+const token = localStorage.getItem('token') || sessionStorage.getItem('token') || document.cookie.match(/token=([^;]+)/)?.[1];
+if (token) {
+  console.log('✅ Token:', token);
+  navigator.clipboard.writeText(token);
+} else {
+  console.log('❌ 未找到 Token');
+}
+          </div>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <p>Token 会自动复制！粘贴到开盒工具即可</p>
+          <a href="unbox/" class="btn btn-primary" style="margin-top:10px">
+            ↩️ 返回开盒工具
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
