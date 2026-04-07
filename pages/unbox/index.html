@@ -369,7 +369,14 @@ body::after{
     <div class="section" id="elemSection"></div>
   </div>
 
-  <div class="ftr">仅供参考学习 · 禁止挂人引战</div>
+  <div class="ftr">
+    仅供参考学习 · 禁止挂人引战
+    <div style="margin-top:8px;font-size:0.68rem;color:var(--text3);opacity:0.6">
+      缓存：<span id="cacheCount">0</span> 条 · 
+      <span style="cursor:pointer;text-decoration:underline" onclick="showCacheInfo()">查看</span> · 
+      <span style="cursor:pointer;text-decoration:underline" onclick="clearCache()">清空</span>
+    </div>
+  </div>
 </div>
 
 <div class="lb" id="lb" onclick="this.classList.remove('open')">
@@ -396,6 +403,101 @@ const RATE_LIMIT={
   windowMs: 60000,       // 1 分钟内
   requests: [],          // 记录请求时间
   blockedUntil: 0        // 阻止到什么时候
+};
+
+// ═══════════════════════════════════════════
+//  本地缓存（查过的东西存起来）
+// ═══════════════════════════════════════════
+const CACHE_KEY='unbox_cache_v1';
+const CACHE_EXPIRE=7*24*60*60*1000; // 7 天过期
+
+const QueryCache={
+  // 获取所有缓存
+  getAll(){
+    try{
+      const data=localStorage.getItem(CACHE_KEY);
+      if(!data) return {};
+      const parsed=JSON.parse(data);
+      // 清理过期缓存
+      const now=Date.now();
+      const valid={};
+      for(const uuid of Object.keys(parsed)){
+        if(now - parsed[uuid].cachedAt < CACHE_EXPIRE){
+          valid[uuid]=parsed[uuid];
+        }
+      }
+      if(Object.keys(valid).length !== Object.keys(parsed).length){
+        localStorage.setItem(CACHE_KEY,JSON.stringify(valid));
+      }
+      return valid;
+    }catch(e){
+      console.error('[Cache] 读取失败:',e);
+      return {};
+    }
+  },
+  
+  // 保存缓存
+  set(uuid,data){
+    try{
+      const cache=this.getAll();
+      cache[uuid]={
+        data,
+        cachedAt:Date.now(),
+        type: data.type || 'unknown',
+        name: data.item?.name || 'Unknown'
+      };
+      localStorage.setItem(CACHE_KEY,JSON.stringify(cache));
+      console.log('[Cache] 已保存:',uuid);
+    }catch(e){
+      console.error('[Cache] 保存失败:',e);
+    }
+  },
+  
+  // 获取缓存
+  get(uuid){
+    try{
+      const cache=this.getAll();
+      const item=cache[uuid];
+      if(!item) return null;
+      // 检查是否过期
+      if(Date.now() - item.cachedAt >= CACHE_EXPIRE){
+        this.delete(uuid);
+        return null;
+      }
+      console.log('[Cache] 命中缓存:',uuid);
+      return item.data;
+    }catch(e){
+      console.error('[Cache] 读取失败:',e);
+      return null;
+    }
+  },
+  
+  // 删除缓存
+  delete(uuid){
+    try{
+      const cache=this.getAll();
+      delete cache[uuid];
+      localStorage.setItem(CACHE_KEY,JSON.stringify(cache));
+      console.log('[Cache] 已删除:',uuid);
+    }catch(e){
+      console.error('[Cache] 删除失败:',e);
+    }
+  },
+  
+  // 清空缓存
+  clear(){
+    try{
+      localStorage.removeItem(CACHE_KEY);
+      console.log('[Cache] 已清空');
+    }catch(e){
+      console.error('[Cache] 清空失败:',e);
+    }
+  },
+  
+  // 获取缓存数量
+  count(){
+    return Object.keys(this.getAll()).length;
+  }
 };
 
 function checkRateLimit(){
@@ -488,6 +590,36 @@ function goBack(){
 }
 
 function status(s){$('status').textContent=s}
+
+function updateCacheCount(){
+  $('cacheCount').textContent=QueryCache.count();
+}
+
+function showCacheInfo(){
+  const cache=QueryCache.getAll();
+  const keys=Object.keys(cache);
+  if(keys.length===0){
+    alert('📭 缓存为空');
+    return;
+  }
+  let msg=`📦 缓存了 ${keys.length} 条数据：\n\n`;
+  for(const uuid of keys){
+    const item=cache[uuid];
+    const days=Math.floor((Date.now()-item.cachedAt)/(24*60*60*1000));
+    msg+=`• ${item.name} (${item.type})\n  ${days}天前缓存\n\n`;
+  }
+  alert(msg);
+  updateCacheCount();
+}
+
+function clearCache(){
+  if(confirm('确定要清空所有缓存吗？(´• ω •`) 清空后查询会重新消耗请求次数哦~')){
+    QueryCache.clear();
+    updateCacheCount();
+    status('✨ 缓存已清空');
+    setTimeout(()=>status(''),2000);
+  }
+}
 
 function updateRateLimitDisplay(){
   const statusDiv=$('rateLimitStatus');
@@ -705,13 +837,33 @@ async function unbox(uuid){
   const btn=$('goBtn');btn.disabled=true;btn.textContent='查询中…';
   $('emptyState').style.display='none';$('result').classList.remove('show');
   updateRateLimitDisplay(); // 更新限流状态
+  
   try{
+    // 先查缓存
+    const cached=QueryCache.get(uuid);
+    if(cached){
+      status('✨ 从缓存加载：'+cached.item.name);
+      pushNav(cached.type,cached.item.name||'',uuid);
+      render(cached.item,cached.type,cached.item.name||'');
+      $('result').classList.add('show');
+      status('✦ 缓存查询完成 ✦');
+      btn.disabled=false;btn.textContent='查 询';busy=false;
+      updateRateLimitDisplay();
+      return;
+    }
+    
+    // 缓存没有，走 API 查询
     status('检查收藏…');
     let result=await findInFavorites(uuid);
     if(!result){status('收藏角色中…');await favorItem(uuid,'oc');result=await findInFavorites(uuid)}
     if(!result){status('收藏元素中…');await favorItem(uuid,'elementum');result=await findInFavorites(uuid)}
     if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色，也可能是请求太多了，试试用自己的 Token');
     status('提取数据…');
+    
+    // 保存到缓存
+    QueryCache.set(uuid,{type:result.type,item:result.item});
+    updateCacheCount(); // 更新缓存数量
+    
     pushNav(result.type,result.item.name||'',uuid);
     render(result.item,result.type,result.item.name||'');
     $('result').classList.add('show');
