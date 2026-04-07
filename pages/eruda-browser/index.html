@@ -3,77 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Eruda Browser</title>
+<title>Eruda Console</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#1a1a2e;color:#eee;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
-.toolbar{display:flex;gap:6px;padding:8px;background:#16213e;align-items:center;border-bottom:2px solid #0f3460}
-.toolbar input{flex:1;padding:8px 12px;border:1px solid #0f3460;border-radius:6px;background:#1a1a2e;color:#eee;font-size:14px;outline:none}
+.toolbar{display:flex;gap:6px;padding:8px;background:#16213e;align-items:center;border-bottom:2px solid #0f3460;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:150px;padding:8px 12px;border:1px solid #0f3460;border-radius:6px;background:#1a1a2e;color:#eee;font-size:14px;outline:none}
 .toolbar input:focus{border-color:#e94560}
-.toolbar button{padding:8px 16px;border:none;border-radius:6px;background:#e94560;color:#fff;font-size:14px;cursor:pointer;white-space:nowrap}
-.toolbar button:active{background:#c73650}
-.proxy-sel{padding:6px;border:1px solid #0f3460;border-radius:6px;background:#1a1a2e;color:#eee;font-size:11px;outline:none;max-width:130px}
+.toolbar button{padding:8px 14px;border:none;border-radius:6px;background:#e94560;color:#fff;font-size:13px;cursor:pointer;white-space:nowrap}
+.toolbar button:active{opacity:.8}
+.toolbar button.secondary{background:#0f3460}
 .status{padding:4px 10px;font-size:11px;color:#888;background:#16213e;border-bottom:1px solid #0f3460;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .status.ok{color:#4ecca3}
 .status.err{color:#e94560}
 .status.trying{color:#f0c040}
 iframe{flex:1;border:none;background:#fff;width:100%}
+.content{flex:1;display:flex;flex-direction:column}
 .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:#555;gap:12px;padding:40px;text-align:center}
 .placeholder .icon{font-size:64px;opacity:.5}
 .placeholder p{font-size:14px;max-width:320px;line-height:1.6}
 .placeholder code{background:#0f3460;padding:2px 8px;border-radius:4px;font-size:12px;color:#4ecca3}
+.placeholder ol{text-align:left;font-size:13px;color:#888;line-height:2;padding-left:20px}
+.placeholder ol li{margin:4px 0}
 .hidden{display:none!important}
+.tab-bar{display:flex;background:#0f3460;border-bottom:1px solid #16213e}
+.tab-bar button{flex:1;padding:8px;border:none;background:transparent;color:#888;font-size:12px;cursor:pointer;border-bottom:2px solid transparent}
+.tab-bar button.active{color:#e94560;border-bottom-color:#e94560}
+.inject-box{padding:10px;background:#16213e;display:flex;flex-direction:column;gap:8px}
+.inject-box textarea{width:100%;min-height:80px;background:#1a1a2e;color:#4ecca3;border:1px solid #0f3460;border-radius:6px;padding:8px;font-family:monospace;font-size:12px;resize:vertical;outline:none}
+.inject-box .hint{font-size:11px;color:#666}
 </style>
 </head>
 <body>
 
 <div class="toolbar">
-  <input id="urlInput" type="url" placeholder="输入网址" autofocus>
-  <button id="goBtn">打开</button>
+  <input id="urlInput" type="url" placeholder="输入网址" value="">
+  <button id="goBtn">加载</button>
+  <button id="injectBtn" class="secondary" onclick="injectEruda()">注入Eruda</button>
 </div>
-<select class="proxy-sel" id="proxySel">
-  <option value="auto">自动切换</option>
-  <option value="0">corsproxy.io</option>
-  <option value="1">corsproxy.io/?</option>
-  <option value="2">allorigins</option>
-</select>
-<div id="status" class="status">就绪 — 多代理 fallback + Eruda 注入</div>
-<iframe id="frame" class="hidden"></iframe>
-<div id="placeholder" class="placeholder">
-  <div class="icon">🌐</div>
-  <p>输入任意网址，通过代理加载并注入 Eruda 控制台</p>
-  <p>CSP 会被自动剥离，Eruda 不会被拦截</p>
-  <p>可用代理：<code>corsproxy.io</code> <code>allorigins</code></p>
+<div id="status" class="status">就绪</div>
+
+<div class="content">
+  <!-- 主页加载模式 -->
+  <div id="homeTab">
+    <iframe id="frame" class="hidden"></iframe>
+    <div id="placeholder" class="placeholder">
+      <div class="icon">🌐</div>
+      <p><strong>方式一：代理加载</strong></p>
+      <p>输入网址 → 通过 CORS 代理加载（部分站点可能 403）</p>
+      <p style="margin-top:16px"><strong>方式二：手动注入（推荐）</strong></p>
+      <ol>
+        <li>用你的浏览器打开目标网页</li>
+        <li>复制下面的代码粘贴到浏览器地址栏</li>
+        <li>回车，Eruda 图标会出现在页面右下角</li>
+      </ol>
+      <textarea readonly id="bookmarkCode" style="margin-top:8px;max-width:300px;height:80px;font-size:11px" onclick="this.select()"></textarea>
+      <button class="secondary" onclick="copyCode()" style="margin-top:4px">复制注入代码</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const ERUDA = 'https://cdn.jsdelivr.net/npm/eruda';
-
-// 代理配置
-const PROXIES = [
-  {
-    name: 'corsproxy.io',
-    fetch: url => fetch('https://corsproxy.io/?' + encodeURIComponent(url))
-  },
-  {
-    name: 'corsproxy.io (direct)',
-    fetch: url => fetch('https://corsproxy.io/?' + url)
-  },
-  {
-    name: 'allorigins',
-    fetch: url => fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url))
-  }
-];
+const ERUDA_CDN = 'https://cdn.jsdelivr.net/npm/eruda';
+const ERUDA_CDN2 = 'https://unpkg.com/eruda';
 
 const urlInput  = document.getElementById('urlInput');
 const goBtn     = document.getElementById('goBtn');
 const frame     = document.getElementById('frame');
 const statusEl  = document.getElementById('status');
-const proxySel  = document.getElementById('proxySel');
 const ph        = document.getElementById('placeholder');
+const codeEl    = document.getElementById('bookmarkCode');
+
+// 生成注入代码
+const injectCode = `(function(){var s=document.createElement('script');s.src='${ERUDA_CDN}';s.onerror=function(){var s2=document.createElement('script');s2.src='${ERUDA_CDN2}';document.body.appendChild(s2);s2.onload=function(){eruda.init()}};document.body.appendChild(s);s.onload=function(){eruda.init()}})();`;
+codeEl.value = 'javascript:' + injectCode;
 
 goBtn.onclick = load;
 urlInput.onkeydown = e => { if(e.key==='Enter') load() };
+
+// 多代理
+const PROXIES = [
+  { name:'corsproxy.io', fetch:u=>fetch('https://corsproxy.io/?'+u) },
+  { name:'allorigins', fetch:u=>fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u)) },
+  { name:'thingproxy', fetch:u=>fetch('https://thingproxy.freeboard.io/fetch/'+u) },
+];
 
 async function load(){
   let url = urlInput.value.trim();
@@ -81,82 +94,93 @@ async function load(){
   if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
   urlInput.value = url;
 
-  const mode = proxySel.value;
-
-  if(mode === 'auto'){
-    await loadWithFallback(url);
-  } else {
-    const idx = parseInt(mode);
-    await tryProxy(idx, url);
-  }
-}
-
-async function loadWithFallback(url){
-  for(let i = 0; i < PROXIES.length; i++){
+  for(let i=0;i<PROXIES.length;i++){
     const ok = await tryProxy(i, url);
     if(ok) return;
   }
-  setStatus('所有代理均失败', 'err');
+  setStatus('所有代理均失败，请尝试手动注入方式','err');
+  // 显示 placeholder
+  frame.classList.add('hidden');
+  ph.classList.remove('hidden');
 }
 
 async function tryProxy(idx, url){
   const p = PROXIES[idx];
-  setStatus('正在尝试 ' + p.name + ' …', 'trying');
+  setStatus('尝试 '+p.name+' …','trying');
   try{
     const resp = await p.fetch(url);
-    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
     const html = await resp.text();
     if(html.length < 100 && /error|blocked|forbidden/i.test(html)) throw new Error('页面被拒绝');
-
     return await renderPage(html, url, p.name);
   } catch(e){
-    console.warn('Proxy ' + p.name + ' failed:', e.message);
+    console.warn(p.name+' failed:', e.message);
     return false;
   }
 }
 
 async function renderPage(html, url, proxyName){
-  const inject = '<scr'+'ipt src="'+ERUDA+'"></scr'+'ipt><scr'+'ipt>try{eruda.init()}catch(e){}</scr'+'ipt>';
-
+  const inject = '<scr'+'ipt src="'+ERUDA_CDN+'"></scr'+'ipt><scr'+'ipt>try{eruda.init()}catch(e){}</scr'+'ipt>';
   let modified;
   if(/<\/head>/i.test(html)){
-    modified = html.replace(/<\/head>/i, inject + '</head>');
+    modified = html.replace(/<\/head>/i, inject+'</head>');
   } else {
     modified = inject + html;
   }
-  // 移除 CSP meta
   modified = modified.replace(/<meta[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*\/?>/gi, '');
 
-  const blob = new Blob([modified], {type:'text/html;charset=utf-8'});
+  const blob = new Blob([modified],{type:'text/html;charset=utf-8'});
   const blobUrl = URL.createObjectURL(blob);
 
-  return new Promise(resolve => {
-    const timeout = setTimeout(() => {
+  return new Promise(resolve=>{
+    const t = setTimeout(()=>{
       frame.classList.remove('hidden');
       ph.classList.add('hidden');
-      setStatus('已加载 (' + proxyName + '): ' + url, 'ok');
+      setStatus('已加载 ('+proxyName+'): '+url,'ok');
       resolve(true);
-    }, 800);
-
-    frame.onload = () => {
-      clearTimeout(timeout);
-      frame.classList.remove('hidden');
-      ph.classList.add('hidden');
-      setStatus('已加载 (' + proxyName + '): ' + url, 'ok');
-      resolve(true);
-    };
-    frame.onerror = () => {
-      clearTimeout(timeout);
-      setStatus('加载失败 (' + proxyName + ')', 'err');
-      resolve(false);
-    };
-    frame.src = blobUrl;
+    },800);
+    frame.onload=()=>{clearTimeout(t);frame.classList.remove('hidden');ph.classList.add('hidden');setStatus('已加载 ('+proxyName+'): '+url,'ok');resolve(true)};
+    frame.onerror=()=>{clearTimeout(t);setStatus('加载失败 ('+proxyName+')','err');resolve(false)};
+    frame.src=blobUrl;
   });
 }
 
-function setStatus(msg, type){
+function injectEruda(){
+  const url = urlInput.value.trim();
+  if(!url){setStatus('先输入网址','err');return}
+  // 尝试打开目标页并在 iframe 中注入
+  setStatus('尝试直接加载...','trying');
+  // 先试直接加载（如果页面允许 iframe）
+  frame.onload = function(){
+    frame.classList.remove('hidden');
+    ph.classList.add('hidden');
+    setStatus('已加载（如看不到 Eruda，请用手动注入方式）','ok');
+    // 尝试 postMessage 注入
+    try{
+      frame.contentWindow.eval(injectCode);
+      setStatus('Eruda 已注入','ok');
+    }catch(e){
+      setStatus('跨域无法注入，请用手动注入方式','err');
+    }
+  };
+  frame.onerror = function(){
+    setStatus('无法直接加载，请复制代码手动注入','err');
+  };
+  frame.src = url;
+}
+
+function copyCode(){
+  navigator.clipboard.writeText('javascript:'+injectCode).then(()=>{
+    setStatus('已复制到剪贴板','ok');
+  }).catch(()=>{
+    codeEl.select();
+    setStatus('已选中，请手动复制','ok');
+  });
+}
+
+function setStatus(msg,type){
   statusEl.textContent = msg;
-  statusEl.className = 'status' + (type ? ' ' + type : '');
+  statusEl.className = 'status'+(type?' '+type:'');
 }
 </script>
 </body>
