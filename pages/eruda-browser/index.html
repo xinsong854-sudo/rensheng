@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Eruda Browser</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;color:#eee;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.toolbar{display:flex;gap:6px;padding:8px;background:#16213e;align-items:center;border-bottom:2px solid #0f3460}
+.toolbar input{flex:1;padding:8px 12px;border:1px solid #0f3460;border-radius:6px;background:#1a1a2e;color:#eee;font-size:14px;outline:none}
+.toolbar input:focus{border-color:#e94560}
+.toolbar button{padding:8px 16px;border:none;border-radius:6px;background:#e94560;color:#fff;font-size:14px;cursor:pointer;white-space:nowrap}
+.toolbar button:active{background:#c73650}
+.toolbar select{padding:8px 6px;border:1px solid #0f3460;border-radius:6px;background:#1a1a2e;color:#eee;font-size:12px;outline:none}
+.status{padding:4px 10px;font-size:11px;color:#888;background:#16213e;border-bottom:1px solid #0f3460;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status.ok{color:#4ecca3}
+.status.err{color:#e94560}
+iframe{flex:1;border:none;background:#fff;width:100%}
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:#555;gap:12px;padding:40px;text-align:center}
+.placeholder .icon{font-size:64px;opacity:.5}
+.placeholder p{font-size:14px;max-width:320px;line-height:1.6}
+.placeholder code{background:#0f3460;padding:2px 8px;border-radius:4px;font-size:13px;color:#4ecca3}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <input id="urlInput" type="url" placeholder="输入网址，如 https://example.com" autofocus>
+  <button id="goBtn">打开</button>
+</div>
+<div id="status" class="status">就绪 — CORS 代理加载 + Eruda 注入</div>
+<iframe id="frame" class="hidden"></iframe>
+<div id="placeholder" class="placeholder">
+  <div class="icon">🌐</div>
+  <p>输入任意网址，通过 CORS 代理加载并自动注入 Eruda 控制台</p>
+  <p>CSP 会被自动剥离，Eruda 不会被拦截</p>
+  <p>代理：<code>corsproxy.io</code></p>
+</div>
+
+<script>
+const PROXY = 'https://corsproxy.io/?';
+const ERUDA = 'https://cdn.jsdelivr.net/npm/eruda';
+
+const urlInput  = document.getElementById('urlInput');
+const goBtn     = document.getElementById('goBtn');
+const frame     = document.getElementById('frame');
+const statusEl  = document.getElementById('status');
+const ph        = document.getElementById('placeholder');
+
+goBtn.onclick = load;
+urlInput.onkeydown = e => { if(e.key==='Enter') load() };
+
+async function load(){
+  let url = urlInput.value.trim();
+  if(!url) return;
+  if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  urlInput.value = url;
+
+  setStatus('加载代理中…');
+  try{
+    const resp = await fetch(PROXY + encodeURIComponent(url));
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const html = await resp.text();
+
+    // 注入 Eruda
+    const inject = `<script src="${ERUDA}"><\/script><script>try{eruda.init()}catch(e){}<\/script>`;
+
+    // 尝试注入到 </head> 之前，否则放最前
+    let modified;
+    if(/<\/head>/i.test(html)){
+      modified = html.replace(/<\/head>/i, inject + '</head>');
+    } else {
+      modified = inject + html;
+    }
+
+    // 移除原始页面的 CSP meta 标签（双重保险）
+    modified = modified.replace(/<meta[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*\/?>/gi, '');
+
+    // 创建 blob URL
+    const blob = new Blob([modified], {type:'text/html;charset=utf-8'});
+    const blobUrl = URL.createObjectURL(blob);
+
+    frame.onload = () => {
+      setStatus('已加载: ' + url, 'ok');
+    };
+    frame.onerror = () => {
+      setStatus('加载失败（页面可能拒绝 iframe 嵌入）', 'err');
+    };
+    frame.src = blobUrl;
+    frame.classList.remove('hidden');
+    ph.classList.add('hidden');
+
+  } catch(e){
+    setStatus('错误: ' + e.message, 'err');
+  }
+}
+
+function setStatus(msg, type){
+  statusEl.textContent = msg;
+  statusEl.className = 'status' + (type ? ' ' + type : '');
+}
+</script>
+</body>
+</html>
