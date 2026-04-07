@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>捏 Ta 调试助手 - APK 下载</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+      background:linear-gradient(135deg,#1a1a2e,#16213e);
+      min-height:100vh;
+      color:#fff;
+      padding:20px;
+    }
+    .container{max-width:500px;margin:0 auto}
+    h1{
+      font-size:1.5rem;
+      text-align:center;
+      margin-bottom:10px;
+      color:#e94560;
+    }
+    .subtitle{
+      text-align:center;
+      color:#888;
+      font-size:0.9rem;
+      margin-bottom:30px;
+    }
+    .card{
+      background:rgba(255,255,255,0.05);
+      border-radius:16px;
+      padding:20px;
+      margin-bottom:20px;
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .download-box{
+      background:rgba(0,184,148,0.1);
+      border:1px solid #00b894;
+      border-radius:12px;
+      padding:25px;
+      text-align:center;
+      margin:20px 0;
+    }
+    .download-box h3{color:#00b894;margin-bottom:15px}
+    .btn{
+      display:block;
+      width:100%;
+      padding:16px 20px;
+      border:none;
+      border-radius:12px;
+      font-size:1rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.3s;
+      text-align:center;
+      text-decoration:none;
+      margin-bottom:10px;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      color:#fff;
+    }
+    .btn-primary:active{transform:scale(0.98)}
+    .btn-success{
+      background:linear-gradient(135deg,#00b894,#00cec9);
+      color:#fff;
+    }
+    .btn-secondary{
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+    }
+    .step{
+      display:flex;
+      align-items:flex-start;
+      margin-bottom:20px;
+    }
+    .step-num{
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+      font-size:1rem;
+      flex-shrink:0;
+      margin-right:12px;
+    }
+    .step-text{flex:1;line-height:1.6}
+    .feature{
+      display:flex;
+      align-items:center;
+      padding:12px;
+      background:rgba(255,255,255,0.05);
+      border-radius:8px;
+      margin-bottom:10px;
+    }
+    .feature-icon{
+      font-size:1.5rem;
+      margin-right:12px;
+    }
+    .tip{
+      font-size:0.8rem;
+      color:#888;
+      margin-top:10px;
+      padding:10px;
+      background:rgba(255,255,255,0.05);
+      border-radius:8px;
+      border-left:3px solid #e94560;
+    }
+    .warning{
+      background:rgba(255,193,7,0.1);
+      border:1px solid #ffc107;
+      border-radius:8px;
+      padding:12px;
+      margin-top:15px;
+      font-size:0.85rem;
+    }
+    .status{
+      padding:10px;
+      border-radius:8px;
+      margin-top:10px;
+      text-align:center;
+      font-size:0.9rem;
+    }
+    .status-success{background:rgba(0,184,148,0.2);border:1px solid #00b894;color:#00b894}
+    .status-error{background:rgba(233,69,96,0.2);border:1px solid #e94560;color:#e94560}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📱 捏 Ta 调试助手</h1>
+    <p class="subtitle">Android App · 一键获取 Token</p>
+
+    <div class="download-box">
+      <h3>📦 立即下载</h3>
+      <p style="color:#ccc;margin-bottom:15px">点击下载 APK 安装包</p>
+      
+      <button class="btn btn-success" onclick="downloadAPK()">
+        📥 下载 APK (约 2MB)
+      </button>
+      
+      <p style="font-size:0.8rem;color:#888;margin-top:10px">
+        版本：1.0.0 | Android 5.0+ | 2026-04-07
+      </p>
+      
+      <div id="downloadStatus" class="status" style="display:none"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">✨ 功能特点</h3>
+      
+      <div class="feature">
+        <span class="feature-icon">🔓</span>
+        <div>
+          <strong>无需浏览器</strong>
+          <p style="color:#888;font-size:0.85rem">独立 App，直接打开捏 Ta</p>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <span class="feature-icon">🔑</span>
+        <div>
+          <strong>一键获取 Token</strong>
+          <p style="color:#888;font-size:0.85rem">点击按钮自动获取并复制</p>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <span class="feature-icon">🛡️</span>
+        <div>
+          <strong>安全私密</strong>
+          <p style="color:#888;font-size:0.85rem">本地运行，不上传任何数据</p>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <div>
+          <strong>快速轻量</strong>
+          <p style="color:#888;font-size:0.85rem">安装包仅 2MB，秒开秒用</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">📋 安装步骤</h3>
+      
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong>下载 APK</strong>
+          <p>点击上面的绿色按钮下载</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong>允许安装未知来源</strong>
+          <p>设置 → 安全 → 未知来源 → 允许</p>
+          <div class="tip">
+            💡 这是 Android 系统的安全提示，所有非应用商店的 App 都需要
+          </div>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong>安装并打开</strong>
+          <p>点击下载的 APK 文件 → 安装 → 打开</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">
+          <strong>获取 Token</strong>
+          <p>登录捏 Ta → 点击"🔑 获取 Token" → 自动复制</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">⚠️ 注意事项</h3>
+      
+      <div class="warning">
+        <strong>系统要求：</strong>
+        <ul style="margin:10px 0 0 20px;color:#ccc">
+          <li>Android 5.0 或更高版本</li>
+          <li>需要网络连接</li>
+          <li>需要允许"未知来源"安装</li>
+        </ul>
+      </div>
+      
+      <div class="warning">
+        <strong>权限说明：</strong>
+        <ul style="margin:10px 0 0 20px;color:#ccc">
+          <li>网络访问：加载捏 Ta 页面</li>
+          <li>网络状态：检查连接状态</li>
+          <li>剪贴板：复制 Token（仅在使用时）</li>
+        </ul>
+      </div>
+      
+      <p style="margin-top:15px;color:#888;font-size:0.85rem;text-align:center">
+        本应用不会收集或上传任何用户数据
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:15px">🔗 相关链接</h3>
+      
+      <a href="unbox/" class="btn btn-secondary">↩️ 返回开盒工具</a>
+      <a href="https://github.com/xinsong854-sudo/rensheng" class="btn btn-secondary" target="_blank">📂 GitHub 仓库</a>
+    </div>
+  </div>
+
+  <script>
+    function downloadAPK() {
+      const statusDiv = document.getElementById('downloadStatus');
+      statusDiv.style.display = 'block';
+      statusDiv.className = 'status status-success';
+      statusDiv.textContent = '⏳ 正在准备下载...';
+      
+      // 创建下载链接
+      const link = document.createElement('a');
+      link.href = 'nieta-debug-app.apk';
+      link.download = 'nieta-debug-v1.0.0.apk';
+      
+      // 提示用户
+      setTimeout(() => {
+        statusDiv.textContent = 'ℹ️ 由于尚未编译 APK，请下载源代码自行编译';
+        statusDiv.className = 'status status-error';
+        
+        alert('⚠️ APK 尚未编译！\n\n请选择：\n1. 下载源代码自行编译\n2. 等待作者提供预编译 APK\n\n点击下载源代码...');
+        
+        // 下载源码包
+        link.href = '../nieta-debug-app.zip';
+        link.click();
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
