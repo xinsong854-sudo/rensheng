@@ -139,6 +139,11 @@ body::after{
   text-shadow:0 0 10px var(--glow);
 }
 
+.rate-limit-status{
+  text-align:center;font-size:0.7rem;color:var(--text3);
+  margin-top:8px;letter-spacing:0.05em;
+}
+
 .result{display:none}
 .result.show{display:block;animation:fadeUp 0.5s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -326,6 +331,20 @@ body::after{
     </div>
   </div>
 
+  <div class="input-wrap" style="margin-top:16px">
+    <label style="display:flex;align-items:center;gap:8px">
+      <span>🔑 自定义 Token（可选，限流时用）</span>
+      <input type="checkbox" id="useCustomToken" onchange="toggleTokenInput()" style="width:auto;margin:0">
+    </label>
+    <div id="customTokenWrap" style="display:none;margin-top:10px">
+      <input type="text" id="customToken" placeholder="粘贴你的 JWT Token" autocomplete="off" spellcheck="false">
+      <div style="margin-top:8px;font-size:0.68rem;color:var(--text3);line-height:1.6">
+        💡 提示：如果遇到"请求过多"限流，可以试试用自己的 Token<br>
+        📍 获取方式：捏 Ta 网页 F12 → Network → 任意请求 → Headers → x-token
+      </div>
+    </div>
+  </div>
+
   <div class="breadcrumb" id="breadcrumb">
     <span class="bc-icon">🧬</span>
     <span class="bc-label">当前：</span>
@@ -334,6 +353,10 @@ body::after{
   </div>
 
   <div class="status" id="status"></div>
+  
+  <div class="rate-limit-status" id="rateLimitStatus" style="font-size:0.7rem;color:var(--text3);text-align:center;margin-top:8px;display:none">
+    请求限额：<span id="rateLimitUsed">0</span>/<span id="rateLimitMax">5</span> · 剩余 <span id="rateLimitRemaining">5</span> 次
+  </div>
 
   <div class="empty" id="emptyState">
     <div class="ico">📦</div>
@@ -354,12 +377,75 @@ body::after{
 </div>
 
 <script>
-const TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mzc3ODQxLCJ1dWlkIjoiOGM0ZDRhZTUwNjZlNDA1YWFkMWUwODliYjIyNWI4YjciLCJwaG9uZV9udW0iOiIxMzYyMTk3NDYwMiIsImV4cGlyZXNfYXQiOjE4MDY5NjY0NTAsImlzX3JlZ2lzdGVyIjpmYWxzZSwidXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChBbmRyb2lkIDE2OyBNb2JpbGU7IHJ2OjEyOC4wKSBHZWNrby8xMjguMCBGaXJlZm94LzEyOC4wIiwic2FsdCI6IjFiMzM3YzUxMDBhMDRlNzRiMzQwYTk3NGQ0NmY4MzMxIn0.LVt_wGoyRx3ahv8d4WZdhwzF1Xtid9Fnmm1zTgboqGM';
+// 内置 sessionId（第一次尝试用这个）
+const DEFAULT_TOKEN='{"sessionId":"ea720acb-16be-413a-827b-13c3bd2b987a","timestamp":1775533414478}';
+// 备用 token（主 token 失败时切换）
+const BACKUP_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDE4NjMzLCJ1dWlkIjoiNDljOTE1ZTY0OTI1NGY1NWE3ZWEzOTlhZDNiNmVmZDEiLCJwaG9uZV9udW0iOiIxMzkxODE1NzQ3NiIsImV4cGlyZXNfYXQiOjE4MDcwMTI0MDEsImlzX3JlZ2lzdGVyIjpmYWxzZSwidXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDYuMC4wLjAgU2FmYXJpLzUzNy4zNiBFZGcvMTQ2LjAuMC4wIiwic2FsdCI6IjcyYzRmMjVhYjUxYTQ3ODFhNTNjYWY1ZDM3MWZlYmNjIn0.IT-HOX9JpJQkkF3FQEBTBetUbDmkcLS1eKdBJhe45Gg';
 const API='https://api.talesofai.cn';
 let busy=false;
 let currentType='';
 let currentName='';
+let useCustomToken=false;
+let useBackupToken=false; // 是否已切换到备用 token
+
+// ═══════════════════════════════════════════
+//  请求限流
+// ═══════════════════════════════════════════
+const RATE_LIMIT={
+  maxRequests: 5,        // 最多 5 次请求
+  windowMs: 60000,       // 1 分钟内
+  requests: [],          // 记录请求时间
+  blockedUntil: 0        // 阻止到什么时候
+};
+
+function checkRateLimit(){
+  const now=Date.now();
+  
+  // 如果还在阻止期内，返回剩余时间
+  if(now < RATE_LIMIT.blockedUntil){
+    const remaining=Math.ceil((RATE_LIMIT.blockedUntil - now)/1000);
+    return {allowed:false, remaining};
+  }
+  
+  // 清理过期的请求记录
+  RATE_LIMIT.requests=RATE_LIMIT.requests.filter(t => now - t < RATE_LIMIT.windowMs);
+  
+  // 检查是否超过限制
+  if(RATE_LIMIT.requests.length >= RATE_LIMIT.maxRequests){
+    RATE_LIMIT.blockedUntil=now + RATE_LIMIT.windowMs;
+    return {allowed:false, remaining:Math.ceil(RATE_LIMIT.windowMs/1000)};
+  }
+  
+  // 允许请求，记录时间
+  RATE_LIMIT.requests.push(now);
+  return {allowed:true};
+}
+
+function getRateLimitStatus(){
+  const now=Date.now();
+  RATE_LIMIT.requests=RATE_LIMIT.requests.filter(t => now - t < RATE_LIMIT.windowMs);
+  return {
+    used: RATE_LIMIT.requests.length,
+    limit: RATE_LIMIT.maxRequests,
+    remaining: Math.max(0, RATE_LIMIT.maxRequests - RATE_LIMIT.requests.length)
+  };
+}
+
 const $=id=>document.getElementById(id);
+
+function getToken(){
+  if(useCustomToken){
+    const custom=$('customToken').value.trim();
+    if(custom)return custom;
+  }
+  // 如果已切换到备用 token，返回备用的
+  if(useBackupToken) return BACKUP_TOKEN;
+  return DEFAULT_TOKEN;
+}
+function toggleTokenInput(){
+  useCustomToken=$('useCustomToken').checked;
+  $('customTokenWrap').style.display=useCustomToken?'':'none';
+}
 
 // ═══════════════════════════════════════════
 //  navigation
@@ -393,7 +479,8 @@ function goHome(){
   $('linkInput').value='';
 }
 function goBack(){
-  if(navStack.length<2){goHome();return}
+  // 只有一个元素或没有元素时，返回首页（输入框）
+  if(navStack.length<=1){goHome();return}
   navStack.pop();
   const prev=navStack[navStack.length-1];
   if(prev.uuid)unbox(prev.uuid);
@@ -401,6 +488,16 @@ function goBack(){
 }
 
 function status(s){$('status').textContent=s}
+
+function updateRateLimitDisplay(){
+  const statusDiv=$('rateLimitStatus');
+  const status=getRateLimitStatus();
+  $('rateLimitUsed').textContent=status.used;
+  $('rateLimitMax').textContent=status.limit;
+  $('rateLimitRemaining').textContent=status.remaining;
+  statusDiv.style.display=status.used>0?'block':'none';
+}
+
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function escAttr(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'\\\'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
@@ -414,7 +511,9 @@ function shuffle(arr){
 }
 
 async function resolveShort(url){
-  const r=await fetch(API+'/v1/util/original-url?short_url='+encodeURIComponent(url),{headers:{'x-token':TOKEN}});
+  const r=await fetch(API+'/v1/util/original-url?short_url='+encodeURIComponent(url),{
+    headers:{'Content-Type':'application/json'}
+  });
   if(!r.ok)throw new Error('API '+r.status);
   return await r.text();
 }
@@ -424,35 +523,141 @@ function extractUUID(fullUrl){
   return m?m[1]:null;
 }
 
-async function apiGet(path){
-  const r=await fetch(API+path,{headers:{'x-token':TOKEN}});
-  if(!r.ok)throw new Error('API '+r.status);
-  return r.json();
+async function apiGet(path, retry=true){
+  console.log('[apiGet] 请求:',API+path);
+  
+  // 检查限流
+  const rateCheck=checkRateLimit();
+  if(!rateCheck.allowed){
+    throw new Error(`请求太频繁了 (´;ω;`) 请等待 ${rateCheck.remaining} 秒后再试`);
+  }
+  
+  const url=API+path;
+  const token=getToken();
+  try{
+    const headers={'Content-Type':'application/json'};
+    if(token)headers['x-token']=token;
+    const r=await fetch(url,{method:'GET',headers});
+    console.log('[apiGet] 响应状态:',r.status,r.statusText);
+    if(!r.ok){
+      const text=await r.text();
+      console.error('[apiGet] 错误响应:',text);
+      if(r.status===429){
+        // 429 限流：如果还没切换备用 token，切换后重试一次
+        if(retry && !useBackupToken){
+          console.log('[apiGet] 触发 429，切换到备用 Token 重试');
+          useBackupToken=true;
+          await new Promise(r=>setTimeout(r, 2000)); // 等 2 秒
+          return apiGet(path, false); // 重试，但不允许再次切换
+        }
+        throw new Error('请求太多限流了 (´;ω;`) 请稍等再试，或用自己的 Token');
+      }
+      throw new Error('API '+r.status+': '+text.substring(0,200));
+    }
+    const data=await r.json();
+    console.log('[apiGet] 返回数据:',data);
+    return data;
+  }catch(e){
+    console.error('[apiGet] 异常:',e.message);
+    throw e;
+  }
 }
-async function apiPut(path,body){
-  const r=await fetch(API+path,{
-    method:'PUT',headers:{'x-token':TOKEN,'Content-Type':'application/json'},
-    body:JSON.stringify(body)
-  });
-  if(!r.ok)throw new Error('API '+r.status);
-  return r.json().catch(()=>null);
+async function apiPost(path,body,retry=true){
+  console.log('[apiPost] 请求:',API+path,body);
+  
+  // 检查限流
+  const rateCheck=checkRateLimit();
+  if(!rateCheck.allowed){
+    throw new Error(`请求太频繁了 (´;ω;`) 请等待 ${rateCheck.remaining} 秒后再试`);
+  }
+  
+  const token=getToken();
+  try{
+    const headers={'Content-Type':'application/json'};
+    if(token)headers['x-token']=token;
+    const r=await fetch(API+path,{method:'POST',headers,body:JSON.stringify(body)});
+    console.log('[apiPost] 响应状态:',r.status,r.statusText);
+    const text=await r.text();
+    console.log('[apiPost] 响应内容:',text.substring(0,500));
+    if(!r.ok){
+      if(r.status===429){
+        // 429 限流：如果还没切换备用 token，切换后重试一次
+        if(retry && !useBackupToken){
+          console.log('[apiPost] 触发 429，切换到备用 Token 重试');
+          useBackupToken=true;
+          await new Promise(r=>setTimeout(r, 2000)); // 等 2 秒
+          return apiPost(path,body,false); // 重试，但不允许再次切换
+        }
+        throw new Error('请求太多限流了 (´;ω;`) 请稍等再试，或用自己的 Token');
+      }
+      throw new Error('API '+r.status+': '+text.substring(0,100));
+    }
+    return JSON.parse(text);
+  }catch(e){
+    console.error('[apiPost] 错误:',e.message);
+    throw e;
+  }
+}
+async function apiPut(path,body,retry=true){
+  console.log('[apiPut] 请求:',API+path,body);
+  const token=getToken();
+  try{
+    const headers={'Content-Type':'application/json'};
+    if(token)headers['x-token']=token;
+    const r=await fetch(API+path,{method:'PUT',headers,body:JSON.stringify(body)});
+    console.log('[apiPut] 响应状态:',r.status,r.statusText);
+    if(!r.ok){
+      if(r.status===429){
+        // 429 限流：如果还没切换备用 token，切换后重试一次
+        if(retry && !useBackupToken){
+          console.log('[apiPut] 触发 429，切换到备用 Token 重试');
+          useBackupToken=true;
+          await new Promise(r=>setTimeout(r, 2000)); // 等 2 秒
+          return apiPut(path,body,false); // 重试，但不允许再次切换
+        }
+        throw new Error('请求太多限流了 (´;ω;`) 请稍等再试，或用自己的 Token');
+      }
+      throw new Error('API '+r.status);
+    }
+    return r.json().catch(()=>null);
+  }catch(e){
+    console.error('[apiPut] 错误:',e.message);
+    throw e;
+  }
 }
 
 // ═══════════════════════════════════════════
 //  🅱 搜索精准化
 // ═══════════════════════════════════════════
 
-/** 专用搜索子元素（elementum only，精确匹配优先，不模糊匹配子元素） */
+/** 专用搜索子元素（elementum only，精确匹配优先） */
 async function searchElementOnly(name){
   const trim=name.trim();
   if(!trim)return null;
+  console.log('[searchElementOnly] 搜索名字:',trim);
   try{
-    const data=await apiGet('/v2/search/character_or_elementum?keywords='+encodeURIComponent(trim)+'&parent_type=elementum&sort_scheme=best&page_size=50');
+    // 参考捏 Ta 前端参数格式：parent_type 用字符串，不是数组
+    const url='/v2/travel/parent-search?keywords='+encodeURIComponent(trim)+'&page_index=0&page_size=20&sort_scheme=best&parent_type=elementum';
+    console.log('[searchElementOnly] API URL:',url);
+    const data=await apiGet(url);
+    console.log('[searchElementOnly] 返回数据:',data);
     const list=data.list||[];
+    console.log('[searchElementOnly] list 长度:',list.length);
+    if(list.length===0){
+      console.log('[searchElementOnly] 列表为空，尝试 parent_type=oc');
+      const url2='/v2/travel/parent-search?keywords='+encodeURIComponent(trim)+'&page_index=0&page_size=20&sort_scheme=best&parent_type=oc';
+      const data2=await apiGet(url2);
+      const list2=data2.list||[];
+      if(list2.length>0){
+        console.log('[searchElementOnly] oc 列表有数据:',list2);
+      }
+    }
+    // 精确匹配优先
     let match=list.find(e=>e.name===trim);
     if(!match)match=list.find(e=>e.name&&e.name.toLowerCase()===trim.toLowerCase());
-    if(match)return{uuid:match.uuid,type:'elementum',name:match.name,item:match};
-  }catch(e){}
+    console.log('[searchElementOnly] 匹配结果:',match);
+    if(match)return{uuid:match.uuid,type:'elementum',name:match.name,avatar_img:match.avatar_img,header_img:match.header_img};
+  }catch(e){console.error('searchElementOnly error:',e)}
   return null;
 }
 
@@ -499,49 +704,79 @@ async function unbox(uuid){
   if(busy)return;busy=true;
   const btn=$('goBtn');btn.disabled=true;btn.textContent='查询中…';
   $('emptyState').style.display='none';$('result').classList.remove('show');
+  updateRateLimitDisplay(); // 更新限流状态
   try{
     status('检查收藏…');
     let result=await findInFavorites(uuid);
     if(!result){status('收藏角色中…');await favorItem(uuid,'oc');result=await findInFavorites(uuid)}
     if(!result){status('收藏元素中…');await favorItem(uuid,'elementum');result=await findInFavorites(uuid)}
-    if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色');
+    if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色，也可能是请求太多了，试试用自己的 Token');
     status('提取数据…');
     pushNav(result.type,result.item.name||'',uuid);
     render(result.item,result.type,result.item.name||'');
     $('result').classList.add('show');
     status('✦ 查询完成 ✦');
+    updateRateLimitDisplay(); // 更新限流状态
   }catch(e){status('查询失败：'+e.message);$('emptyState').style.display=''}
   btn.disabled=false;btn.textContent='查 询';busy=false;
+  updateRateLimitDisplay(); // 更新限流状态
 }
 
-/** 子元素查询：唯一名称 → UUID → 收藏 → 渲染 */
-async function openElemByUUID(uuid,name){
-  if(busy)return;busy=true;
+/** 子元素查询：只用名字搜索 → 得 UUID → 收藏 → 渲染 */
+async function openElemByName(name){
+  console.log('[openElemByName] 开始，名字:',name);
+  if(busy){console.log('[openElemByName] busy=true,return');return;}
+  busy=true;
   $('emptyState').style.display='none';$('result').classList.remove('show');
   try{
-    // 第一步：用唯一名称搜索，获取准确数据
+    // 第一步：用名字搜索获取 UUID
     status('搜索元素：'+name+'…');
-    const found=await searchElementOnly(name);
-    // UUID 校验
-    if(found&&found.uuid!==uuid){
-      status('UUID 校验不一致，使用搜索结果：'+found.name+'…');
-      uuid=found.uuid;name=found.name;
+    console.log('[openElemByName] 调用 searchElementOnly');
+    const found = await searchElementOnly(name);
+    console.log('[openElemByName] searchElementOnly 返回:',found);
+    
+    if(!found){
+      console.log('[openElemByName] 没找到，抛错');
+      throw new Error('找不到元素：'+name);
     }
-    // 第二步：如果名称搜索失败，尝试直接查收藏夹
-    let result=null;
-    if(!found){status('名称搜索未命中，尝试直接查询…');result=await findInFavorites(uuid)}
-    // 第三步：收藏
-    if(!result){status('收藏元素中…');await favorItem(uuid,'elementum');result=await findInFavorites(uuid)}
-    if(!result){status('尝试角色收藏…');await favorItem(uuid,'oc');result=await findInFavorites(uuid)}
-    if(!result)throw new Error('咱可能被对方拉黑，或者对方没公开角色');
+    
+    // 等待 1 秒，避免限流
+    await new Promise(r=>setTimeout(r, 1000));
+    
+    // 第二步：收藏元素
+    status('收藏元素：'+found.name+'…');
+    console.log('[openElemByName] 收藏 UUID:',found.uuid);
+    await favorItem(found.uuid,'elementum');
+    await new Promise(r=>setTimeout(r, 1500));  // 收藏后等 1.5 秒
+    
+    // 第三步：查收藏夹获取完整数据
+    status('获取完整数据…');
+    let result = await findInFavorites(found.uuid);
+    console.log('[openElemByName] findInFavorites 返回:',result);
+    
+    if(!result){
+      console.log('[openElemByName] 尝试 oc 收藏');
+      status('尝试其他收藏…');
+      await favorItem(found.uuid,'oc');
+      await new Promise(r=>setTimeout(r, 1500));  // 再等 1.5 秒
+      result = await findInFavorites(found.uuid);
+    }
+    
+    if(!result) throw new Error('无法获取完整数据');
+    
     // 第四步：渲染
     status('提取数据…');
-    pushNav(result.type,result.item.name||name,uuid);
-    render(result.item,result.type,result.item.name||name);
+    pushNav(result.type,result.item.name||found.name,found.uuid);
+    render(result.item,result.type,result.item.name||found.name);
     $('result').classList.add('show');
     status('✦ 查询完成 ✦');
-  }catch(e){status('查询失败：'+e.message);$('emptyState').style.display=''}
+  }catch(e){
+    console.error('[openElemByName] 错误:',e);
+    status('查询失败：'+e.message);
+    $('emptyState').style.display='';
+  }
   busy=false;
+  console.log('[openElemByName] 结束');
 }
 
 // ═══════════════════════════════════════════
@@ -552,23 +787,28 @@ function render(item,type,name){
   const oc=item.oc||{};
   const isChar=type==='character';
   const cover=oc.url||oc.tachie_url||oc.avatar_img||'';
-  const creator=item.oc?.creator_nickname||item.oc?.creator_name||'';
+  // 🅲 创作者字段在外层 item.creator 里，不在 item.oc 里
+  const c=item.creator||{};
+  const creator=c.nick_name||'';
+  const creatorAvatar=c.avatar_url||'';
   const canBack=navStack.length>1;
   const annuonieMsg=creator==='安诺涅'
     ?'<div class="meta creator-msg" style="margin-top:6px;font-size:0.72rem;color:var(--pink);opacity:0.85">👀 你在看什么呢，和我们也讲讲呗～</div>'
     :'';
+  const creatorLine=creator
+    ?(creatorAvatar?`<img src="${esc(creatorAvatar)}" onerror="this.style.display='none'" style="width:18px;height:18px;border-radius:50%;vertical-align:middle;margin-right:4px;object-fit:cover">by ${esc(creator)}`:`by ${esc(creator)}`)
+    :'<span style="opacity:0.5">未知</span>';
 
   $('charCard').innerHTML=`
     <div class="char-top">
       ${cover?`<img src="${esc(cover)}" onerror="this.style.display='none'">`:''}
       <div class="info">
         <h2>${esc(name)}</h2>
-        <div class="meta">${creator?'by '+esc(creator):''}</div>
+        <div class="meta">${creatorLine}</div>
         ${annuonieMsg}
       </div>
       <span class="char-tag ${isChar?'ct-char':'ct-elem'}">${isChar?'角色':'元素'}</span>
-    </div>
-    ${canBack?`<button class="btn-back" onclick="goBack()">← 返回上一个</button>`:''}`;
+    </div>`;
 
   // 垫图
   const pads=[];
@@ -601,10 +841,15 @@ function render(item,type,name){
       </div>
     </div>`;
 
-  // 融元素
+  // 融元素 —— 只显示有 uuid 的真正元素，过滤手写词条
   const avts=oc.appearance_vtokens||[];
   const elemRefs=[];
-  for(const vt of avts){if(vt.uuid)elemRefs.push({uuid:vt.uuid,name:vt.name||'未命名元素'})}
+  for(const vt of avts){
+    // 只有 uuid 和 name 都有的才是真正的融元素
+    if(vt.uuid && vt.name){
+      elemRefs.push({uuid:vt.uuid,name:vt.name});
+    }
+  }
   const shuffled=shuffle(elemRefs);
 
   if(shuffled.length>0){
@@ -616,7 +861,7 @@ function render(item,type,name){
       </div>
       <div class="elem-list">
         ${shuffled.map(e=>`
-          <div class="elem-item" onclick="openElemByUUID('${escAttr(e.uuid)}','${escAttr(e.name)}')">
+          <div class="elem-item" onclick="openElemByName('${escAttr(e.name)}')">
             <div class="eimg-placeholder">?</div>
             <div class="info"><div class="ename">${esc(e.name)}</div></div>
             <span class="arrow">›</span>
