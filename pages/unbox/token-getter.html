@@ -181,10 +181,13 @@
         <div class="step-num">2</div>
         <div class="step-text">
           <p><strong>在捏 Ta 页面获取 Token</strong></p>
-          <p>1. 在地址栏输入下面的代码并运行（书签代码）</p>
-          <p>2. 点击右下角出现的 🐞 按钮</p>
+          <p>1. <strong>长按地址栏</strong> → 粘贴 → 点击运行（Go/前往）</p>
+          <p>2. 页面右下角会出现 🐞 按钮，点击它</p>
           <p>3. 点击 <strong>Console</strong> 标签</p>
-          <p>4. 粘贴 Token 获取代码并运行</p>
+          <p>4. 粘贴下面的 Token 代码并运行</p>
+          <div class="tip">
+            💡 书签代码以 <code>javascript:</code> 开头，粘贴后地址栏不会跳转，这是正常的！
+          </div>
           
           <div class="token-label">📌 第一步：运行这段代码加载调试工具（书签代码）</div>
           <div class="token-box" id="bookmarkletCode">
@@ -274,22 +277,31 @@ if (token) {
       document.getElementById('step2').style.display = 'block';
       document.getElementById('step3').style.display = 'block';
       
-      // 直接跳转到捏 Ta 官网
+      // 捏 Ta 官网 URL
       const nietaUrl = 'https://app.nieta.art/mine';
       
-      // 创建一个书签代码，用户可以在捏 Ta 页面运行
+      // 书签代码（用户手动运行）
       const bookmarklet = `javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';s.onload=function(){eruda.init();eruda.show();console.log('🐞 Eruda 调试工具已加载！点击右下角按钮打开控制台');};document.body.appendChild(s);})();`;
       
-      // 保存到全局变量，供用户复制
+      // 保存到全局
       window.BOOKMARKLET_CODE = bookmarklet;
+      document.getElementById('bookmarkletCode').textContent = bookmarklet;
       
-      // 显示提示
-      showStatus('✅ 即将跳转到捏 Ta！请在打开的页面运行调试代码', 'info');
+      // 打开捏 Ta 小窗
+      const newWin = window.open(nietaUrl, '_blank', 'width=400,height=700');
       
-      // 延迟 2 秒后跳转，让用户看到提示
-      setTimeout(() => {
+      if (newWin) {
+        // 自动复制书签代码
+        navigator.clipboard.writeText(bookmarklet).then(() => {
+          showStatus('✅ 捏 Ta 已打开！书签代码已复制，在地址栏粘贴运行', 'success');
+        }).catch(() => {
+          showStatus('✅ 捏 Ta 已打开！请手动复制书签代码', 'info');
+        });
+      } else {
+        // 弹窗被阻止，直接跳转
         window.location.href = nietaUrl;
-      }, 2000);
+        showStatus('⚠️ 小窗被阻止，已直接跳转', 'info');
+      }
     }
     
     function copyBookmarklet() {
