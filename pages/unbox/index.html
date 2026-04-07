@@ -388,7 +388,8 @@ body::after{
 const DEFAULT_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDE4NjMzLCJ1dWlkIjoiNDljOTE1ZTY0OTI1NGY1NWE3ZWEzOTlhZDNiNmVmZDEiLCJwaG9uZV9udW0iOiIxMzkxODE1NzQ3NiIsImV4cGlyZXNfYXQiOjE4MDcwNjk0MTMsImlzX3JlZ2lzdGVyIjpmYWxzZSwidXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChBbmRyb2lkIDE2OyBNb2JpbGU7IHJ2OjEyOC4wKSBHZWNrby8xMjguMCBGaXJlZm94LzEyOC4wIiwic2FsdCI6IjA4ZTRjNmJkMTAzZTRjNzNhZjIwMjVmNjExZGY3ZDFiIn0.TZZnQhvb5XnLegzjCgY1_UlQUVmO1e-WZNx9SZkOEzI';
 // 备用 token（主 token 失败时切换）
 const BACKUP_TOKEN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDE4NjMzLCJ1dWlkIjoiNDljOTE1ZTY0OTI1NGY1NWE3ZWEzOTlhZDNiNmVmZDEiLCJwaG9uZV9udW0iOiIxMzkxODE1NzQ3NiIsImV4cGlyZXNfYXQiOjE4MDcwMTI0MDEsImlzX3JlZ2lzdGVyIjpmYWxzZSwidXNlcl9hZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDYuMC4wLjAgU2FmYXJpLzUzNy4zNiBFZGcvMTQ2LjAuMC4wIiwic2FsdCI6IjcyYzRmMjVhYjUxYTQ3ODFhNTNjYWY1ZDM3MWZlYmNjIn0.IT-HOX9JpJQkkF3FQEBTBetUbDmkcLS1eKdBJhe45Gg';
-const API='https://api.talesofai.cn';
+// API 地址（云函数代理，带缓存）
+const API='https://unbox9-mz7e.vercel.app/api/proxy';
 let busy=false;
 let currentType='';
 let currentName='';
@@ -656,15 +657,16 @@ function extractUUID(fullUrl){
 }
 
 async function apiGet(path, retry=true){
-  console.log('[apiGet] 请求:',API+path);
+  // 云函数代理 URL 格式：API?target=路径
+  const url=`${API}?target=${encodeURIComponent(path)}`;
+  console.log('[apiGet] 请求:',url);
   
   // 检查限流
   const rateCheck=checkRateLimit();
   if(!rateCheck.allowed){
-    throw new Error(`请求太频繁了 (´;ω;`) 请等待 ${rateCheck.remaining} 秒后再试`);
+    throw new Error('请求太频繁了请等待 ' + rateCheck.remaining + ' 秒后再试');
   }
   
-  const url=API+path;
   const token=getToken();
   try{
     const headers={'Content-Type':'application/json'};
@@ -695,19 +697,21 @@ async function apiGet(path, retry=true){
   }
 }
 async function apiPost(path,body,retry=true){
-  console.log('[apiPost] 请求:',API+path,body);
+  // 云函数代理 URL 格式：API?target=路径
+  const url=`${API}?target=${encodeURIComponent(path)}`;
+  console.log('[apiPost] 请求:',url,body);
   
   // 检查限流
   const rateCheck=checkRateLimit();
   if(!rateCheck.allowed){
-    throw new Error(`请求太频繁了 (´;ω;`) 请等待 ${rateCheck.remaining} 秒后再试`);
+    throw new Error('请求太频繁了请等待 ' + rateCheck.remaining + ' 秒后再试');
   }
   
   const token=getToken();
   try{
     const headers={'Content-Type':'application/json'};
     if(token)headers['x-token']=token;
-    const r=await fetch(API+path,{method:'POST',headers,body:JSON.stringify(body)});
+    const r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
     console.log('[apiPost] 响应状态:',r.status,r.statusText);
     const text=await r.text();
     console.log('[apiPost] 响应内容:',text.substring(0,500));
