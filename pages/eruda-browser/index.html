@@ -12,41 +12,64 @@ body{background:#1a1a2e;color:#eee;font-family:-apple-system,BlinkMacSystemFont,
 .toolbar input:focus{border-color:#e94560}
 .toolbar button{padding:8px 16px;border:none;border-radius:6px;background:#e94560;color:#fff;font-size:14px;cursor:pointer;white-space:nowrap}
 .toolbar button:active{background:#c73650}
-.toolbar select{padding:8px 6px;border:1px solid #0f3460;border-radius:6px;background:#1a1a2e;color:#eee;font-size:12px;outline:none}
+.proxy-sel{padding:6px;border:1px solid #0f3460;border-radius:6px;background:#1a1a2e;color:#eee;font-size:11px;outline:none;max-width:130px}
 .status{padding:4px 10px;font-size:11px;color:#888;background:#16213e;border-bottom:1px solid #0f3460;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .status.ok{color:#4ecca3}
 .status.err{color:#e94560}
+.status.trying{color:#f0c040}
 iframe{flex:1;border:none;background:#fff;width:100%}
 .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:#555;gap:12px;padding:40px;text-align:center}
 .placeholder .icon{font-size:64px;opacity:.5}
 .placeholder p{font-size:14px;max-width:320px;line-height:1.6}
-.placeholder code{background:#0f3460;padding:2px 8px;border-radius:4px;font-size:13px;color:#4ecca3}
+.placeholder code{background:#0f3460;padding:2px 8px;border-radius:4px;font-size:12px;color:#4ecca3}
 .hidden{display:none!important}
 </style>
 </head>
 <body>
 
 <div class="toolbar">
-  <input id="urlInput" type="url" placeholder="输入网址，如 https://example.com" autofocus>
+  <input id="urlInput" type="url" placeholder="输入网址" autofocus>
   <button id="goBtn">打开</button>
 </div>
-<div id="status" class="status">就绪 — CORS 代理加载 + Eruda 注入</div>
+<select class="proxy-sel" id="proxySel">
+  <option value="auto">自动切换</option>
+  <option value="0">corsproxy.io</option>
+  <option value="1">corsproxy.io/?</option>
+  <option value="2">allorigins</option>
+</select>
+<div id="status" class="status">就绪 — 多代理 fallback + Eruda 注入</div>
 <iframe id="frame" class="hidden"></iframe>
 <div id="placeholder" class="placeholder">
   <div class="icon">🌐</div>
-  <p>输入任意网址，通过 CORS 代理加载并自动注入 Eruda 控制台</p>
+  <p>输入任意网址，通过代理加载并注入 Eruda 控制台</p>
   <p>CSP 会被自动剥离，Eruda 不会被拦截</p>
-  <p>代理：<code>corsproxy.io</code></p>
+  <p>可用代理：<code>corsproxy.io</code> <code>allorigins</code></p>
 </div>
 
 <script>
-const PROXY = 'https://corsproxy.io/?';
 const ERUDA = 'https://cdn.jsdelivr.net/npm/eruda';
+
+// 代理配置
+const PROXIES = [
+  {
+    name: 'corsproxy.io',
+    fetch: url => fetch('https://corsproxy.io/?' + encodeURIComponent(url))
+  },
+  {
+    name: 'corsproxy.io (direct)',
+    fetch: url => fetch('https://corsproxy.io/?' + url)
+  },
+  {
+    name: 'allorigins',
+    fetch: url => fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url))
+  }
+];
 
 const urlInput  = document.getElementById('urlInput');
 const goBtn     = document.getElementById('goBtn');
 const frame     = document.getElementById('frame');
 const statusEl  = document.getElementById('status');
+const proxySel  = document.getElementById('proxySel');
 const ph        = document.getElementById('placeholder');
 
 goBtn.onclick = load;
@@ -58,43 +81,77 @@ async function load(){
   if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
   urlInput.value = url;
 
-  setStatus('加载代理中…');
+  const mode = proxySel.value;
+
+  if(mode === 'auto'){
+    await loadWithFallback(url);
+  } else {
+    const idx = parseInt(mode);
+    await tryProxy(idx, url);
+  }
+}
+
+async function loadWithFallback(url){
+  for(let i = 0; i < PROXIES.length; i++){
+    const ok = await tryProxy(i, url);
+    if(ok) return;
+  }
+  setStatus('所有代理均失败', 'err');
+}
+
+async function tryProxy(idx, url){
+  const p = PROXIES[idx];
+  setStatus('正在尝试 ' + p.name + ' …', 'trying');
   try{
-    const resp = await fetch(PROXY + encodeURIComponent(url));
+    const resp = await p.fetch(url);
     if(!resp.ok) throw new Error('HTTP ' + resp.status);
     const html = await resp.text();
+    if(html.length < 100 && /error|blocked|forbidden/i.test(html)) throw new Error('页面被拒绝');
 
-    // 注入 Eruda
-    const inject = `<script src="${ERUDA}"><\/script><script>try{eruda.init()}catch(e){}<\/script>`;
+    return await renderPage(html, url, p.name);
+  } catch(e){
+    console.warn('Proxy ' + p.name + ' failed:', e.message);
+    return false;
+  }
+}
 
-    // 尝试注入到 </head> 之前，否则放最前
-    let modified;
-    if(/<\/head>/i.test(html)){
-      modified = html.replace(/<\/head>/i, inject + '</head>');
-    } else {
-      modified = inject + html;
-    }
+async function renderPage(html, url, proxyName){
+  const inject = '<scr'+'ipt src="'+ERUDA+'"></scr'+'ipt><scr'+'ipt>try{eruda.init()}catch(e){}</scr'+'ipt>';
 
-    // 移除原始页面的 CSP meta 标签（双重保险）
-    modified = modified.replace(/<meta[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*\/?>/gi, '');
+  let modified;
+  if(/<\/head>/i.test(html)){
+    modified = html.replace(/<\/head>/i, inject + '</head>');
+  } else {
+    modified = inject + html;
+  }
+  // 移除 CSP meta
+  modified = modified.replace(/<meta[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*\/?>/gi, '');
 
-    // 创建 blob URL
-    const blob = new Blob([modified], {type:'text/html;charset=utf-8'});
-    const blobUrl = URL.createObjectURL(blob);
+  const blob = new Blob([modified], {type:'text/html;charset=utf-8'});
+  const blobUrl = URL.createObjectURL(blob);
+
+  return new Promise(resolve => {
+    const timeout = setTimeout(() => {
+      frame.classList.remove('hidden');
+      ph.classList.add('hidden');
+      setStatus('已加载 (' + proxyName + '): ' + url, 'ok');
+      resolve(true);
+    }, 800);
 
     frame.onload = () => {
-      setStatus('已加载: ' + url, 'ok');
+      clearTimeout(timeout);
+      frame.classList.remove('hidden');
+      ph.classList.add('hidden');
+      setStatus('已加载 (' + proxyName + '): ' + url, 'ok');
+      resolve(true);
     };
     frame.onerror = () => {
-      setStatus('加载失败（页面可能拒绝 iframe 嵌入）', 'err');
+      clearTimeout(timeout);
+      setStatus('加载失败 (' + proxyName + ')', 'err');
+      resolve(false);
     };
     frame.src = blobUrl;
-    frame.classList.remove('hidden');
-    ph.classList.add('hidden');
-
-  } catch(e){
-    setStatus('错误: ' + e.message, 'err');
-  }
+  });
 }
 
 function setStatus(msg, type){
