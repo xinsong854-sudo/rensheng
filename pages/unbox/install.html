@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>捏 Ta 调试工具 - 安装</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+      min-height:100vh;
+      color:#fff;
+      padding:20px;
+    }
+    .container{max-width:500px;margin:0 auto}
+    h1{
+      font-size:1.5rem;
+      text-align:center;
+      margin-bottom:10px;
+      background:linear-gradient(90deg,#e94560,#ff6b6b);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .subtitle{
+      text-align:center;
+      color:#888;
+      font-size:0.9rem;
+      margin-bottom:30px;
+    }
+    .card{
+      background:rgba(255,255,255,0.05);
+      border-radius:16px;
+      padding:20px;
+      margin-bottom:20px;
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .btn{
+      display:block;
+      width:100%;
+      padding:14px 20px;
+      border:none;
+      border-radius:12px;
+      font-size:1rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.3s;
+      text-align:center;
+      text-decoration:none;
+      margin-bottom:10px;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      color:#fff;
+    }
+    .btn-primary:active{transform:scale(0.98)}
+    .btn-secondary{
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+    }
+    .step{
+      display:flex;
+      align-items:flex-start;
+      margin-bottom:20px;
+    }
+    .step-num{
+      background:linear-gradient(135deg,#e94560,#ff6b6b);
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+      font-size:1rem;
+      flex-shrink:0;
+      margin-right:12px;
+    }
+    .step-text{flex:1;line-height:1.6}
+    .code-box{
+      background:rgba(0,0,0,0.3);
+      border-radius:8px;
+      padding:12px;
+      margin-top:10px;
+      font-family:monospace;
+      font-size:0.75rem;
+      word-break:break-all;
+      max-height:200px;
+      overflow-y:auto;
+      border:1px solid rgba(255,255,255,0.1);
+      white-space:pre-wrap;
+    }
+    .copy-btn{
+      background:rgba(255,255,255,0.1);
+      border:none;
+      color:#fff;
+      padding:8px 16px;
+      border-radius:8px;
+      font-size:0.85rem;
+      cursor:pointer;
+      margin-top:10px;
+    }
+    .status{
+      padding:12px;
+      border-radius:8px;
+      margin-top:15px;
+      font-size:0.9rem;
+      text-align:center;
+    }
+    .status-success{background:rgba(0,184,148,0.2);border:1px solid #00b894}
+    .status-info{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2)}
+    .tip{
+      font-size:0.8rem;
+      color:#888;
+      margin-top:10px;
+      padding:10px;
+      background:rgba(255,255,255,0.05);
+      border-radius:8px;
+      border-left:3px solid #e94560;
+    }
+    .download-box{
+      background:rgba(0,184,148,0.1);
+      border:1px solid #00b894;
+      border-radius:12px;
+      padding:20px;
+      text-align:center;
+      margin:20px 0;
+    }
+    .download-box h3{color:#00b894;margin-bottom:10px}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 捏 Ta 调试工具</h1>
+    <p class="subtitle">手机端专用 · 自动注入控制台</p>
+
+    <!-- 方案选择 -->
+    <div class="card" id="methodSelect">
+      <h3 style="margin-bottom:15px">📱 选择你的浏览器</h3>
+      
+      <button class="btn btn-primary" onclick="selectMethod('kiwi')">
+        🥝 Kiwi Browser (推荐)
+        <div style="font-size:0.8rem;color:#888;margin-top:5px">支持 Chrome 扩展，功能最强</div>
+      </button>
+      
+      <button class="btn btn-secondary" onclick="selectMethod('lemur')">
+        🦙 Lemur Browser
+        <div style="font-size:0.8rem;color:#888;margin-top:5px">内置调试工具</div>
+      </button>
+      
+      <button class="btn btn-secondary" onclick="selectMethod('other')">
+        🌐 其他浏览器
+        <div style="font-size:0.8rem;color:#888;margin-top:5px">Chrome/Safari/Firefox 等</div>
+      </button>
+    </div>
+
+    <!-- Kiwi 方案 -->
+    <div class="card hidden" id="kiwiMethod">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong>下载并安装 Kiwi Browser</strong>
+          <button class="btn btn-secondary" style="margin-top:10px" onclick="openUrl('https://play.google.com/store/apps/details?id=com.kiwibrowser.browser')">
+            📥 去 Google Play 下载
+          </button>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong>安装捏 Ta 调试扩展</strong>
+          <p>打开 Kiwi → 右上角菜单 → Extensions → + (from .zip)</p>
+          <button class="btn btn-secondary" style="margin-top:10px" onclick="downloadExtension()">
+            📦 下载扩展文件 (.zip)
+          </button>
+          <div class="tip">
+            下载后在 Kiwi 中解压并安装
+          </div>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong>打开捏 Ta</strong>
+          <button class="btn btn-primary" style="margin-top:10px" onclick="openNieta()">
+            🔓 打开捏 Ta
+          </button>
+          <div class="tip">
+            扩展会自动注入 Eruda 调试工具！
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 其他浏览器方案 -->
+    <div class="card hidden" id="otherMethod">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong>复制下面的代码</strong>
+          <div class="code-box" id="codeBox">javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda';s.onload=function(){eruda.init();eruda.show();};document.body.appendChild(s);})();</div>
+          <button class="btn btn-secondary" onclick="copyCode()">📋 复制代码</button>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong>打开捏 Ta</strong>
+          <button class="btn btn-primary" style="margin-top:10px" onclick="openNieta()">
+            🔓 打开捏 Ta
+          </button>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong>在捏 Ta 页面运行代码</strong>
+          <p>长按地址栏 → 粘贴 → 点击运行（Go/前往）</p>
+          <div class="tip">
+            💡 代码以 javascript: 开头，运行后地址栏不会跳转，这是正常的！
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Token 获取代码 -->
+    <div class="card hidden" id="tokenStep">
+      <h3 style="margin-bottom:15px">🔑 获取 Token</h3>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <p>点击右下角 🐞 按钮 → Console 标签</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <p>粘贴并运行下面的代码：</p>
+          <div class="code-box" id="tokenCode">const token = localStorage.getItem('token') || sessionStorage.getItem('token') || document.cookie.match(/token=([^;]+)/)?.[1];
+if (token) {
+  console.log('✅ Token:', token);
+  navigator.clipboard.writeText(token);
+  console.log('📋 已复制！');
+} else {
+  console.log('❌ 未找到 Token');
+}</div>
+          <button class="btn btn-secondary" onclick="copyTokenCode()">📋 复制 Token 代码</button>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <button class="btn btn-primary" onclick="backToUnbox()">↩️ 返回开盒工具</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectMethod(method) {
+      document.getElementById('methodSelect').classList.add('hidden');
+      
+      if (method === 'kiwi') {
+        document.getElementById('kiwiMethod').classList.remove('hidden');
+      } else {
+        document.getElementById('otherMethod').classList.remove('hidden');
+      }
+      
+      document.getElementById('tokenStep').classList.remove('hidden');
+    }
+    
+    function openUrl(url) {
+      window.open(url, '_blank');
+    }
+    
+    function openNieta() {
+      window.open('https://app.nieta.art/mine', '_blank');
+      showStatus('✅ 捏 Ta 已打开！', 'success');
+    }
+    
+    function downloadExtension() {
+      // 创建扩展文件
+      const extension = {
+        'manifest.json': JSON.stringify({
+          manifest_version: 3,
+          name: '捏 Ta 调试助手',
+          version: '1.0.0',
+          description: '为捏 Ta 页面自动加载 Eruda 调试工具',
+          permissions: ['activeTab', 'scripting'],
+          host_permissions: ['https://app.nieta.art/*'],
+          content_scripts: [{
+            matches: ['https://app.nieta.art/*'],
+            js: ['content.js'],
+            run_at: 'document_end'
+          }]
+        }, null, 2),
+        'content.js': `// 自动加载 Eruda 调试工具
+(function() {
+  console.log('🐞 捏 Ta 调试助手已激活');
+  
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/eruda';
+  s.onload = function() {
+    console.log('Eruda 加载成功');
+    setTimeout(function() {
+      if (typeof eruda !== 'undefined') {
+        eruda.init();
+        eruda.show();
+        console.log('🔧 调试工具已就绪！');
+      }
+    }, 500);
+  };
+  document.head.appendChild(s);
+})();`,
+        'README.txt': `捏 Ta 调试助手 - 安装说明
+
+1. 解压这个 zip 文件
+2. 打开 Kiwi Browser
+3. 右上角菜单 → Extensions
+4. 点击 + (from .zip)
+5. 选择这个文件夹
+6. 安装完成！
+
+现在打开 https://app.nieta.art/mine
+调试工具会自动加载！`
+      };
+      
+      // 创建下载提示
+      const readme = `捏 Ta 调试助手 - 安装说明
+
+1. 解压这个 zip 文件
+2. 打开 Kiwi Browser
+3. 右上角菜单 → Extensions
+4. 点击 + (from .zip)
+5. 选择这个文件夹
+6. 安装完成！
+
+现在打开 https://app.nieta.art/mine
+调试工具会自动加载！
+
+content.js 内容：
+${extension['content.js']}
+
+manifest.json 内容：
+${extension['manifest.json']}`;
+      
+      // 下载 README 文件
+      const blob = new Blob([readme], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nieta-debug-installer.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showStatus('📥 安装说明已下载！按说明操作', 'info');
+    }
+    
+    function copyCode() {
+      const code = document.getElementById('codeBox').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showStatus('✅ 代码已复制！', 'success');
+      }).catch(() => {
+        showStatus('❌ 复制失败，请手动复制', 'error');
+      });
+    }
+    
+    function copyTokenCode() {
+      const code = document.getElementById('tokenCode').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showStatus('✅ Token 代码已复制！', 'success');
+      }).catch(() => {
+        showStatus('❌ 复制失败', 'error');
+      });
+    }
+    
+    function backToUnbox() {
+      const url = window.location.href.replace(/token-.*/g, '') + 'unbox/';
+      window.location.href = url;
+    }
+    
+    function showStatus(msg, type) {
+      const div = document.createElement('div');
+      div.className = 'status status-' + type;
+      div.textContent = msg;
+      document.querySelector('.container').insertBefore(div, document.querySelector('.container').firstChild);
+      setTimeout(() => div.remove(), 3000);
+    }
+  </script>
+</body>
+</html>
