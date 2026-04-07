@@ -6,6 +6,8 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -14,6 +16,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,10 +27,8 @@ public class MainActivity extends Activity {
     private WebView webView;
     private ProgressBar progressBar;
     private LinearLayout controlPanel;
-    private Button btnGetToken;
-    private Button btnOpenNieta;
     private TextView statusText;
-    private boolean isNietaLoaded = false;
+    private String savedToken = "";
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
@@ -42,14 +43,64 @@ public class MainActivity extends Activity {
             LinearLayout.LayoutParams.MATCH_PARENT
         ));
 
-        // 状态栏
+        // 标题栏
         statusText = new TextView(this);
-        statusText.setText("🔧 捏 Ta 调试助手");
+        statusText.setText("🔍 捏 Ta 开盒工具");
         statusText.setTextSize(18);
         statusText.setPadding(20, 30, 20, 20);
         statusText.setTextColor(getResources().getColor(android.R.color.white));
         statusText.setBackgroundColor(getResources().getColor(android.R.color.black));
         mainLayout.addView(statusText);
+
+        // 输入框区域
+        LinearLayout inputPanel = new LinearLayout(this);
+        inputPanel.setOrientation(LinearLayout.VERTICAL);
+        inputPanel.setPadding(15, 15, 15, 15);
+        inputPanel.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+
+        TextView hint = new TextView(this);
+        hint.setText("粘贴角色/元素链接或 UUID：");
+        hint.setTextSize(14);
+        hint.setPadding(0, 0, 0, 10);
+        inputPanel.addView(hint);
+
+        EditText input = new EditText(this);
+        input.setHint("https://... 或 UUID");
+        input.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        input.setPadding(10, 10, 10, 10);
+        inputPanel.addView(input);
+
+        Button btnQuery = new Button(this);
+        btnQuery.setText("🔍 查询");
+        btnQuery.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        btnQuery.setPadding(0, 10, 0, 0);
+        btnQuery.setOnClickListener(v -> {
+            String value = input.getText().toString().trim();
+            if (value.isEmpty()) {
+                Toast.makeText(this, "请输入链接或 UUID", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            queryUnbox(value);
+        });
+        inputPanel.addView(btnQuery);
+
+        Button btnToken = new Button(this);
+        btnToken.setText("🔑 获取 Token（限流时用）");
+        btnToken.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        btnToken.setPadding(0, 10, 0, 0);
+        btnToken.setOnClickListener(v -> openTokenGetter());
+        inputPanel.addView(btnToken);
+
+        mainLayout.addView(inputPanel);
 
         // WebView
         webView = new WebView(this);
@@ -59,7 +110,6 @@ public class MainActivity extends Activity {
             1.0f
         ));
         
-        // 配置 WebView
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -68,25 +118,33 @@ public class MainActivity extends Activity {
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
         
-        // 添加 JS 接口
         webView.addJavascriptInterface(new WebAppInterface(this), "AndroidApp");
         
-        // 设置 WebViewClient
         webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                // 拦截捏 Ta 链接，在 WebView 内打开
+                if (url.contains("app.nieta.art") || url.contains("talesofai.cn")) {
+                    view.loadUrl(url);
+                    return true;
+                }
+                // 其他链接用浏览器打开
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+                return true;
+            }
+            
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 if (url.contains("app.nieta.art")) {
-                    isNietaLoaded = true;
-                    updateStatus("✅ 捏 Ta 已加载，点击获取 Token");
-                    controlPanel.setVisibility(View.VISIBLE);
+                    updateStatus("✅ 捏 Ta 已加载，正在获取 Token...");
+                    getToken();
                 }
             }
         });
         
-        // 设置 WebChromeClient（支持控制台）
         webView.setWebChromeClient(new WebChromeClient());
-        
         mainLayout.addView(webView);
 
         // 进度条
@@ -97,54 +155,45 @@ public class MainActivity extends Activity {
         ));
         mainLayout.addView(progressBar);
 
-        // 控制面板
-        controlPanel = new LinearLayout(this);
-        controlPanel.setOrientation(LinearLayout.HORIZONTAL);
-        controlPanel.setPadding(10, 10, 10, 10);
-        controlPanel.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-        controlPanel.setVisibility(View.GONE);
-
-        btnGetToken = new Button(this);
-        btnGetToken.setText("🔑 获取 Token");
-        btnGetToken.setLayoutParams(new LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            1.0f
-        ));
-        btnGetToken.setOnClickListener(v -> getToken());
-        controlPanel.addView(btnGetToken);
-
-        btnOpenNieta = new Button(this);
-        btnOpenNieta.setText("🔓 打开捏 Ta");
-        btnOpenNieta.setLayoutParams(new LinearLayout.LayoutParams(
-            0,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            1.0f
-        ));
-        btnOpenNieta.setOnClickListener(v -> openNieta());
-        controlPanel.addView(btnOpenNieta);
-
-        mainLayout.addView(controlPanel);
-
         setContentView(mainLayout);
 
-        // 加载捏 Ta
-        updateStatus("正在加载捏 Ta...");
-        webView.loadUrl("https://app.nieta.art/mine");
+        // 默认加载开盒工具页面
+        updateStatus("🔍 加载开盒工具中...");
+        webView.loadUrl("https://claw-annuonie-pages.talesofai.com/unbox/");
     }
 
-    private void openNieta() {
-        updateStatus("正在加载捏 Ta...");
+    private void queryUnbox(String value) {
+        updateStatus("🔍 查询中...");
+        // 提取 UUID
+        String uuid = extractUUID(value);
+        if (uuid != null) {
+            webView.loadUrl("https://claw-annuonie-pages.talesofai.com/unbox/?uuid=" + uuid);
+        } else {
+            Toast.makeText(this, "无效的链接或 UUID", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String extractUUID(String input) {
+        // UUID 格式：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        if (input.matches("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")) {
+            return input;
+        }
+        // 从链接提取
+        if (input.contains("uuid=")) {
+            String[] parts = input.split("uuid=");
+            if (parts.length > 1) {
+                return parts[1].split("&")[0];
+            }
+        }
+        return null;
+    }
+
+    private void openTokenGetter() {
+        updateStatus("🔑 正在加载捏 Ta...");
         webView.loadUrl("https://app.nieta.art/mine");
     }
 
     private void getToken() {
-        if (!isNietaLoaded) {
-            Toast.makeText(this, "请先加载捏 Ta 页面", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // 注入 JS 获取 Token
         String jsCode = 
             "(function() {" +
             "  var token = localStorage.getItem('token') || " +
@@ -167,7 +216,6 @@ public class MainActivity extends Activity {
         });
     }
 
-    // JS 接口类
     public class WebAppInterface {
         Context mContext;
 
@@ -179,17 +227,19 @@ public class MainActivity extends Activity {
         public void onTokenReceived(String token) {
             runOnUiThread(() -> {
                 if (token != null && !token.isEmpty()) {
-                    // 复制到剪贴板
+                    savedToken = token;
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData clip = ClipData.newPlainText("Token", token);
                     clipboard.setPrimaryClip(clip);
 
-                    // 显示对话框
                     new AlertDialog.Builder(MainActivity.this)
                         .setTitle("✅ Token 获取成功！")
-                        .setMessage("Token 已复制到剪贴板：\n\n" + token.substring(0, Math.min(50, token.length())) + "...")
-                        .setPositiveButton("确定", null)
-                        .setNeutralButton("复制", (dialog, which) -> {
+                        .setMessage("Token 已复制，返回开盒工具粘贴使用\n\n" + token.substring(0, Math.min(50, token.length())) + "...")
+                        .setPositiveButton("返回开盒工具", (dialog, which) -> {
+                            webView.loadUrl("https://claw-annuonie-pages.talesofai.com/unbox/");
+                            updateStatus("🔍 开盒工具");
+                        })
+                        .setNeutralButton("再复制一次", (dialog, which) -> {
                             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                             ClipData clip = ClipData.newPlainText("Token", token);
                             clipboard.setPrimaryClip(clip);

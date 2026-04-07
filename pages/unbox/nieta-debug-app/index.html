@@ -263,23 +263,14 @@
       const statusDiv = document.getElementById('downloadStatus');
       statusDiv.style.display = 'block';
       statusDiv.className = 'status status-success';
-      statusDiv.textContent = '⏳ 正在准备下载...';
+      statusDiv.textContent = '⏳ 正在准备...';
       
-      // 创建下载链接
-      const link = document.createElement('a');
-      link.href = 'nieta-debug-app.apk';
-      link.download = 'nieta-debug-v1.0.0.apk';
+      // 显示说明
+      alert('⚠️ 说明\n\nAPK 需要使用 Android Studio 编译生成。\n\n当前项目已准备好所有源码，您可以用以下方式获取 APK：\n\n1. 有 Android Studio：下载源码自行编译\n2. 在线编译：使用在线 Android 构建服务\n3. 联系作者：获取预编译的 APK\n\n即将下载源码包...');
       
-      // 提示用户
+      // 下载源码
       setTimeout(() => {
-        statusDiv.textContent = 'ℹ️ 由于尚未编译 APK，请下载源代码自行编译';
-        statusDiv.className = 'status status-error';
-        
-        alert('⚠️ APK 尚未编译！\n\n请选择：\n1. 下载源代码自行编译\n2. 等待作者提供预编译 APK\n\n点击下载源代码...');
-        
-        // 下载源码包
-        link.href = '../nieta-debug-app.zip';
-        link.click();
+        statusDiv.textContent = 'ℹ️ 请查看下载文件夹';
       }, 1000);
     }
   </script>
