@@ -1215,7 +1215,22 @@ function setupScrollTracker(cid){
  var danmakuBar=document.getElementById(cid+'-danmaku-bar');
  if(!area||!pageEl)return;
  var total=mangaPages[cid];
+ var scrollDebounce=null;
+ var isInputFocused=false;
+
+ /* 监听弹幕输入框焦点状态 */
+ var allInputs=document.querySelectorAll('.reading-danmaku-bar input');
+ for(var i=0;i<allInputs.length;i++){
+  (function(inp){
+   inp.addEventListener('focus',function(){isInputFocused=true});
+   inp.addEventListener('blur',function(){isInputFocused=false});
+  })(allInputs[i]);
+ }
+
  function updatePage(){
+  if(scrollDebounce)return;
+  scrollDebounce=setTimeout(function(){scrollDebounce=null},150);
+  /* 输入框聚焦时跳过弹幕栏显示/隐藏逻辑，防止键盘弹出时抖动 */
   var scrollTop=window.scrollY||window.pageYOffset;
   var vh=window.innerHeight;
   var areaRect=area.getBoundingClientRect();
@@ -1226,7 +1241,8 @@ function setupScrollTracker(cid){
   var current=Math.floor(offset/pageH)+1;
   if(current>total)current=total;
   pageEl.textContent=current+'/'+total;
-  /* 弹幕栏：评论区可见时隐藏 */
+  /* 弹幕栏：输入框聚焦时跳过显隐切换 */
+  if(isInputFocused)return;
   if(danmakuBar){
    var commentsId=cid+'-comments-section';
    /* 故事之外多章节 */
@@ -1553,9 +1569,13 @@ function setupDanmakuScroll(cid,chapter){
  console.log('setupDanmakuScroll: triggered page',startIdx,'chapter',chapter,'for',cid);
 
  var lastTriggeredPage=-1;
+ var dmDebounce=null;
 
  window.addEventListener('scroll',function(){
   if(!danmakuEnabled)return;
+  /* 防抖 */
+  if(dmDebounce)return;
+  dmDebounce=setTimeout(function(){dmDebounce=null},200);
 
   var vh=window.innerHeight;
 
@@ -1569,7 +1589,9 @@ function setupDanmakuScroll(cid,chapter){
     }
    }
   }
-  /* 评论区可见时隐藏弹幕输入栏 */
+  /* 弹幕栏显隐：输入框聚焦时跳过 */
+  var active=document.activeElement;
+  if(active&&active.tagName==='INPUT'&&active.closest('.reading-danmaku-bar'))return;
   var commentsId=cid+'-comments-section';
   if(chapter)commentsId=cid+'-comments-section-'+chapter;
   var comments=document.getElementById(commentsId);
