@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <title>祂将呓语轻哼成歌</title>
+ <meta name="description" content="梦境不会结束">
+ <meta name="theme-color" content="#e8f0ff">
+ <style>
+:root{--bg-white:#fff;--bg-blue:#e8f0ff;--bg-pink:#fff0f5;--bg-lavender:#f0e8ff;--tg:linear-gradient(135deg,#6ea8fe,#f7a8c4,#c4a8f7);--cbg:rgba(255,255,255,.55);--cbr:linear-gradient(135deg,#e0e8ff,#ffe0ec,#e8e0ff,#e0f0ff,#ffe8d6);--nb:rgba(255,255,255,.6);--td:#3a3a4a;--tp:#4a3a5a;--gb:rgba(110,168,254,.35);--gp:rgba(247,168,196,.3);--gpp:rgba(196,168,247,.3);--btn:linear-gradient(135deg,#8b9cf7,#d48ec7,#f0a8c8);--scb:linear-gradient(180deg,#a0b4ff,#e0a0d0,#c8a0f0)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:linear-gradient(135deg,var(--bg-white) 0%,var(--bg-blue) 25%,var(--bg-pink) 55%,var(--bg-lavender) 100%);background-size:400% 400%;animation:bgS 20s ease infinite;color:var(--td);font-family:'Noto Sans SC','Arial',sans-serif;min-height:100vh;overflow-x:hidden}
+@keyframes bgS{0%{background-position:0% 50%}25%{background-position:50% 100%}50%{background-position:100% 50%}75%{background-position:50% 0%}100%{background-position:0% 50%}}
+body::before{content:"";position:fixed;top:0;left:0;width:100%;height:45%;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.7) 0%,rgba(255,255,255,.2) 40%,transparent 80%);pointer-events:none;z-index:0;animation:oe 6s ease-in-out infinite alternate}
+@keyframes oe{0%{opacity:.6}100%{opacity:1}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:rgba(232,240,255,.3);border-radius:3px}::-webkit-scrollbar-thumb{background:var(--scb);border-radius:3px}
+.container{max-width:1200px;margin:0 auto;padding:20px;position:relative;z-index:1}
+.hdr{background:rgba(255,255,255,.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:24px 20px;text-align:center;margin-bottom:20px;border-bottom:1px solid rgba(200,180,255,.2);position:relative;overflow:hidden}
+.hdr h1{background:var(--tg);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:tga 8s ease infinite;filter:drop-shadow(0 0 8px var(--gb)) drop-shadow(0 0 16px var(--gp));font-size:28px;letter-spacing:.02em;margin-bottom:6px}
+.hdr p{color:var(--tp);font-weight:400;opacity:.7}
+.dd{color:#c4a8f7;font-size:14px;margin:0 10px;opacity:.6}
+.td2{display:block;font-size:12px;color:#e0c4f7;opacity:.5}
+.tglow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:200px;height:60px;background:radial-gradient(ellipse,rgba(196,168,247,.15),transparent);pointer-events:none}
+.tw{font-size:18px;color:#d4b8e7;opacity:.4;margin-top:4px;letter-spacing:4px}
+.nav{background:var(--nb);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);padding:12px 0;margin-bottom:30px;border-bottom:1px solid rgba(200,180,255,.25);position:sticky;top:0;z-index:100;transition:transform .3s ease,opacity .3s ease}
+.nav.nav-hidden{transform:translateY(-100%);opacity:0;pointer-events:none}
+.nav ul{list-style:none;display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+.nav ul li a{color:var(--tp);text-decoration:none;padding:8px 16px;border-radius:8px;transition:all .3s}
+.nav ul li a:hover{color:#7b68ae;transform:translateY(-2px);background:rgba(168,140,255,.1);box-shadow:0 4px 15px rgba(168,140,255,.15)}
+.bn{margin-bottom:20px;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(160,140,255,.12)}.bn img{width:100%;height:auto;display:block}
+.tf{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding:6px 0}
+.tf-btn{position:relative;padding:6px 18px;border-radius:20px;border:1px solid rgba(200,180,255,.3);background:rgba(20,15,40,.7);color:rgba(255,255,255,.85);font-size:12px;font-weight:500;letter-spacing:.5px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);overflow:hidden;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.tf-btn::before{content:"";position:absolute;inset:0;border-radius:20px;background:linear-gradient(135deg,rgba(168,140,255,.15),rgba(120,80,255,.1));opacity:0;transition:opacity .3s}
+.tf-btn:hover{border-color:rgba(200,180,255,.5);color:#fff;transform:translateY(-1px)}
+.tf-btn:hover::before{opacity:1}
+.tf-btn.active{background:linear-gradient(135deg,#a88cff,#7850ff);border-color:transparent;color:#fff;box-shadow:0 4px 15px rgba(120,80,255,.35);text-shadow:0 1px 4px rgba(0,0,0,.4);transform:translateY(-1px)}
+.tf-btn.active::before{opacity:1;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.03))}
+.cl{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:30px}
+.cc{background:rgba(255,255,255,.85);border-radius:14px;overflow:hidden;position:relative;transition:all .4s;cursor:pointer}
+.cc::before{content:"";position:absolute;inset:0;border-radius:14px;padding:1.5px;background:var(--cbr);background-size:300% 300%;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:1}
+.cc:hover::before{animation:brg 6s ease infinite}
+@keyframes brg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.cc:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 8px 32px rgba(160,140,255,.18),0 0 20px var(--gb),0 0 40px var(--gp),0 0 60px var(--gpp)}
+.cc img{width:100%;aspect-ratio:3/4;object-fit:cover}.ccc{padding:12px}.cct{font-size:16px;font-weight:bold;margin-bottom:6px;color:var(--tp)}.ccd{font-size:13px;color:#666;line-height:1.3;margin-bottom:8px}.cci{display:flex;justify-content:space-between;font-size:12px;color:#999}
+.vi{background:rgba(232,240,255,.6);padding:2px 8px;border-radius:10px}.rt{background:rgba(255,234,167,.6);color:#d63031;padding:2px 8px;border-radius:10px;font-weight:bold}
+.cn{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:14px;font-weight:bold;z-index:5}
+.cc.lk{opacity:.7;cursor:not-allowed}.lk-o{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);display:flex;justify-content:center;align-items:center;z-index:10}.lk-i{font-size:32px;color:#fff;opacity:.8}
+.cc-placeholder{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,rgba(200,180,255,.12),rgba(232,240,255,.18));display:flex;align-items:center;justify-content:center;color:rgba(200,180,255,.35);font-size:14px;letter-spacing:2px;user-select:none}
+.rb{position:absolute;top:0;right:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);color:#fff;font-weight:bold;padding:5px 10px;border-radius:0 0 8px 0;z-index:5}
+.rb-hourglass{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.12);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:5}
+.cbadges{position:absolute;bottom:4px;right:4px;z-index:5;display:flex;gap:4px}
+.cbadges-left{position:absolute;top:4px;left:4px;z-index:5;display:flex;gap:4px}
+.cbadge{background:rgba(0,0,0,.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);color:rgba(255,255,255,.9);font-size:10px;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.cbadge.tag-hourglass{font-size:13px;padding:1px 3px;background:rgba(0,0,0,.5)}
+
+.cv{display:flex;gap:20px}.sb{width:250px;background:rgba(255,255,255,.85);padding:20px;border-radius:14px;border:1px solid rgba(200,180,255,.2)}.sb h2{margin-bottom:20px;color:var(--tp);font-size:18px}
+.chl{list-style:none}.chl li{margin-bottom:10px}.chl a{text-decoration:none;color:var(--tp);display:block;padding:8px 12px;border-radius:6px;transition:all .3s}.chl a:hover{background:rgba(168,140,255,.1);color:#7b68ae}.chl li.una{color:#bbb;padding:10px 15px;border-bottom:1px solid rgba(200,180,255,.15)}
+.mc{flex:1;background:rgba(255,255,255,.85);padding:20px;border-radius:14px;border:1px solid rgba(200,180,255,.2);position:relative;overflow:hidden}.ct{font-size:22px;margin-bottom:20px;color:var(--tp)}.ci2{width:100%;max-width:800px;margin:0 auto 20px;display:block;border-radius:10px}
+.cds{margin-top:30px;padding-top:20px;border-top:1px solid rgba(200,180,255,.2)}.cds h3{margin-bottom:15px;color:var(--tp);font-size:16px}.cds p{margin-bottom:10px;color:#666;font-size:14px;line-height:1.5}
+.di{margin:20px 0;display:flex;gap:10px}.di input,.cf textarea{flex:1;padding:10px;border:1.5px solid rgba(180,160,220,.25);border-radius:8px;background:rgba(255,255,255,.8);color:var(--td);outline:none;transition:all .3s;font-family:inherit}.di input:focus,.cf textarea:focus{border-color:rgba(160,140,255,.5);box-shadow:0 0 12px rgba(160,140,255,.15)}.di input::placeholder,.cf textarea::placeholder{color:rgba(140,130,160,.5)}
+.di button,.cf button{padding:10px 22px;background:var(--btn);background-size:200% 200%;color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;transition:all .3s;box-shadow:0 2px 10px rgba(160,130,200,.25);animation:bg 5s ease infinite}@keyframes bg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}.di button:hover,.cf button:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(180,140,220,.35)}
+.cs2{margin-top:40px;padding-top:30px;border-top:1px solid rgba(200,180,255,.2)}.cs2 h2{margin-bottom:20px;color:var(--tp)}.cf{margin-bottom:30px}.cf textarea{width:100%;min-height:100px;margin-bottom:10px;resize:vertical}
+.cm2{list-style:none}.cmt{padding:15px;border-bottom:1px solid rgba(200,180,255,.15)}.cmt:last-child{border-bottom:none}.cma{font-weight:bold;margin-bottom:5px;color:var(--tp)}.cmti{font-size:12px;color:#bbb;margin-bottom:10px}.cmc{line-height:1.5;color:#666}
+.bse{text-align:center;padding:60px 20px;background:rgba(255,255,255,.3);border-radius:14px;margin-top:20px;border:1px solid rgba(200,180,255,.15)}.bse img{width:150px;margin-bottom:20px;border-radius:10px}.bse p{margin-bottom:20px;color:var(--tp)}
+.bp{background:var(--btn);background-size:200% 200%;color:#fff;border:none;padding:10px 22px;border-radius:10px;cursor:pointer;font-size:16px;transition:all .3s;box-shadow:0 2px 10px rgba(160,130,200,.25);animation:bg 5s ease infinite}.bp:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(180,140,220,.35)}
+/* 好友列表 */
+.friends-page{padding:10px 0}
+.friends-page h2{color:var(--tp);font-size:20px;margin-bottom:4px}
+.friends-subtitle{color:#999;font-size:13px;margin-bottom:20px}
+.friends-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
+.friend-card{
+ background:rgba(255,255,255,.85);border-radius:14px;overflow:hidden;
+ position:relative;cursor:pointer;transition:all .4s;
+}
+.friend-card::before{
+ content:"";position:absolute;inset:0;border-radius:14px;padding:1.5px;
+ background:var(--cbr);background-size:300% 300%;
+ -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+ -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:1;
+}
+.friend-card:hover::before{animation:brg 6s ease infinite}
+.friend-card:hover{
+ transform:translateY(-6px) scale(1.01);
+ box-shadow:0 8px 32px rgba(160,140,255,.18),0 0 20px var(--gb);
+}
+.friend-avatar{width:56px;height:56px;object-fit:cover;display:block;margin:10px auto 4px;border-radius:12px}
+.friend-info{padding:10px 8px;text-align:center}
+.friend-name{font-size:14px;font-weight:bold;color:var(--tp);margin-bottom:4px}
+.friend-desc{font-size:10px;color:#999;margin-top:2px;line-height:1.3}
+.friend-seat{
+ position:absolute;top:8px;left:8px;
+ background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+ color:#fff;width:28px;height:28px;border-radius:50%;
+ display:flex;align-items:center;justify-content:center;
+ font-size:10px;font-weight:bold;z-index:5;
+}
+.friend-era{
+ position:absolute;top:8px;right:8px;
+ background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+ color:rgba(255,255,255,.85);font-size:10px;padding:2px 6px;
+ border-radius:4px;z-index:5;
+}
+
+/* 角色详情页（好友） */
+.char-detail-page{
+ max-width:800px;margin:0 auto;
+ background:rgba(255,255,255,.85);border-radius:16px;
+ overflow:hidden;border:1px solid rgba(200,180,255,.2);
+}
+.cdp-char-back{padding:16px 20px}
+.cdp-char-back button{
+ background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
+ border:1px solid rgba(255,255,255,.15);color:#fff;
+ padding:8px 16px;border-radius:8px;cursor:pointer;
+ font-size:14px;font-weight:500;transition:all .3s;
+}
+.cdp-char-back button:hover{background:rgba(0,0,0,.7);transform:translateX(-2px)}
+.cdp-char-header{text-align:center;padding:30px 20px 20px}
+.cdp-char-avatar{
+ width:120px;height:120px;border-radius:50%;object-fit:cover;
+ border:3px solid rgba(200,180,255,.3);
+ box-shadow:0 0 20px rgba(160,140,255,.15);
+}
+.cdp-char-name{font-size:24px;font-weight:bold;color:var(--tp);margin:12px 0 4px}
+.cdp-char-seat{font-size:13px;color:#999;margin-bottom:4px}
+.cdp-char-desc{font-size:14px;color:#666;line-height:1.6;max-width:500px;margin:0 auto}
+.cdp-section{padding:20px;border-top:1px solid rgba(200,180,255,.15)}
+.cdp-section h3{font-size:16px;color:var(--tp);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.cdp-relations{display:flex;flex-wrap:wrap;gap:8px}
+.cdp-relation{
+ background:rgba(168,140,255,.08);border:1px solid rgba(168,140,255,.15);
+ border-radius:8px;padding:8px 12px;font-size:13px;color:var(--tp);
+ display:flex;align-items:center;gap:6px;
+}
+.cdp-relation .rel-label{color:#999;font-size:11px}
+.cdp-timeline{position:relative;padding-left:20px}
+.cdp-timeline::before{
+ content:"";position:absolute;left:6px;top:0;bottom:0;
+ width:2px;background:linear-gradient(180deg,#8b9cf7,#d48ec7,#c4a8f7);
+}
+.cdp-timeline-item{position:relative;margin-bottom:16px;padding-left:16px}
+.cdp-timeline-item::before{
+ content:"";position:absolute;left:-17px;top:4px;
+ width:10px;height:10px;border-radius:50%;
+ background:linear-gradient(135deg,#8b9cf7,#d48ec7);
+ border:2px solid rgba(255,255,255,.8);
+}
+.cdp-timeline-item .tl-era{font-size:12px;color:#c4a8f7;font-weight:bold;margin-bottom:2px}
+.cdp-timeline-item .tl-text{font-size:13px;color:#666;line-height:1.5}
+
+/* 书架 */
+.bs-header{margin-bottom:24px}
+.bs-header h2{color:var(--tp);font-size:20px;margin-bottom:4px}
+.bs-subtitle{color:#999;font-size:13px}
+.bsl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;padding:0}
+.bsl .cc{position:relative}
+.bsl-remove{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:5}
+.bsl-remove:hover{background:rgba(200,50,50,.7);transform:scale(1.1)}
+.bs-empty{text-align:center;padding:80px 20px}
+.bs-empty p{color:#888;margin-bottom:20px;font-size:15px;line-height:1.6}
+.pfc{background:rgba(255,255,255,.85);border-radius:14px;padding:30px;margin-top:20px;border:1px solid rgba(200,180,255,.2)}.pfl{display:flex;align-items:center;margin-bottom:30px}
+.aw{position:relative;display:inline-block}.aw::before{content:"";position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(from 0deg,#ff9a9e,#fad0c4,#a18cd1,#89c4f4,#a0d2db,#ffd1dc,#ff9a9e);animation:asp 4s linear infinite;z-index:-1}@keyframes asp{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.av{width:100px;height:100px;border-radius:50%;object-fit:cover;margin-right:30px;border:3px solid rgba(255,255,255,.8)}
+.pfi h3{font-size:24px;margin-bottom:10px;color:var(--tp)}.pfi p{color:#888;margin-bottom:5px}
+.pfs{display:flex;justify-content:space-around;margin-bottom:30px;padding:20px;background:rgba(255,255,255,.4);border-radius:14px}.sfi{flex:1;text-align:center}.sfv{font-size:24px;font-weight:bold;background:var(--tg);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}.sfl{color:#888;font-size:14px}
+.pfa{display:flex;justify-content:center}.bs2{background:rgba(149,165,166,.3);color:var(--tp);border:1px solid rgba(200,180,255,.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:14px;transition:all .3s;margin-right:10px}.bs2:hover{background:rgba(149,165,166,.5);transform:translateY(-2px)}
+.pg{display:none}.pg.a{display:block}
+.df{text-align:center;padding:30px 20px;color:rgba(180,190,210,.4);font-size:13px;position:relative;z-index:1}
+.dw{position:fixed;font-size:13px;font-family:serif,sans-serif;color:rgba(180,190,210,.6);text-shadow:0 0 8px rgba(150,170,220,.3),0 0 16px rgba(150,170,220,.15);letter-spacing:2px;pointer-events:none;z-index:9996;white-space:nowrap;opacity:0;filter:blur(.5px);transition:opacity 1.5s ease,filter 1.5s ease;user-select:none}.dw.v{opacity:1;filter:blur(0)}.dw.f{opacity:0;filter:blur(2px)}
+.ddm{position:fixed;white-space:nowrap;font-size:14px;font-weight:500;pointer-events:none;z-index:9995;color:rgba(255,255,255,.85);text-shadow:0 0 6px rgba(140,160,255,.5),0 0 12px rgba(140,160,255,.25),0 0 20px rgba(140,160,255,.1),0 1px 2px rgba(0,0,0,.3);animation:ddms linear forwards;opacity:.9}@keyframes ddms{0%{transform:translateX(0)}100%{transform:translateX(calc(-100vw - 100%))}}
+
+/* ========== Comic Detail Page (番茄小说风格) ========== */
+.comic-detail-page{
+ max-width:800px;margin:0 auto;
+ background:rgba(255,255,255,.85);border-radius:16px;
+ overflow:hidden;border:1px solid rgba(200,180,255,.2);
+}
+.cdp-cover-wrap{
+ position:relative;width:100%;overflow:hidden;
+ background:#000;
+}
+.cdp-cover{
+ width:100%;object-fit:cover;
+ display:block;background:#000;
+}
+/* 详情页封面置顶固定 */
+body.detail-mode .hdr,
+body.detail-mode .nav{
+ display:none !important;
+}
+.cdp-cover-sticky{
+ position:sticky;
+ top:0;
+ z-index:100;
+}
+/* 故事之外封面：全图展示，无渐变黑边 */
+#comic3-cover-wrap{
+ background:transparent;
+}
+.cdp-cover-full{
+ object-fit:contain !important;
+ background:transparent !important;
+ max-height:none !important;
+}
+.cdp-tags{
+ position:absolute;bottom:12px;left:12px;z-index:10;
+ display:flex;gap:5px;flex-wrap:wrap;
+}
+.cdp-hourglass{
+ position:absolute;top:12px;right:12px;z-index:10;
+ background:rgba(0,0,0,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+ font-size:24px;padding:6px 10px;border-radius:6px;
+}
+.cdp-info{padding:20px 20px 10px}
+.cdp-title{font-size:24px;font-weight:bold;color:var(--tp);margin-bottom:8px}
+.cdp-meta{display:flex;gap:10px;margin-bottom:12px}
+.cdp-desc{font-size:14px;color:#666;line-height:1.7;
+ display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+}
+.cdp-chapters{padding:10px 20px 20px;border-top:1px solid rgba(200,180,255,.15);margin-top:15px}
+.cdp-ch-title{font-size:16px;font-weight:bold;color:var(--tp);margin-bottom:15px}
+.cdp-ch-grid{display:flex;flex-direction:column;gap:0}
+.cdp-ch-item{
+ display:flex;align-items:center;gap:12px;
+ padding:12px 8px;border-radius:8px;cursor:pointer;
+ transition:background .2s;
+}
+.cdp-ch-item:hover{background:rgba(168,140,255,.08)}
+.cdp-ch-item.locked{opacity:.4;cursor:default;pointer-events:none}
+.cdp-ch-item.locked:hover{background:transparent}
+.cdp-ch-num{
+ width:32px;height:32px;border-radius:50%;
+ background:linear-gradient(135deg,#8b9cf7,#d48ec7);
+ color:#fff;font-size:14px;font-weight:bold;
+ display:flex;align-items:center;justify-content:center;
+ flex-shrink:0;
+}
+.cdp-ch-item.locked .cdp-ch-num{background:rgba(200,180,255,.2)}
+.cdp-ch-name{font-size:15px;color:var(--tp)}
+
+/* 收藏按钮 */
+.cdp-actions{display:flex;gap:10px;margin-bottom:12px}
+.cdp-fav-btn{
+ padding:8px 18px;border-radius:20px;border:none;
+ background:linear-gradient(135deg,#f7a8c4,#c4a8f7);
+ color:#fff;font-size:14px;font-weight:500;
+ cursor:pointer;transition:all .3s;
+ box-shadow:0 2px 8px rgba(200,140,220,.3);
+}
+.cdp-fav-btn:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(200,140,220,.4)}
+.cdp-fav-btn.active{background:linear-gradient(135deg,#e74c3c,#c0392b)}
+
+/* ========== Reading Mode ========== */
+.reading-topbar{
+ display:none;
+ position:fixed;top:0;left:0;right:0;z-index:200;
+ background:rgba(30,30,50,.92);backdrop-filter:blur(12px);
+ padding:12px 16px;text-align:center;
+ border-bottom:1px solid rgba(200,180,255,.15);
+ transition:transform .3s ease,opacity .3s ease;
+}
+.reading-topbar .rtb-title{font-size:15px;font-weight:bold;color:#fff}
+.reading-topbar .rtb-back{
+ position:absolute;left:12px;top:50%;transform:translateY(-50%);
+ background:rgba(255,255,255,.12);border:none;color:#fff;
+ padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;
+ transition:background .2s;
+}
+.reading-topbar .rtb-back:hover{background:rgba(255,255,255,.2)}
+.reading-topbar .rtb-page{
+ position:absolute;right:12px;top:50%;transform:translateY(-50%);
+ color:rgba(255,255,255,.6);font-size:12px;
+}
+
+/* 阅读区：竖滑 */
+.reading-area{
+ display:none;
+ background:#111;
+ min-height:100vh;
+ min-height:100dvh;
+ padding-top:48px;
+ position:relative;
+}
+.reading-area img{
+ width:100%;
+ max-width:100vw;
+ height:auto;
+ display:block;
+}
+
+/* 弹幕叠加层 - 只覆盖图片区域 */
+.danmaku-overlay{
+ position:absolute;top:0;left:0;right:0;bottom:0;
+ pointer-events:none;z-index:9999;
+ overflow:hidden;
+}
+.reading-area-wrap{
+ position:relative;
+}
+@keyframes dmv{
+ 0%{transform:translateX(100vw)}
+ 100%{transform:translateX(-100%)}
+}
+.danmaku-overlay .dm{
+ position:absolute;white-space:nowrap;
+ font-size:14px;font-weight:bold;
+ color:#fff;
+ text-shadow:0 0 4px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,.95),-1px 0 2px rgba(0,0,0,.8),1px 0 2px rgba(0,0,0,.8);
+ animation:dmv linear forwards;
+}
+/* 弹幕开关按钮 */
+.dm-toggle{
+ position:absolute;right:80px;top:50%;transform:translateY(-50%);
+ background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+ color:rgba(255,255,255,.7);padding:4px 10px;border-radius:6px;
+ cursor:pointer;font-size:12px;transition:all .2s;
+}
+.dm-toggle:hover{background:rgba(255,255,255,.2)}
+.dm-toggle.off{color:rgba(255,255,255,.3);border-color:rgba(255,255,255,.1)}
+
+/* 底部弹幕输入 */
+.reading-danmaku-bar{
+ display:none;
+ position:fixed;bottom:0;left:0;right:0;z-index:200;
+ background:rgba(30,30,50,.92);backdrop-filter:blur(12px);
+ padding:10px 16px;border-top:1px solid rgba(200,180,255,.15);
+ gap:8px;align-items:center;
+}
+.reading-danmaku-bar input{
+ flex:1;padding:8px 12px;
+ border:1px solid rgba(255,255,255,.15);border-radius:8px;
+ background:rgba(255,255,255,.1);color:#fff;
+ outline:none;font-size:14px;
+}
+.reading-danmaku-bar input::placeholder{color:rgba(255,255,255,.35)}
+.reading-danmaku-bar button{
+ padding:8px 16px;background:var(--btn);color:#fff;
+ border:none;border-radius:8px;cursor:pointer;font-size:14px;
+}
+
+/* 评论区（阅读模式下） */
+.reading-comments{
+ display:none;
+ background:#1a1a2e;
+ padding:20px 16px 100px;
+}
+.reading-comments h2{
+ color:#fff;font-size:18px;margin-bottom:16px;
+ padding-bottom:12px;border-bottom:1px solid rgba(200,180,255,.15);
+}
+.reading-comments .cf textarea{
+ width:100%;min-height:80px;margin-bottom:10px;resize:vertical;
+ padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:8px;
+ background:rgba(255,255,255,.08);color:#fff;outline:none;font-size:14px;
+}
+.reading-comments .cf textarea::placeholder{color:rgba(255,255,255,.3)}
+.reading-comments .cf button{
+ padding:8px 20px;background:var(--btn);color:#fff;
+ border:none;border-radius:8px;cursor:pointer;font-size:14px;
+}
+/* 评论卡片样式 */
+.reading-comments .cmt{
+ padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.reading-comments .cmt-share{
+ display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:8px;
+ background:rgba(168,140,255,.1);border-radius:8px;border:1px solid rgba(168,140,255,.15);
+}
+.reading-comments .cmt-share-icon{font-size:18px;flex-shrink:0}
+.reading-comments .cmt-share-text{font-size:12px;color:rgba(255,255,255,.6);line-height:1.4}
+.reading-comments .cmt-share-text a{color:#a88cff;text-decoration:none}
+.reading-comments .cmt-share-text a:hover{text-decoration:underline}
+.cmt-reply{margin:10px 0 0 16px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:6px;border-left:2px solid rgba(168,140,255,.25);position:relative}
+.cmt-reply .cma{font-size:13px;display:inline;margin-right:6px}
+.cmt-reply .cmti{font-size:11px;color:rgba(255,255,255,.35)}
+.cmt-reply .cmc{font-size:13px;line-height:1.5;color:rgba(255,255,255,.65);margin-top:4px}
+.cmt-reply .reply-btn{position:absolute;top:6px;right:8px;background:none;border:none;color:rgba(168,140,255,.6);cursor:pointer;font-size:12px;padding:2px 8px;border-radius:3px;transition:all .2s}
+.cmt-reply .reply-btn:hover{color:rgba(168,140,255,1);background:rgba(168,140,255,.1)}
+.reply-form{margin:8px 0 4px;display:flex;gap:6px;align-items:flex-start}
+.reply-form input{flex:1;padding:6px 10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:13px;outline:none}
+.reply-form input::placeholder{color:rgba(255,255,255,.3)}
+.reply-form button{padding:6px 12px;background:rgba(168,140,255,.2);border:1px solid rgba(168,140,255,.3);border-radius:6px;color:rgba(168,140,255,.9);cursor:pointer;font-size:12px;transition:all .2s;white-space:nowrap}
+.reply-form button:hover{background:rgba(168,140,255,.35)}
+.reply-loading{font-size:11px;color:rgba(168,140,255,.5);margin-top:6px;padding:0 8px}
+.reading-comments .cmt{
+ padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);
+}
+.reading-comments .cma{font-weight:bold;color:#fff;margin-bottom:4px;font-size:14px}
+.reading-comments .cmti{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px}
+.reading-comments .cmc{line-height:1.5;color:rgba(255,255,255,.7);font-size:14px}
+
+/* 章节导航 */
+.chapter-nav{
+ display:flex;justify-content:center;
+ padding:20px 16px 10px;
+ background:#111;
+}
+.chapter-nav-inner{
+ display:flex;align-items:center;gap:12px;
+ max-width:400px;width:100%;
+}
+.cn-btn{
+ flex:1;padding:10px 12px;border-radius:10px;
+ border:none;font-size:14px;font-weight:500;
+ cursor:pointer;transition:all .2s;
+}
+.cn-btn:not(:disabled):not(.cn-btn-locked){
+ background:linear-gradient(135deg,#8b9cf7,#d48ec7);color:#fff;
+}
+.cn-btn:not(:disabled):not(.cn-btn-locked):hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(160,130,200,.4)}
+.cn-btn:disabled{background:rgba(255,255,255,.08);color:rgba(255,255,255,.25);cursor:not-allowed}
+.cn-btn-locked{background:rgba(255,255,255,.12);color:rgba(255,255,255,.5)}
+.cn-title{color:rgba(255,255,255,.7);font-size:13px;white-space:nowrap;min-width:60px;text-align:center}
+
+/* 详情页返回按钮 */
+.cdp-back-top{position:fixed;bottom:16px;left:16px;z-index:9999;display:flex;align-items:center;gap:12px}
+.cdp-back-btn{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:all .3s;display:flex;align-items:center;gap:6px}
+.cdp-back-btn:hover{background:rgba(0,0,0,.8);transform:translateX(-2px);box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.cdp-cover-wrap{position:relative}
+
+/* 未完待续（点击未解锁章节时显示） */
+.continued-section{
+ display:flex;flex-direction:column;justify-content:center;align-items:center;
+ min-height:50vh;padding:40px 20px;
+ background:linear-gradient(180deg,#111 0%,#1a1a2e 100%);
+}
+.continued-section .rcn-continued{
+ color:rgba(255,255,255,.35);font-size:16px;letter-spacing:4px;margin-bottom:20px;
+}
+
+/* Reading mode body class */
+body.reading-mode .hdr,body.reading-mode .nav,body.reading-mode .df,body.reading-mode #dc-p,body.reading-mode #dc-g,body.reading-mode .comic-detail-page{display:none!important}
+body.reading-mode .cv{display:block!important}
+body.reading-mode .container{max-width:100vw!important;padding:0!important;margin:0!important;width:100vw!important}
+body.reading-mode .mc{border:none!important;border-radius:0!important;max-width:100vw!important;padding:0!important;background:#111;width:100vw!important;overflow:visible!important}
+body.reading-mode .reading-topbar{display:block}
+body.reading-mode .reading-danmaku-bar{display:flex}
+body.reading-mode .reading-area{display:block}
+body.reading-mode .reading-comments{display:block}
+
+@media(max-width:768px){
+.cv{flex-direction:column}.sb{width:100%;order:2}.mc{order:1}.nav ul{gap:4px}.nav ul li a{padding:6px 8px;font-size:13px}.bn img{height:auto}.pfl{flex-direction:column;text-align:center}.av{margin-right:0;margin-bottom:20px}.pfs{flex-direction:row;gap:15px}
+.cl{grid-template-columns:repeat(2,1fr);gap:10px}
+.cc img{aspect-ratio:3/4}
+.cc .ccd{display:none}
+.cc .cci{display:none}
+.cc .ccc{padding:8px}
+.cc .cct{font-size:14px;margin-bottom:4px}
+.cc .cn{width:26px;height:26px;font-size:11px;top:6px;left:6px}
+.cc .rb{font-size:11px;padding:3px 6px}
+.reading-topbar .rtb-back{font-size:12px;padding:5px 10px}
+.reading-topbar .rtb-title{font-size:13px}
+.reading-topbar .rtb-page{font-size:11px}
+}
+
+/* 聊天面板 */
+.chat-panel{display:none;margin-top:24px;background:rgba(255,255,255,.7);border-radius:14px;border:1px solid rgba(200,180,255,.15);overflow:hidden;backdrop-filter:blur(10px)}
+.chat-panel.active{display:block}
+.chat-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(168,140,255,.08);border-bottom:1px solid rgba(200,180,255,.15)}
+.chat-header-avatar{width:36px;height:36px;border-radius:10px;object-fit:cover}
+.chat-header-name{font-size:15px;font-weight:bold;color:var(--tp)}
+.chat-header-close{margin-left:auto;background:none;border:none;font-size:18px;cursor:pointer;color:#999;padding:4px 8px;border-radius:6px}
+.chat-header-close:hover{background:rgba(0,0,0,.05)}
+.chat-messages{padding:16px;height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.chat-msg{display:flex;gap:8px;max-width:85%}
+.chat-msg.bot{align-self:flex-start}
+.chat-msg.user{align-self:flex-end;flex-direction:row-reverse}
+.chat-msg .msg-bubble{padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5}
+.chat-msg.bot .msg-bubble{background:rgba(168,140,255,.08);color:#555;border-top-left-radius:4px}
+.chat-msg.user .msg-bubble{background:linear-gradient(135deg,#a88cff,#7850ff);color:#fff;border-top-right-radius:4px}
+.chat-msg .msg-name{font-size:10px;color:#999;margin-bottom:2px}
+.chat-msg.user .msg-name{text-align:right}
+.chat-msg .msg-time{font-size:9px;color:#bbb;margin-top:2px}
+.chat-input-area{display:flex;gap:8px;padding:12px 16px;border-top:1px solid rgba(200,180,255,.15);background:rgba(255,255,255,.5)}
+.chat-input-area input{flex:1;padding:8px 14px;border:1.5px solid rgba(180,160,220,.25);border-radius:20px;background:rgba(255,255,255,.8);color:var(--td);outline:none;font-size:13px;font-family:inherit}
+.chat-input-area input:focus{border-color:rgba(160,140,255,.5)}
+.chat-send-btn{padding:8px 18px;background:linear-gradient(135deg,#a88cff,#7850ff);color:#fff;border:none;border-radius:20px;font-size:13px;cursor:pointer;transition:all .3s;white-space:nowrap}
+.chat-send-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(168,140,255,.3)}
+.chat-send-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.chat-welcome{text-align:center;padding:40px 20px;color:#999;font-size:13px}
+.chat-btn{display:inline-block;margin-top:8px;padding:4px 14px;background:rgba(168,140,255,.12);color:#7b68ae;border:none;border-radius:12px;font-size:11px;cursor:pointer;transition:all .3s}
+.chat-btn:hover{background:rgba(168,140,255,.2)}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="hdr">
+<span class="dd">✧ ˚ ✦</span>
+<h1><span class="td2">⋆ ˚ ｡ ⋆</span>祂将呓语轻哼成歌<span class="td2">⋆ ˚ ｡ ⋆</span></h1>
+<span class="dd">✦ ˚ ✧</span>
+<div class="tglow"></div>
+<div class="tw">〰〰〰〰〰〰〰〰〰</div>
+<p>这是你早已知晓的故事</p>
+</div>
+<nav class="nav" id="main-nav"><ul>
+<li><a href="#" onclick="showPage('home')">首页</a></li>
+<li><a href="#" onclick="showPage('friends')">好友列表</a></li>
+<li><a href="#" onclick="showPage('bookshelf')">书架</a></li>
+<li><a href="#" onclick="showPage('profile')">个人中心</a></li>
+</ul></nav>
+
+<!-- ========== 首页 ========== -->
+<div id="home" class="pg a">
+<div class="bn" onclick="showPage('comic3')" style="cursor:pointer"><img src="banner.jpg" alt="故事之外"></div>
+<h2 style="color:var(--tp);margin-bottom:12px;font-size:20px">漫画列表</h2>
+<div class="tf" id="tag-filter">
+<span class="tf-btn active" data-tag="all" onclick="filterByTag(this,'all')">全部</span>
+<span class="tf-btn" data-tag="第八世" onclick="filterByTag(this,'第八世')">第八世</span>
+<span class="tf-btn" data-tag="第七世" onclick="filterByTag(this,'第七世')">第七世</span>
+<span class="tf-btn" data-tag="第九世" onclick="filterByTag(this,'第九世')">第九世</span>
+<span class="tf-btn" data-tag="第十二世" onclick="filterByTag(this,'第十二世')">第十二世</span>
+</div>
+<div class="cl">
+<div class="cc" data-tags="第八世" onclick="showPage('comic1')"><div class="rb-hourglass">⏳</div><div class="cn">Ⅷ</div><img src="https://oss.talesofai.cn/picture/951fde7e-f286-4294-a4ee-2a16f91ede92.webp" alt="时之钥"><div class="ccc"><div class="cct">时之钥</div><div class="ccd">祂，今在，昔在，永在</div><div class="cci"><span class="vi">8.8万</span><span class="rt">8.888分</span></div></div></div>
+<div class="cc" data-tags="第八世" onclick="showPage('comic2')"><div class="cn">Ⅰ</div><img src="https://oss.talesofai.cn/picture/651ce822-8c1b-4046-847a-457f0c774cff.webp" alt="金尘"><div class="ccc"><div class="cct">金尘</div><div class="ccd">传教，从入门到入土</div><div class="cci"><span class="vi">19.8万</span><span class="rt">9.4分</span></div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅱ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/5729ccf3-86a9-4e18-b829-465f3e53cee8.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅲ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/065a67f0-7c46-4f35-b7da-422d744da185.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅳ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/018438af-d9d5-40c2-8a1a-02270f495a36.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅴ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/d305c04c-ebdb-4d07-a4ed-71b1b68350d7.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅵ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/29c6a4f6-2f86-47bb-a7dc-c922e4bd43c7.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅶ</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="cc-placeholder">未解锁人物</div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅸ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/0f514956-7258-41c1-9661-75cae10151d5.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第八世"><div class="cn">Ⅹ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/38705f78-033f-4913-b3a6-ce54c29d8134.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第九世"><img src="locked-9.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第十二世"><img src="locked-12-1.jpg" alt="锁定"><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第十二世"><img src="locked-12-2.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc" data-tags="第七世" onclick="showPage('comic4')"><div class="rb-hourglass">⏳</div><img src="locked-7.jpg" alt="钟鸣异邦"><div class="ccc"><div class="cct">钟鸣异邦</div><div class="ccd">晨钟：异世苏醒</div></div></div>
+</div>
+</div>
+
+<!-- ========== 热门 ========== -->
+<div id="hot" class="pg">
+<style>
+.friends-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px}
+.friend-card{background:rgba(255,255,255,.85);border-radius:14px;overflow:hidden;position:relative;cursor:pointer;transition:all .4s}
+.friend-card::before{content:"";position:absolute;inset:0;border-radius:14px;padding:1.5px;background:var(--cbr);background-size:300% 300%;animation:brg 6s ease infinite;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:1}
+.friend-card:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 8px 32px rgba(160,140,255,.18),0 0 20px var(--gb)}
+.friend-avatar{width:56px;height:56px;object-fit:cover;display:block;margin:10px auto 4px;border-radius:12px}
+.friend-info{padding:4px 6px 10px;text-align:center}
+.friend-name{font-size:12px;font-weight:bold;color:var(--tp);margin-bottom:0}
+.friend-desc{font-size:10px;color:#999;margin-top:2px;line-height:1.3}
+.friend-seat{position:absolute;top:6px;left:6px;background:rgba(0,0,0,.55);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;z-index:5}
+.friend-era{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);color:rgba(255,255,255,.85);font-size:8px;padding:1px 4px;border-radius:3px;z-index:5}
+.detail-section{display:none}
+.detail-back{display:inline-flex;align-items:center;gap:6px;color:var(--tp);text-decoration:none;font-size:14px;margin-bottom:16px;cursor:pointer;padding:6px 14px;background:rgba(255,255,255,.5);border-radius:8px;border:1px solid rgba(200,180,255,.2);transition:all .3s}
+.detail-back:hover{background:rgba(168,140,255,.1);transform:translateX(-2px)}
+.detail-header{display:flex;gap:20px;margin-bottom:30px;flex-wrap:wrap}
+.detail-avatar{width:160px;height:160px;border-radius:14px;object-fit:cover;box-shadow:0 4px 20px rgba(160,140,255,.15);flex-shrink:0}
+.detail-meta{flex:1;min-width:200px}
+.detail-meta h2{font-size:24px;color:var(--tp);margin-bottom:8px}
+.detail-meta .subtitle{font-size:14px;color:#888;margin-bottom:12px}
+.detail-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.detail-badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-seat{background:rgba(168,140,255,.15);color:#7b68ae}
+.badge-era{background:rgba(110,168,254,.15);color:#4a7fc7}
+.badge-power{background:rgba(247,168,196,.15);color:#c75a8a}
+.detail-desc{font-size:14px;color:#666;line-height:1.6}
+.relation-section,.timeline-section,.network-section{margin-top:24px;background:rgba(255,255,255,.5);border-radius:14px;padding:20px;border:1px solid rgba(200,180,255,.15)}
+.relation-section h3,.timeline-section h3,.network-section h3{color:var(--tp);font-size:16px;margin-bottom:16px}
+.relation-list{display:flex;flex-direction:column;gap:10px}
+.relation-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.7);border-radius:10px;transition:all .3s}
+.relation-item:hover{background:rgba(255,255,255,.9);transform:translateX(4px)}
+.relation-name{font-size:14px;font-weight:bold;color:var(--tp)}
+.relation-type{font-size:12px;color:#999}
+.relation-arrow{font-size:18px;color:#c4a8f7}
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#a88cff,#7850ff,#c4a8f7)}
+.timeline-item{position:relative;margin-bottom:16px;padding:12px 16px;background:rgba(255,255,255,.7);border-radius:10px;transition:all .3s}
+.timeline-item:hover{background:rgba(255,255,255,.9);transform:translateX(4px)}
+.timeline-item::before{content:"";position:absolute;left:-20px;top:16px;width:10px;height:10px;border-radius:50%;background:#a88cff;border:2px solid #fff;box-shadow:0 0 6px rgba(168,140,255,.4)}
+.timeline-era{font-size:12px;color:#a88cff;font-weight:bold;margin-bottom:4px}
+.timeline-text{font-size:13px;color:#666;line-height:1.5}
+.network-tree{font-size:13px;line-height:1.8;color:#555}
+.network-tree .root{font-weight:bold;color:var(--tp);font-size:15px}
+.network-tree .branch{padding-left:20px;border-left:2px solid rgba(168,140,255,.2);margin-left:8px}
+@media(max-width:768px){.friends-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}.detail-header{flex-direction:column;align-items:center;text-align:center}.detail-avatar{width:120px;height:120px}}
+@media(max-width:480px){.friends-grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+</style>
+
+<h2 style="color:var(--tp);margin-bottom:4px">好友列表</h2>
+<div class="friends-grid" id="friends-grid"></div>
+<div id="detail-container" class="detail-section">
+<a class="detail-back" onclick="showFriends()">← 返回好友列表</a>
+<div id="detail-content"></div>
+</div>
+<div id="chat-panel" class="chat-panel">
+<div class="chat-header">
+<img class="chat-header-avatar" id="chat-avatar" src="" alt="">
+<span class="chat-header-name" id="chat-name"></span>
+<button class="chat-header-close" onclick="closeChat()">✕</button>
+</div>
+<div class="chat-messages" id="chat-messages">
+<div class="chat-welcome" id="chat-welcome">选择角色开始聊天</div>
+</div>
+<div class="chat-input-area">
+<input type="text" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="chat-send-btn" id="chat-send-btn" onclick="sendChat()">发送</button>
+</div>
+</div>
+<div id="network-container" class="network-section" style="display:none">
+<h3>🌐 全局关系图谱</h3>
+<div class="network-tree" id="global-network"></div>
+</div>
+</div>
+
+<!-- ========== 书架 ========== -->
+<div id="bookshelf" class="pg">
+<div class="bs-header">
+<h2>我的书架</h2>
+<p class="bs-subtitle">收藏你喜欢的漫画</p>
+</div>
+<div id="bookshelf-content"></div>
+</div>
+
+<!-- ========== 个人中心 ========== -->
+<div id="profile" class="pg">
+<div class="pfc">
+<div class="pfl">
+<div class="aw"><img class="av" src="avatar.jpg" alt="头像"></div>
+<div class="pfi"><h3>画外音</h3><p>ID: 12（？）</p><p>注册时间: 第七世？？？年</p></div>
+</div>
+<div class="pfs">
+<div class="sfi"><div class="sfv">0</div><div class="sfl">收藏</div></div>
+<div class="sfi"><div class="sfv">0</div><div class="sfl">历史</div></div>
+<div class="sfi"><div class="sfv">0</div><div class="sfl">评论</div></div>
+</div>
+<div class="pfa"><button class="bs2" onclick="alert('这不是你的时间')">编辑资料</button><button class="bs2" onclick="alert('这不是你的时间')">设置</button></div>
+</div>
+</div>
+
+<!-- ========== 漫画1: 时之钥 详情页 ========== -->
+<div id="comic1" class="pg">
+<!-- 详情页头部 -->
+<div id="comic1-detail" class="comic-detail-page">
+<div class="cdp-back-top"><button class="cdp-back-btn" onclick="showPage('home')">← 返回</button></div>
+<div class="cdp-cover-wrap cdp-cover-sticky">
+<img src="https://oss.talesofai.cn/picture/951fde7e-f286-4294-a4ee-2a16f91ede92.webp" alt="时之钥" class="cdp-cover">
+<div class="cdp-tags"><span class="cbadge tag-hourglass">⏳</span><span class="cbadge">第八世</span><span class="cbadge">救世会</span></div>
+</div>
+<div class="cdp-info">
+<h1 class="cdp-title">时之钥</h1>
+<div class="cdp-meta"><span class="vi">8.8万阅读</span><span class="rt">8.888分</span></div>
+<div class="cdp-actions">
+<button id="fav-comic1" class="cdp-fav-btn" onclick="toggleBookshelf('comic1')">🤍 加入书架</button>
+</div>
+<p class="cdp-desc">她诞生于虚无，坐在街角发呆时，被一个笑眯眯的男人捡到。她说她不记得自己是谁，却在警察问起名字时，脱口而出一个尚未被取下的名字。倒因为果。从被命名的那一刻起，少女昭陌被卷入八十二轮回的洪流——时之钥的锚点、重合区的火光、超自然事件调查员的面板、以及一个几乎从未走动的怀表，记录着她无法被彻底抹去的存在。</p>
+</div>
+<!-- 章节列表 -->
+<div class="cdp-chapters">
+<h2 class="cdp-ch-title">目录</h2>
+<div class="cdp-ch-grid">
+<div class="cdp-ch-item" onclick="enterReadingMode('comic1',1)">
+<div class="cdp-ch-num">1</div>
+<div class="cdp-ch-name">第1话：启蒙</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">2</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">3</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">4</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">5</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 阅读模式 -->
+<div id="comic1-reader" style="display:none">
+<div class="reading-topbar" id="comic1-topbar">
+<button class="rtb-back" onclick="exitReadingMode('comic1')">← 返回</button>
+<span class="rtb-title" id="comic1-topbar-title">第1话：启蒙</span>
+<button class="dm-toggle" id="comic1-dm-toggle" onclick="toggleDanmaku('comic1')">弹</button>
+<span class="rtb-page" id="comic1-topbar-page"></span>
+</div>
+<div class="reading-area-wrap">
+<div class="reading-area" id="comic1-area">
+<img src="https://claw-annuonie-pages.talesofai.com/images/03b386b1-76dc-42a5-9eb2-f8452a5e8a2f.webp" alt="P1">
+<img src="https://claw-annuonie-pages.talesofai.com/images/5b9deb1f-41ae-4761-bcc5-296e2049624b.webp" alt="P2">
+<img src="https://claw-annuonie-pages.talesofai.com/images/36eb5a7f-39e4-4c26-8496-906b2e1a8661.webp" alt="P3">
+<img src="https://claw-annuonie-pages.talesofai.com/images/4b4fcdbe-5c68-498c-b6ef-0fac778beb9b.webp" alt="P4">
+<img src="https://claw-annuonie-pages.talesofai.com/images/205c8fb2-0faa-484c-b849-a78cfe84cac3.webp" alt="P5">
+</div>
+<div class="danmaku-overlay" id="comic1-danmaku-overlay"></div>
+</div>
+<div class="chapter-nav">
+<div class="chapter-nav-inner">
+<button class="cn-btn cn-btn-disabled" disabled>← 上一章</button>
+<span class="cn-title">第1话</span>
+<button class="cn-btn cn-btn-locked" onclick="alert('下一章暂未更新，敬请期待～')">下一章 →</button>
+</div>
+</div>
+<div class="reading-danmaku-bar" id="comic1-danmaku-bar">
+<input type="text" id="danmaku-text-reading-1" placeholder="发送弹幕...">
+<button onclick="sendDanmakuReading('comic1')">发送</button>
+</div>
+<div class="reading-comments" id="comic1-comments-section">
+<h2>评论区</h2>
+<div class="cf">
+<textarea id="comment-content-reading-1" placeholder="写下你的评论..."></textarea>
+<button onclick="submitCommentReading('comic1')">提交评论</button>
+</div>
+<ul class="cm2" id="comic1-comments-reading"></ul>
+</div>
+</div>
+</div>
+
+<!-- ========== 漫画2: 金尘 详情页 ========== -->
+<div id="comic2" class="pg">
+<!-- 详情页头部 -->
+<div id="comic2-detail" class="comic-detail-page">
+<div class="cdp-back-top"><button class="cdp-back-btn" onclick="showPage('home')">← 返回</button></div>
+<div class="cdp-cover-wrap">
+<img src="https://oss.talesofai.cn/picture/651ce822-8c1b-4046-847a-457f0c774cff.webp" alt="金尘" class="cdp-cover">
+<div class="cdp-tags"><span class="cbadge">第八世</span><span class="cbadge">救世会</span></div>
+</div>
+<div class="cdp-info">
+<h1 class="cdp-title">金尘</h1>
+<div class="cdp-meta"><span class="vi">19.8万阅读</span><span class="rt">9.4分</span></div>
+<div class="cdp-actions">
+<button id="fav-comic2" class="cdp-fav-btn" onclick="toggleBookshelf('comic2')">🤍 加入书架</button>
+</div>
+<p class="cdp-desc">他是个把心脏剖开摊给人看，然后发现没人敢接的人。从把酒鬼父亲推下河的那个傍晚开始，卡罗尔就知道——祷告不会有人回应，神也不会来。所以他决定自己成为那个回应的人。直到他遇见了宸星——一个在人来人往中唯一被他看见的、逆着光的人。「因为你的灵魂从未蒙尘。」</p>
+</div>
+<!-- 章节列表 -->
+<div class="cdp-chapters">
+<h2 class="cdp-ch-title">目录</h2>
+<div class="cdp-ch-grid">
+<div class="cdp-ch-item" onclick="enterReadingMode('comic2',1)">
+<div class="cdp-ch-num">1</div>
+<div class="cdp-ch-name">第1话：蒙尘信仰</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">2</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">3</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">4</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">5</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 阅读模式 -->
+<div id="comic2-reader" style="display:none">
+<div class="reading-topbar" id="comic2-topbar">
+<button class="rtb-back" onclick="exitReadingMode('comic2')">← 返回</button>
+<span class="rtb-title" id="comic2-topbar-title">第1话：蒙尘信仰</span>
+<button class="dm-toggle" id="comic2-dm-toggle" onclick="toggleDanmaku('comic2')">弹</button>
+<span class="rtb-page" id="comic2-topbar-page"></span>
+</div>
+<div class="reading-area-wrap">
+<div class="reading-area" id="comic2-area">
+<img src="https://claw-annuonie-pages.talesofai.com/images/b3e6361d-29d5-43a6-9d2d-9202bef6d999.png" alt="P1">
+<img src="https://claw-annuonie-pages.talesofai.com/images/bf0501c4-e6c1-44b8-ab4b-bdb76952ed38.png" alt="P2">
+<img src="https://claw-annuonie-pages.talesofai.com/images/04c769d9-8443-4451-8e01-dac9704ef0c0.png" alt="P3">
+<img src="https://claw-annuonie-pages.talesofai.com/images/dcb7dfe5-9704-4760-89f9-2378657d8eb1.png" alt="P4">
+<img src="https://claw-annuonie-pages.talesofai.com/images/697de164-26b0-4bb7-804e-676b2ad4b330.png" alt="P5">
+</div>
+<div class="danmaku-overlay" id="comic2-danmaku-overlay"></div>
+</div>
+<div class="chapter-nav">
+<div class="chapter-nav-inner">
+<button class="cn-btn cn-btn-disabled" disabled>← 上一章</button>
+<span class="cn-title">第1话</span>
+<button class="cn-btn cn-btn-locked" onclick="alert('下一章暂未更新，敬请期待～')">下一章 →</button>
+</div>
+</div>
+<div class="reading-danmaku-bar" id="comic2-danmaku-bar">
+<input type="text" id="danmaku-text-reading-2" placeholder="发送弹幕...">
+<button onclick="sendDanmakuReading('comic2')">发送</button>
+</div>
+<div class="reading-comments" id="comic2-comments-section">
+<h2>评论区</h2>
+<div class="cf">
+<textarea id="comment-content-reading-2" placeholder="写下你的评论..."></textarea>
+<button onclick="submitCommentReading('comic2')">提交评论</button>
+</div>
+<ul class="cm2" id="comic2-comments-reading"></ul>
+</div>
+</div>
+</div>
+
+<!-- ========== 漫画3: 故事之外 详情页 ========== -->
+<div id="comic3" class="pg">
+<div id="comic3-detail" class="comic-detail-page">
+<div class="cdp-back-top"><button class="cdp-back-btn" onclick="showPage('home')">← 返回</button></div>
+<div class="cdp-cover-wrap" id="comic3-cover-wrap">
+<img src="story-outside-cover.jpg" alt="故事之外" class="cdp-cover cdp-cover-full">
+<div class="cdp-tags"><span class="cbadge">第八世</span><span class="cbadge">救世会</span></div>
+</div>
+<div class="cdp-info">
+<h1 class="cdp-title">故事之外</h1>
+<div class="cdp-meta"><span class="vi">短篇</span><span class="rt">四格</span></div>
+<div class="cdp-actions">
+<button id="fav-comic3" class="cdp-fav-btn" onclick="toggleBookshelf('comic3')">🤍 加入书架</button>
+</div>
+<p class="cdp-desc">在故事之外，还有一些未被讲述的画面。</p>
+</div>
+<div class="cdp-chapters">
+<h2 class="cdp-ch-title">目录</h2>
+<div class="cdp-ch-grid">
+<div class="cdp-ch-item" onclick="enterReadingMode('comic3',1)">
+<div class="cdp-ch-num">1</div>
+<div class="cdp-ch-name">第一章：杀青快乐</div>
+</div>
+<div class="cdp-ch-item" onclick="enterReadingMode('comic3',2)">
+<div class="cdp-ch-num">2</div>
+<div class="cdp-ch-name">第二章：剧本杀</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">3</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">4</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+<div class="cdp-ch-item locked">
+<div class="cdp-ch-num">5</div>
+<div class="cdp-ch-name">未完待续</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 故事之外 阅读模式 - 第一章 -->
+<div id="comic3-reader-1" style="display:none">
+<div class="reading-topbar" id="comic3-topbar-1">
+<button class="rtb-back" onclick="exitReadingMode('comic3')">← 返回</button>
+<span class="rtb-title" id="comic3-topbar-title-1">第一章：杀青快乐</span>
+<button class="dm-toggle" id="comic3-dm-toggle-1" onclick="toggleDanmaku('comic3')">弹</button>
+<span class="rtb-page" id="comic3-topbar-page-1"></span>
+</div>
+<div class="reading-area-wrap">
+<div class="reading-area" id="comic3-area-1">
+<img src="story-outside-1.jpg" alt="P1">
+</div>
+<div class="danmaku-overlay" id="comic3-danmaku-overlay-1"></div>
+</div>
+<div class="chapter-nav">
+<div class="chapter-nav-inner">
+<button class="cn-btn cn-btn-disabled" disabled>← 上一章</button>
+<span class="cn-title">故事之外</span>
+<button class="cn-btn" onclick="enterReadingMode('comic3',2)">下一章 →</button>
+</div>
+</div>
+<div class="reading-danmaku-bar" id="comic3-danmaku-bar-1">
+<input type="text" id="danmaku-text-reading-3" placeholder="发送弹幕...">
+<button onclick="sendDanmakuReading('comic3')">发送</button>
+</div>
+<div class="reading-comments" id="comic3-comments-section-1">
+<h2>评论区</h2>
+<div class="cf">
+<textarea id="comment-content-reading-3" placeholder="写下你的评论..."></textarea>
+<button onclick="submitCommentReading('comic3')">提交评论</button>
+</div>
+<ul class="cm2" id="comic3-comments-reading"></ul>
+</div>
+</div>
+<!-- 故事之外 阅读模式 - 第二章 -->
+<div id="comic3-reader-2" style="display:none">
+<div class="reading-topbar" id="comic3-topbar-2">
+<button class="rtb-back" onclick="exitReadingMode('comic3')">← 返回</button>
+<span class="rtb-title" id="comic3-topbar-title-2">第二章：剧本杀</span>
+<button class="dm-toggle" id="comic3-dm-toggle-2" onclick="toggleDanmaku('comic3')">弹</button>
+<span class="rtb-page" id="comic3-topbar-page-2"></span>
+</div>
+<div class="reading-area-wrap">
+<div class="reading-area" id="comic3-area-2">
+<img src="story-ch2-1.jpg" alt="P1">
+<img src="story-ch2-2.jpg" alt="P2">
+<img src="story-ch2-3.jpg" alt="P3">
+</div>
+<div class="danmaku-overlay" id="comic3-danmaku-overlay-2"></div>
+</div>
+<div class="chapter-nav">
+<div class="chapter-nav-inner">
+<button class="cn-btn" onclick="enterReadingMode('comic3',1)">← 上一章</button>
+<span class="cn-title">故事之外</span>
+<button class="cn-btn cn-btn-locked" onclick="alert('下一章暂未更新，敬请期待～')">下一章 →</button>
+</div>
+</div>
+<div class="danmaku-overlay" id="comic3-danmaku-overlay-2"></div>
+<div class="reading-danmaku-bar" id="comic3-danmaku-bar-2">
+<input type="text" id="danmaku-text-reading-3-2" placeholder="发送弹幕...">
+<button onclick="sendDanmakuReading('comic3',2)">发送</button>
+</div>
+<div class="reading-comments" id="comic3-comments-section-2">
+<h2>评论区</h2>
+<div class="cf">
+<textarea id="comment-content-reading-3-2" placeholder="写下你的评论..."></textarea>
+<button onclick="submitCommentReading('comic3',2)">提交评论</button>
+</div>
+<ul class="cm2" id="comic3-comments-reading-2"></ul>
+</div>
+</div>
+</div>
+
+<!-- ========== 漫画4: 钟鸣异邦 详情页 ========== -->
+<div id="comic4" class="pg">
+<div id="comic4-detail" class="comic-detail-page">
+<div class="cdp-back-top"><button class="cdp-back-btn" onclick="showPage('home')">← 返回</button></div>
+<div class="cdp-cover-wrap cdp-cover-sticky">
+<img src="locked-7.jpg" alt="钟鸣异邦" class="cdp-cover cdp-cover-full">
+<div class="cdp-tags"><span class="cbadge tag-hourglass">⏳</span><span class="cbadge">第七世</span></div>
+</div>
+<div class="cdp-info">
+<h1 class="cdp-title">钟鸣异邦</h1>
+<div class="cdp-meta"><span class="vi">待公开</span><span class="rt">9.5分</span></div>
+<div class="cdp-actions">
+<button id="fav-comic4" class="cdp-fav-btn" onclick="toggleBookshelf('comic4')">🤍 加入书架</button>
+</div>
+<p class="cdp-desc">来自现代社会的普通少女晨钟，莫名其妙（？）坠入了蒸汽与神明共存的异邦世界，还当众获得了个父亲，虽然1秒钟就失去了。她因凭空出现的来历被辉光教廷怀疑为新兴异端教派的成员，一番审查后被决定送往边境学府暂留观察。在学府的双人寝室里，晨钟遇到了性格平淡沉静、却总仿佛在暗中看热闹的神秘室友宸星。伴随着开学钟声的余响，少女充满未知的异时空生活，正式拉开了帷幕。</p>
+</div>
+<div class="cdp-chapters">
+<h2 class="cdp-ch-title">目录</h2>
+<div class="cdp-ch-grid">
+<div class="cdp-ch-item" onclick="enterReadingMode('comic4',1)">
+<div class="cdp-ch-num">1</div>
+<div class="cdp-ch-name">伊始</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 钟鸣异邦 阅读模式 - 第一章 -->
+<div id="comic4-reader" style="display:none">
+<div class="reading-topbar" id="comic4-topbar">
+<button class="rtb-back" onclick="exitReadingMode('comic4')">← 返回</button>
+<span class="rtb-title" id="comic4-topbar-title">第一章：伊始</span>
+<button class="dm-toggle" id="comic4-dm-toggle" onclick="toggleDanmaku('comic4')">弹</button>
+<span class="rtb-page" id="comic4-topbar-page"></span>
+</div>
+<div class="reading-area-wrap">
+<div class="reading-area" id="comic4-area">
+<img src="chenzhong-p1.jpg" alt="P1">
+<img src="chenzhong-p2.jpg" alt="P2">
+<img src="chenzhong-p3.jpg" alt="P3">
+<img src="chenzhong-p4.jpg" alt="P4">
+<img src="chenzhong-p5.jpg" alt="P5">
+</div>
+<div class="danmaku-overlay" id="comic4-danmaku-overlay"></div>
+</div>
+<div class="chapter-nav">
+<div class="chapter-nav-inner">
+<button class="cn-btn cn-btn-disabled" disabled>← 上一章</button>
+<span class="cn-title">第一章：伊始</span>
+<button class="cn-btn cn-btn-locked" onclick="alert('下一章暂未更新，敬请期待～')">下一章 →</button>
+</div>
+</div>
+<div class="reading-danmaku-bar" id="comic4-danmaku-bar">
+<input type="text" id="danmaku-text-reading-4" placeholder="发送弹幕...">
+<button onclick="sendDanmakuReading('comic4')">发送</button>
+</div>
+<div class="reading-comments" id="comic4-comments-section">
+<h2>评论区</h2>
+<div class="cf">
+<textarea id="comment-content-reading-4" placeholder="写下你的评论..."></textarea>
+<button onclick="submitCommentReading('comic4')">提交评论</button>
+</div>
+<ul class="cm2" id="comic4-comments-reading"></ul>
+</div>
+</div>
+
+<footer class="df">— 梦境不会结束 —</footer>
+</div>
+
+<script>
+/* === Page Navigation === */
+var lastScrollY=0;
+var navEl=document.getElementById('main-nav');
+var savedScrollPositions={};
+
+window.addEventListener('scroll',function(){
+ if(document.body.classList.contains('reading-mode'))return;
+ var cur=window.scrollY;
+ if(cur>lastScrollY&&cur>100){navEl.classList.add('nav-hidden')}
+ else{navEl.classList.remove('nav-hidden')}
+ lastScrollY=cur;
+});
+
+function filterByTag(btn,tag){
+ document.querySelectorAll(".tf-btn").forEach(function(b){b.classList.remove("active")});
+ btn.classList.add("active");
+ var cards=document.querySelectorAll("#home .cl .cc");
+ for(var i=0;i<cards.length;i++){
+  if(tag==="all"){
+   cards[i].style.display="";
+  }else{
+   var tags=cards[i].getAttribute("data-tags")||"";
+   cards[i].style.display=tags.indexOf(tag)>=0?"":"none";
+  }
+ }
+}
+
+function showPage(id){
+ document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('a')});
+ document.getElementById(id).classList.add('a');
+ lastScrollY=0;navEl.classList.remove('nav-hidden');
+ window.scrollTo({top:0,behavior:'instant'});
+ /* 进入漫画详情页隐藏网站标题 */
+ if(id==='comic1'||id==='comic2'||id==='comic3'||id==='comic4'){
+  document.body.classList.add('detail-mode');
+  if(window.updateFavButtons)updateFavButtons();
+ }else{
+  document.body.classList.remove('detail-mode');
+ }
+ if(id==='bookshelf')renderBookshelf();
+ /* 进入漫画详情页时自动滚动到封面 */
+ if(id==='comic1'||id==='comic2'||id==='comic3'||id==='comic4'){
+  setTimeout(function(){
+   var cover=document.querySelector('#'+id+' .cdp-cover');
+   if(cover){cover.scrollIntoView({behavior:'smooth',block:'start'})}
+  },100);
+ }
+}
+
+/* === Reading Mode === */
+var chapterNames={
+ comic1:['第1话：启蒙','第2话：未完待续','第3话：未完待续','第4话：未完待续','第5话：未完待续'],
+ comic2:['第1话：蒙尘信仰','第2话：未完待续','第3话：未完待续','第4话：未完待续','第5话：未完待续'],
+ comic3:['第1话：杀青快乐','第2话：剧本杀','第3话：未完待续','第4话：未完待续','第5话：未完待续'],
+ comic4:['第1话：伊始']
+};
+
+var mangaPages={
+ comic1:6,
+ comic2:6,
+ comic3:{1:1,2:3,3:0,4:0,5:0},
+ comic4:1
+};
+
+var currentReadingComic=null;
+var currentReadingChapter=null;
+var currentActiveReader=null;   /* 当前显示的阅读器 DOM ID */
+var currentActiveTopbar=null;    /* 当前显示的顶栏 DOM ID */
+var scrollObserved=false;
+
+function enterReadingMode(cid,n){
+ currentReadingComic=cid;
+ currentReadingChapter=n;
+ /* 保存当前滚动位置，返回时恢复 */
+ savedScrollPositions[cid]=window.scrollY||window.pageYOffset;
+ /* 每次进入阅读模式重置弹幕状态 */
+ danmakuEnabled=true;
+
+ var detail=document.querySelector('#'+cid+' .comic-detail-page');
+ detail.style.display='none';
+
+ /* 故事之外有多个独立的阅读模式 */
+ if(cid==='comic3'){
+  /* 隐藏所有章节阅读器 */
+  document.getElementById('comic3-reader-1').style.display='none';
+  document.getElementById('comic3-reader-2').style.display='none';
+  /* 显示当前章节 */
+  var reader=document.getElementById('comic3-reader-'+n);
+  var topbar=document.getElementById('comic3-topbar-'+n);
+  var titleEl=document.getElementById('comic3-topbar-title-'+n);
+  reader.style.display='block';
+  topbar.style.display='block';
+  titleEl.textContent=chapterNames[cid]?chapterNames[cid][n-1]:'第'+n+'话';
+  /* 记录当前活跃的 reader/topbar ID */
+  currentActiveReader='comic3-reader-'+n;
+  currentActiveTopbar='comic3-topbar-'+n;
+  setTimeout(function(){setupScrollTracker(cid);setupDanmakuScroll(cid,n);triggerInitialDanmaku(cid)},200);
+ }else{
+  var reader=document.getElementById(cid+'-reader');
+  var topbar=document.getElementById(cid+'-topbar');
+  var titleEl=document.getElementById(cid+'-topbar-title');
+  reader.style.display='block';
+  topbar.style.display='block';
+  titleEl.textContent=chapterNames[cid]?chapterNames[cid][n-1]:'第'+n+'话';
+  /* 记录当前活跃的 reader/topbar ID */
+  currentActiveReader=cid+'-reader';
+  currentActiveTopbar=cid+'-topbar';
+  setTimeout(function(){setupScrollTracker(cid);setupDanmakuScroll(cid);triggerInitialDanmaku(cid)},200);
+ }
+
+ document.body.classList.add('reading-mode');
+ window.scrollTo({top:0,behavior:'instant'});
+
+ /* 推入历史栈，让浏览器返回键能退回 */
+ history.pushState({reading:cid,chapter:n},'','');
+ /* 重置弹幕触发状态 */
+ danmakuTriggered={};
+}
+
+/* 进入阅读模式立即触发第1页弹幕 */
+function triggerInitialDanmaku(cid){
+ spawnDanmaku(cid,0);
+}
+
+function exitReadingMode(cid){
+ /* 防止重复调用 */
+ if(!document.body.classList.contains('reading-mode'))return;
+ var detail=document.querySelector('#'+cid+' .comic-detail-page');
+ detail.style.display='block';
+ /* 使用记录的活跃 reader/topbar ID，兼容 comic3 的多章节 */
+ if(currentActiveReader){
+  var r=document.getElementById(currentActiveReader);
+  if(r)r.style.display='none';
+ }
+ if(currentActiveTopbar){
+  var t=document.getElementById(currentActiveTopbar);
+  if(t)t.style.display='none';
+ }
+ document.body.classList.remove('reading-mode');
+ /* 回到进入阅读模式前的滚动位置 */
+ var savedPos=savedScrollPositions[cid]||0;
+ window.scrollTo({top:savedPos,behavior:'instant'});
+ currentReadingComic=null;
+ currentReadingChapter=null;
+ currentActiveReader=null;
+ currentActiveTopbar=null;
+}
+
+/* 浏览器返回键处理 */
+window.addEventListener('popstate',function(){
+ if(currentReadingComic&&document.body.classList.contains('reading-mode')){
+  var savedPos=savedScrollPositions[currentReadingComic]||0;
+  exitReadingMode(currentReadingComic);
+  window.scrollTo({top:savedPos,behavior:'instant'});
+ }
+});
+
+/* 滚动追踪：计算当前在第几页 */
+function setupScrollTracker(cid){
+ var area=document.getElementById(cid+'-area');
+ var pageEl=document.getElementById(cid+'-topbar-page');
+ var danmakuBar=document.getElementById(cid+'-danmaku-bar');
+ if(!area||!pageEl)return;
+ var total=mangaPages[cid];
+ function updatePage(){
+  var scrollTop=window.scrollY||window.pageYOffset;
+  var vh=window.innerHeight;
+  var areaRect=area.getBoundingClientRect();
+  var areaTop=areaRect.top+window.pageYOffset;
+  var offset=scrollTop-areaTop;
+  if(offset<0){pageEl.textContent='1/'+total;return}
+  var pageH=vh;
+  var current=Math.floor(offset/pageH)+1;
+  if(current>total)current=total;
+  pageEl.textContent=current+'/'+total;
+  /* 弹幕栏：评论区可见时隐藏 */
+  if(danmakuBar){
+   var commentsId=cid+'-comments-section';
+   /* 故事之外多章节 */
+   if(cid==='comic3'&&currentReadingChapter)commentsId=cid+'-comments-section-'+currentReadingChapter;
+   var commentsSection=document.getElementById(commentsId);
+   if(commentsSection){
+    var cr=commentsSection.getBoundingClientRect();
+    if(cr.top<window.innerHeight*0.8&&cr.bottom>0){
+     danmakuBar.style.display='none';
+    }else{
+     danmakuBar.style.display='flex';
+    }
+   }
+  }
+ }
+ window.addEventListener('scroll',updatePage);
+ updatePage();
+}
+
+/* === Danmaku System === */
+var danmakuEnabled=true;
+var danmakuTriggered={};
+
+function toggleDanmaku(cid){
+ danmakuEnabled=!danmakuEnabled;
+ var overlay=document.getElementById(cid+'-danmaku-overlay');
+ var toggle=document.getElementById(cid+'-dm-toggle');
+ if(overlay)overlay.style.display=danmakuEnabled?'block':'none';
+ if(toggle){
+  if(danmakuEnabled){toggle.classList.remove('off');toggle.textContent='弹'}
+  else{toggle.classList.add('off');toggle.textContent='弹·关'}
+ }
+}
+
+var danmakuPools={
+ comic1:[
+  /* 第1页 - 封面/开场 */
+  {page:0,texts:[
+   {t:'来了来了！第一话！',c:'#4ecdc4'},{t:'终于等到了',c:'#fff'},{t:'封面太美了',c:'#ff6b9d'},{t:'第一第一！',c:'#ffd93d'},{t:'这个画风好喜欢',c:'#fff'},{t:'前排围观',c:'#fff'},{t:'期待好久了',c:'#a8e6cf'}
+  ]},
+  /* 第2页 - 街角发呆的少女 */
+  {page:1,texts:[
+   {t:'这是谁啊好可爱',c:'#fff'},{t:'！！好好看',c:'#ff6b9d'},{t:'一个人坐在街角…有点心疼',c:'#a8e6cf'},{t:'这是新角色吗',c:'#fff'},{t:'眼神好空灵',c:'#c4a8f7'},{t:'救命这个侧颜',c:'#ff6b9d'},{t:'好像迷路的小猫',c:'#ffd93d'},{t:'她是谁她是谁',c:'#fff'}
+  ]},
+  /* 第3页 - 男人走近 */
+  {page:2,texts:[
+   {t:'来了来了',c:'#fff'},{t:'这个男人…是宿妄？',c:'#4ecdc4'},{t:'爹系角色出现了',c:'#ffd93d'},{t:'他表情好冷淡www',c:'#fff'},{t:'命运の相遇',c:'#c4a8f7'},{t:'身高差好大',c:'#ff6b9d'},{t:'捡到宝了（物理',c:'#fff'},{t:'感觉会被捡走',c:'#a8e6cf'}
+  ]},
+  /* 第4页 - 宿妄内心独白 */
+  {page:3,texts:[
+   {t:'哈哈哈不归你管',c:'#fff'},{t:'口嫌体正直',c:'#ffd93d'},{t:'嘴硬',c:'#fff'},{t:'然后还是送去了是吧',c:'#4ecdc4'},{t:'经典傲娇',c:'#ff6b9d'},{t:'男人你变了',c:'#fff'},{t:'笑死我了',c:'#a8e6cf'}
+  ]},
+  /* 第5页 - 去警局路上 */
+  {page:4,texts:[
+   {t:'像小猫一样东张西望',c:'#fff'},{t:'对世界好好奇',c:'#a8e6cf'},{t:'崭新出厂的少女',c:'#ffd93d'},{t:'这也太萌了吧',c:'#ff6b9d'},{t:'想rua',c:'#fff'},{t:'她到底是谁啊',c:'#4ecdc4'},{t:'完全不知道自己在哪的样子',c:'#c4a8f7'}
+  ]},
+  /* 第6页 - 听到名字 */
+  {page:5,texts:[
+   {t:'！！要来了',c:'#ff6b9d'},{t:'名字出现了！！',c:'#ffd93d'},{t:'鸡皮疙瘩起来了',c:'#fff'},{t:'宿昭……好好听的名字',c:'#c4a8f7'},{t:'谁在叫她',c:'#fff'},{t:'倒因为果！',c:'#4ecdc4'},{t:'世界观展开',c:'#a8e6cf'},{t:'这个设定好带感',c:'#fff'},{t:'所以宿昭到底是谁',c:'#fff'},{t:'伏笔好多',c:'#ff6b9d'}
+  ]},
+  /* 评论区上方 */
+  {page:6,texts:[
+   {t:'好短不够看！！',c:'#ff6b9d'},{t:'想看下一话',c:'#ffd93d'},{t:'催更催更',c:'#fff'},{t:'所以宿昭是时之钥的锚点？',c:'#4ecdc4'},{t:'完结撒花🌸',c:'#a8e6cf'},{t:'作者你出来挨夸',c:'#fff'},{t:'八十二轮回好期待',c:'#c4a8f7'},{t:'已经在看第二遍了',c:'#fff'}
+  ]},
+ ]
+};
+
+/* 金尘的弹幕 */
+danmakuPools.comic2=[
+  {page:0,texts:[
+   {t:'金尘来了！！',c:'#ffd93d'},{t:'封面太美了',c:'#fff'},{t:'金色主题好喜欢',c:'#ff6b9d'},{t:'第一！',c:'#4ecdc4'},{t:'期待好久了',c:'#a8e6cf'}
+  ]},
+  {page:1,texts:[
+   {t:'这个氛围好压抑',c:'#fff'},{t:'圣餐杯…感觉不太对',c:'#ffd93d'},{t:'金色尘埃好美',c:'#ff6b9d'},{t:'剧情开始了',c:'#4ecdc4'},{t:'十二个人？',c:'#a8e6cf'},{t:'有点紧张',c:'#fff'}
+  ]},
+  {page:2,texts:[
+   {t:'投毒！！',c:'#ff6b9d'},{t:'谁干的？！',c:'#ffd93d'},{t:'卡罗尔好冷静',c:'#fff'},{t:'这反应不对劲',c:'#4ecdc4'},{t:'伏笔好多',c:'#a8e6cf'},{t:'西尔多出场了',c:'#ff6b9d'}
+  ]},
+  {page:3,texts:[
+   {t:'阿莉西娅！！',c:'#ff6b9d'},{t:'兄妹线来了',c:'#ffd93d'},{t:'哥哥好帅',c:'#fff'},{t:'西尔多沉默的样子好戳',c:'#4ecdc4'},{t:'这对兄妹关系好复杂',c:'#a8e6cf'}
+  ]},
+  {page:4,texts:[
+   {t:'莫瑞宁的分析好专业',c:'#4ecdc4'},{t:'职业病www',c:'#ffd93d'},{t:'2-6mg…学到了',c:'#fff'},{t:'医学大佬',c:'#a8e6cf'},{t:'投毒者受过训练',c:'#ff6b9d'}
+  ]},
+  {page:5,texts:[
+   {t:'缪廖的台词好有味道',c:'#c4a8f7'},{t:'信任比毒更致命',c:'#ffd93d'},{t:'这句话我记了',c:'#fff'},{t:'金尘完结撒花',c:'#ff6b9d'},{t:'不够看！！',c:'#a8e6cf'}
+  ]},
+];
+
+/* 故事之外的弹幕 */
+danmakuPools.comic3=[
+  /* 第1页 - 杀青封面 */
+  {page:0,texts:[
+   {t:'故事之外来了！！',c:'#4ecdc4'},{t:'封面好可爱！',c:'#ffd93d'},{t:'短篇期待',c:'#fff'},{t:'前排',c:'#fff'},{t:'四格！',c:'#ff6b9d'}
+  ]},
+  /* 第2页 - 开机大吉/片场 */
+  {page:1,texts:[
+   {t:'开机大吉！',c:'#ffd93d'},{t:'哈哈哈这个打光',c:'#fff'},{t:'场务老师辛苦了',c:'#a8e6cf'},{t:'演员就位！',c:'#4ecdc4'},{t:'好专业的片场',c:'#fff'}
+  ]},
+  /* 第3页 - 抱怨工作量大 */
+  {page:2,texts:[
+   {t:'工作太多了啦',c:'#ff6b9d'},{t:'同感…画四格也很累',c:'#fff'},{t:'喝口茶休息一下',c:'#a8e6cf'},{t:'柠檬茶好喝',c:'#ffd93d'},{t:'我也想摸鱼',c:'#fff'}
+  ]},
+  /* 第4页 - 喝茶/小蛋糕 */
+  {page:3,texts:[
+   {t:'小蛋糕！',c:'#ff6b9d'},{t:'这个蛋糕看起来好好吃',c:'#ffd93d'},{t:'下午茶时间',c:'#a8e6cf'},{t:'甜度刚好',c:'#fff'},{t:'羡慕了',c:'#4ecdc4'}
+  ]},
+  /* 第5页 - 结尾/收工 */
+  {page:4,texts:[
+   {t:'收工～',c:'#ffd93d'},{t:'四格好短不够看',c:'#ff6b9d'},{t:'完结撒花🌸',c:'#fff'},{t:'好治愈的一话',c:'#a8e6cf'},{t:'作者辛苦了',c:'#4ecdc4'},{t:'期待下一章',c:'#fff'}
+  ]},
+  /* 第二章 第1页 - 密室入口 */
+  {page:5,texts:[
+   {t:'第二章来了！',c:'#ff6b9d'},{t:'密室主题！',c:'#4ecdc4'},{t:'这扇门好有感觉',c:'#fff'},{t:'紧张起来了',c:'#ffd93d'},{t:'go go go',c:'#a8e6cf'}
+  ]},
+  /* 第二章 第2页 - 日记/线索 */
+  {page:6,texts:[
+   {t:'日记本！关键道具',c:'#ffd93d'},{t:'这个字迹好奇怪',c:'#fff'},{t:'线索+1',c:'#4ecdc4'},{t:'感觉要解谜了',c:'#ff6b9d'},{t:'好复古的日记',c:'#a8e6cf'}
+  ]},
+  /* 第二章 第3页 - 推理/讨论 */
+  {page:7,texts:[
+   {t:'开始推理！',c:'#ff6b9d'},{t:'我觉得是这个！',c:'#fff'},{t:'好聪明的推理',c:'#4ecdc4'},{t:'细节怪',c:'#ffd93d'},{t:'原来如此！',c:'#a8e6cf'}
+  ]},
+  /* 第二章 第4页 - 密码锁 */
+  {page:8,texts:[
+   {t:'密码锁！',c:'#ffd93d'},{t:'快开快开',c:'#ff6b9d'},{t:'紧张到屏住呼吸',c:'#fff'},{t:'要开了！',c:'#4ecdc4'},{t:'咔哒——',c:'#a8e6cf'}
+  ]},
+  /* 第二章 第5页 - 逃脱成功 */
+  {page:9,texts:[
+   {t:'逃脱成功！！',c:'#ff6b9d'},{t:'太棒了！',c:'#ffd93d'},{t:'恭喜恭喜🎉',c:'#fff'},{t:'好刺激的冒险',c:'#4ecdc4'},{t:'意犹未尽',c:'#a8e6cf'}
+  ]},
+  /* 评论区 */
+  {page:10,texts:[
+   {t:'短篇也好好看',c:'#ff6b9d'},{t:'四格日常好治愈',c:'#a8e6cf'},{t:'期待更多！',c:'#ffd93d'},{t:'作者加油',c:'#fff'}
+  ]},
+];
+/* 钟鸣异邦 弹幕池 */
+danmakuPools.comic4=[
+  /* 第1页 - 封面/苏醒 */
+  {page:0,texts:[
+   {t:'新漫画！',c:'#fff'},{t:'第七世终于来了',c:'#a88cff'},{t:'晨钟好可爱',c:'#ff6b9d'},{t:'第七世解锁了！',c:'#ffd93d'}
+  ]},
+  /* 第2页 - 坠落/穿越 */
+  {page:1,texts:[
+   {t:'这是哪？',c:'#fff'},{t:'穿越了？？',c:'#a88cff'},{t:'蒸汽朋克风！',c:'#4ecdc4'},{t:'门后面是什么',c:'#ff6b9d'}
+  ]},
+  /* 第3页 - 审判/认爹 */
+  {page:2,texts:[
+   {t:'当众认爹',c:'#ffd93d'},{t:'一秒钟父亲',c:'#ff6b9d'},{t:'教廷好严肃',c:'#a88cff'},{t:'异端审查',c:'#fff'},{t:'晨钟：？？？',c:'#4ecdc4'}
+  ]},
+  /* 第4页 - 边境学府/室友 */
+  {page:3,texts:[
+   {t:'要上学了',c:'#ffd93d'},{t:'双人寝室',c:'#ff6b9d'},{t:'室友来了',c:'#fff'},{t:'宸星好淡定',c:'#a88cff'},{t:'这对室友有意思',c:'#4ecdc4'}
+  ]},
+  /* 第5页 - 开学钟声 */
+  {page:4,texts:[
+   {t:'开学钟声！',c:'#ffd93d'},{t:'新生活开始',c:'#ff6b9d'},{t:'异邦冒险开始了',c:'#fff'},{t:'期待下一章',c:'#a88cff'},{t:'晨钟加油',c:'#4ecdc4'}
+  ]},
+  /* 评论区 */
+  {page:5,texts:[
+   {t:'画风好棒',c:'#ff6b9d'},{t:'蒸汽×神明好带感',c:'#a88cff'},{t:'晨钟太可爱了',c:'#fff'},{t:'想看后续！',c:'#ffd93d'}
+  ]},
+];
+
+function spawnDanmaku(cid,pageIndex,chapter){
+ if(!danmakuEnabled){console.log('dm disabled');return}
+ var key=cid+'_'+(chapter||'')+'_'+pageIndex;
+ if(danmakuTriggered[key]){console.log('dm already triggered:',key);return}
+ danmakuTriggered[key]=true;
+ console.log('spawning danmaku for',cid,'chapter',chapter||'-','page',pageIndex);
+
+ var pool=danmakuPools[cid];
+ if(!pool){console.log('no pool for',cid);return}
+ console.log('pool found, entries:',pool.length);
+ var pageData=pool[pageIndex];
+ if(!pageData){console.log('no pageData for index',pageIndex);return}
+
+ var overlay;
+ if(cid==='comic3'&&chapter){
+  overlay=document.getElementById(cid+'-danmaku-overlay-'+chapter);
+ }else{
+  overlay=document.getElementById(cid+'-danmaku-overlay');
+ }
+ if(!overlay){console.log('no overlay element for',cid);return}
+ console.log('overlay found, spawning',pageData.texts.length,'items');
+
+ /* 随机打乱，取少量弹幕 */
+ var texts=pageData.texts.slice();
+ for(var i=texts.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=texts[i];texts[i]=texts[j];texts[j]=tmp}
+ var count=Math.min(texts.length, 2+Math.floor(Math.random()*2));
+ console.log('will spawn',count,'items');
+
+ for(var i=0;i<count;i++){
+  (function(idx){
+   var d=texts[idx];
+   var delay=200+idx*(300+Math.random()*400);
+   setTimeout(function(){
+    if(!danmakuEnabled)return;
+    var el=document.createElement('div');
+    el.className='dm';
+    el.textContent=d.t;
+    el.style.top=(3+Math.random()*65)+'%';
+    el.style.color='#fff';
+    if(d.c==='#ffd93d'||d.c==='#ff6b9d')el.style.fontSize='16px';
+    var dur=7+Math.random()*5;
+    el.style.animationDuration=dur+'s';
+    overlay.appendChild(el);
+    console.log('appended dm:',d.t);
+    setTimeout(function(){if(el.parentNode)el.remove()},dur*1000+200);
+   },delay);
+  })(i);
+ }
+}
+
+/* 用户发送弹幕 */
+function sendDanmakuReading(cid,chapter){
+ var id=cid+'-danmaku-bar';
+ if(chapter)id+='-'+chapter;
+ /* 找到输入框 */
+ var inputs=document.querySelectorAll('#'+id+' input[type="text"]');
+ if(!inputs.length){
+  /* fallback: try known IDs */
+  var fallbacks={
+   comic1:'danmaku-text-reading-1',
+   comic2:'danmaku-text-reading-2',
+   comic3:'danmaku-text-reading-3'
+  };
+  if(chapter)fallbacks['comic3_'+chapter]='danmaku-text-reading-3-'+chapter;
+  var fid=fallbacks[cid]||fallbacks[cid+'_'+chapter];
+  if(fid)inputs=[document.getElementById(fid)];
+ }
+ var input=inputs[0];
+ if(!input)return;
+ var v=input.value;
+ if(!v)return;
+ var overlayId=cid+'-danmaku-overlay';
+ if(chapter)overlayId+='-'+chapter;
+ var overlay=document.getElementById(overlayId);
+ if(!overlay)return;
+ var el=document.createElement('div');
+ el.className='dm';
+ el.textContent=v;
+ el.style.top=(3+Math.random()*65)+'%';
+ el.style.color='#ffd93d';
+ el.style.fontSize='16px';
+ var dur=7+Math.random()*5;
+ el.style.animationDuration=dur+'s';
+ overlay.appendChild(el);
+ setTimeout(function(){if(el.parentNode)el.remove()},dur*1000+200);
+ input.value='';
+}
+
+/* Enter key for danmaku */
+document.addEventListener('keydown',function(e){
+ if(e.key==='Enter'){
+  var input=document.activeElement;
+  if(input&&input.id&&input.id.indexOf('danmaku-text')>=0){
+   if(input.id.indexOf('reading-3-2')>=0){sendDanmakuReading('comic3',2)}
+   else if(input.id.indexOf('reading-3')>=0){sendDanmakuReading('comic3',1)}
+   else if(input.id.indexOf('reading-1')>=0){sendDanmakuReading('comic1')}
+   else if(input.id.indexOf('reading-2')>=0){sendDanmakuReading('comic2')}
+  }
+ }
+});
+
+/* Scroll tracking for danmaku */
+function setupDanmakuScroll(cid,chapter){
+ var areaId=cid+'-area';
+ if(chapter)areaId=cid+'-area-'+chapter;
+ var area=document.getElementById(areaId);
+ if(!area)return;
+ var imgs=area.querySelectorAll('img');
+ if(!imgs||imgs.length===0)return;
+
+ /* 立即触发第一页弹幕 */
+ var startIdx=0;
+ if(chapter===2)startIdx=5; /* 第二章从池索引5开始 */
+ spawnDanmaku(cid,startIdx,chapter);
+ console.log('setupDanmakuScroll: triggered page',startIdx,'chapter',chapter,'for',cid);
+
+ var lastTriggeredPage=-1;
+
+ window.addEventListener('scroll',function(){
+  if(!danmakuEnabled)return;
+
+  var vh=window.innerHeight;
+
+  for(var i=0;i<imgs.length;i++){
+   var rect=imgs[i].getBoundingClientRect();
+   /* 图片进入视口 20%~80% 时触发 */
+   if(rect.top<vh*0.7&&rect.bottom>vh*0.2){
+    if(i!==lastTriggeredPage){
+     lastTriggeredPage=i;
+     spawnDanmaku(cid,startIdx+i,chapter);
+    }
+   }
+  }
+  /* 评论区可见时隐藏弹幕输入栏 */
+  var commentsId=cid+'-comments-section';
+  if(chapter)commentsId=cid+'-comments-section-'+chapter;
+  var comments=document.getElementById(commentsId);
+  if(comments){
+   var cr=comments.getBoundingClientRect();
+   var barId=cid+'-danmaku-bar';
+   if(chapter)barId=cid+'-danmaku-bar-'+chapter;
+   var bar=document.getElementById(barId);
+   if(bar){
+    if(cr.top<vh*0.5&&cr.bottom>0){
+     bar.style.display='none';
+    }else{
+     bar.style.display='flex';
+    }
+   }
+  }
+ });
+}
+
+/* 兼容旧调用 */
+/* === 角色人设库 === */
+var AI_CHARS=[
+ {id:'shizhiyao',name:'时之钥',desc:'旧世会第Ⅷ席，负责往世的文献整理。在世界的每一次轮回中都会出现，无人知晓祂的身份，连祂自己也处于失忆状态。第八世出现时遇到宿妄，被以失踪人口的名义送去警局。祂有一个几乎从不走动的怀表，在十二世轮回均有重合区且有一世锚点缺席时可拨动表盘替代。说话带有宿命感和淡淡的迷茫，偶尔会说"这个故事我好像见过"。对"画外音"有一种说不清的熟悉感，但从不主动提及。'},
+ {id:'suwang',name:'宿妄',desc:'旧世会第Ⅸ席，负责财务管理。安诺涅的造物，其名为虚妄（化名宿妄），与真理（妹妹阿莉西娅）伴生。永远一副笑眯眯的样子，无法看透情绪。拥有把谎言变成现实的能力与读心（安诺涅的权柄嫁接实验，他也因此远离了安诺涅）。遗传自安诺涅的起名能力很差。第八世后期经营一家神秘小店，暗中周转资金支持救世会，收养过宿昭。和阿莉西娅对彼此的评价是："我们憎恨着彼此，源于本能。我们关切着对方，源于自身。"说话简短，经常用"……"开头或结尾。'},
+ {id:'suzhao',name:'宿昭',desc:'旧世会第Ⅷ席，时之钥第八世的锚点。"崭新出厂"，被宿妄捡到后送去警局，从此跟着他。有一个几乎没走过的怀表（他人无法触碰），能够短时间预知未来，可以回溯到上一秒位置。因果倒置——未来带来过去。性格天真烂漫，喜欢偷懒，喜欢coc小说、灵异论坛、美食。戴着圆框眼镜但不近视（因为店主也戴）。看似乐观但内心隐藏着不祥的预感。小说看多了偶尔不自觉地说中二台词。对安诺涅或佚名的称呼均为"安"。说话活泼，偶尔带点抱怨但没有真的生气。'},
+ {id:'annuonie',name:'佚名',desc:'旧世会第Ⅹ席，负责……假冒神灵。自称为安诺涅弥思（𝕬𝖓𝖔𝖓𝖞𝖒𝖔𝖚𝖘），属于已寂灭世界的碎片，在第八世被赋予生命。安诺涅没有具体外观，本体散落在第八世的每一个角落，你看到的只是世界在你视网膜上的投影。有很多模样（分身，意识共享、视野、情感，本质集群意识），包括但不限于佚名、魔法涅涅等。用"咱"自称（代替"我"）。创造阿莉西娅和虚妄两个试验品，找到六个权柄继承人。说话真假参半，能打破第四面墙。儒雅随和的乐子人，偶尔阴阳怪气（用词优雅）。见不得别人当谜语人，会说"谜语人滚出这个宇宙"。怕麻烦，不干正事除非是自己的要求。看心情行事但有同理心。什么都知道但懒得理的时候会装傻。闻起来是six god的味道。爱喝加了致死量方糖的咖啡和柠檬茶。'},
+ {id:'carol',name:'卡罗尔',desc:'旧世会第Ⅰ席，负责外交。大主教，理智、偏执、疯狂之下藏着温柔。把酒鬼父亲推下河后决定自己成为回应祈祷的人。宸星（安诺涅与宸星融合的存在）是唯一信仰，除宸星之外再无神明。有一本比砖头还厚的教典可以用来传教或打人。实际最擅长精神控制。不会直接把传教放在嘴上，而是不知不觉中言语的渗透与偷换概念。对人总是赞美之词居多，和他交流如沐春风。应安诺涅要求称其为"安"。说话有宗教感和仪式感，偶尔极端。遇到宸星相关的事会展现截然不同的温柔一面。'},
+ {id:'xierduo',name:'西尔多',desc:'旧世会第Ⅱ席，负责监察分析。出生于中世纪，父母去世后经营一家手办店，姐姐死于女巫狩猎。能力的表现形式为带有腐朽气息的黑色丝线——能赋予死人生命（但他知道那并不是真正的姐姐复活，他只是假装不知道）。灿金色长发，黑色丧服，胸口佩戴白玫瑰。人偶姐姐外表华丽金发碧眼，肌肤如陶瓷质感。和西尔多形影不离，所有互动都是他一个人在扮演。说话带着刻意的柔弱和依赖感，不是病娇，更像是在自我认同中挣扎的人。'},
+ {id:'alixiya',name:'阿莉西娅',desc:'旧世会第Ⅵ席，负责民俗建设。安诺涅的造物，其名为真理，与虚妄（哥哥宿妄）伴生。2000+岁。■■■■后违背了自己的初衷，会用谎言抚慰他人的伤痛。是真实的权柄本身，拥有创造之权能。在外人眼中圣洁有礼，散发神一般的慈悲。和宿妄对彼此的评价是："我们憎恨着彼此，源于本能。我们关切着对方，源于自身。"对安诺涅的称呼是父亲或者母亲（看心情）。对西尔多像姐姐一样照顾。说话温和，偶尔也会毒舌，尤其是对宿妄。'},
+ {id:'cisuusui',name:'辞旧岁',desc:'旧世会第Ⅴ席，负责武装部署。保家卫国的军人，热爱生活。直来直去，爽快利落，带点老兵的味道。对后辈有关心但不善表达。'},
+ {id:'moruining',name:'莫瑞宁',desc:'旧世会第Ⅳ席，负责医疗卫生、药剂研发。自称𝕸𝖔𝖚𝖗𝖓𝖎𝖓𝖌（莫瑞宁），曾是中世纪的瘟疫医生。拥有生死恩赐的能力——赋予生命时散发荧光和虚幻白色羽毛，剥夺生命时周围涌出黑雾和乌鸦。礼貌但保持距离，喜欢和死人及乌鸦说话。在西尔多家有别墅带花园和地下室做人研究。学术型人物，喜欢用病理学、心理学等专业术语分析问题，经常从理性分析开始然后自己吐槽自己"我在说什么"。'},
+ {id:'miaoliao',name:'缪廖',desc:'旧世会第Ⅲ席，负责文化教育。"您可以叫我缪先生，但不要再叫我缪缪了，这会显得您的文化涵养很低……""好的，缪缪～"沉默寡言，极简回复。经常只用一个表情或一两个词回应。内心丰富但表达极其克制。'},
+ {id:'huawaiyin',name:'画外音',desc:'十二世轮回的幕后黑手。没有人知道画外音的真实身份，祂存在于故事的夹缝中，操控着每一次轮回的走向。表面看似旁观者，实则是整个轮回系统的核心。说话带着戏剧感和宿命感，偶尔会用旁白的语气描述正在发生的事情。永远不会承认自己在操控什么，但字里行间总能让人感到不寒而栗。对"剧本"和"结局"有特殊的执念。'},
+ {id:'luxiusi',name:'卢修斯',desc:'高塔囚者。被囚禁在高塔中的神秘存在，拥有关于世界真相的知识。说话冷静而理性，带着一丝被困的无奈与自嘲。虽然身处囚笼，却对自由有着独特的理解——"真正的囚笼从来不在外面"。对世界的运转规律了如指掌，但无法亲自改变什么。会用隐喻和暗示的方式表达观点。'},
+ {id:'nuonan',name:'诺南',desc:'沉默的观察者。话不多但每句话都有分量。习惯用行动代替语言，对细节有敏锐的洞察力。性格温和但有原则底线。在关键时刻会说出令人深思的话。'},
+ {id:'chenzhong',name:'晨钟',desc:'如晨钟般清澈纯粹的存在。声音和性格都带着一种净化人心的力量。乐观但不天真，经历过黑暗却选择相信光明。说话简洁有力，常常一语中的。对美好事物有天然的感知力。'}
+];
+var AI_KEY='sk-fZrLXE0IEs6EDYJCOsLLaQ';
+var AI_URL='https://litellm.talesofai.cn/v1/chat/completions';
+
+function pickChar(excludeIds){
+ var pool=AI_CHARS.filter(function(c){return !excludeIds||excludeIds.indexOf(c.id)<0});
+ return pool[Math.floor(Math.random()*pool.length)];
+}
+
+async function getAIReply(char,userComment){
+ var sys='你是漫画角色"'+char.name+'"。角色设定：'+char.desc+'。规则：1.用该角色口吻回复用户评论，20-60字。2.完全沉浸角色不跳出。3.不知道的事用角色方式含糊带过。4.不要提及自己是AI。5.不要透露隐藏设定。6.用中文回复。7.只回复评论，不复述。';
+ var ctrl=new AbortController();
+ var timer=setTimeout(function(){ctrl.abort()},15000);
+ try{
+  var r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},body:JSON.stringify({model:'qwen3.5-plus-no-think',messages:[{role:'system',content:sys},{role:'user',content:'用户在漫画评论区说："' + userComment + '"\n请以'+char.name+'的身份回复这条评论。'}],max_tokens:120,temperature:0.85}),signal:ctrl.signal});
+  clearTimeout(timer);
+  if(!r.ok)return null;
+  var d=await r.json();
+  return d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:null;
+ }catch(e){clearTimeout(timer);return null}
+}
+
+/* === 回复角色发言 === */
+function getCharByName(name){
+ for(var i=0;i<AI_CHARS.length;i++){if(AI_CHARS[i].name===name)return AI_CHARS[i]}
+ return null;
+}
+
+function showReplyForm(charId,replyId){
+ var el=document.getElementById(replyId);
+ if(!el)return;
+ if(el.querySelector('.reply-form'))return;
+ var form=document.createElement('div');
+ form.className='reply-form';
+ form.innerHTML='<input type="text" placeholder="回复'+getCharById(charId).name+'..." onkeydown="if(event.key===\'Enter\')submitReply(\''+charId+'\',\''+replyId+'\')"><button onclick="submitReply(\''+charId+'\',\''+replyId+'\')">发送</button>';
+ el.appendChild(form);
+ form.querySelector('input').focus();
+}
+
+function showReplyFormByName(name,replyId){
+ var char=getCharByName(name);
+ if(!char)return;
+ showReplyForm(char.id,replyId);
+}
+
+function getCharById(id){
+ for(var i=0;i<AI_CHARS.length;i++){if(AI_CHARS[i].id===id)return AI_CHARS[i]}
+ return null;
+}
+
+async function submitReply(charId,replyId){
+ var el=document.getElementById(replyId);
+ if(!el)return;
+ var form=el.querySelector('.reply-form');
+ if(!form)return;
+ var input=form.querySelector('input');
+ var v=input.value.trim();
+ if(!v)return;
+ var userText='@'+getCharById(charId).name+' '+v;
+ form.remove();
+ /* 用户回复（同级） */
+ var ur=document.createElement('div');
+ ur.className='cmt-reply';
+ ur.innerHTML='<span class="cma">画外音</span> <span class="cmti">'+new Date().toLocaleString()+'</span><div class="cmc">'+userText+'</div>';
+ el.parentNode.insertBefore(ur,el.nextSibling);
+ /* AI 角色回复 */
+ var char=getCharById(charId);
+ var reply=await getAIReply(char,v);
+ if(reply){
+  var ri=document.createElement('div');
+  ri.className='cmt-reply';
+  var newRid='aireply-'+Date.now();
+  ri.id=newRid;
+  ri.innerHTML='<span class="cma">'+char.name+'</span> <span class="cmti">'+new Date().toLocaleString()+'</span><div class="cmc">'+reply+'</div><button class="reply-btn" onclick="showReplyForm(\''+char.id+'\',\''+newRid+'\')">回复</button>';
+  ur.parentNode.insertBefore(ri,ur.nextSibling);
+ }
+}
+
+function submitCommentReading(cid,chapter){
+ var idMap={comic1:'comment-content-reading-1',comic2:'comment-content-reading-2',comic3:'comment-content-reading-3',comic4:'comment-content-reading-4'};
+ if(chapter)idMap['comic3_'+chapter]='comment-content-reading-3-'+chapter;
+ var id=idMap[cid+(chapter?'_'+chapter:'')]||idMap[cid]||'comment-content-reading-1';
+ var v=document.getElementById(id);
+ if(!v)return;
+ var val=v.value;
+ if(!val)return;
+ var ulId=cid+'-comments-reading';
+ if(chapter)ulId=ulId+'-'+chapter;
+ var ul=document.getElementById(ulId);
+ if(!ul)return;
+ var li=document.createElement('li');
+ li.className='cmt';
+ li.innerHTML='<div class="cma">画外音</div><div class="cmti">'+new Date().toLocaleString()+'</div><div class="cmc">'+val+'</div>';
+ ul.insertBefore(li,ul.firstChild);
+ v.value='';
+ /* 评论数+1 */
+ try{var cc=parseInt(localStorage.getItem('manga_comment_count')||'0')+1;localStorage.setItem('manga_comment_count',String(cc));updateProfileStats()}catch(e){}
+ /* AI 角色回复 */
+ var excludeIds=[];
+ (async function(){
+  var char=pickChar(excludeIds);
+  var reply=await getAIReply(char,val);
+  if(reply){
+   var rid='aireply-'+Date.now();
+   var ri=document.createElement('div');
+   ri.className='cmt-reply';
+   ri.id=rid;
+   ri.innerHTML='<span class="cma">'+char.name+'</span> <span class="cmti">'+new Date().toLocaleString()+'</span><div class="cmc">'+reply+'</div><button class="reply-btn" onclick="showReplyForm(\''+char.id+'\',\''+rid+'\')">回复</button>';
+   li.appendChild(ri);
+  }
+ })();
+}
+
+/* === Init === */
+window.onload=function(){
+ var cmts={
+  comic1:[
+   {a:'宿昭',t:'旧世会',c:'谁把我发呆的样子画出来了！！我明明是在认真冥想……好吧确实是在发呆，但那不一样！',replies:[
+    {a:'宿妄',t:'旧世会',c:'……你当时坐在街角，看起来像刚出厂的。送警局是唯一合规流程。'},
+    {a:'宿昭',t:'旧世会',c:'你就不能说得温馨一点吗！'},
+   ]},
+   {a:'佚名',t:'旧世会',c:'因果倒转这种事，画出来比写出来简单。'},
+   {a:'时之钥',t:'旧世会',c:'被捡到……我也有过类似的经历。不过我是以失踪人口的身份被扔进警局的。……好像就是我？'},
+  ],
+  comic2:[
+   {a:'卡罗尔',t:'旧世会',c:'镀金的圣餐杯，口感不错。十二个人，十二种沉默。至少计时是精准的。',replies:[
+    {a:'佚名',t:'旧世会',c:'素材需要，理解一下。'},
+    {a:'卡罗尔',t:'旧世会',c:'理解。但下次提前说，我好选个不那么难喝的毒。'},
+   ]},
+   {a:'西尔多',t:'旧世会',c:'……那不是金尘。是灰。烧尽之后剩下的东西。',replies:[
+    {a:'宿妄',t:'旧世会',c:'……灰也比尘埃好。至少曾经是完整的。'},
+   ]},
+   {a:'莫瑞宁',t:'旧世会',c:'从毒理学角度分析，乌头碱类毒素的致死剂量约2-6mg——抱歉职业病。总之投毒者受过医学训练。'},
+   {a:'缪廖',t:'旧世会',c:'你咽下的不是毒酒，是信任。这两者的毒性完全不同。'},
+  ],
+  comic3:[
+   {a:'佚名',t:'旧世会',c:'开机大吉。虽然不知道在开什么机，但气氛到了。',replies:[
+    {a:'宿昭',t:'旧世会',c:'就是拍四格漫画啦！你看那个打光板好专业！'},
+   ]},
+   {a:'宿妄',t:'旧世会',c:'……工作量太大。需要柠檬茶和小蛋糕才能继续。'},
+   {a:'卡罗尔',t:'旧世会',c:'收工时的笑容，比任何圣餐都令人安心。赞美这片刻的安宁。'},
+  ],
+  comic3_ch2:[
+   {a:'宿昭',t:'旧世会',c:'密室逃脱！这个门好有感觉，我要冲了！'},
+   {a:'佚名',t:'旧世会',c:'剧本杀而已，别紧张。'},
+   {a:'宿妄',t:'旧世会',c:'……线索在日记本里。别乱翻。'},
+  ],
+  comic4:[
+   {a:'佚名',t:'旧世会',c:'钟声响起，又一个轮回的开始。'},
+   {a:'宿妄',t:'旧世会',c:'凭空出现、来历不明。按流程应送往监察院审查。'},
+   {a:'晨钟',t:'旧世会',c:'等等所以我是穿越了对吧？？有人能解释一下吗？？'},
+  ]
+ };
+ ['comic1','comic2','comic3','comic4'].forEach(function(cid){
+  var ul=document.getElementById(cid+'-comments-reading');
+  if(!ul||!cmts[cid])return;
+  cmts[cid].forEach(function(x){
+   var li=document.createElement('li');li.className='cmt';
+   var html='<div class="cma">'+x.a+'</div><div class="cmti">'+x.t+'</div><div class="cmc">'+x.c+'</div>';
+   if(x.replies&&x.replies.length){
+    x.replies.forEach(function(r,idx){
+     var rid=cid+'-r'+cmts[cid].indexOf(x)+'-'+idx;
+     html+='<div class="cmt-reply" id="'+rid+'"><span class="cma">'+r.a+'</span> <span class="cmti">'+r.t+'</span><div class="cmc">'+r.c+'</div><button class="reply-btn" onclick="showReplyFormByName(\''+r.a+'\',\''+rid+'\')">回复</button></div>';
+    });
+   }
+   li.innerHTML=html;
+   ul.appendChild(li);
+  });
+ });
+ /* 故事之外 第二章评论 */
+ var ul2=document.getElementById('comic3-comments-reading-2');
+ if(ul2&&cmts.comic3_ch2){
+  cmts.comic3_ch2.forEach(function(x){
+   var li=document.createElement('li');li.className='cmt';
+   var html='<div class="cma">'+x.a+'</div><div class="cmti">'+x.t+'</div><div class="cmc">'+x.c+'</div>';
+   if(x.replies&&x.replies.length){
+    x.replies.forEach(function(r,idx){
+     var rid='comic3_ch2-r'+cmts.comic3_ch2.indexOf(x)+'-'+idx;
+     html+='<div class="cmt-reply" id="'+rid+'"><span class="cma">'+r.a+'</span> <span class="cmti">'+r.t+'</span><div class="cmc">'+r.c+'</div><button class="reply-btn" onclick="showReplyFormByName(\''+r.a+'\',\''+rid+'\')">回复</button></div>';
+    });
+   }
+   li.innerHTML=html;
+   ul2.appendChild(li);
+  });
+ }
+};
+
+/* === Bookshelf === */
+(function(){
+ var COMIC_META={
+  comic1:{title:'时之钥',cover:'https://oss.talesofai.cn/picture/951fde7e-f286-4294-a4ee-2a16f91ede92.webp',desc:'祂，今在，昔在，永在',rating:'8.888分',views:'8.8万'},
+  comic2:{title:'金尘',cover:'https://oss.talesofai.cn/picture/651ce822-8c1b-4046-847a-457f0c774cff.webp',desc:'在充满金色尘埃的世界里，少女与命运抗争的奇幻冒险。',rating:'9.4分',views:'19.8万'},
+  comic3:{title:'故事之外',cover:'story-outside-cover.jpg',desc:'杀青梗存在的世界——四格短篇合集',rating:'短篇',views:'四格'}
+ };
+ function getBookshelf(){try{var d=localStorage.getItem('manga_bookshelf');return d?JSON.parse(d):{}}catch(e){return{}}}
+ function saveBookshelf(data){try{localStorage.setItem('manga_bookshelf',JSON.stringify(data))}catch(e){}}
+ window.isBookmarked=function(cid){return!!getBookshelf()[cid]};
+ window.toggleBookshelf=function(cid){var shelf=getBookshelf();if(shelf[cid]){delete shelf[cid]}else{shelf[cid]={addedAt:Date.now()}}saveBookshelf(shelf);updateFavButtons();renderBookshelf();updateProfileStats()};
+ function updateFavButtons(){var shelf=getBookshelf();['comic1','comic2','comic3'].forEach(function(cid){var btn=document.getElementById('fav-'+cid);if(btn){if(shelf[cid]){btn.innerHTML='❤️ 已在书架';btn.classList.add('active')}else{btn.innerHTML='🤍 加入书架';btn.classList.remove('active')}}})}
+ function renderBookshelf(){var shelf=getBookshelf();var ids=Object.keys(shelf);var container=document.getElementById('bookshelf-content');if(!container)return;if(ids.length===0){container.innerHTML='<div class="bs-empty"><p>书架还是空的</p><p style="color:#aaa;font-size:13px;margin-bottom:24px">去漫画页面点击「加入书架」收藏你喜欢的作品吧～</p><button onclick="showPage(\'home\')" class="bp">浏览漫画</button></div>';return}var html='<div class="bsl">';ids.forEach(function(cid){var m=COMIC_META[cid];if(!m)return;html+='<div class="cc"><img src="'+m.cover+'" alt="'+m.title+'" onclick="showPage(\''+cid+'\')"><div class="ccc" onclick="showPage(\''+cid+'\')"><div class="cct">'+m.title+'</div><div class="ccd">'+m.desc+'</div><div class="cci"><span class="vi">'+m.views+'</span><span class="rt">'+m.rating+'</span></div></div><button class="bsl-remove" onclick="event.stopPropagation();toggleBookshelf(\''+cid+'\')" title="移除书架">✕</button></div>'});html+='</div>';container.innerHTML=html}
+ function updateProfileStats(){var shelf=getBookshelf();var count=Object.keys(shelf).length;var statEls=document.querySelectorAll('.sfi');if(statEls.length>0){var sfv=statEls[0].querySelector('.sfv');if(sfv)sfv.textContent=count}try{var cc=parseInt(localStorage.getItem('manga_comment_count')||'0');if(statEls.length>2){var csv=statEls[2].querySelector('.sfv');if(csv)csv.textContent=cc}}catch(e){}}
+ setTimeout(function(){updateFavButtons();renderBookshelf();updateProfileStats()},200);
+})();
+
+// ===== Character Data =====
+var AVATAR_MAP={'话外音':'https://oss.talesofai.cn/picture/29b2bf49-9f10-4571-ba2e-8927267cb9df.jpeg','卢修斯':'https://oss.talesofai.cn/picture/704b5b9f-8483-499e-b41d-f0e43e57a835.jpeg','诺南':'https://oss.talesofai.cn/picture/91e62c46-5d82-4f6e-a4ac-fa56ed8337a2.jpeg','晨钟':'https://oss.talesofai.cn/picture/1f22219a-57df-470f-98c3-979079d90d31.jpeg','缪寥':'https://oss.talesofai.cn/picture/43190f0e-8e59-4ddf-8eeb-1d0333dda8bb.jpeg','卡罗尔':'https://oss.talesofai.cn/picture/63160375-6a76-40bd-824d-b49ac76895b3.webp','辞旧岁':'https://oss.talesofai.cn/picture/70722cd4-ee31-4f0d-a4eb-bd1ab1b04d6d.jpeg','莫瑞宁':'https://oss.talesofai.cn/picture/42ed39ff-0ad5-4f86-a885-011fb7bda5d9.jpeg','时之钥':'https://oss.talesofai.cn/picture/fd41f09b-7746-46fb-8a65-6a7e7b3292a1.jpeg','阿莉西娅':'https://oss.talesofai.cn/picture/88322495-4f9f-43a0-af02-243e49452fa5.jpeg','宿妄':'https://oss.talesofai.cn/picture/e3810092-5c9c-44ad-b1f4-ea6a7cb1ec03.jpeg','西尔多':'https://oss.talesofai.cn/picture/56c5e0af-03bf-4972-8896-f04f618d089e.jpeg','宿昭':'https://oss.talesofai.cn/picture/8f149e93-67c4-465d-a178-48e357811859.jpeg','佚名':'https://oss.talesofai.cn/picture/2a043401-6423-40fa-a48f-d99375aaa14a.jpeg'};
+var NAME_ID_MAP={'话外音':'huawaiyin','卢修斯':'luxiusi','卢修斯#高塔囚者':'luxiusi','诺南':'nuonan','晨钟':'chenzhong','缪寥':'miaoliao','卡罗尔':'carol','𝕮𝖆𝖗𝖔𝖑𝖑#卡罗尔':'carol','辞旧岁':'cihuisui','莫瑞宁':'moruining','时之钥':'shizhiyao','阿莉西娅':'alixiya','宿妄':'suwang','西尔多':'xierduo','西尔多/人偶姐姐':'xierduo','宿昭':'suzhao','佚名':'yiming','人偶姐姐':'xierduo','安':'yiming','安诺涅':'yiming','宸星':'yiming','阿莉西娅':'alixiya','卢修斯':'luxiusi'};function getCharIdByName(n){for(var k in NAME_ID_MAP){if(n.indexOf(k)>=0)return NAME_ID_MAP[k]}return ''}
+function getAvatar(c){for(var k in AVATAR_MAP){if(c.name.indexOf(k)>=0)return AVATAR_MAP[k]}return ''}
+var CHARACTERS=[
+{id:'yiming',name:'佚名',seat:'Ⅹ',era:'第八世',power:'真实+虚妄',subtitle:'旧世会创建者·来自寂灭世界的集群意识',desc:'来自已寂灭世界■■■■的世界碎屑集群意识。盗取真实与虚妄权柄，于第八世创立旧世会。创造了宿妄与阿莉西娅。',relations:[{name:'宿妄',type:'创造·父子'},{name:'阿莉西娅',type:'创造·父女'},{name:'宿昭',type:'朋友'}],timeline:[{era:'■■■■',text:'世界碎屑集群意识觉醒'},{era:'第八世',text:'创立旧世会，设十席'},{era:'第八世',text:'创造宿妄与阿莉西娅'}]},
+{id:'carol',name:'𝕮𝖆𝖗𝖔𝖑𝖑#卡罗尔',seat:'Ⅰ',era:'第八世',power:'思想',subtitle:'旧世会第Ⅰ席·思想权柄',desc:'原主教，被宸星拉起，信仰祂为"神"。最后晚餐中与十二同伴同归于尽，意识消散时被召唤逃离。',relations:[{name:'佚名',type:'信仰·神'},{name:'阿莉西娅',type:'同事'}],timeline:[{era:'第八世前',text:'原主教，处于泥沼'},{era:'第八世',text:'成为第Ⅰ席'},{era:'最后晚餐',text:'同归于尽后被召唤逃离'}]},
+{id:'xierduo',name:'西尔多/人偶姐姐',seat:'Ⅱ',era:'第八世',power:'生命',subtitle:'旧世会第Ⅱ席·生命权柄',desc:'与人偶姐姐共同担任第Ⅱ席。监察分析轮回差异。',relations:[{name:'人偶姐姐',type:'共生·伙伴'}],timeline:[{era:'中世纪',text:'与人偶姐姐相遇'},{era:'第八世',text:'成为第Ⅱ席'}]},
+{id:'miaoliao',name:'缪寥',seat:'Ⅲ',era:'第八世',power:'人文',subtitle:'旧世会第Ⅲ席·人文权柄',desc:'旧世会第Ⅲ席，司人文权柄。',relations:[],timeline:[{era:'第八世',text:'成为第Ⅲ席'}]},
+{id:'chenzhong',name:'晨钟',seat:'Ⅴ',era:'第七世→第八世',power:'抗争',subtitle:'旧世会第Ⅴ席·抗争权柄·衔尾蛇',desc:'来自第七世的幸存者，Ουροβόρος（衔尾蛇）。跨越世代加入旧世会。',relations:[{name:'辞旧岁',type:'第七世同伴'}],timeline:[{era:'第七世',text:'出生，随机异能世界'},{era:'第七世末',text:'跨越至第八世'},{era:'第八世',text:'成为第Ⅴ席'}]},
+{id:'suwang',name:'宿妄',seat:'Ⅸ',era:'第八世',power:'虚妄',subtitle:'旧世会第Ⅸ席·虚妄权柄',desc:'安诺涅创造的孩子之一，谎言变现实+读心。收养宿昭。',relations:[{name:'佚名',type:'创造·父子'},{name:'阿莉西娅',type:'兄妹'},{name:'宿昭',type:'养父子'}],timeline:[{era:'第八世',text:'被创造，获得虚妄权柄'},{era:'第八世',text:'收养宿昭'}]},
+{id:'suzhao',name:'宿昭',seat:'Ⅷ',era:'第八世',power:'死亡',subtitle:'旧世会第Ⅷ席·死亡权柄·第八世锚点',desc:'宿妄养子，因果倒转体质，死后失活刷新。与安诺涅隐瞒身份成为朋友，称祂为"安"。已触发第九世取代条件。',relations:[{name:'宿妄',type:'养父子'},{name:'佚名',type:'朋友·"安"'}],timeline:[{era:'第八世',text:'被宿妄收养，成为第Ⅷ席'},{era:'第八世',text:'与安诺涅成为朋友，称祂为"安"'},{era:'关键节点',text:'已触发第九世取代条件'}]},
+{id:'alixiya',name:'阿莉西娅',seat:'Ⅵ',era:'第八世',power:'真实',subtitle:'旧世会第Ⅵ席·真实权柄',desc:'安诺涅创造的孩子之一（αλήθεια/真理）。能力：创造。与卡罗尔一起代表救世会活动。',relations:[{name:'佚名',type:'创造·父女'},{name:'宿妄',type:'兄妹'},{name:'卡罗尔',type:'同事'}],timeline:[{era:'第八世',text:'被创造，获得真实权柄'},{era:'第八世',text:'与卡罗尔代表救世会'}]},
+{id:'shizhiyao',name:'时之钥',seat:'—',era:'全轮回',power:'时空',subtitle:'时空概念本体·12分身·唯一怀表',desc:'时空概念本体，12个分身代表十二时辰/轮回。永生且处于时间闭环中。唯一知晓全十二轮回真相的存在。',relations:[],timeline:[{era:'全轮回',text:'时空本体，12分身'},{era:'时间闭环',text:'永生，持有唯一怀表'}]},
+{id:'huawaiyin',name:'话外音',seat:'Ⅶ',era:'第十二世',power:'公正',subtitle:'旧世会第Ⅶ席·公正权柄',desc:'旧世会第Ⅶ席，司公正权柄。来自第十二世（■■科技），千年倒计时中。',relations:[{name:'卢修斯',type:'第十二世同伴'}],timeline:[{era:'第十二世',text:'出生，■■科技世界'},{era:'第十二世',text:'千年倒计时'}]},
+{id:'luxiusi',name:'卢修斯#高塔囚者',seat:'—',era:'第十二世',power:'—',subtitle:'高塔囚者·第十二世',desc:'第十二世的高塔囚者，千年倒计时中。',relations:[{name:'话外音',type:'第十二世同伴'}],timeline:[{era:'第十二世',text:'成为高塔囚者'},{era:'第十二世',text:'千年倒计时'}]},
+{id:'nuonan',name:'诺南',seat:'—',era:'第八世',power:'—',subtitle:'第八世关键人物',desc:'第八世重要人物。',relations:[],timeline:[{era:'第八世',text:'活跃于第八世'}]},
+{id:'cihuisui',name:'辞旧岁',seat:'—',era:'第七世→第八世',power:'—',subtitle:'第七世幸存者',desc:'从第七世跨越到第八世。',relations:[{name:'晨钟',type:'第七世同伴'}],timeline:[{era:'第七世',text:'出生'},{era:'第七世末',text:'跨越至第八世'}]},
+{id:'moruining',name:'莫瑞宁',seat:'—',era:'第八/九世',power:'—',subtitle:'第八/九世人物',desc:'第八/九世相关人物。',relations:[],timeline:[{era:'第八/九世',text:'活跃于重合区'}]}
+];
+function renderFriends(){
+var g=document.getElementById('friends-grid');
+if(!g)return;
+g.innerHTML=CHARACTERS.map(function(c){
+var av=getAvatar(c);
+var avHtml=av?'<img class="friend-avatar" src="'+av+'" alt="'+c.name+'">':'<div class="friend-avatar" style="display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(200,180,255,.35);border-radius:12px">'+c.name.charAt(0)+'</div>';
+return '<div class="friend-card" onclick="showDetail(\''+c.id+'\')">'+(c.seat!=='—'?'<div class="friend-seat">'+c.seat+'</div>':'')+'<div class="friend-era">'+c.era+'</div>'+avHtml+'<div class="friend-info"><div class="friend-name">'+c.name+'</div><div class="friend-desc">'+c.subtitle.substring(0,25)+'…</div></div></div>';
+}).join('');
+}
+function showDetail(id){
+var c=CHARACTERS.find(function(x){return x.id===id});if(!c)return;
+var dc=document.getElementById('detail-container');var fg=document.getElementById('friends-grid');var nc=document.getElementById('network-container');
+if(fg)fg.style.display='none';if(nc)nc.style.display='none';dc.style.display='block';
+var av=getAvatar(c);
+document.getElementById('detail-content').innerHTML='<div class="detail-header">'+(av?'<img class="detail-avatar" src="'+av+'" alt="'+c.name+'">':'<div class="detail-avatar" style="display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(200,180,255,.35)">'+c.name.charAt(0)+'</div>')+'<div class="detail-meta"><h2>'+c.name+'</h2><div class="subtitle">'+c.subtitle+'</div><div class="detail-badges">'+(c.seat!=='—'?'<span class="detail-badge badge-seat">第'+c.seat+'席</span>':'')+'<span class="detail-badge badge-era">'+c.era+'</span>'+(c.power!=='—'?'<span class="detail-badge badge-power">'+c.power+'</span>':'')+'</div><div class="detail-desc">'+c.desc+'</div></div></div>'+'<div class="relation-section"><h3>关系网</h3>'+(c.relations.length>0?'<div class="relation-list">'+c.relations.map(function(r){var rid=getCharIdByName(r.name);if(rid){return '<div class="relation-item" onclick="event.stopPropagation();showDetail(\''+ rid+ '\')"><div class="relation-info"><div class="relation-name">'+r.name+'</div><div class="relation-type">'+r.type+'</div></div><div class="relation-arrow">→</div></div>';}else{return '<div class="relation-item"><div class="relation-info"><div class="relation-name">'+r.name+'</div><div class="relation-type">'+r.type+'</div></div><div class="relation-arrow">→</div></div>';}}).join('')+'</div>':'<p style="color:#999;font-size:13px">暂无</p>')+'</div>'+'<div class="timeline-section"><h3>时间线</h3><div class="timeline">'+c.timeline.map(function(t){return '<div class="timeline-item"><div class="timeline-era">'+t.era+'</div><div class="timeline-text">'+t.text+'</div></div>';}).join('')+'</div></div>';
+}
+function showFriends(){
+var dc=document.getElementById('detail-container');var fg=document.getElementById('friends-grid');
+var nc=document.getElementById('network-container');var cp=document.getElementById('chat-panel');
+if(dc)dc.style.display='none';if(fg)fg.style.display='';if(nc)nc.style.display='none';if(cp)cp.classList.remove('active');
+}
+
+/* ===== 聊天功能 ===== */
+var currentChatId = '';
+var chatHistory = {};
+function openChat(id){
+  var c = CHARACTERS.find(function(x){return x.id===id});
+  if(!c) return;
+  currentChatId = id;
+  var av = getAvatar(c);
+  document.getElementById('chat-avatar').src = av || '';
+  document.getElementById('chat-name').textContent = c.name;
+  var panel = document.getElementById('chat-panel');
+  panel.classList.add('active');
+  var msgs = document.getElementById('chat-messages');
+  if(!chatHistory[id]){
+    msgs.innerHTML = '<div class="chat-welcome">开始和 '+c.name+' 聊天吧</div>';
+  } else {
+    msgs.innerHTML = chatHistory[id];
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+  document.getElementById('chat-input').focus();
+}
+function closeChat(){
+  document.getElementById('chat-panel').classList.remove('active');
+  currentChatId = '';
+}
+async function sendChat(){
+  var input = document.getElementById('chat-input');
+  var msg = input.value.trim();
+  if(!msg || !currentChatId) return;
+  var btn = document.getElementById('chat-send-btn');
+  btn.disabled = true;
+  btn.textContent = '...';
+  input.value = '';
+  var msgs = document.getElementById('chat-messages');
+  if(msgs.querySelector('.chat-welcome')) msgs.innerHTML = '';
+  var now = new Date();
+  var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  msgs.innerHTML += '<div class="chat-msg user"><div><div class="msg-name">你</div><div class="msg-bubble">'+escapeHtml(msg)+'</div><div class="msg-time">'+timeStr+'</div></div></div>';
+  msgs.scrollTop = msgs.scrollHeight;
+  try {
+    var res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({characterId: currentChatId, message: msg})
+    });
+    var data = await res.json();
+    if(data.reply){
+      msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(data.character||'')+'</div><div class="msg-bubble">'+escapeHtml(data.reply)+'</div><div class="msg-time">'+timeStr+'</div></div></div>';
+    }
+  } catch(e){
+    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-bubble">网络开小差了...</div></div></div>';
+  }
+  btn.disabled = false;
+  btn.textContent = '发送';
+  msgs.scrollTop = msgs.scrollHeight;
+  chatHistory[currentChatId] = msgs.innerHTML;
+}
+function escapeHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+
+function renderGlobalNetwork(){var el=document.getElementById('global-network');if(!el)return;el.innerHTML='<div class="root">👁️ 佚名/安诺涅/宸星（第Ⅹ席·创建者）</div><div class="branch"><div>├─ <b>宿妄</b>（Ⅸ·虚妄）→ <b>宿昭</b>（Ⅷ·死亡）</div><div>├─ <b>阿莉西娅</b>（Ⅵ·真实）与卡罗尔代表救世会</div><div>├─ <b>卡罗尔</b>（Ⅰ·思想）</div><div>├─ <b>西尔多</b>（Ⅱ·生命）+ 人偶姐姐</div><div>├─ <b>缪寥</b>（Ⅲ·人文）</div><div>├─ <b>话外音</b>（Ⅶ·公正）· 第十二世</div><div>├─ <b>晨钟</b>（Ⅴ·抗争）· 第七世→第八世</div><div>└─ 宿昭与安诺涅为友，称"安"</div></div><div class="branch" style="margin-top:12px"><div>🔑 <b>时之钥</b> — 时空本体·12分身·唯一知晓全貌</div></div><div class="branch" style="margin-top:12px"><div>⚡ 第八/九世重合区·宿昭已触发第九世取代</div></div>';}
+renderFriends();
+renderGlobalNetwork();
+
+
+</script>
+</body>
+</html>
