@@ -1736,7 +1736,7 @@ var c=CHARACTERS.find(function(x){return x.id===id});if(!c)return;
 var dc=document.getElementById('detail-container');var fg=document.getElementById('friends-grid');var nc=document.getElementById('network-container');
 if(fg)fg.style.display='none';if(nc)nc.style.display='none';dc.style.display='block';
 var av=getAvatar(c);
-document.getElementById('detail-content').innerHTML='<div class="detail-header">'+(av?'<div class="detail-avatar" style="position:relative;display:flex;align-items:center;justify-content:center"><div class="image-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(200,180,255,.35);border-radius:14px;background:rgba(255,255,255,.5);z-index:1"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 12L10 14L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><img class="detail-avatar" src="" data-src="'+av+'" alt="'+c.name+'" style="position:relative;z-index:2;opacity:0;transition:opacity 0.3s ease" onload="this.style.opacity=1; this.previousElementSibling.style.display=\'none\'"/></div>':'<div class="detail-avatar" style="display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(200,180,255,.35)">'+c.name.charAt(0)+'</div>')+'<div class="detail-meta"><h2>'+c.name+'</h2><div class="subtitle">'+c.subtitle+'</div><div class="detail-badges">'+(c.seat!=='—'?'<span class="detail-badge badge-seat">第'+c.seat+'席</span>':'')+'<span class="detail-badge badge-era">'+c.era+'</span>'+(c.power!=='—'?'<span class="detail-badge badge-power">'+c.power+'</span>':'')+'</div><div class="detail-desc">'+c.desc+'</div></div></div>'+'<div class="relation-section"><h3>关系网</h3>'+(c.relations.length>0?'<div class="relation-list">'+c.relations.map(function(r){var rid=getCharIdByName(r.name);if(rid){return '<div class="relation-item" onclick="event.stopPropagation();showDetail(\''+ rid+ '\')"><div class="relation-info"><div class="relation-name">'+r.name+'</div><div class="relation-type">'+r.type+'</div></div><div class="relation-arrow">→</div></div>';}else{return '<div class="relation-item"><div class="relation-info"><div class="relation-name">'+r.name+'</div><div class="relation-type">'+r.type+'</div></div><div class="relation-arrow">→</div></div>';}}).join('')+'</div>':'<p style="color:#999;font-size:13px">暂无</p>')+'</div>'+'<div class="timeline-section"><h3>时间线</h3><div class="timeline">'+c.timeline.map(function(t){return '<div class="timeline-item"><div class="timeline-era">'+t.era+'</div><div class="timeline-text">'+t.text+'</div></div>';}).join('')+'</div></div>';
+document.getElementById('detail-content').innerHTML='<div class="detail-header">'+(av?'<div class="detail-avatar" style="position:relative;display:flex;align-items:center;justify-content:center"><div class="image-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(200,180,255,.35);border-radius:14px;background:rgba(255,255,255,.5);z-index:1"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 12L10 14L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><img class="detail-avatar" src="" data-src="'+av+'" alt="'+c.name+'" style="position:relative;z-index:2;opacity:0;transition:opacity 0.3s ease" onload="this.style.opacity=1; this.previousElementSibling.style.display=\'none\'"/></div>':'<div class="detail-avatar" style="display:flex;align-items:center;justify-content:center;font-size:48px;color:rgba(200,180,255,.35)">'+c.name.charAt(0)+'</div>')+'<div class="detail-meta"><h2>'+c.name+'</h2><div class="subtitle">'+c.subtitle+'</div><div class="detail-badges">'+(c.seat!=='—'?'<span class="detail-badge badge-seat">第'+c.seat+'席</span>':'')+'<span class="detail-badge badge-era">'+c.era+'</span>'+(c.power!=='—'?'<span class="detail-badge badge-power">'+c.power+'</span>':'')+'</div><div class="detail-desc">'+c.desc+'</div></div></div>'+'<button class="chat-btn" onclick="openChat(\''+c.id+'\')">💬 和 '+c.name+' 聊天</button>'+'<div class="relation-section"><h3>关系网</h3>'+(c.relations.length>0?'<div class="relation-list">'+c.relations.map(function(r){var rid=getCharIdByName(r.name);if(rid){return '<div class="relation-item" onclick="event.stopPropagation();showDetail(\''+ rid+ '\')"><div class="relation-info"><div class="relation-name">'+r.name+'</div><div class="relation-type">'+r.type+'</div></div><div class="relation-arrow">→</div></div>';}else{return '<div class="relation-item"><div class="relation-info"><div class="relation-name">'+r.name+'</div><div class="relation-type">'+r.type+'</div></div><div class="relation-arrow">→</div></div>';}}).join('')+'</div>':'<p style="color:#999;font-size:13px">暂无</p>')+'</div>'+'<div class="timeline-section"><h3>时间线</h3><div class="timeline">'+c.timeline.map(function(t){return '<div class="timeline-item"><div class="timeline-era">'+t.era+'</div><div class="timeline-text">'+t.text+'</div></div>';}).join('')+'</div></div>';
 // 初始化懒加载
 lazyLoadImages();
 }
@@ -1785,23 +1785,25 @@ async function sendChat(){
   var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
   msgs.innerHTML += '<div class="chat-msg user"><div><div class="msg-name">你</div><div class="msg-bubble">'+escapeHtml(msg)+'</div><div class="msg-time">'+timeStr+'</div></div></div>';
   msgs.scrollTop = msgs.scrollHeight;
-  try {
-    var res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({characterId: currentChatId, message: msg})
-    });
-    var data = await res.json();
-    if(data.reply){
-      msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(data.character||'')+'</div><div class="msg-bubble">'+escapeHtml(data.reply)+'</div><div class="msg-time">'+timeStr+'</div></div></div>';
-    }
-  } catch(e){
-    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-bubble">网络开小差了...</div></div></div>';
+  /* 用 LLM 生成角色回复 */
+  var c = CHARACTERS.find(function(x){return x.id===currentChatId});
+  var aiChar = findAIChar(currentChatId);
+  var reply = aiChar ? await getAIReply(aiChar, msg) : null;
+  if(reply){
+    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble">'+escapeHtml(reply)+'</div><div class="msg-time">'+timeStr+'</div></div></div>';
+  } else {
+    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-bubble">信号不太好，请稍后再试…</div></div></div>';
   }
   btn.disabled = false;
   btn.textContent = '发送';
   msgs.scrollTop = msgs.scrollHeight;
   chatHistory[currentChatId] = msgs.innerHTML;
+}
+function findAIChar(id){
+  var nameMap={yiming:'佚名',carol:'卡罗尔',xierduo:'西尔多',miaoliao:'缪寥',chenzhong:'晨钟',suwang:'宿妄',suzhao:'宿昭',alixiya:'阿莉西娅',shizhiyao:'时之钥',huawaiyin:'画外音',luxiusi:'卢修斯',nuonan:'诺南',cihuisui:'辞旧岁',moruining:'莫瑞宁'};
+  var name=nameMap[id];if(!name)return null;
+  for(var i=0;i<AI_CHARS.length;i++){if(AI_CHARS[i].name===name)return AI_CHARS[i]}
+  return null;
 }
 function escapeHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 
