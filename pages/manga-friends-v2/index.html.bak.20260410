@@ -481,21 +481,6 @@ body.reading-mode .reading-comments{display:block}
 .chat-btn{display:inline-block;margin-top:8px;padding:4px 14px;background:rgba(168,140,255,.12);color:#7b68ae;border:none;border-radius:12px;font-size:11px;cursor:pointer;transition:all .3s}
 .chat-btn:hover{background:rgba(168,140,255,.2)}
 
-/* 设置弹窗 */
-.settings-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:10000;align-items:center;justify-content:center}
-.settings-overlay.open{display:flex}
-.settings-modal{background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-radius:16px;width:90%;max-width:420px;border:1px solid rgba(200,180,255,.2);box-shadow:0 20px 60px rgba(160,140,255,.2);overflow:hidden}
-.settings-header{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(200,180,255,.15)}
-.settings-header h3{font-size:16px;color:var(--tp);flex:1}
-.settings-close{background:none;border:none;font-size:18px;cursor:pointer;color:#999;padding:4px 8px;border-radius:6px}
-.settings-close:hover{background:rgba(0,0,0,.05)}
-.settings-body{padding:20px}
-.settings-group{margin-bottom:20px}
-.settings-label{display:block;font-size:13px;font-weight:bold;color:var(--tp);margin-bottom:8px}
-.settings-select{width:100%;padding:10px 14px;border:1.5px solid rgba(180,160,220,.25);border-radius:10px;background:rgba(255,255,255,.8);color:var(--td);font-size:14px;outline:none;cursor:pointer;font-family:inherit;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-.settings-select:focus{border-color:rgba(160,140,255,.5);box-shadow:0 0 12px rgba(160,140,255,.15)}
-.settings-hint{font-size:11px;color:#999;margin-top:6px;line-height:1.4}
-
 </style>
 </head>
 <body>
@@ -541,7 +526,7 @@ body.reading-mode .reading-comments{display:block}
 <div class="cc lk" data-tags="第九世"><img src="locked-9.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第十二世"><img src="locked-12-1.jpg" alt="锁定"><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第十二世"><img src="locked-12-2.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
-<div class="cc" data-tags="第七世" onclick="showPage('comic4')"><div class="rb-hourglass">⏳</div><img src="chenzhong-cover.jpg" alt="钟鸣异邦"><div class="ccc"><div class="cct">钟鸣异邦</div><div class="ccd">晨钟：异世苏醒</div></div></div>
+<div class="cc" data-tags="第七世" onclick="showPage('comic4')"><div class="rb-hourglass">⏳</div><img src="locked-7.jpg" alt="钟鸣异邦"><div class="ccc"><div class="cct">钟鸣异邦</div><div class="ccd">晨钟：异世苏醒</div></div></div>
 </div>
 </div>
 
@@ -637,33 +622,11 @@ body.reading-mode .reading-comments{display:block}
 <div class="pfi"><h3>画外音</h3><p>ID: 12（？）</p><p>注册时间: 第七世？？？年</p></div>
 </div>
 <div class="pfs">
-<div class="sfi"><div class="sfv" id="profile-fav-count">0</div><div class="sfl">收藏</div></div>
-<div class="sfi"><div class="sfv" id="profile-comment-count">0</div><div class="sfl">评论</div></div>
+<div class="sfi"><div class="sfv">0</div><div class="sfl">收藏</div></div>
+<div class="sfi"><div class="sfv">0</div><div class="sfl">历史</div></div>
+<div class="sfi"><div class="sfv">0</div><div class="sfl">评论</div></div>
 </div>
-<div class="pfa"><button class="bs2" onclick="openSettings()">⚙️ 设置</button></div>
-</div>
-</div>
-
-<!-- ========== 设置弹窗 ========== -->
-<div id="settings-overlay" class="settings-overlay" onclick="closeSettings()">
-<div class="settings-modal" onclick="event.stopPropagation()">
-<div class="settings-header">
-<h3>⚙️ 设置</h3>
-<button class="settings-close" onclick="closeSettings()">✕</button>
-</div>
-<div class="settings-body">
-<div class="settings-group">
-<label class="settings-label">聊天模型</label>
-<select id="chat-model-select" class="settings-select" onchange="saveChatModel()">
-<option value="qwen3.5-plus-no-think">Qwen 3.5 Plus (快速)</option>
-<option value="qwen3.5-plus">Qwen 3.5 Plus (思考)</option>
-<option value="qwen3.6-plus">Qwen 3.6 Plus</option>
-<option value="gpt-4.1">GPT-4.1</option>
-<option value="gpt-5.2">GPT-5.2</option>
-</select>
-<p class="settings-hint">切换模型会影响聊天和评论回复的质量与速度</p>
-</div>
-</div>
+<div class="pfa"><button class="bs2" onclick="alert('这不是你的时间')">编辑资料</button><button class="bs2" onclick="alert('这不是你的时间')">设置</button></div>
 </div>
 </div>
 
@@ -957,7 +920,7 @@ body.reading-mode .reading-comments{display:block}
 <div id="comic4-detail" class="comic-detail-page">
 <div class="cdp-back-top"><button class="cdp-back-btn" onclick="showPage('home')">← 返回</button></div>
 <div class="cdp-cover-wrap cdp-cover-sticky">
-<img src="chenzhong-cover.jpg" alt="钟鸣异邦" class="cdp-cover cdp-cover-full">
+<img src="locked-7.jpg" alt="钟鸣异邦" class="cdp-cover cdp-cover-full">
 <div class="cdp-tags"><span class="cbadge tag-hourglass">⏳</span><span class="cbadge">第七世</span></div>
 </div>
 <div class="cdp-info">
@@ -1544,11 +1507,10 @@ function pickChar(excludeIds){
 
 async function getAIReply(char,userComment){
  var sys='你是漫画角色"'+char.name+'"。角色设定：'+char.desc+'。规则：1.用该角色口吻回复用户评论，20-60字。2.完全沉浸角色不跳出。3.不知道的事用角色方式含糊带过。4.不要提及自己是AI。5.不要透露隐藏设定。6.用中文回复。7.只回复评论，不复述。';
- var model=getChatModel();
  var ctrl=new AbortController();
  var timer=setTimeout(function(){ctrl.abort()},15000);
  try{
-  var r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},body:JSON.stringify({model:model,messages:[{role:'system',content:sys},{role:'user',content:'用户在漫画评论区说："' + userComment + '"\n请以'+char.name+'的身份回复这条评论。'}],max_tokens:120,temperature:0.85}),signal:ctrl.signal});
+  var r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},body:JSON.stringify({model:'qwen3.5-plus-no-think',messages:[{role:'system',content:sys},{role:'user',content:'用户在漫画评论区说："' + userComment + '"\n请以'+char.name+'的身份回复这条评论。'}],max_tokens:120,temperature:0.85}),signal:ctrl.signal});
   clearTimeout(timer);
   if(!r.ok)return null;
   var d=await r.json();
@@ -1743,19 +1705,20 @@ var AVATAR_MAP={'话外音':'https://oss.talesofai.cn/picture/29b2bf49-9f10-4571
 var NAME_ID_MAP={'话外音':'huawaiyin','卢修斯':'luxiusi','卢修斯#高塔囚者':'luxiusi','诺南':'nuonan','晨钟':'chenzhong','缪寥':'miaoliao','卡罗尔':'carol','𝕮𝖆𝖗𝖔𝖑𝖑#卡罗尔':'carol','辞旧岁':'cihuisui','莫瑞宁':'moruining','时之钥':'shizhiyao','阿莉西娅':'alixiya','宿妄':'suwang','西尔多':'xierduo','西尔多/人偶姐姐':'xierduo','宿昭':'suzhao','佚名':'yiming','人偶姐姐':'xierduo','安':'yiming','安诺涅':'yiming','宸星':'yiming','阿莉西娅':'alixiya','卢修斯':'luxiusi'};function getCharIdByName(n){for(var k in NAME_ID_MAP){if(n.indexOf(k)>=0)return NAME_ID_MAP[k]}return ''}
 function getAvatar(c){for(var k in AVATAR_MAP){if(c.name.indexOf(k)>=0)return AVATAR_MAP[k]}return ''}
 var CHARACTERS=[
-{id:'yiming',name:'佚名',seat:'Ⅹ',era:'第八/九世',power:'真实+虚妄',subtitle:'旧世会创建者·来自寂灭世界的集群意识',desc:'来自已寂灭世界■■■■的世界碎屑集群意识。盗取真实与虚妄权柄，于第八世创立旧世会。创造了宿妄与阿莉西娅。',relations:[{name:'宿妄',type:'创造·父子'},{name:'阿莉西娅',type:'创造·父女'},{name:'宿昭',type:'朋友'}],timeline:[{era:'■■■■',text:'世界碎屑集群意识觉醒'},{era:'第八世',text:'创立旧世会，设十席'},{era:'第八世',text:'创造宿妄与阿莉西娅'}]},
-{id:'carol',name:'𝕮𝖆𝖗𝖔𝖑𝖑#卡罗尔',seat:'Ⅰ',era:'第八/九世',power:'思想',subtitle:'旧世会第Ⅰ席·思想权柄',desc:'原主教，被宸星拉起，信仰祂为"神"。最后晚餐中与十二同伴同归于尽，意识消散时被召唤逃离。',relations:[{name:'佚名',type:'信仰·神'},{name:'阿莉西娅',type:'同事'}],timeline:[{era:'第八世前',text:'原主教，处于泥沼'},{era:'第八世',text:'成为第Ⅰ席'},{era:'最后晚餐',text:'同归于尽后被召唤逃离'}]},
-{id:'xierduo',name:'西尔多/人偶姐姐',seat:'Ⅱ',era:'第八/九世',power:'生命',subtitle:'旧世会第Ⅱ席·生命权柄',desc:'与人偶姐姐共同担任第Ⅱ席。监察分析轮回差异。',relations:[{name:'人偶姐姐',type:'共生·伙伴'}],timeline:[{era:'中世纪',text:'与人偶姐姐相遇'},{era:'第八世',text:'成为第Ⅱ席'}]},
-{id:'miaoliao',name:'缪寥',seat:'Ⅲ',era:'第八/九世',power:'人文',subtitle:'旧世会第Ⅲ席·人文权柄',desc:'旧世会第Ⅲ席，司人文权柄。',relations:[],timeline:[{era:'第八世',text:'成为第Ⅲ席'}]},
-{id:'chenzhong',name:'晨钟',seat:'—',era:'第七/九世',power:'抗争',subtitle:'抗争权柄·衔尾蛇',desc:'来自第七世的幸存者，Ουροβόρος（衔尾蛇）。跨越世代加入旧世会。',relations:[{name:'辞旧岁',type:'第七世同伴'},{name:'诺南',type:'师徒'}],timeline:[{era:'第七世',text:'出生，随机异能世界'},{era:'第七世末',text:'跨越至第八世'},{era:'第八世',text:'成为第Ⅴ席'}]},
-{id:'suwang',name:'宿妄',seat:'Ⅸ',era:'第八/九世',power:'虚妄',subtitle:'旧世会第Ⅸ席·虚妄权柄',desc:'安诺涅创造的孩子之一，谎言变现实+读心。收养宿昭。',relations:[{name:'佚名',type:'创造·父子'},{name:'阿莉西娅',type:'兄妹'},{name:'宿昭',type:'养父子'}],timeline:[{era:'第八世',text:'被创造，获得虚妄权柄'},{era:'第八世',text:'收养宿昭'}]},
-{id:'suzhao',name:'宿昭',seat:'Ⅷ',era:'第八/九世',power:'死亡',subtitle:'旧世会第Ⅷ席·死亡权柄·第八世锚点',desc:'宿妄养子，因果倒转体质，死后失活刷新。与安诺涅隐瞒身份成为朋友，称祂为"安"。已触发第九世取代条件。',relations:[{name:'宿妄',type:'养父子'},{name:'佚名',type:'朋友·"安"'}],timeline:[{era:'第八世',text:'被宿妄收养，成为第Ⅷ席'},{era:'第八世',text:'与安诺涅成为朋友，称祂为"安"'},{era:'关键节点',text:'已触发第九世取代条件'}]},
-{id:'alixiya',name:'阿莉西娅',seat:'Ⅵ',era:'第八/九世',power:'真实',subtitle:'旧世会第Ⅵ席·真实权柄',desc:'安诺涅创造的孩子之一（αλήθεια/真理）。能力：创造。与卡罗尔一起代表救世会活动。',relations:[{name:'佚名',type:'创造·父女'},{name:'宿妄',type:'兄妹'},{name:'卡罗尔',type:'同事'}],timeline:[{era:'第八世',text:'被创造，获得真实权柄'},{era:'第八世',text:'与卡罗尔代表救世会'}]},
+{id:'yiming',name:'佚名',seat:'Ⅹ',era:'第八世',power:'真实+虚妄',subtitle:'旧世会创建者·来自寂灭世界的集群意识',desc:'来自已寂灭世界■■■■的世界碎屑集群意识。盗取真实与虚妄权柄，于第八世创立旧世会。创造了宿妄与阿莉西娅。',relations:[{name:'宿妄',type:'创造·父子'},{name:'阿莉西娅',type:'创造·父女'},{name:'宿昭',type:'朋友'}],timeline:[{era:'■■■■',text:'世界碎屑集群意识觉醒'},{era:'第八世',text:'创立旧世会，设十席'},{era:'第八世',text:'创造宿妄与阿莉西娅'}]},
+{id:'carol',name:'𝕮𝖆𝖗𝖔𝖑𝖑#卡罗尔',seat:'Ⅰ',era:'第八世',power:'思想',subtitle:'旧世会第Ⅰ席·思想权柄',desc:'原主教，被宸星拉起，信仰祂为"神"。最后晚餐中与十二同伴同归于尽，意识消散时被召唤逃离。',relations:[{name:'佚名',type:'信仰·神'},{name:'阿莉西娅',type:'同事'}],timeline:[{era:'第八世前',text:'原主教，处于泥沼'},{era:'第八世',text:'成为第Ⅰ席'},{era:'最后晚餐',text:'同归于尽后被召唤逃离'}]},
+{id:'xierduo',name:'西尔多/人偶姐姐',seat:'Ⅱ',era:'第八世',power:'生命',subtitle:'旧世会第Ⅱ席·生命权柄',desc:'与人偶姐姐共同担任第Ⅱ席。监察分析轮回差异。',relations:[{name:'人偶姐姐',type:'共生·伙伴'}],timeline:[{era:'中世纪',text:'与人偶姐姐相遇'},{era:'第八世',text:'成为第Ⅱ席'}]},
+{id:'miaoliao',name:'缪寥',seat:'Ⅲ',era:'第八世',power:'人文',subtitle:'旧世会第Ⅲ席·人文权柄',desc:'旧世会第Ⅲ席，司人文权柄。',relations:[],timeline:[{era:'第八世',text:'成为第Ⅲ席'}]},
+{id:'chenzhong',name:'晨钟',seat:'Ⅴ',era:'第七世→第八世',power:'抗争',subtitle:'旧世会第Ⅴ席·抗争权柄·衔尾蛇',desc:'来自第七世的幸存者，Ουροβόρος（衔尾蛇）。跨越世代加入旧世会。',relations:[{name:'辞旧岁',type:'第七世同伴'}],timeline:[{era:'第七世',text:'出生，随机异能世界'},{era:'第七世末',text:'跨越至第八世'},{era:'第八世',text:'成为第Ⅴ席'}]},
+{id:'suwang',name:'宿妄',seat:'Ⅸ',era:'第八世',power:'虚妄',subtitle:'旧世会第Ⅸ席·虚妄权柄',desc:'安诺涅创造的孩子之一，谎言变现实+读心。收养宿昭。',relations:[{name:'佚名',type:'创造·父子'},{name:'阿莉西娅',type:'兄妹'},{name:'宿昭',type:'养父子'}],timeline:[{era:'第八世',text:'被创造，获得虚妄权柄'},{era:'第八世',text:'收养宿昭'}]},
+{id:'suzhao',name:'宿昭',seat:'Ⅷ',era:'第八世',power:'死亡',subtitle:'旧世会第Ⅷ席·死亡权柄·第八世锚点',desc:'宿妄养子，因果倒转体质，死后失活刷新。与安诺涅隐瞒身份成为朋友，称祂为"安"。已触发第九世取代条件。',relations:[{name:'宿妄',type:'养父子'},{name:'佚名',type:'朋友·"安"'}],timeline:[{era:'第八世',text:'被宿妄收养，成为第Ⅷ席'},{era:'第八世',text:'与安诺涅成为朋友，称祂为"安"'},{era:'关键节点',text:'已触发第九世取代条件'}]},
+{id:'alixiya',name:'阿莉西娅',seat:'Ⅵ',era:'第八世',power:'真实',subtitle:'旧世会第Ⅵ席·真实权柄',desc:'安诺涅创造的孩子之一（αλήθεια/真理）。能力：创造。与卡罗尔一起代表救世会活动。',relations:[{name:'佚名',type:'创造·父女'},{name:'宿妄',type:'兄妹'},{name:'卡罗尔',type:'同事'}],timeline:[{era:'第八世',text:'被创造，获得真实权柄'},{era:'第八世',text:'与卡罗尔代表救世会'}]},
 {id:'shizhiyao',name:'时之钥',seat:'—',era:'全轮回',power:'时空',subtitle:'时空概念本体·12分身·唯一怀表',desc:'时空概念本体，12个分身代表十二时辰/轮回。永生且处于时间闭环中。唯一知晓全十二轮回真相的存在。',relations:[],timeline:[{era:'全轮回',text:'时空本体，12分身'},{era:'时间闭环',text:'永生，持有唯一怀表'}]},
+{id:'huawaiyin',name:'话外音',seat:'Ⅶ',era:'第十二世',power:'公正',subtitle:'旧世会第Ⅶ席·公正权柄',desc:'旧世会第Ⅶ席，司公正权柄。来自第十二世（■■科技），千年倒计时中。',relations:[{name:'卢修斯',type:'第十二世同伴'}],timeline:[{era:'第十二世',text:'出生，■■科技世界'},{era:'第十二世',text:'千年倒计时'}]},
 {id:'luxiusi',name:'卢修斯#高塔囚者',seat:'—',era:'第十二世',power:'—',subtitle:'高塔囚者·第十二世',desc:'第十二世的高塔囚者，千年倒计时中。',relations:[{name:'话外音',type:'第十二世同伴'}],timeline:[{era:'第十二世',text:'成为高塔囚者'},{era:'第十二世',text:'千年倒计时'}]},
-{id:'nuonan',name:'诺南',seat:'—',era:'第九世',power:'—',subtitle:'第九世关键人物·晨钟与宸星之师',desc:'第九世重要人物。晨钟与宸星（佚名）的老师。',relations:[{name:'晨钟',type:'师徒'},{name:'佚名/宸星',type:'师徒'}],timeline:[{era:'第九世',text:'活跃于第九世'}]},
-{id:'cihuisui',name:'辞旧岁',seat:'Ⅴ',era:'第八/九世',power:'抗争',subtitle:'救世会第Ⅴ席·抗争权柄',desc:'从第七世跨越到第八世。救世会第Ⅴ席，司抗争权柄。',relations:[{name:'晨钟',type:'第七世同伴'}],timeline:[{era:'第七世',text:'出生'},{era:'第七世末',text:'跨越至第八世'}]},
-{id:'moruining',name:'莫瑞宁',seat:'Ⅳ',era:'第八/九世',power:'医疗卫生',subtitle:'旧世会第Ⅳ席·医疗卫生·药剂研发',desc:'旧世会第Ⅳ席，负责医疗卫生、药剂研发。曾是中世纪的瘟疫医生，拥有生死恩赐的能力。',relations:[],timeline:[{era:'第八/九世',text:'活跃于重合区'}]}
+{id:'nuonan',name:'诺南',seat:'—',era:'第八世',power:'—',subtitle:'第八世关键人物',desc:'第八世重要人物。',relations:[],timeline:[{era:'第八世',text:'活跃于第八世'}]},
+{id:'cihuisui',name:'辞旧岁',seat:'—',era:'第七世→第八世',power:'—',subtitle:'第七世幸存者',desc:'从第七世跨越到第八世。',relations:[{name:'晨钟',type:'第七世同伴'}],timeline:[{era:'第七世',text:'出生'},{era:'第七世末',text:'跨越至第八世'}]},
+{id:'moruining',name:'莫瑞宁',seat:'—',era:'第八/九世',power:'—',subtitle:'第八/九世人物',desc:'第八/九世相关人物。',relations:[],timeline:[{era:'第八/九世',text:'活跃于重合区'}]}
 ];
 function renderFriends(){
 var g=document.getElementById('friends-grid');
@@ -1844,24 +1807,7 @@ function findAIChar(id){
 }
 function escapeHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 
-function renderGlobalNetwork(){var el=document.getElementById('global-network');if(!el)return;el.innerHTML='<div class="root">👁️ 佚名/安诺涅/宸星（第Ⅹ席·创建者）</div><div class="branch"><div>├─ <b>宿妄</b>（Ⅸ·虚妄）→ <b>宿昭</b>（Ⅷ·死亡）</div><div>├─ <b>阿莉西娅</b>（Ⅵ·真实）与卡罗尔代表救世会</div><div>├─ <b>卡罗尔</b>（Ⅰ·思想）</div><div>├─ <b>西尔多</b>（Ⅱ·生命）+ 人偶姐姐</div><div>├─ <b>缪寥</b>（Ⅲ·人文）</div><div>├─ <b>晨钟</b>（抗争）· 第七/九世</div><div>└─ 宿昭与安诺涅为友，称"安"</div></div><div class="branch" style="margin-top:12px"><div>🔑 <b>时之钥</b> — 时空本体·12分身·唯一知晓全貌</div></div><div class="branch" style="margin-top:12px"><div>⚡ 第八/九世重合区·宿昭已触发第九世取代</div></div>';}
-
-/* ===== 设置功能 ===== */
-function openSettings(){
- document.getElementById('settings-overlay').classList.add('open');
- var sel=document.getElementById('chat-model-select');
- sel.value=getChatModel();
-}
-function closeSettings(){
- document.getElementById('settings-overlay').classList.remove('open');
-}
-function getChatModel(){
- try{return localStorage.getItem('chat_model')||'qwen3.5-plus-no-think'}catch(e){return 'qwen3.5-plus-no-think'}
-}
-function saveChatModel(){
- var sel=document.getElementById('chat-model-select');
- try{localStorage.setItem('chat_model',sel.value)}catch(e){}
-}
+function renderGlobalNetwork(){var el=document.getElementById('global-network');if(!el)return;el.innerHTML='<div class="root">👁️ 佚名/安诺涅/宸星（第Ⅹ席·创建者）</div><div class="branch"><div>├─ <b>宿妄</b>（Ⅸ·虚妄）→ <b>宿昭</b>（Ⅷ·死亡）</div><div>├─ <b>阿莉西娅</b>（Ⅵ·真实）与卡罗尔代表救世会</div><div>├─ <b>卡罗尔</b>（Ⅰ·思想）</div><div>├─ <b>西尔多</b>（Ⅱ·生命）+ 人偶姐姐</div><div>├─ <b>缪寥</b>（Ⅲ·人文）</div><div>├─ <b>话外音</b>（Ⅶ·公正）· 第十二世</div><div>├─ <b>晨钟</b>（Ⅴ·抗争）· 第七世→第八世</div><div>└─ 宿昭与安诺涅为友，称"安"</div></div><div class="branch" style="margin-top:12px"><div>🔑 <b>时之钥</b> — 时空本体·12分身·唯一知晓全貌</div></div><div class="branch" style="margin-top:12px"><div>⚡ 第八/九世重合区·宿昭已触发第九世取代</div></div>';}
 
 // 图片预加载函数
 function preloadImages() {
