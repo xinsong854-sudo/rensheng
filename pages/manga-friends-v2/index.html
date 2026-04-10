@@ -6,6 +6,10 @@
  <title>祂将呓语轻哼成歌</title>
  <meta name="description" content="梦境不会结束">
  <meta name="theme-color" content="#e8f0ff">
+ <link rel="preconnect" href="https://oss.talesofai.cn" crossorigin>
+ <link rel="preconnect" href="https://claw-annuonie-pages.talesofai.com" crossorigin>
+ <link rel="dns-prefetch" href="https://litellm.talesofai.cn">
+ <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✧</text></svg>">
  <style>
 :root{--bg-white:#fff;--bg-blue:#e8f0ff;--bg-pink:#fff0f5;--bg-lavender:#f0e8ff;--tg:linear-gradient(135deg,#6ea8fe,#f7a8c4,#c4a8f7);--cbg:rgba(255,255,255,.55);--cbr:linear-gradient(135deg,#e0e8ff,#ffe0ec,#e8e0ff,#e0f0ff,#ffe8d6);--nb:rgba(255,255,255,.6);--td:#3a3a4a;--tp:#4a3a5a;--gb:rgba(110,168,254,.35);--gp:rgba(247,168,196,.3);--gpp:rgba(196,168,247,.3);--btn:linear-gradient(135deg,#8b9cf7,#d48ec7,#f0a8c8);--scb:linear-gradient(180deg,#a0b4ff,#e0a0d0,#c8a0f0)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -286,7 +290,26 @@ body.detail-mode .nav{
  max-width:100vw;
  height:auto;
  display:block;
+ opacity:0;
+ transition:opacity .4s ease;
 }
+.reading-area img.loaded{opacity:1}
+/* 图片骨架占位 */
+.img-skeleton{
+ width:100%;aspect-ratio:3/4;
+ background:linear-gradient(110deg,#111 30%,#1a1a2e 50%,#111 70%);
+ background-size:200% 100%;
+ animation:shimmer 1.5s infinite linear;
+ display:flex;align-items:center;justify-content:center;
+ color:rgba(255,255,255,.1);font-size:13px;letter-spacing:2px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* 阅读顶栏加载指示 */
+.reading-topbar.loading .rtb-title::after{
+ content:" 加载中…";
+ animation:loadPulse 1.2s ease infinite;
+}
+@keyframes loadPulse{0%,100%{opacity:.3}50%{opacity:1}}
 
 /* 弹幕叠加层 - 只覆盖图片区域 */
 .danmaku-overlay{
@@ -303,11 +326,13 @@ body.detail-mode .nav{
 }
 .danmaku-overlay .dm{
  position:absolute;white-space:nowrap;
- font-size:14px;font-weight:bold;
+ font-weight:bold;
  color:#fff;
  text-shadow:0 0 4px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,.95),-1px 0 2px rgba(0,0,0,.8),1px 0 2px rgba(0,0,0,.8);
  animation:dmv linear forwards;
 }
+@media(min-width:769px){.danmaku-overlay .dm{font-size:14px}.danmaku-overlay .dm.dm-highlight{font-size:16px}}
+@media(max-width:768px){.danmaku-overlay .dm{font-size:11px}.danmaku-overlay .dm.dm-highlight{font-size:13px}}
 /* 弹幕开关按钮 */
 .dm-toggle{
  position:absolute;right:80px;top:50%;transform:translateY(-50%);
@@ -413,9 +438,9 @@ body.detail-mode .nav{
 .cn-title{color:rgba(255,255,255,.7);font-size:13px;white-space:nowrap;min-width:60px;text-align:center}
 
 /* 详情页返回按钮 */
-.cdp-back-top{position:fixed;bottom:16px;left:16px;z-index:9999;display:flex;align-items:center;gap:12px}
-.cdp-back-btn{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:all .3s;display:flex;align-items:center;gap:6px}
-.cdp-back-btn:hover{background:rgba(0,0,0,.8);transform:translateX(-2px);box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.cdp-back-top{position:fixed;top:12px;left:12px;z-index:10001;display:flex;align-items:center;gap:8px}
+.cdp-back-btn{background:rgba(30,20,60,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(168,140,255,.25);color:rgba(255,255,255,.9);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .3s;display:flex;align-items:center;gap:5px;box-shadow:0 2px 12px rgba(120,80,255,.15)}
+.cdp-back-btn:hover{background:rgba(30,20,60,.75);border-color:rgba(168,140,255,.45);transform:translateX(-2px);box-shadow:0 4px 16px rgba(120,80,255,.25)}
 .cdp-cover-wrap{position:relative}
 
 /* 未完待续（点击未解锁章节时显示） */
@@ -518,7 +543,7 @@ body.reading-mode .reading-comments{display:block}
 
 <!-- ========== 首页 ========== -->
 <div id="home" class="pg a">
-<div class="bn" onclick="showPage('comic3')" style="cursor:pointer"><img src="banner.jpg" alt="故事之外"></div>
+<div class="bn" onclick="showPage('comic3')" style="cursor:pointer"><img src="banner.webp" alt="故事之外"></div>
 <h2 style="color:var(--tp);margin-bottom:12px;font-size:20px">漫画列表</h2>
 <div class="tf" id="tag-filter">
 <span class="tf-btn active" data-tag="all" onclick="filterByTag(this,'all')">全部</span>
@@ -530,7 +555,7 @@ body.reading-mode .reading-comments{display:block}
 <div class="cl">
 <div class="cc" data-tags="第八世" onclick="showPage('comic1')"><div class="rb-hourglass">⏳</div><div class="cn">Ⅷ</div><img src="https://oss.talesofai.cn/picture/951fde7e-f286-4294-a4ee-2a16f91ede92.webp" alt="时之钥"><div class="ccc"><div class="cct">时之钥</div><div class="ccd">祂，今在，昔在，永在</div><div class="cci"><span class="vi">8.8万</span><span class="rt">8.888分</span></div></div></div>
 <div class="cc" data-tags="第八世" onclick="showPage('comic2')"><div class="cn">Ⅰ</div><img src="https://oss.talesofai.cn/picture/651ce822-8c1b-4046-847a-457f0c774cff.webp" alt="金尘"><div class="ccc"><div class="cct">金尘</div><div class="ccd">传教，从入门到入土</div><div class="cci"><span class="vi">19.8万</span><span class="rt">9.4分</span></div></div></div>
-<div class="cc" data-tags="第七世" onclick="showPage('comic4')"><div class="rb-hourglass">⏳</div><img src="chenzhong-cover.jpg" alt="钟鸣异邦"><div class="ccc"><div class="cct">钟鸣异邦</div><div class="ccd">晨钟：异世苏醒</div><div class="cci"><span class="vi">7.7万</span><span class="rt">9.5分</span></div></div></div>
+<div class="cc" data-tags="第七世" onclick="showPage('comic4')"><div class="rb-hourglass">⏳</div><img src="chenzhong-cover.webp" alt="钟鸣异邦"><div class="ccc"><div class="cct">钟鸣异邦</div><div class="ccd">晨钟：异世苏醒</div><div class="cci"><span class="vi">7.7万</span><span class="rt">9.5分</span></div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅱ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/5729ccf3-86a9-4e18-b829-465f3e53cee8.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅲ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/065a67f0-7c46-4f35-b7da-422d744da185.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅳ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/018438af-d9d5-40c2-8a1a-02270f495a36.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
@@ -539,9 +564,9 @@ body.reading-mode .reading-comments{display:block}
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅶ</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="cc-placeholder">未解锁人物</div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅸ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/0f514956-7258-41c1-9661-75cae10151d5.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅹ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/38705f78-033f-4913-b3a6-ce54c29d8134.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
-<div class="cc lk" data-tags="第九世"><img src="locked-9.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
-<div class="cc lk" data-tags="第十二世"><img src="locked-12-1.jpg" alt="锁定"><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
-<div class="cc lk" data-tags="第十二世"><img src="locked-12-2.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第九世"><img src="locked-9.webp" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第十二世"><img src="locked-12-1.webp" alt="锁定"><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
+<div class="cc lk" data-tags="第十二世"><img src="locked-12-2.webp" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 </div>
 </div>
 
@@ -633,7 +658,7 @@ body.reading-mode .reading-comments{display:block}
 <div id="profile" class="pg">
 <div class="pfc">
 <div class="pfl">
-<div class="aw"><img class="av" src="avatar.jpg" alt="头像"></div>
+<div class="aw"><img class="av" src="avatar.webp" alt="头像"></div>
 <div class="pfi"><h3>画外音</h3><p>ID: 12（？）</p><p>注册时间: 第七世？？？年</p></div>
 </div>
 <div class="pfs">
@@ -842,7 +867,7 @@ body.reading-mode .reading-comments{display:block}
 <div id="comic3-detail" class="comic-detail-page">
 <div class="cdp-back-top"><button class="cdp-back-btn" onclick="showPage('home')">← 返回</button></div>
 <div class="cdp-cover-wrap" id="comic3-cover-wrap">
-<img src="story-outside-cover.jpg" alt="故事之外" class="cdp-cover cdp-cover-full">
+<img src="story-outside-cover.webp" alt="故事之外" class="cdp-cover cdp-cover-full">
 <div class="cdp-tags"><span class="cbadge">第八世</span><span class="cbadge">救世会</span></div>
 </div>
 <div class="cdp-info">
@@ -889,7 +914,7 @@ body.reading-mode .reading-comments{display:block}
 </div>
 <div class="reading-area-wrap">
 <div class="reading-area" id="comic3-area-1">
-<img src="story-outside-1.jpg" alt="P1">
+<img src="story-outside-1.webp" alt="P1">
 </div>
 <div class="danmaku-overlay" id="comic3-danmaku-overlay-1"></div>
 </div>
@@ -923,9 +948,9 @@ body.reading-mode .reading-comments{display:block}
 </div>
 <div class="reading-area-wrap">
 <div class="reading-area" id="comic3-area-2">
-<img src="story-ch2-1.jpg" alt="P1">
-<img src="story-ch2-2.jpg" alt="P2">
-<img src="story-ch2-3.jpg" alt="P3">
+<img src="story-ch2-1.webp" alt="P1">
+<img src="story-ch2-2.webp" alt="P2">
+<img src="story-ch2-3.webp" alt="P3">
 </div>
 <div class="danmaku-overlay" id="comic3-danmaku-overlay-2"></div>
 </div>
@@ -957,7 +982,7 @@ body.reading-mode .reading-comments{display:block}
 <div id="comic4-detail" class="comic-detail-page">
 <div class="cdp-back-top"><button class="cdp-back-btn" onclick="showPage('home')">← 返回</button></div>
 <div class="cdp-cover-wrap cdp-cover-sticky">
-<img src="chenzhong-cover.jpg" alt="钟鸣异邦" class="cdp-cover cdp-cover-full">
+<img src="chenzhong-cover.webp" alt="钟鸣异邦" class="cdp-cover cdp-cover-full">
 <div class="cdp-tags"><span class="cbadge tag-hourglass">⏳</span><span class="cbadge">第七世</span></div>
 </div>
 <div class="cdp-info">
@@ -990,11 +1015,11 @@ body.reading-mode .reading-comments{display:block}
 </div>
 <div class="reading-area-wrap">
 <div class="reading-area" id="comic4-area">
-<img src="chenzhong-p1.jpg" alt="P1">
-<img src="chenzhong-p2.jpg" alt="P2">
-<img src="chenzhong-p3.jpg" alt="P3">
-<img src="chenzhong-p4.jpg" alt="P4">
-<img src="chenzhong-p5.jpg" alt="P5">
+<img src="chenzhong-p1.webp" alt="P1">
+<img src="chenzhong-p2.webp" alt="P2">
+<img src="chenzhong-p3.webp" alt="P3">
+<img src="chenzhong-p4.webp" alt="P4">
+<img src="chenzhong-p5.webp" alt="P5">
 </div>
 <div class="danmaku-overlay" id="comic4-danmaku-overlay"></div>
 </div>
@@ -1115,22 +1140,24 @@ function enterReadingMode(cid,n){
   var titleEl=document.getElementById('comic3-topbar-title-'+n);
   reader.style.display='block';
   topbar.style.display='block';
+  topbar.classList.add('loading');
   titleEl.textContent=chapterNames[cid]?chapterNames[cid][n-1]:'第'+n+'话';
   /* 记录当前活跃的 reader/topbar ID */
   currentActiveReader='comic3-reader-'+n;
   currentActiveTopbar='comic3-topbar-'+n;
-  setTimeout(function(){setupScrollTracker(cid);setupDanmakuScroll(cid,n);triggerInitialDanmaku(cid)},200);
+  setTimeout(function(){setupImgFadeIn(cid,n);setupScrollTracker(cid);setupDanmakuScroll(cid,n);triggerInitialDanmaku(cid)},200);
  }else{
   var reader=document.getElementById(cid+'-reader');
   var topbar=document.getElementById(cid+'-topbar');
   var titleEl=document.getElementById(cid+'-topbar-title');
   reader.style.display='block';
   topbar.style.display='block';
+  topbar.classList.add('loading');
   titleEl.textContent=chapterNames[cid]?chapterNames[cid][n-1]:'第'+n+'话';
   /* 记录当前活跃的 reader/topbar ID */
   currentActiveReader=cid+'-reader';
   currentActiveTopbar=cid+'-topbar';
-  setTimeout(function(){setupScrollTracker(cid);setupDanmakuScroll(cid);triggerInitialDanmaku(cid)},200);
+  setTimeout(function(){setupImgFadeIn(cid);setupScrollTracker(cid);setupDanmakuScroll(cid);triggerInitialDanmaku(cid)},200);
  }
 
  document.body.classList.add('reading-mode');
@@ -1216,6 +1243,51 @@ function setupScrollTracker(cid){
  }
  window.addEventListener('scroll',updatePage);
  updatePage();
+}
+
+/* 图片渐进加载：骨架屏 + 淡入 */
+function setupImgFadeIn(cid,chapter){
+ var areaId=cid+'-area';
+ if(chapter)areaId=cid+'-area-'+chapter;
+ var area=document.getElementById(areaId);
+ if(!area)return;
+ var imgs=area.querySelectorAll('img');
+ var total=imgs.length;
+ var loaded=0;
+
+ /* 为每张图片添加骨架占位 */
+ for(var i=0;i<imgs.length;i++){
+  var img=imgs[i];
+  /* 创建骨架占位 */
+  var skel=document.createElement('div');
+  skel.className='img-skeleton';
+  skel.id=areaId+'-skel-'+i;
+  img.parentNode.insertBefore(skel,img);
+  /* 图片加载完成后淡入 */
+  (function(s,idx){
+   img.onload=function(){
+    s.style.display='none';
+    img.classList.add('loaded');
+    loaded++;
+    if(loaded>=total){
+     /* 全部加载完成，移除顶栏加载提示 */
+     var topbarId=cid+'-topbar';
+     if(chapter)topbarId=cid+'-topbar-'+chapter;
+     var tb=document.getElementById(topbarId);
+     if(tb)tb.classList.remove('loading');
+    }
+   };
+   img.onerror=function(){
+    s.style.display='none';
+    img.classList.add('loaded');
+    loaded++;
+   };
+  })(skel,i);
+  /* 如果图片已缓存，触发 onload */
+  if(img.complete&&img.naturalWidth>0){
+   img.onload&&img.onload();
+  }
+ }
 }
 
 /* === Danmaku System === */
@@ -1402,7 +1474,7 @@ function spawnDanmaku(cid,pageIndex,chapter){
     el.textContent=d.t;
     el.style.top=(3+Math.random()*65)+'%';
     el.style.color='#fff';
-    if(d.c==='#ffd93d'||d.c==='#ff6b9d')el.style.fontSize='16px';
+    if(d.c==='#ffd93d'||d.c==='#ff6b9d')el.classList.add('dm-highlight');
     var dur=7+Math.random()*5;
     el.style.animationDuration=dur+'s';
     overlay.appendChild(el);
@@ -1443,7 +1515,7 @@ function sendDanmakuReading(cid,chapter){
  el.textContent=v;
  el.style.top=(3+Math.random()*65)+'%';
  el.style.color='#ffd93d';
- el.style.fontSize='16px';
+ el.classList.add('dm-highlight');
  var dur=7+Math.random()*5;
  el.style.animationDuration=dur+'s';
  overlay.appendChild(el);
@@ -1548,21 +1620,29 @@ async function getAIReply(char,userComment){
  /* 方案二：按模型调整超时和参数 */
  var modelConfig={
   'qwen3.5-plus-no-think':{timeout:15000,max_tokens:120},
-  'qwen3.5-plus':{timeout:45000,max_tokens:300},
-  'qwen3.6-plus':{timeout:45000,max_tokens:300},
-  'gpt-4.1':{timeout:60000,max_tokens:300},
-  'gpt-5.2':{timeout:60000,max_tokens:300}
+  'qwen3.5-plus':{timeout:90000,max_tokens:300},
+  'qwen3.6-plus':{timeout:90000,max_tokens:300},
+  'gpt-4.1':{timeout:120000,max_tokens:300},
+  'gpt-5.2':{timeout:120000,max_tokens:300}
  };
  var cfg=modelConfig[model]||{timeout:30000,max_tokens:200};
  var ctrl=new AbortController();
- var timer=setTimeout(function(){ctrl.abort()},cfg.timeout);
+ var timedOut=false;
+ var timer=setTimeout(function(){timedOut=true;ctrl.abort('timeout')},cfg.timeout);
  try{
   var r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},body:JSON.stringify({model:model,messages:[{role:'system',content:sys},{role:'user',content:'用户在漫画评论区说："' + userComment + '"\n请以'+char.name+'的身份回复这条评论。'}],max_tokens:cfg.max_tokens,temperature:0.85}),signal:ctrl.signal});
   clearTimeout(timer);
   if(!r.ok){console.error('AI API error:',r.status,r.statusText);return null}
   var d=await r.json();
   return d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:null;
- }catch(e){clearTimeout(timer);console.error('AI request failed:',e.message);return null}
+ }catch(e){
+  clearTimeout(timer);
+  if(e.name==='AbortError'){
+   if(timedOut){console.warn('AI timeout after',cfg.timeout+'ms');return null}
+   else{console.error('AI request aborted by server, try no-think model');return 'ABORTED'}
+  }
+  console.error('AI request failed:',e.message);return null;
+ }
 }
 
 /* === 回复角色发言 === */
@@ -1735,7 +1815,7 @@ window.onload=function(){
  var COMIC_META={
   comic1:{title:'时之钥',cover:'https://oss.talesofai.cn/picture/951fde7e-f286-4294-a4ee-2a16f91ede92.webp',desc:'祂，今在，昔在，永在',rating:'8.888分',views:'8.8万'},
   comic2:{title:'金尘',cover:'https://oss.talesofai.cn/picture/651ce822-8c1b-4046-847a-457f0c774cff.webp',desc:'在充满金色尘埃的世界里，少女与命运抗争的奇幻冒险。',rating:'9.4分',views:'19.8万'},
-  comic3:{title:'故事之外',cover:'story-outside-cover.jpg',desc:'杀青梗存在的世界——四格短篇合集',rating:'短篇',views:'四格'}
+  comic3:{title:'故事之外',cover:'story-outside-cover.webp',desc:'杀青梗存在的世界——四格短篇合集',rating:'短篇',views:'四格'}
  };
  function getBookshelf(){try{var d=localStorage.getItem('manga_bookshelf');return d?JSON.parse(d):{}}catch(e){return{}}}
  function saveBookshelf(data){try{localStorage.setItem('manga_bookshelf',JSON.stringify(data))}catch(e){}}
@@ -1847,7 +1927,9 @@ async function sendChat(){
   /* 移除加载中提示 */
   var loadingEl=document.getElementById(loadingId);
   if(loadingEl)loadingEl.remove();
-  if(reply){
+  if(reply===true||reply==='ABORTED'){
+    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble">⚡ 服务器端超时了，思考模型响应较慢，建议切换到「Qwen 3.5 Plus (快速)」再试～</div><div class="msg-time">'+timeStr2+'</div></div></div>';
+  } else if(reply){
     msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble">'+escapeHtml(reply)+'</div><div class="msg-time">'+timeStr2+'</div></div></div>';
   } else {
     msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble">角色思考时间较长，请稍后再试…</div><div class="msg-time">'+timeStr2+'</div></div></div>';
