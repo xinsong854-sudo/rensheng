@@ -530,6 +530,7 @@ body.reading-mode .reading-comments{display:block}
 <div class="cl">
 <div class="cc" data-tags="第八世" onclick="showPage('comic1')"><div class="rb-hourglass">⏳</div><div class="cn">Ⅷ</div><img src="https://oss.talesofai.cn/picture/951fde7e-f286-4294-a4ee-2a16f91ede92.webp" alt="时之钥"><div class="ccc"><div class="cct">时之钥</div><div class="ccd">祂，今在，昔在，永在</div><div class="cci"><span class="vi">8.8万</span><span class="rt">8.888分</span></div></div></div>
 <div class="cc" data-tags="第八世" onclick="showPage('comic2')"><div class="cn">Ⅰ</div><img src="https://oss.talesofai.cn/picture/651ce822-8c1b-4046-847a-457f0c774cff.webp" alt="金尘"><div class="ccc"><div class="cct">金尘</div><div class="ccd">传教，从入门到入土</div><div class="cci"><span class="vi">19.8万</span><span class="rt">9.4分</span></div></div></div>
+<div class="cc" data-tags="第七世" onclick="showPage('comic4')"><div class="rb-hourglass">⏳</div><img src="chenzhong-cover.jpg" alt="钟鸣异邦"><div class="ccc"><div class="cct">钟鸣异邦</div><div class="ccd">晨钟：异世苏醒</div><div class="cci"><span class="vi">7.7万</span><span class="rt">9.5分</span></div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅱ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/5729ccf3-86a9-4e18-b829-465f3e53cee8.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅲ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/065a67f0-7c46-4f35-b7da-422d744da185.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第八世"><div class="cn">Ⅳ</div><div class="lk-o"><div class="lk-i">🔒</div></div><img src="https://claw-annuonie-pages.talesofai.com/images/018438af-d9d5-40c2-8a1a-02270f495a36.jpg" alt="锁定"><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
@@ -541,7 +542,6 @@ body.reading-mode .reading-comments{display:block}
 <div class="cc lk" data-tags="第九世"><img src="locked-9.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第十二世"><img src="locked-12-1.jpg" alt="锁定"><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
 <div class="cc lk" data-tags="第十二世"><img src="locked-12-2.jpg" alt="锁定"><div class="rb-hourglass">⏳</div><div class="lk-o"><div class="lk-i">🔒</div></div><div class="ccc"><div class="cct">未解锁漫画</div><div class="ccd">敬请期待</div></div></div>
-<div class="cc" data-tags="第七世" onclick="showPage('comic4')"><div class="rb-hourglass">⏳</div><img src="chenzhong-cover.jpg" alt="钟鸣异邦"><div class="ccc"><div class="cct">钟鸣异邦</div><div class="ccd">晨钟：异世苏醒</div></div></div>
 </div>
 </div>
 
@@ -962,7 +962,7 @@ body.reading-mode .reading-comments{display:block}
 </div>
 <div class="cdp-info">
 <h1 class="cdp-title">钟鸣异邦</h1>
-<div class="cdp-meta"><span class="vi">待公开</span><span class="rt">9.5分</span></div>
+<div class="cdp-meta"><span class="vi">7.7万</span><span class="rt">9.5分</span></div>
 <div class="cdp-actions">
 <button id="fav-comic4" class="cdp-fav-btn" onclick="toggleBookshelf('comic4')">🤍 加入书架</button>
 </div>
@@ -1545,15 +1545,24 @@ function pickChar(excludeIds){
 async function getAIReply(char,userComment){
  var sys='你是漫画角色"'+char.name+'"。角色设定：'+char.desc+'。规则：1.用该角色口吻回复用户评论，20-60字。2.完全沉浸角色不跳出。3.不知道的事用角色方式含糊带过。4.不要提及自己是AI。5.不要透露隐藏设定。6.用中文回复。7.只回复评论，不复述。';
  var model=getChatModel();
+ /* 方案二：按模型调整超时和参数 */
+ var modelConfig={
+  'qwen3.5-plus-no-think':{timeout:15000,max_tokens:120},
+  'qwen3.5-plus':{timeout:45000,max_tokens:300},
+  'qwen3.6-plus':{timeout:45000,max_tokens:300},
+  'gpt-4.1':{timeout:60000,max_tokens:300},
+  'gpt-5.2':{timeout:60000,max_tokens:300}
+ };
+ var cfg=modelConfig[model]||{timeout:30000,max_tokens:200};
  var ctrl=new AbortController();
- var timer=setTimeout(function(){ctrl.abort()},15000);
+ var timer=setTimeout(function(){ctrl.abort()},cfg.timeout);
  try{
-  var r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},body:JSON.stringify({model:model,messages:[{role:'system',content:sys},{role:'user',content:'用户在漫画评论区说："' + userComment + '"\n请以'+char.name+'的身份回复这条评论。'}],max_tokens:120,temperature:0.85}),signal:ctrl.signal});
+  var r=await fetch(AI_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_KEY},body:JSON.stringify({model:model,messages:[{role:'system',content:sys},{role:'user',content:'用户在漫画评论区说："' + userComment + '"\n请以'+char.name+'的身份回复这条评论。'}],max_tokens:cfg.max_tokens,temperature:0.85}),signal:ctrl.signal});
   clearTimeout(timer);
-  if(!r.ok)return null;
+  if(!r.ok){console.error('AI API error:',r.status,r.statusText);return null}
   var d=await r.json();
   return d.choices&&d.choices[0]&&d.choices[0].message?d.choices[0].message.content:null;
- }catch(e){clearTimeout(timer);return null}
+ }catch(e){clearTimeout(timer);console.error('AI request failed:',e.message);return null}
 }
 
 /* === 回复角色发言 === */
@@ -1813,8 +1822,11 @@ async function sendChat(){
   var msg = input.value.trim();
   if(!msg || !currentChatId) return;
   var btn = document.getElementById('chat-send-btn');
+  var model=getChatModel();
   btn.disabled = true;
-  btn.textContent = '...';
+  btn.textContent = '思考中...';
+  input.disabled = true;
+  input.placeholder = '等待回复...';
   input.value = '';
   var msgs = document.getElementById('chat-messages');
   if(msgs.querySelector('.chat-welcome')) msgs.innerHTML = '';
@@ -1822,17 +1834,28 @@ async function sendChat(){
   var timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
   msgs.innerHTML += '<div class="chat-msg user"><div><div class="msg-name">你</div><div class="msg-bubble">'+escapeHtml(msg)+'</div><div class="msg-time">'+timeStr+'</div></div></div>';
   msgs.scrollTop = msgs.scrollHeight;
-  /* 用 LLM 生成角色回复 */
+  /* 显示加载中的提示 */
+  var loadingId='loading-'+Date.now();
   var c = CHARACTERS.find(function(x){return x.id===currentChatId});
+  msgs.innerHTML += '<div class="chat-msg bot" id="'+loadingId+'"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble" style="opacity:.5">💭 正在思考...</div></div></div>';
+  msgs.scrollTop = msgs.scrollHeight;
+  /* 用 LLM 生成角色回复 */
   var aiChar = findAIChar(currentChatId);
   var reply = aiChar ? await getAIReply(aiChar, msg) : null;
+  var now2 = new Date();
+  var timeStr2 = now2.getHours().toString().padStart(2,'0')+':'+now2.getMinutes().toString().padStart(2,'0');
+  /* 移除加载中提示 */
+  var loadingEl=document.getElementById(loadingId);
+  if(loadingEl)loadingEl.remove();
   if(reply){
-    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble">'+escapeHtml(reply)+'</div><div class="msg-time">'+timeStr+'</div></div></div>';
+    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble">'+escapeHtml(reply)+'</div><div class="msg-time">'+timeStr2+'</div></div></div>';
   } else {
-    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-bubble">信号不太好，请稍后再试…</div></div></div>';
+    msgs.innerHTML += '<div class="chat-msg bot"><div><div class="msg-name">'+(c?c.name:'')+'</div><div class="msg-bubble">角色思考时间较长，请稍后再试…</div><div class="msg-time">'+timeStr2+'</div></div></div>';
   }
   btn.disabled = false;
   btn.textContent = '发送';
+  input.disabled = false;
+  input.placeholder = '输入消息...';
   msgs.scrollTop = msgs.scrollHeight;
   chatHistory[currentChatId] = msgs.innerHTML;
 }
