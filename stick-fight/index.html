@@ -3,34 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>火柴人打斗表演</title>
+<title>火柴人战斗模拟</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   background: #0a0a0f;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 100vh; overflow: hidden;
+  color: #c8c8d8;
   font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh; overflow-x: hidden;
+  display: flex; flex-direction: column; align-items: center;
 }
 h1 {
-  color: #fff; font-size: 1.2rem;
-  margin-bottom: 12px; opacity: .6;
+  color: #fff; font-size: 1.3rem;
+  margin: 20px 0 8px; opacity: .7;
   letter-spacing: 2px;
 }
+
+/* ---- 面板 ---- */
+.panel {
+  background: rgba(14,14,20,.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 920px;
+  width: calc(100% - 24px);
+  margin: 8px 0;
+}
+
+/* ---- 输入区 ---- */
+.input-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  align-items: center;
+}
+.input-row input {
+  flex: 1; min-width: 180px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 6px;
+  background: rgba(10,10,16,.8);
+  color: #c8c8d8;
+  font-size: .85rem;
+  outline: none;
+}
+.input-row input:focus { border-color: rgba(138,127,199,.4); }
+.input-row button, .panel button {
+  padding: 8px 16px;
+  border: 1px solid rgba(138,127,199,.25);
+  border-radius: 6px;
+  background: rgba(138,127,199,.12);
+  color: #c8c8d8;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: .2s;
+  white-space: nowrap;
+}
+.input-row button:hover, .panel button:hover {
+  background: rgba(138,127,199,.25);
+  border-color: rgba(138,127,199,.4);
+}
+
+/* ---- 角色卡片 ---- */
+.char-section {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-top: 10px;
+}
+.char-card {
+  flex: 1; min-width: 260px;
+  background: rgba(20,20,30,.6);
+  border: 1px solid rgba(255,255,255,.04);
+  border-radius: 8px;
+  padding: 12px;
+}
+.char-card.p1 { border-left: 3px solid #4af; }
+.char-card.p2 { border-left: 3px solid #f55; }
+.char-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+.char-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.1);
+  object-fit: cover;
+  background: rgba(10,10,16,.8);
+  display: block;
+}
+.char-avatar.placeholder {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+}
+.char-name { font-weight: 600; font-size: .95rem; }
+.char-origin { font-size: .65rem; color: #7a7a8a; margin-top: 2px; }
+.char-desc { font-size: .75rem; color: #999; line-height: 1.5; margin-bottom: 8px; }
+
+/* ---- 招式列表 ---- */
+.moves { display: flex; flex-direction: column; gap: 4px; }
+.move-item {
+  padding: 6px 8px;
+  background: rgba(10,10,16,.5);
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,.03);
+  font-size: .75rem;
+}
+.move-item .move-type {
+  display: inline-block;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: .6rem;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.move-item .move-type.normal { background: rgba(122,184,122,.15); color: #7ab87a; }
+.move-item .move-type.skill { background: rgba(138,127,199,.15); color: #8a7fc7; }
+.move-item .move-type.ultimate { background: rgba(212,160,224,.15); color: #d4a0e0; }
+.move-item .move-name { font-weight: 600; color: #ddd; }
+.move-item .move-desc { color: #888; margin-top: 2px; }
+
+/* ---- canvas ---- */
 canvas {
   border: 1px solid #222;
   border-radius: 8px;
   background: #0d0d14;
   box-shadow: 0 0 40px rgba(100,120,255,.08);
+  margin: 8px 0;
+  max-width: calc(100% - 24px);
 }
+
+/* ---- UI 按钮 ---- */
 #ui {
-  position: fixed; bottom: 20px;
-  display: flex; gap: 10px;
+  display: flex; gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+  margin: 8px 0 20px;
 }
-button {
+#ui button {
   padding: 8px 18px;
   border: 1px solid #333;
   border-radius: 6px;
@@ -38,27 +145,163 @@ button {
   color: #ccc; font-size: .85rem;
   cursor: pointer; transition: .2s;
 }
-button:hover { background: #22223a; color: #fff; border-color: #556; }
+#ui button:hover { background: #22223a; color: #fff; border-color: #556; }
+
+/* ---- 加载 ---- */
+.loading-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(10,10,15,.9);
+  z-index: 100;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 50px; height: 50px;
+  border: 3px solid rgba(138,127,199,.2);
+  border-top-color: #8a7fc7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  margin-top: 16px;
+  font-size: .85rem;
+  color: #8a7fc7;
+  letter-spacing: .1em;
+}
+.loading-sub {
+  margin-top: 6px;
+  font-size: .7rem;
+  color: #555;
+}
+
+/* ---- 对战信息 ---- */
+.vs-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px;
+  padding: 8px;
+  font-size: .85rem;
+  color: #aaa;
+}
+.vs-bar .vs-name { font-weight: 600; }
+.vs-bar .vs-name.p1 { color: #4af; }
+.vs-bar .vs-name.p2 { color: #f55; }
+.vs-bar .vs-label { color: #555; }
+
+/* ---- 解说 ---- */
+.commentary {
+  text-align: center;
+  font-size: .8rem;
+  color: #d4a0e0;
+  opacity: .8;
+  margin-bottom: 4px;
+  min-height: 1.2em;
+  letter-spacing: .05em;
+}
+
+/* ---- 移动端 ---- */
+@media (max-width: 640px) {
+  .char-section { flex-direction: column; }
+  .char-card { min-width: auto; }
+  h1 { font-size: 1.1rem; }
+}
 </style>
 </head>
 <body>
-<h1>🔥 火柴人 FIGHT 🔥</h1>
+
+<h1>🔥 火柴人战斗模拟 🔥</h1>
+
+<!-- 角色输入 -->
+<div class="panel">
+  <div style="font-size:.75rem;color:#7a7a8a;margin-bottom:6px;letter-spacing:.1em">⚡ P1 角色（捏Ta链接）</div>
+  <div class="input-row">
+    <input id="p1Link" placeholder="https://nieta.talesofai.com/character/xxxxx 或角色名" />
+    <button onclick="loadP1()">🔍 查找</button>
+  </div>
+
+  <div style="font-size:.75rem;color:#7a7a8a;margin:10px 0 6px;letter-spacing:.1em">⚡ P2 角色</div>
+  <div class="input-row">
+    <input id="p2Link" placeholder="捏Ta链接 或角色名" />
+    <button onclick="loadP2()">🔍 查找</button>
+    <button onclick="autoEnemy()" id="btnAuto" style="border-color:rgba(245,85,85,.3);color:#f77;">🎲 智能对决</button>
+  </div>
+</div>
+
+<!-- 角色展示 -->
+<div class="char-section" id="charSection">
+  <div class="char-card p1" id="card1">
+    <div class="char-header">
+      <div class="char-avatar placeholder" id="avatar1">🔵</div>
+      <div>
+        <div class="char-name" id="name1">蓝方战士</div>
+        <div class="char-origin" id="origin1">默认角色</div>
+      </div>
+    </div>
+    <div class="char-desc" id="desc1">等待导入角色...</div>
+    <div class="moves" id="moves1">
+      <div class="move-item"><span class="move-type normal">普攻</span><span class="move-name">普通拳击</span><div class="move-desc">基础的直拳攻击</div></div>
+      <div class="move-item"><span class="move-type skill">技能</span><span class="move-name">旋风踢</span><div class="move-desc">旋转一周后踢出</div></div>
+      <div class="move-item"><span class="move-type ultimate">大招</span><span class="move-name">终结飞踢</span><div class="move-desc">从空中劈下的致命一击</div></div>
+    </div>
+  </div>
+  <div class="char-card p2" id="card2">
+    <div class="char-header">
+      <div class="char-avatar placeholder" id="avatar2">🔴</div>
+      <div>
+        <div class="char-name" id="name2">红方战士</div>
+        <div class="char-origin" id="origin2">默认角色</div>
+      </div>
+    </div>
+    <div class="char-desc" id="desc2">等待导入角色...</div>
+    <div class="moves" id="moves2">
+      <div class="move-item"><span class="move-type normal">普攻</span><span class="move-name">普通拳击</span><div class="move-desc">基础的直拳攻击</div></div>
+      <div class="move-item"><span class="move-type skill">技能</span><span class="move-name">旋风踢</span><div class="move-desc">旋转一周后踢出</div></div>
+      <div class="move-item"><span class="move-type ultimate">大招</span><span class="move-name">终结飞踢</span><div class="move-desc">从空中劈下的致命一击</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" style="text-align:center;margin-top:10px;">
+  <button onclick="startFight()" style="font-size:1rem;padding:10px 30px;border-color:rgba(212,160,224,.3);color:#d4a0e0;">⚔️ 开始战斗</button>
+</div>
+
+<!-- 对战栏 -->
+<div class="panel" style="padding:6px 12px;">
+  <div class="vs-bar">
+    <span class="vs-name p1" id="vsP1">蓝方战士</span>
+    <span class="vs-label">VS</span>
+    <span class="vs-name p2" id="vsP2">红方战士</span>
+  </div>
+</div>
+
+<div class="commentary" id="commentary"></div>
 <canvas id="c"></canvas>
+
 <div id="ui">
-  <button onclick="restart()">🔄 重来</button>
+  <button onclick="restart()">🔄 重新战斗</button>
   <button onclick="toggleSlow()">⏱ 慢放</button>
   <button onclick="toggleAuto()">▶ 自动重播</button>
 </div>
+
+<!-- 加载遮罩 -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadText">分析中...</div>
+  <div class="loading-sub" id="loadSub"></div>
+</div>
+
 <script>
+// ===== 常量 & 状态 =====
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
-const REF_W = 900;
-const REF_H = 500;
+const REF_W = 900, REF_H = 500;
 let W, H, GROUND, scaleX, scaleY;
 
 function resizeCanvas() {
   W = canvas.width = Math.min(REF_W, window.innerWidth - 30);
-  H = canvas.height = Math.min(REF_H, window.innerHeight - 120);
+  H = canvas.height = Math.min(REF_H, window.innerHeight - 180);
   GROUND = H - 60;
   scaleX = W / REF_W;
   scaleY = H / REF_H;
@@ -68,8 +311,423 @@ resizeCanvas();
 const GRAVITY = 0.55 * scaleY;
 let slow = false, autoReplay = false, time = 0;
 let rafId = null;
+let headImg1 = null, headImg2 = null; // 角色头像
 
-// ---- 姿势系统 ----
+// LLM 配置
+const LLM_URL = 'https://litellm.talesofai.cn/v1/chat/completions';
+const LLM_KEY = 'sk-fZrLXE0IEs6EDYJCOsLLaQ';
+const LLM_MODEL = 'qwen3.5-plus-no-think';
+
+// 角色数据
+let P1 = { name: '蓝方战士', desc: '', origin: '默认角色', avatar: null, moves: defaultMoves() };
+let P2 = { name: '红方战士', desc: '', origin: '默认角色', avatar: null, moves: defaultMoves() };
+
+function defaultMoves() {
+  return [
+    { type: 'normal', name: '普通拳击', desc: '基础的直拳攻击',
+      phases: [
+        { f: 6, pose: 'punch', hit: false },
+        { f: 4, pose: 'punch', hit: true },
+        { f: 8, pose: 'fight', hit: false }
+      ]
+    },
+    { type: 'skill', name: '旋风踢', desc: '旋转一周后踢出',
+      phases: [
+        { f: 8, pose: 'highKick', hit: false },
+        { f: 4, pose: 'highKick', hit: true },
+        { f: 6, pose: 'fight', hit: false }
+      ]
+    },
+    { type: 'ultimate', name: '终结飞踢', desc: '从空中劈下的致命一击',
+      phases: [
+        { f: 8, pose: 'jump', hit: false },
+        { f: 6, pose: 'axeKick', hit: true, big: true },
+        { f: 8, pose: 'fight', hit: false }
+      ]
+    }
+  ];
+}
+
+// ===== 捏Ta API =====
+function extractUUID(url) {
+  if (!url) return '';
+  // 匹配 UUID 格式: 8-4-4-4-12 hex
+  const m = url.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+  return m ? m[0] : '';
+}
+
+async function fetchCharacter(uuid) {
+  // 捏Ta API - 通过 UUID 查询角色
+  const resp = await fetch(`https://api.nieta.com.cn/v1/character/${uuid}`);
+  if (!resp.ok) throw new Error('角色查询失败: ' + resp.status);
+  const data = await resp.json();
+  return {
+    name: data.name || data.nick_name || '未知角色',
+    desc: data.description || data.desc || data.info || '',
+    avatar: data.cover_image_url || data.avatar_url || data.image_url || data.avatar || ''
+  };
+}
+
+async function searchCharacter(keyword) {
+  // 捏Ta API - 搜索角色
+  const resp = await fetch(`https://api.nieta.com.cn/v1/character/search?keywords=${encodeURIComponent(keyword)}&parent_type=character&sort_scheme=exact`);
+  if (!resp.ok) throw new Error('搜索失败: ' + resp.status);
+  const data = await resp.json();
+  if (data && data.items && data.items.length > 0) {
+    const c = data.items[0];
+    return {
+      name: c.name || c.nick_name || '未知角色',
+      desc: c.description || c.desc || c.info || '',
+      avatar: c.cover_image_url || c.avatar_url || c.image_url || ''
+    };
+  }
+  return null;
+}
+
+// ===== 图片处理 =====
+function loadImage(url) {
+  if (!url) return null;
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+function drawCircleAvatar(img, x, y, radius) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  if (img) {
+    // 裁剪图片适配圆形
+    const size = radius * 2;
+    ctx.drawImage(img, x - radius, y - radius, size, size);
+  }
+  ctx.restore();
+  // 边框
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 2 * scaleX;
+  ctx.stroke();
+}
+
+// ===== LLM 调用 =====
+async function llmCall(systemPrompt, userPrompt, maxTokens = 2048, temperature = 0.85) {
+  const ctrl = new AbortController();
+  const tmo = setTimeout(() => ctrl.abort(), 30000);
+  const resp = await fetch(LLM_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + LLM_KEY
+    },
+    body: JSON.stringify({
+      model: LLM_MODEL,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      max_tokens: maxTokens,
+      temperature
+    }),
+    signal: ctrl.signal
+  });
+  clearTimeout(tmo);
+  if (!resp.ok) throw new Error('LLM 请求失败: ' + resp.status);
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+function parseJSON(t) {
+  t = t.replace(/```(?:json)?/g, '').replace(/```/g, '').trim();
+  for (const open of ['[', '{']) {
+    const start = t.indexOf(open);
+    if (start < 0) continue;
+    const close = open === '[' ? ']' : '}';
+    let depth = 0, inStr = false, esc = false;
+    for (let i = start; i < t.length; i++) {
+      const c = t[i];
+      if (esc) { esc = false; continue; }
+      if (c === '\\') { esc = true; continue; }
+      if (c === '"') inStr = !inStr;
+      if (inStr) continue;
+      if (c === open) depth++;
+      if (c === close) { depth--; if (depth === 0) {
+        const sub = t.substring(start, i + 1);
+        try { return JSON.parse(sub); } catch(e) {}
+        break;
+      }}
+    }
+  }
+  try { return JSON.parse(t); } catch(e) {}
+  return null;
+}
+
+// ===== 加载角色 =====
+function showLoading(text, sub) {
+  document.getElementById('loadText').textContent = text;
+  document.getElementById('loadSub').textContent = sub || '';
+  document.getElementById('loading').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loading').classList.remove('show');
+}
+
+async function loadP1() {
+  const input = document.getElementById('p1Link').value.trim();
+  if (!input) return;
+  await loadCharacter(1, input);
+}
+
+async function loadP2() {
+  const input = document.getElementById('p2Link').value.trim();
+  if (!input) return;
+  await loadCharacter(2, input);
+}
+
+async function loadCharacter(player, input) {
+  showLoading('正在查找角色...', input);
+  try {
+    let charData = null;
+    const uuid = extractUUID(input);
+
+    if (uuid) {
+      try {
+        charData = await fetchCharacter(uuid);
+        charData.origin = '捏Ta';
+      } catch(e) {
+        // API 可能不是这个格式，尝试搜索
+        const nameGuess = input.split('/').pop().replace(/[-_]/g, ' ');
+        charData = await searchCharacter(nameGuess);
+        if (charData) charData.origin = '捏Ta搜索';
+      }
+    } else {
+      charData = await searchCharacter(input);
+      if (charData) charData.origin = '捏Ta搜索';
+    }
+
+    if (!charData) {
+      // 搜索失败，用输入作为角色名
+      charData = { name: input, desc: '', avatar: '', origin: '自定义' };
+    }
+
+    // 更新角色数据
+    const p = player === 1 ? P1 : P2;
+    p.name = charData.name;
+    p.desc = charData.desc;
+    p.origin = charData.origin;
+
+    // 加载头像
+    if (charData.avatar) {
+      const img = await loadImage(charData.avatar);
+      if (player === 1) headImg1 = img;
+      else headImg2 = img;
+    }
+
+    // LLM 生成招式
+    showLoading('正在分析战斗风格...', `${charData.name} 的招式生成中`);
+    const moves = await generateMoves(charData);
+    p.moves = moves;
+
+    // 更新 UI
+    updateCharUI(player, charData);
+    hideLoading();
+  } catch(e) {
+    hideLoading();
+    alert('加载失败: ' + e.message);
+  }
+}
+
+function updateCharUI(player, charData) {
+  const n = player === 1 ? '1' : '2';
+  document.getElementById('name' + n).textContent = charData.name;
+  document.getElementById('origin' + n).textContent = charData.origin;
+  document.getElementById('desc' + n).textContent = charData.desc || '暂无简介';
+  document.getElementById('vsP' + n).textContent = charData.name;
+
+  // 更新头像
+  const avatarEl = document.getElementById('avatar' + n);
+  if (charData.avatar) {
+    avatarEl.outerHTML = `<img class="char-avatar" id="avatar${n}" src="${charData.avatar}" onerror="this.outerHTML='<div class=\\'char-avatar placeholder\\' id=\\'avatar${n}\\'>${player === 1 ? '🔵' : '🔴'}</div>'" />`;
+  }
+
+  // 更新招式
+  const p = player === 1 ? P1 : P2;
+  const movesEl = document.getElementById('moves' + n);
+  movesEl.innerHTML = p.moves.map(m =>
+    `<div class="move-item">
+      <span class="move-type ${m.type}">${m.type === 'normal' ? '普攻' : m.type === 'skill' ? '技能' : '大招'}</span>
+      <span class="move-name">${m.name}</span>
+      <div class="move-desc">${m.desc}</div>
+    </div>`
+  ).join('');
+}
+
+async function generateMoves(charData) {
+  const prompt = `你是火柴人战斗模拟的招式设计师。请根据以下角色信息，为该角色设计 3 种火柴人战斗招式：
+
+角色名：${charData.name}
+角色简介：${charData.desc || '暂无'}
+来源：${charData.origin}
+
+要求：
+1. 根据角色的能力、性格、背景设计符合其特色的招式
+2. 招式名要有创意，符合角色风格
+3. 描述要有趣带吐槽
+4. 每个招式要对应火柴人的 pose 序列
+
+可用 pose：stand(站), fight(战斗), punch(出拳), heavyPunch(重拳), kick(踢腿), highKick(上踢), block(防御), hit(被打), knockback(后仰), jump(跳跃), axeKick(下劈), kneel(跪地), victory(胜利)
+
+严格返回 JSON 数组：
+[
+  {
+    "type": "normal",
+    "name": "招式名",
+    "desc": "简短有趣的描述",
+    "phases": [
+      {"f": 8, "pose": "jump", "hit": false},
+      {"f": 6, "pose": "highKick", "hit": true, "big": false},
+      {"f": 8, "pose": "fight", "hit": false}
+    ]
+  },
+  ...
+]
+3 个招式分别是普通攻击、技能、大招。大招的 phases 中最后一个打击设 "big": true。`;
+
+  const result = await llmCall(
+    '你只返回 JSON 数组，不返回其他任何内容。',
+    prompt,
+    1024, 0.85
+  );
+  const moves = parseJSON(result);
+  if (moves && Array.isArray(moves) && moves.length >= 3) {
+    return moves.slice(0, 3);
+  }
+  return defaultMoves();
+}
+
+// ===== 智能对决 =====
+async function autoEnemy() {
+  if (!P1.name || P1.name === '蓝方战士') {
+    alert('请先导入 P1 角色');
+    return;
+  }
+
+  showLoading('正在生成对手...', `根据 ${P1.name} 智能匹配对手`);
+  try {
+    const result = await llmCall(
+      '你只返回 JSON 对象，不返回其他任何内容。',
+      `你是火柴人战斗模拟的角色设计师。请根据以下角色，生成一个与其形成有趣对决的敌人角色：
+
+角色名：${P1.name}
+角色简介：${P1.desc || '暂无'}
+
+要求：
+1. 敌人角色要与原角色形成有趣的对比或克制关系
+2. 给敌人设计 3 种招式（普攻/技能/大招）
+3. 可用 pose：stand, fight, punch, heavyPunch, kick, highKick, block, hit, knockback, jump, axeKick, kneel, victory
+4. 每个招式的 phases 包含 3 个阶段
+
+严格返回 JSON：
+{
+  "name": "敌人名字",
+  "desc": "敌人简介(50字内)",
+  "avatar_desc": "描述敌人外貌，用于生成占位emoji(如👹🤖👻等)",
+  "moves": [
+    {
+      "type": "normal",
+      "name": "招式名",
+      "desc": "简短描述",
+      "phases": [{"f": 8, "pose": "fight", "hit": false}, {"f": 4, "pose": "punch", "hit": true}, {"f": 8, "pose": "fight", "hit": false}]
+    },
+    ...
+  ]
+}`,
+      1024, 0.9
+    );
+    const data = parseJSON(result);
+    if (data && data.name) {
+      P2.name = data.name;
+      P2.desc = data.desc || '';
+      P2.origin = 'AI 生成 · 克制 ' + P1.name;
+      P2.moves = data.moves && data.moves.length >= 3 ? data.moves.slice(0, 3) : defaultMoves();
+      headImg2 = null;
+
+      updateCharUI(2, P2);
+      const avatarEl = document.getElementById('avatar2');
+      const emoji = data.avatar_desc || '🔴';
+      if (avatarEl) {
+        avatarEl.textContent = emoji.charAt(0);
+      }
+    }
+    hideLoading();
+  } catch(e) {
+    hideLoading();
+    // fallback
+    P2.name = '暗影刺客';
+    P2.desc = '神秘的反派角色，专门为对决而生';
+    P2.origin = 'AI 生成（fallback）';
+    P2.moves = defaultMoves();
+    updateCharUI(2, P2);
+  }
+}
+
+// ===== 战斗编排 =====
+async function generateChoreo() {
+  showLoading('正在编排战斗...', `${P1.name} vs ${P2.name}`);
+
+  const p1Moves = P1.moves.map((m, i) => `${i + 1}.【${m.type}】${m.name}：${m.desc}`).join('\n');
+  const p2Moves = P2.moves.map((m, i) => `${i + 1}.【${m.type}】${m.name}：${m.desc}`).join('\n');
+
+  const result = await llmCall(
+    '你只返回 JSON 对象，不返回其他任何内容。',
+    `你是火柴人战斗的编排导演。请为以下两位角色编排一场精彩的战斗：
+
+P1: ${P1.name} (${P1.desc || '默认角色'})
+P1招式:
+${p1Moves}
+
+P2: ${P2.name} (${P2.desc || '默认角色'})
+P2招式:
+${p2Moves}
+
+战斗流程要求：
+1. 开场对峙（fight pose，距离较远）
+2. 双方接近
+3. P1 先出招（使用 P1 招式之一）
+4. P2 反击
+5. 几轮交锋（交替使用招式）
+6. 双方都使用大招
+7. 最终对决
+8. 一方胜利
+
+可用 pose：stand, fight, punch, heavyPunch, kick, highKick, block, hit, knockback, jump, axeKick, kneel, victory
+x 坐标范围：100-800（900px 画布）
+
+严格返回 JSON：
+{
+  "commentary": "一段精彩的战斗解说/总结",
+  "taunts": ["开打前的垃圾话1", "命中后的吐槽2", ...],
+  "choreo": [
+    {"f": 帧数, "p1": {"pose": "姿势", "x": 坐标, "vy": 可选}, "p2": {"pose": "姿势", "x": 坐标, "vy": 可选}, "hit": true/false, "big": true/false(可选), "tauntIndex": 可选},
+    ...
+  ]
+}
+
+choreo 至少 15 个阶段，要有来有回，双方都有高光。`,
+    2048, 0.85
+  );
+  const data = parseJSON(result);
+  hideLoading();
+  return data;
+}
+
+// ===== 姿势系统 =====
 function lerp(a, b, t) { return a + (b - a) * t; }
 function lerpPose(a, b, t) {
   const r = {};
@@ -80,152 +738,32 @@ function lerpPose(a, b, t) {
 function sx(x) { return x * scaleX; }
 function sy(y) { return y * scaleY; }
 
-// 基础站姿
-function standPose() {
-  return {
-    head: { x: 0, y: -70 }, neck: { x: 0, y: -58 },
-    shoulder: { x: 0, y: -52 }, elbow: { x: -12, y: -38 },
-    hand: { x: -8, y: -22 }, hip: { x: 0, y: -28 },
-    knee: { x: -8, y: -10 }, foot: { x: -10, y: 0 }
-  };
-}
-
-// 战斗姿态
-function fightPose() {
-  return {
-    head: { x: 5, y: -66 }, neck: { x: 3, y: -54 },
-    shoulder: { x: 5, y: -48 }, elbow: { x: 18, y: -52 },
-    hand: { x: 30, y: -48 }, hip: { x: 2, y: -26 },
-    knee: { x: -5, y: -10 }, foot: { x: -8, y: 0 }
-  };
-}
-
-// 出拳
-function punchPose() {
-  return {
-    head: { x: 10, y: -64 }, neck: { x: 8, y: -52 },
-    shoulder: { x: 8, y: -46 }, elbow: { x: 25, y: -50 },
-    hand: { x: 50, y: -46 }, hip: { x: 4, y: -24 },
-    knee: { x: -3, y: -8 }, foot: { x: -5, y: 0 }
-  };
-}
-
-// 重拳
-function heavyPunchPose() {
-  return {
-    head: { x: 15, y: -60 }, neck: { x: 12, y: -48 },
-    shoulder: { x: 12, y: -42 }, elbow: { x: 30, y: -44 },
-    hand: { x: 60, y: -38 }, hip: { x: 8, y: -20 },
-    knee: { x: 0, y: -5 }, foot: { x: 2, y: 0 }
-  };
-}
-
-// 踢腿
-function kickPose() {
-  return {
-    head: { x: -5, y: -64 }, neck: { x: -3, y: -52 },
-    shoulder: { x: -2, y: -46 }, elbow: { x: -15, y: -36 },
-    hand: { x: -20, y: -24 }, hip: { x: -2, y: -26 },
-    knee: { x: 30, y: -30 }, foot: { x: 55, y: -20 }
-  };
-}
-
-// 上踢
-function highKickPose() {
-  return {
-    head: { x: -3, y: -62 }, neck: { x: -1, y: -50 },
-    shoulder: { x: 0, y: -44 }, elbow: { x: -12, y: -34 },
-    hand: { x: -18, y: -22 }, hip: { x: 0, y: -24 },
-    knee: { x: 28, y: -45 }, foot: { x: 45, y: -60 }
-  };
-}
-
-// 防御
-function blockPose() {
-  return {
-    head: { x: 0, y: -60 }, neck: { x: 0, y: -48 },
-    shoulder: { x: 2, y: -44 }, elbow: { x: 12, y: -50 },
-    hand: { x: 15, y: -58 }, hip: { x: 0, y: -24 },
-    knee: { x: -6, y: -10 }, foot: { x: -8, y: 0 }
-  };
-}
-
-// 被打
-function hitPose() {
-  return {
-    head: { x: -12, y: -58 }, neck: { x: -8, y: -46 },
-    shoulder: { x: -6, y: -40 }, elbow: { x: -20, y: -30 },
-    hand: { x: -25, y: -18 }, hip: { x: -4, y: -22 },
-    knee: { x: -12, y: -8 }, foot: { x: -14, y: 0 }
-  };
-}
-
-// 后仰
-function knockbackPose() {
-  return {
-    head: { x: -18, y: -52 }, neck: { x: -12, y: -42 },
-    shoulder: { x: -8, y: -36 }, elbow: { x: -22, y: -22 },
-    hand: { x: -28, y: -10 }, hip: { x: -5, y: -18 },
-    knee: { x: -10, y: -5 }, foot: { x: -12, y: 0 }
-  };
-}
-
-// 跳跃
-function jumpPose() {
-  return {
-    head: { x: 0, y: -80 }, neck: { x: 0, y: -68 },
-    shoulder: { x: 0, y: -62 }, elbow: { x: -18, y: -55 },
-    hand: { x: -25, y: -65 }, hip: { x: 0, y: -38 },
-    knee: { x: -12, y: -22 }, foot: { x: -8, y: -10 }
-  };
-}
-
-// 下劈
-function axeKickPose() {
-  return {
-    head: { x: 5, y: -58 }, neck: { x: 4, y: -46 },
-    shoulder: { x: 5, y: -40 }, elbow: { x: -8, y: -30 },
-    hand: { x: -12, y: -18 }, hip: { x: 3, y: -22 },
-    knee: { x: 20, y: -50 }, foot: { x: 18, y: -10 }
-  };
-}
-
-// 跪地
-function kneelPose() {
-  return {
-    head: { x: -5, y: -38 }, neck: { x: -3, y: -28 },
-    shoulder: { x: -2, y: -24 }, elbow: { x: -15, y: -14 },
-    hand: { x: -18, y: -2 }, hip: { x: 0, y: -14 },
-    knee: { x: 5, y: -4 }, foot: { x: 10, y: 0 }
-  };
-}
-
-// 胜利
-function victoryPose() {
-  return {
-    head: { x: 0, y: -72 }, neck: { x: 0, y: -60 },
-    shoulder: { x: 0, y: -54 }, elbow: { x: -20, y: -70 },
-    hand: { x: -22, y: -88 }, hip: { x: 0, y: -28 },
-    knee: { x: -8, y: -10 }, foot: { x: -10, y: 0 }
-  };
-}
-
-const poseMap = {
-  stand: standPose, fight: fightPose, punch: punchPose,
-  heavyPunch: heavyPunchPose, kick: kickPose, highKick: highKickPose,
-  block: blockPose, hit: hitPose, knockback: knockbackPose,
-  jump: jumpPose, axeKick: axeKickPose, kneel: kneelPose, victory: victoryPose
+// 姿势定义
+const POSES = {
+  stand: { head: {x:0,y:-70}, neck: {x:0,y:-58}, shoulder: {x:0,y:-52}, elbow: {x:-12,y:-38}, hand: {x:-8,y:-22}, hip: {x:0,y:-28}, knee: {x:-8,y:-10}, foot: {x:-10,y:0} },
+  fight: { head: {x:5,y:-66}, neck: {x:3,y:-54}, shoulder: {x:5,y:-48}, elbow: {x:18,y:-52}, hand: {x:30,y:-48}, hip: {x:2,y:-26}, knee: {x:-5,y:-10}, foot: {x:-8,y:0} },
+  punch: { head: {x:10,y:-64}, neck: {x:8,y:-52}, shoulder: {x:8,y:-46}, elbow: {x:25,y:-50}, hand: {x:50,y:-46}, hip: {x:4,y:-24}, knee: {x:-3,y:-8}, foot: {x:-5,y:0} },
+  heavyPunch: { head: {x:15,y:-60}, neck: {x:12,y:-48}, shoulder: {x:12,y:-42}, elbow: {x:30,y:-44}, hand: {x:60,y:-38}, hip: {x:8,y:-20}, knee: {x:0,y:-5}, foot: {x:2,y:0} },
+  kick: { head: {x:-5,y:-64}, neck: {x:-3,y:-52}, shoulder: {x:-2,y:-46}, elbow: {x:-15,y:-36}, hand: {x:-20,y:-24}, hip: {x:-2,y:-26}, knee: {x:30,y:-30}, foot: {x:55,y:-20} },
+  highKick: { head: {x:-3,y:-62}, neck: {x:-1,y:-50}, shoulder: {x:0,y:-44}, elbow: {x:-12,y:-34}, hand: {x:-18,y:-22}, hip: {x:0,y:-24}, knee: {x:28,y:-45}, foot: {x:45,y:-60} },
+  block: { head: {x:0,y:-60}, neck: {x:0,y:-48}, shoulder: {x:2,y:-44}, elbow: {x:12,y:-50}, hand: {x:15,y:-58}, hip: {x:0,y:-24}, knee: {x:-6,y:-10}, foot: {x:-8,y:0} },
+  hit: { head: {x:-12,y:-58}, neck: {x:-8,y:-46}, shoulder: {x:-6,y:-40}, elbow: {x:-20,y:-30}, hand: {x:-25,y:-18}, hip: {x:-4,y:-22}, knee: {x:-12,y:-8}, foot: {x:-14,y:0} },
+  knockback: { head: {x:-18,y:-52}, neck: {x:-12,y:-42}, shoulder: {x:-8,y:-36}, elbow: {x:-22,y:-22}, hand: {x:-28,y:-10}, hip: {x:-5,y:-18}, knee: {x:-10,y:-5}, foot: {x:-12,y:0} },
+  jump: { head: {x:0,y:-80}, neck: {x:0,y:-68}, shoulder: {x:0,y:-62}, elbow: {x:-18,y:-55}, hand: {x:-25,y:-65}, hip: {x:0,y:-38}, knee: {x:-12,y:-22}, foot: {x:-8,y:-10} },
+  axeKick: { head: {x:5,y:-58}, neck: {x:4,y:-46}, shoulder: {x:5,y:-40}, elbow: {x:-8,y:-30}, hand: {x:-12,y:-18}, hip: {x:3,y:-22}, knee: {x:20,y:-50}, foot: {x:18,y:-10} },
+  kneel: { head: {x:-5,y:-38}, neck: {x:-3,y:-28}, shoulder: {x:-2,y:-24}, elbow: {x:-15,y:-14}, hand: {x:-18,y:-2}, hip: {x:0,y:-14}, knee: {x:5,y:-4}, foot: {x:10,y:0} },
+  victory: { head: {x:0,y:-72}, neck: {x:0,y:-60}, shoulder: {x:0,y:-54}, elbow: {x:-20,y:-70}, hand: {x:-22,y:-88}, hip: {x:0,y:-28}, knee: {x:-8,y:-10}, foot: {x:-10,y:0} }
 };
 
-// ---- 火柴人骨架绘制 ----
-function drawStickman(x, y, pose, color, hp, facing) {
+// ===== 火柴人绘制 =====
+function drawStickman(x, y, pose, color, hp, facing, headImg) {
   ctx.save();
-  ctx.globalAlpha = 1;
   ctx.translate(x, y);
   ctx.scale(facing, 1);
 
   const { head, neck, shoulder, elbow, hand, hip, knee, foot } = pose;
-  const lw = 3 * scaleX; // 线宽自适应
+  const lw = Math.max(2, 3 * scaleX);
+  const headR = 12 * scaleX;
 
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
@@ -233,37 +771,22 @@ function drawStickman(x, y, pose, color, hp, facing) {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // 发光效果
+  // 身体线条
+  function line(x1, y1, x2, y2) {
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  }
+
+  // 发光
   ctx.shadowColor = color;
   ctx.shadowBlur = 8;
 
-  // 头（半径自适应）
-  ctx.beginPath();
-  ctx.arc(head.x, head.y, 12 * scaleX, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // 眼睛
-  ctx.beginPath();
-  ctx.arc(head.x + 4 * scaleX, head.y - 2 * scaleY, 2 * scaleX, 0, Math.PI * 2);
-  ctx.fill();
-
-  // 脖子
+  // 脖子、躯干、手臂
   line(neck.x, neck.y, shoulder.x, shoulder.y);
-
-  // 躯干
   line(shoulder.x, shoulder.y, hip.x, hip.y);
-
-  // 手臂
   line(shoulder.x, shoulder.y, elbow.x, elbow.y);
   line(elbow.x, elbow.y, hand.x, hand.y);
-
-  // 另一只手臂
   const ox = shoulder.x - (elbow.x - shoulder.x) * 0.3;
-  const oy = shoulder.y + 5 * scaleY;
-  line(ox, oy,
-       shoulder.x - (hand.x - shoulder.x) * 0.3, shoulder.y + 15 * scaleY);
-
-  // 腿
+  line(ox, shoulder.y + 5 * scaleY, shoulder.x - (hand.x - shoulder.x) * 0.3, shoulder.y + 15 * scaleY);
   line(hip.x, hip.y, knee.x, knee.y);
   line(knee.x, knee.y, foot.x, foot.y);
   line(hip.x, hip.y, knee.x + 10 * scaleX, knee.y + 5 * scaleY);
@@ -271,11 +794,27 @@ function drawStickman(x, y, pose, color, hp, facing) {
 
   ctx.shadowBlur = 0;
 
-  // 血条（修复定位）
+  // 头（圆形，用角色封面或纯色）
+  ctx.beginPath();
+  ctx.arc(head.x, head.y, headR, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+
+  // 如果有角色头像，画圆形头像
+  if (headImg) {
+    drawCircleAvatar(headImg, head.x, head.y, headR);
+  }
+
+  // 眼睛
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(head.x + 4 * scaleX, head.y - 2 * scaleY, 2 * scaleX, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 血条
   if (hp !== undefined) {
-    ctx.scale(facing, 1);
     const bw = 50 * scaleX, bh = 5 * scaleY;
-    const bx = -bw / 2, by = head.y - 22 * scaleY;
+    const bx = -bw / 2, by = head.y - headR - 10 * scaleY;
     ctx.fillStyle = '#333';
     ctx.fillRect(bx, by, bw, bh);
     ctx.fillStyle = hp > 0.3 ? '#4f4' : '#f44';
@@ -285,72 +824,41 @@ function drawStickman(x, y, pose, color, hp, facing) {
   ctx.restore();
 }
 
-function line(x1, y1, x2, y2) {
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-}
-
-// ---- 粒子系统 ----
+// ===== 粒子 & 震动 =====
 const particles = [];
 function spawnParticles(x, y, color, count = 10, speed = 3) {
   for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const spd = Math.random() * speed + 1;
-    particles.push({
-      x, y, vx: Math.cos(angle) * spd * scaleX, vy: Math.sin(angle) * spd * scaleY - scaleY,
-      life: 1, color, size: (Math.random() * 4 + 1) * scaleX
-    });
+    const a = Math.random() * Math.PI * 2, s = Math.random() * speed + 1;
+    particles.push({ x, y, vx: Math.cos(a) * s * scaleX, vy: Math.sin(a) * s * scaleY - scaleY, life: 1, color, size: (Math.random() * 4 + 1) * scaleX });
   }
 }
-
 function spawnSparks(x, y, count = 15) {
   for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI - Math.PI / 2;
-    const spd = Math.random() * 6 + 2;
-    particles.push({
-      x, y,
-      vx: Math.cos(angle) * spd * scaleX * (Math.random() > 0.5 ? 1 : -1),
-      vy: Math.sin(angle) * spd * scaleY - 2 * scaleY,
-      life: 1,
-      color: ['#fff', '#ff4', '#f84', '#4af'][Math.floor(Math.random() * 4)],
-      size: (Math.random() * 3 + 1) * scaleX,
-      spark: true
-    });
+    const a = Math.random() * Math.PI - Math.PI / 2, s = Math.random() * 6 + 2;
+    particles.push({ x, y, vx: Math.cos(a) * s * scaleX * (Math.random() > 0.5 ? 1 : -1), vy: Math.sin(a) * s * scaleY - 2 * scaleY, life: 1, color: ['#fff','#ff4','#f84','#4af'][Math.floor(Math.random()*4)], size: (Math.random()*3+1)*scaleX, spark: true });
   }
 }
-
 function updateParticles() {
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
-    p.x += p.vx; p.y += p.vy;
-    p.vy += 0.1 * scaleY;
-    p.life -= 0.025;
+    p.x += p.vx; p.y += p.vy; p.vy += 0.1 * scaleY; p.life -= 0.025;
     if (p.life <= 0) particles.splice(i, 1);
   }
 }
-
 function drawParticles() {
   for (const p of particles) {
     ctx.globalAlpha = p.life;
     ctx.fillStyle = p.color;
     if (p.spark) {
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(Math.atan2(p.vy, p.vx));
-      ctx.fillRect(-p.size * 2, -0.5, p.size * 4, 1);
-      ctx.restore();
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.atan2(p.vy, p.vx));
+      ctx.fillRect(-p.size*2, -0.5, p.size*4, 1); ctx.restore();
     } else {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2); ctx.fill();
     }
   }
   ctx.globalAlpha = 1;
 }
 
-// ---- 镜头震动 ----
 let shakeX = 0, shakeY = 0, shakeDecay = 0;
 function doShake(intensity) { shakeDecay = intensity * scaleX; }
 function updateShake() {
@@ -358,71 +866,78 @@ function updateShake() {
     shakeX = (Math.random() - 0.5) * shakeDecay * 2;
     shakeY = (Math.random() - 0.5) * shakeDecay * 2;
     shakeDecay *= 0.85;
-    if (shakeDecay < 0.3) shakeDecay = 0;
-  } else { shakeX = 0; shakeY = 0; }
+    if (shakeDecay < 0.3) { shakeDecay = 0; shakeX = 0; shakeY = 0; }
+  }
 }
 
-// ---- 战斗编排 ----
-const CHOREO = [
-  { f: 40, p1: { pose: 'fight', x: 250 }, p2: { pose: 'fight', x: 650 } },
-  { f: 20, p1: { pose: 'fight', x: 320 }, p2: { pose: 'fight', x: 580 } },
-  { f: 6, p1: { pose: 'punch', x: 370 }, p2: { pose: 'block', x: 530 } },
-  { f: 4, p1: { pose: 'punch', x: 380 }, p2: { pose: 'hit', x: 520 }, hit: true },
-  { f: 8, p1: { pose: 'fight', x: 370 }, p2: { pose: 'knockback', x: 490 } },
-  { f: 8, p1: { pose: 'block', x: 380 }, p2: { pose: 'kick', x: 500 } },
-  { f: 4, p1: { pose: 'hit', x: 360 }, p2: { pose: 'kick', x: 510 }, hit: true },
-  { f: 8, p1: { pose: 'knockback', x: 310 }, p2: { pose: 'fight', x: 510 } },
-  { f: 10, p1: { pose: 'jump', x: 350, vy: -8 }, p2: { pose: 'fight', x: 480 } },
-  { f: 6, p1: { pose: 'highKick', x: 460 }, p2: { pose: 'block', x: 480 } },
-  { f: 4, p1: { pose: 'highKick', x: 470 }, p2: { pose: 'hit', x: 490 }, hit: true },
-  { f: 8, p1: { pose: 'fight', x: 420 }, p2: { pose: 'knockback', x: 520 } },
-  { f: 5, p1: { pose: 'punch', x: 430 }, p2: { pose: 'hit', x: 510 }, hit: true },
-  { f: 5, p1: { pose: 'punch', x: 440 }, p2: { pose: 'hit', x: 500 }, hit: true },
-  { f: 5, p1: { pose: 'heavyPunch', x: 450 }, p2: { pose: 'hit', x: 480 }, hit: true },
-  { f: 10, p1: { pose: 'fight', x: 430 }, p2: { pose: 'knockback', x: 430 } },
-  { f: 12, p1: { pose: 'fight', x: 420 }, p2: { pose: 'jump', x: 460, vy: -10 } },
-  { f: 6, p1: { pose: 'hit', x: 410 }, p2: { pose: 'axeKick', x: 470 }, hit: true },
-  { f: 10, p1: { pose: 'knockback', x: 370 }, p2: { pose: 'fight', x: 470 } },
-  { f: 5, p1: { pose: 'hit', x: 370 }, p2: { pose: 'kick', x: 450 }, hit: true },
-  { f: 5, p1: { pose: 'hit', x: 360 }, p2: { pose: 'highKick', x: 440 }, hit: true },
-  { f: 5, p1: { pose: 'hit', x: 350 }, p2: { pose: 'kick', x: 430 }, hit: true },
-  { f: 10, p1: { pose: 'knockback', x: 300 }, p2: { pose: 'fight', x: 430 } },
-  { f: 15, p1: { pose: 'fight', x: 350 }, p2: { pose: 'fight', x: 480 } },
-  { f: 8, p1: { pose: 'heavyPunch', x: 400 }, p2: { pose: 'heavyPunch', x: 430 } },
-  { f: 4, p1: { pose: 'heavyPunch', x: 415 }, p2: { pose: 'hit', x: 440 }, hit: true, bigHit: true },
-  { f: 4, p1: { pose: 'hit', x: 410 }, p2: { pose: 'heavyPunch', x: 435 }, hit: true, bigHit: true },
-  { f: 10, p1: { pose: 'jump', x: 400, vy: -12 }, p2: { pose: 'hit', x: 440 } },
-  { f: 6, p1: { pose: 'axeKick', x: 445 }, p2: { pose: 'hit', x: 445 }, hit: true, bigHit: true },
-  { f: 10, p1: { pose: 'fight', x: 420 }, p2: { pose: 'knockback', x: 470 } },
-  { f: 20, p1: { pose: 'fight', x: 420 }, p2: { pose: 'kneel', x: 500 } },
-  { f: 30, p1: { pose: 'victory', x: 420 }, p2: { pose: 'kneel', x: 520 } },
-];
+// ===== 战斗状态 =====
+let state = {};
+let choreoData = null;
+let fightCommentary = '';
+let currentTaunt = '';
 
-// ---- 战斗状态 ----
-let state;
+function buildChoreoFromMoves() {
+  // LLM 编排失败时的 fallback
+  return [
+    { f: 40, p1: { pose: 'fight', x: 250 }, p2: { pose: 'fight', x: 650 } },
+    { f: 20, p1: { pose: 'fight', x: 320 }, p2: { pose: 'fight', x: 580 } },
+    { f: 6, p1: { pose: 'punch', x: 370 }, p2: { pose: 'block', x: 530 } },
+    { f: 4, p1: { pose: 'punch', x: 380 }, p2: { pose: 'hit', x: 520 }, hit: true },
+    { f: 8, p1: { pose: 'fight', x: 370 }, p2: { pose: 'knockback', x: 490 } },
+    { f: 8, p1: { pose: 'block', x: 380 }, p2: { pose: 'kick', x: 500 } },
+    { f: 4, p1: { pose: 'hit', x: 360 }, p2: { pose: 'kick', x: 510 }, hit: true },
+    { f: 8, p1: { pose: 'knockback', x: 310 }, p2: { pose: 'fight', x: 510 } },
+    { f: 10, p1: { pose: 'jump', x: 350, vy: -8 }, p2: { pose: 'fight', x: 480 } },
+    { f: 6, p1: { pose: 'highKick', x: 460 }, p2: { pose: 'block', x: 480 } },
+    { f: 4, p1: { pose: 'highKick', x: 470 }, p2: { pose: 'hit', x: 490 }, hit: true },
+    { f: 8, p1: { pose: 'fight', x: 420 }, p2: { pose: 'knockback', x: 520 } },
+    { f: 5, p1: { pose: 'punch', x: 430 }, p2: { pose: 'hit', x: 510 }, hit: true },
+    { f: 5, p1: { pose: 'punch', x: 440 }, p2: { pose: 'hit', x: 500 }, hit: true },
+    { f: 5, p1: { pose: 'heavyPunch', x: 450 }, p2: { pose: 'hit', x: 480 }, hit: true },
+    { f: 10, p1: { pose: 'fight', x: 430 }, p2: { pose: 'knockback', x: 430 } },
+    { f: 12, p1: { pose: 'fight', x: 420 }, p2: { pose: 'jump', x: 460, vy: -10 } },
+    { f: 6, p1: { pose: 'hit', x: 410 }, p2: { pose: 'axeKick', x: 470 }, hit: true },
+    { f: 10, p1: { pose: 'knockback', x: 370 }, p2: { pose: 'fight', x: 470 } },
+    { f: 5, p1: { pose: 'hit', x: 370 }, p2: { pose: 'kick', x: 450 }, hit: true },
+    { f: 5, p1: { pose: 'hit', x: 360 }, p2: { pose: 'highKick', x: 440 }, hit: true },
+    { f: 5, p1: { pose: 'hit', x: 350 }, p2: { pose: 'kick', x: 430 }, hit: true },
+    { f: 10, p1: { pose: 'knockback', x: 300 }, p2: { pose: 'fight', x: 430 } },
+    { f: 15, p1: { pose: 'fight', x: 350 }, p2: { pose: 'fight', x: 480 } },
+    { f: 8, p1: { pose: 'heavyPunch', x: 400 }, p2: { pose: 'heavyPunch', x: 430 } },
+    { f: 4, p1: { pose: 'heavyPunch', x: 415 }, p2: { pose: 'hit', x: 440 }, hit: true, big: true },
+    { f: 4, p1: { pose: 'hit', x: 410 }, p2: { pose: 'heavyPunch', x: 435 }, hit: true, big: true },
+    { f: 10, p1: { pose: 'jump', x: 400, vy: -12 }, p2: { pose: 'hit', x: 440 } },
+    { f: 6, p1: { pose: 'axeKick', x: 445 }, p2: { pose: 'hit', x: 445 }, hit: true, big: true },
+    { f: 10, p1: { pose: 'fight', x: 420 }, p2: { pose: 'knockback', x: 470 } },
+    { f: 20, p1: { pose: 'fight', x: 420 }, p2: { pose: 'kneel', x: 500 } },
+    { f: 30, p1: { pose: 'victory', x: 420 }, p2: { pose: 'kneel', x: 520 } },
+  ];
+}
 
 function initState() {
   state = {
-    p1: { x: sx(250), y: GROUND, pose: standPose(), vy: 0, hp: 1, color: '#4af', facing: 1 },
-    p2: { x: sx(650), y: GROUND, pose: standPose(), vy: 0, hp: 1, color: '#f55', facing: -1 },
+    p1: { x: sx(250), y: GROUND, pose: POSES.stand, vy: 0, hp: 1, color: '#4af', facing: 1 },
+    p2: { x: sx(650), y: GROUND, pose: POSES.stand, vy: 0, hp: 1, color: '#f55', facing: -1 },
     phase: 0, frameInPhase: 0,
-    p1TargetPose: null, p2TargetPose: null,
     p1StartPose: null, p2StartPose: null,
-    p1TargetX: sx(250), p2TargetX: sx(650),
+    p1TargetPose: null, p2TargetPose: null,
     p1StartX: sx(250), p2StartX: sx(650),
-    hitFlash: 0, combo: 0,
+    p1TargetX: sx(250), p2TargetX: sx(650),
+    phaseFrames: 40, hitFlash: 0, combo: 0,
     text: '', textTimer: 0, textX: W / 2, textY: H / 2 - 40 * scaleY,
-    finished: false
+    finished: false, hasHit: false, hitData: null,
+    opening: true
   };
 }
 
 function loadPhase(idx) {
-  if (idx >= CHOREO.length) { state.finished = true; return; }
-  const ph = CHOREO[idx];
+  const choreo = choreoData?.choreo || buildChoreoFromMoves();
+  if (idx >= choreo.length) { state.finished = true; return; }
+  const ph = choreo[idx];
   state.p1StartPose = { ...state.p1.pose };
   state.p2StartPose = { ...state.p2.pose };
-  state.p1TargetPose = poseMap[ph.p1.pose]();
-  state.p2TargetPose = poseMap[ph.p2.pose]();
+  state.p1TargetPose = POSES[ph.p1.pose] || POSES.fight;
+  state.p2TargetPose = POSES[ph.p2.pose] || POSES.fight;
   state.p1StartX = state.p1.x;
   state.p2StartX = state.p2.x;
   state.p1TargetX = sx(ph.p1.x);
@@ -431,14 +946,21 @@ function loadPhase(idx) {
   state.p2.vy = (ph.p2.vy || 0) * scaleY;
   state.phaseFrames = ph.f;
   state.hasHit = false;
-  state.hitData = ph.hit ? { big: ph.bigHit || false } : null;
+  state.hitData = ph.hit ? { big: ph.big || false } : null;
+
+  // 更新解说/垃圾话
+  if (ph.tauntIndex !== undefined && choreoData?.taunts) {
+    currentTaunt = choreoData.taunts[ph.tauntIndex] || '';
+  }
 }
 
 function updateState() {
   if (state.finished) return;
-
-  const ph = CHOREO[state.phase];
+  const choreo = choreoData?.choreo || buildChoreoFromMoves();
+  const ph = choreo[state.phase];
   if (!ph) { state.finished = true; return; }
+
+  if (state.opening && time > 80) state.opening = false;
 
   const t = Math.min(state.frameInPhase / state.phaseFrames, 1);
   const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -448,85 +970,62 @@ function updateState() {
   state.p1.x = lerp(state.p1StartX, state.p1TargetX, ease);
   state.p2.x = lerp(state.p2StartX, state.p2TargetX, ease);
 
-  // 重力
   if (state.p1.vy !== 0) {
-    state.p1.y += state.p1.vy;
-    state.p1.vy += GRAVITY;
+    state.p1.y += state.p1.vy; state.p1.vy += GRAVITY;
     if (state.p1.y >= GROUND) { state.p1.y = GROUND; state.p1.vy = 0; }
   }
   if (state.p2.vy !== 0) {
-    state.p2.y += state.p2.vy;
-    state.p2.vy += GRAVITY;
+    state.p2.y += state.p2.vy; state.p2.vy += GRAVITY;
     if (state.p2.y >= GROUND) { state.p2.y = GROUND; state.p2.vy = 0; }
   }
 
-  // 打击判定
+  // 打击
   if (state.hitData && !state.hasHit && t > 0.4) {
     state.hasHit = true;
     const hx = (state.p1.x + state.p2.x) / 2;
     const hy = Math.min(state.p1.y, state.p2.y) - 50 * scaleY;
-
     if (state.hitData.big) {
-      spawnSparks(hx, hy, 25);
-      doShake(12);
+      spawnSparks(hx, hy, 25); doShake(12);
       state.p2.hp = Math.max(0, state.p2.hp - 0.15);
       state.p1.hp = Math.max(0, state.p1.hp - 0.1);
-      state.combo++;
     } else {
-      spawnParticles(hx, hy, '#ff8', 8);
-      doShake(5);
+      spawnParticles(hx, hy, '#ff8', 8); doShake(5);
       state.p2.hp = Math.max(0, state.p2.hp - 0.08);
-      state.combo++;
     }
-
     state.hitFlash = 6;
-    if (state.combo >= 3) {
+    state.combo++;
+    if (state.combo >= 2) {
       state.text = state.combo + ' HIT!';
       state.textTimer = 30;
-      state.textX = hx;
-      state.textY = hy - 20 * scaleY;
+      state.textX = hx; state.textY = hy - 20 * scaleY;
     }
   }
-
   if (state.textTimer > 0) state.textTimer--;
 
   state.frameInPhase++;
   if (state.frameInPhase >= state.phaseFrames) {
-    state.phase++;
-    state.frameInPhase = 0;
+    state.phase++; state.frameInPhase = 0;
     if (state.combo > 0 && !state.hitData) state.combo = 0;
     loadPhase(state.phase);
   }
-
   if (state.hitFlash > 0) state.hitFlash--;
 }
 
-// ---- 背景 ----
+// ===== 背景 =====
 function drawBG() {
   ctx.fillStyle = '#111118';
   ctx.fillRect(0, GROUND, W, H - GROUND);
-  ctx.strokeStyle = '#333';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, GROUND);
-  ctx.lineTo(W, GROUND);
-  ctx.stroke();
+  ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, GROUND); ctx.lineTo(W, GROUND); ctx.stroke();
 
   ctx.strokeStyle = '#222';
-  const gridStep = sx(40);
-  for (let i = 0; i < W; i += gridStep) {
-    ctx.beginPath();
-    ctx.moveTo(i, GROUND);
-    ctx.lineTo(i, H);
-    ctx.stroke();
+  const gs = sx(40);
+  for (let i = 0; i < W; i += gs) {
+    ctx.beginPath(); ctx.moveTo(i, GROUND); ctx.lineTo(i, H); ctx.stroke();
   }
 
   ctx.fillStyle = '#0e0e14';
-  const buildings = [
-    [30, 120], [80, 80], [130, 150], [200, 90], [260, 130],
-    [340, 100], [400, 160], [480, 70], [540, 140], [610, 110],
-    [670, 130], [740, 90], [800, 150], [860, 80]
-  ];
+  const buildings = [[30,120],[80,80],[130,150],[200,90],[260,130],[340,100],[400,160],[480,70],[540,140],[610,110],[670,130],[740,90],[800,150],[860,80]];
   for (const [bx, bh] of buildings) {
     const sbx = sx(bx), sbh = sy(bh);
     ctx.fillRect(sbx, GROUND - sbh, sx(35), sbh);
@@ -540,104 +1039,96 @@ function drawBG() {
   }
 }
 
-// ---- 文字 ----
+// ===== 文字 & 解说 =====
 function drawText() {
   if (state.textTimer > 0) {
     const alpha = Math.min(state.textTimer / 10, 1);
-    const scale = 1 + (1 - alpha) * 0.5;
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.translate(state.textX, state.textY);
-    ctx.scale(scale, scale);
-    ctx.font = `bold ${36 * scaleX}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#fff';
-    ctx.shadowColor = '#f84';
-    ctx.shadowBlur = 15;
+    const s = 1 + (1 - alpha) * 0.5;
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.translate(state.textX, state.textY); ctx.scale(s, s);
+    ctx.font = `bold ${36*scaleX}px sans-serif`; ctx.textAlign = 'center';
+    ctx.fillStyle = '#fff'; ctx.shadowColor = '#f84'; ctx.shadowBlur = 15;
     ctx.fillText(state.text, 0, 0);
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = '#f84';
-    ctx.lineWidth = 1;
+    ctx.shadowBlur = 0; ctx.strokeStyle = '#f84'; ctx.lineWidth = 1;
     ctx.strokeText(state.text, 0, 0);
-    ctx.restore();
-    ctx.globalAlpha = 1;
+    ctx.restore(); ctx.globalAlpha = 1;
   }
 
-  if (time < 120) {
-    const alpha = time < 80 ? Math.min(time / 20, 1) : Math.max(1 - (time - 80) / 40, 0);
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.font = `bold ${28 * scaleX}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#fff';
-    ctx.shadowColor = '#4af';
-    ctx.shadowBlur = 20;
-    ctx.fillText('⚔ FIGHT ⚔', sx(450), H / 2);
+  // 开场
+  if (state.opening) {
+    const alpha = time < 40 ? time / 40 : Math.max(1 - (time - 40) / 40, 0);
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.font = `bold ${28*scaleX}px sans-serif`; ctx.textAlign = 'center';
+    ctx.fillStyle = '#fff'; ctx.shadowColor = '#4af'; ctx.shadowBlur = 20;
+    ctx.fillText(`⚔ ${P1.name} VS ${P2.name} ⚔`, sx(450), H / 2);
     ctx.restore();
   }
 
-  if (state.finished && state.p2.hp <= 0) {
-    const alpha = Math.min((time - getTotalFrames() + 60) / 30, 1);
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.font = `bold ${32 * scaleX}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#4af';
-    ctx.shadowColor = '#4af';
-    ctx.shadowBlur = 20;
+  // 结束
+  if (state.finished) {
+    const totalF = getTotalFrames();
+    const alpha = Math.min((time - totalF + 60) / 30, 1);
+    const winner = state.p2.hp <= 0 ? P1.name : (state.p1.hp <= 0 ? P2.name : '平局');
+    ctx.save(); ctx.globalAlpha = alpha;
+    ctx.font = `bold ${32*scaleX}px sans-serif`; ctx.textAlign = 'center';
+    ctx.fillStyle = '#4af'; ctx.shadowColor = '#4af'; ctx.shadowBlur = 20;
     ctx.fillText('K.O.!', sx(450), H / 2 - 20 * scaleY);
-    ctx.font = `${18 * scaleX}px sans-serif`;
-    ctx.fillStyle = '#aaa';
-    ctx.fillText('🏆 Winner: Blue', sx(450), H / 2 + 20 * scaleY);
+    ctx.font = `${18*scaleX}px sans-serif`; ctx.fillStyle = '#aaa';
+    ctx.fillText(`🏆 Winner: ${winner}`, sx(450), H / 2 + 20 * scaleY);
     ctx.restore();
   }
 }
 
 function getTotalFrames() {
-  let total = 120;
-  for (const ph of CHOREO) total += ph.f;
+  const choreo = choreoData?.choreo || buildChoreoFromMoves();
+  let total = 80;
+  for (const ph of choreo) total += ph.f;
   return total;
 }
 
-// ---- 主循环 ----
+// ===== 主循环 =====
 function draw() {
   time += slow ? 0.5 : 1;
-
   ctx.save();
   ctx.translate(shakeX, shakeY);
-
   ctx.fillStyle = '#0d0d14';
   ctx.fillRect(-10, -10, W + 20, H + 20);
-
   drawBG();
 
-  if (!state.finished || time < getTotalFrames() + 60) {
-    updateState();
-  }
-  updateShake();
-  updateParticles();
+  if (!state.finished || time < getTotalFrames() + 60) updateState();
+  updateShake(); updateParticles();
 
   if (state.hitFlash > 0) {
     ctx.fillStyle = `rgba(255,255,255,${state.hitFlash * 0.03})`;
     ctx.fillRect(0, 0, W, H);
   }
 
-  drawStickman(state.p1.x, state.p1.y, state.p1.pose, state.p1.color, state.p1.hp, 1);
-  drawStickman(state.p2.x, state.p2.y, state.p2.pose, state.p2.color, state.p2.hp, -1);
+  drawStickman(state.p1.x, state.p1.y, state.p1.pose, state.p1.color, state.p1.hp, 1, headImg1);
+  drawStickman(state.p2.x, state.p2.y, state.p2.pose, state.p2.color, state.p2.hp, -1, headImg2);
 
   drawParticles();
   drawText();
-
   ctx.restore();
+
+  // 更新解说文字
+  const comEl = document.getElementById('commentary');
+  if (state.opening) {
+    comEl.textContent = '⚔ 战斗开始！';
+  } else if (currentTaunt && state.textTimer <= 0) {
+    comEl.textContent = currentTaunt;
+  } else if (state.finished) {
+    comEl.textContent = choreoData?.commentary || '精彩的战斗！';
+  } else {
+    comEl.textContent = '';
+  }
 
   rafId = requestAnimationFrame(draw);
 }
 
-// ---- 控制 ----
+// ===== 控制 =====
 function restart() {
   if (rafId) cancelAnimationFrame(rafId);
-  particles.length = 0;
-  time = 0;
+  particles.length = 0; time = 0; currentTaunt = '';
   resizeCanvas();
   initState();
   loadPhase(0);
@@ -645,17 +1136,14 @@ function restart() {
 }
 
 function toggleSlow() { slow = !slow; }
-function toggleAuto() {
-  autoReplay = !autoReplay;
-  if (autoReplay) autoCheck();
-}
+function toggleAuto() { autoReplay = !autoReplay; if (autoReplay) autoCheck(); }
 function autoCheck() {
   if (!autoReplay) return;
   if (state.finished) restart();
   setTimeout(autoCheck, 500);
 }
 
-// ---- resize 处理 ----
+// resize
 window.addEventListener('resize', () => {
   if (rafId) cancelAnimationFrame(rafId);
   particles.length = 0;
@@ -663,7 +1151,18 @@ window.addEventListener('resize', () => {
   restart();
 });
 
-// ---- 启动 ----
+// ===== 开始战斗 =====
+async function startFight() {
+  try {
+    choreoData = await generateChoreo();
+  } catch(e) {
+    console.warn('LLM 编排失败，使用默认编排:', e);
+    choreoData = null;
+  }
+  restart();
+}
+
+// ===== 启动 =====
 initState();
 loadPhase(0);
 draw();
