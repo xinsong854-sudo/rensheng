@@ -5,190 +5,336 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>火柴人战斗模拟</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  background: #0a0a0f; color: #c8c8d8;
-  font-family: 'Segoe UI', sans-serif;
-  min-height: 100vh; overflow-x: hidden;
-  display: flex; flex-direction: column; align-items: center;
-}
-h1 { color: #fff; font-size: 1.3rem; margin: 20px 0 8px; opacity: .7; letter-spacing: 2px; }
-.panel {
-  background: rgba(14,14,20,.85); backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,.06); border-radius: 8px;
-  padding: 16px; max-width: 920px; width: calc(100% - 24px); margin: 8px 0;
-}
-.input-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.input-row input {
-  flex: 1; min-width: 180px; padding: 8px 12px;
-  border: 1px solid rgba(255,255,255,.1); border-radius: 6px;
-  background: rgba(10,10,16,.8); color: #c8c8d8; font-size: .85rem; outline: none;
-}
-.input-row input:focus { border-color: rgba(138,127,199,.4); }
-.input-row button, .panel button {
-  padding: 8px 16px; border: 1px solid rgba(138,127,199,.25); border-radius: 6px;
-  background: rgba(138,127,199,.12); color: #c8c8d8; font-size: .8rem;
-  cursor: pointer; transition: .2s; white-space: nowrap;
-}
-.input-row button:hover, .panel button:hover { background: rgba(138,127,199,.25); border-color: rgba(138,127,199,.4); }
-.char-section { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
-.char-card {
-  flex: 1; min-width: 260px; background: rgba(20,20,30,.6);
-  border: 1px solid rgba(255,255,255,.04); border-radius: 8px; padding: 12px;
-}
-.char-card.p1 { border-left: 3px solid #4af; }
-.char-card.p2 { border-left: 3px solid #f55; }
-.char-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.char-avatar {
-  width: 48px; height: 48px; border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.1); object-fit: cover;
-  background: rgba(10,10,16,.8); display: block;
-}
-.char-avatar.placeholder {
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem; background: rgba(30,30,40,.8); border-radius: 50%;
-  width: 48px; height: 48px;
-}
-.char-name { font-weight: 600; font-size: .95rem; }
-.char-origin { font-size: .65rem; color: #7a7a8a; margin-top: 2px; }
-.char-desc { font-size: .75rem; color: #999; line-height: 1.5; margin-bottom: 8px; max-height: 80px; overflow: hidden; }
-.moves { display: flex; flex-direction: column; gap: 4px; }
-.move-item {
-  padding: 6px 8px; background: rgba(10,10,16,.5); border-radius: 4px;
-  border: 1px solid rgba(255,255,255,.03); font-size: .75rem;
-}
-.move-item .move-type {
-  display: inline-block; padding: 1px 4px; border-radius: 2px;
-  font-size: .6rem; margin-right: 4px; vertical-align: middle;
-}
-.move-item .move-type.normal { background: rgba(122,184,122,.15); color: #7ab87a; }
-.move-item .move-type.skill { background: rgba(138,127,199,.15); color: #8a7fc7; }
-.move-item .move-type.ultimate { background: rgba(212,160,224,.15); color: #d4a0e0; }
-.move-item .move-name { font-weight: 600; color: #ddd; }
-.move-item .move-desc { color: #888; margin-top: 2px; }
-canvas {
-  border: 1px solid #222; border-radius: 8px; background: #0d0d14;
-  box-shadow: 0 0 40px rgba(100,120,255,.08); margin: 8px 0;
-  max-width: calc(100% - 24px);
-}
-#ui { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 8px 0 20px; }
-#ui button {
-  padding: 8px 18px; border: 1px solid #333; border-radius: 6px;
-  background: #16161e; color: #ccc; font-size: .85rem;
-  cursor: pointer; transition: .2s;
-}
-#ui button:hover { background: #22223a; color: #fff; border-color: #556; }
-.loading-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(10,10,15,.92); z-index: 100;
-  align-items: center; justify-content: center; flex-direction: column;
-}
-.loading-overlay.show { display: flex; }
-.spinner {
-  width: 50px; height: 50px; border: 3px solid rgba(138,127,199,.2);
-  border-top-color: #8a7fc7; border-radius: 50%; animation: spin 1s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { margin-top: 16px; font-size: .85rem; color: #8a7fc7; letter-spacing: .1em; }
-.loading-sub { margin-top: 6px; font-size: .7rem; color: #555; }
-.vs-bar { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 8px; font-size: .85rem; color: #aaa; }
-.vs-bar .vs-name { font-weight: 600; }
-.vs-bar .vs-name.p1 { color: #4af; }
-.vs-bar .vs-name.p2 { color: #f55; }
-.vs-bar .vs-label { color: #555; }
-.vs-bar .vs-world { font-size: .7rem; color: #d4a0e0; margin-left: 8px; }
-.commentary {
-  text-align: center; font-size: .8rem; color: #d4a0e0; opacity: .8;
-  margin-bottom: 4px; min-height: 1.2em; letter-spacing: .05em;
-}
-.buff-bar {
-  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
-  margin-bottom: 6px;
-}
-.buff-tag {
-  padding: 2px 8px; border-radius: 3px; font-size: .65rem;
-  letter-spacing: .05em;
-}
-.buff-tag.buff { background: rgba(122,184,122,.12); color: #7ab87a; border: 1px solid rgba(122,184,122,.2); }
-.buff-tag.debuff { background: rgba(196,122,122,.12); color: #c47a7a; border: 1px solid rgba(196,122,122,.2); }
-.world-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 10px; border-radius: 12px; font-size: .7rem;
-  background: rgba(212,160,224,.08); color: #d4a0e0;
-  border: 1px solid rgba(212,160,224,.15); margin: 0 auto;
-}
-@media (max-width: 640px) {
-  .char-section { flex-direction: column; }
-  .char-card { min-width: auto; }
-  h1 { font-size: 1.1rem; }
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#c8c8d8;font-family:'Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;align-items:center}
+h1{color:#fff;font-size:1.3rem;margin:20px 0 8px;opacity:.7;letter-spacing:2px}
+.panel{background:rgba(14,14,20,.85);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:16px;max-width:920px;width:calc(100% - 24px);margin:8px 0}
+.step{display:none}.step.active{display:block}
+.step-label{font-size:.7rem;color:#d4a0e0;margin-bottom:8px;letter-spacing:.15em}
+
+/* Input row */
+.input-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.input-row input{flex:1;min-width:180px;padding:8px 12px;border:1px solid rgba(255,255,255,.1);border-radius:6px;background:rgba(10,10,16,.8);color:#c8c8d8;font-size:.85rem;outline:none}
+.input-row input:focus{border-color:rgba(138,127,199,.4)}
+.input-row button,.panel button{padding:8px 16px;border:1px solid rgba(138,127,199,.25);border-radius:6px;background:rgba(138,127,199,.12);color:#c8c8d8;font-size:.8rem;cursor:pointer;transition:.2s;white-space:nowrap}
+.input-row button:hover,.panel button:hover{background:rgba(138,127,199,.25);border-color:rgba(138,127,199,.4)}
+.btn-rand{border-color:rgba(245,85,85,.3)!important;color:#f77!important}
+.btn-rand:hover{background:rgba(245,85,85,.15)!important}
+.btn-fight{font-size:1rem!important;padding:10px 30px!important;border-color:rgba(212,160,224,.3)!important;color:#d4a0e0!important}
+.btn-learn{border-color:rgba(122,184,122,.3)!important;color:#7ab87a!important}
+.btn-learn:hover{background:rgba(122,184,122,.15)!important}
+
+/* ===== 个人页面布局 ===== */
+.profile-layout{display:flex;gap:16px;align-items:flex-start}
+.profile-main{flex:1;min-width:0}
+.profile-sidebar{display:flex;flex-direction:column;gap:10px;min-width:140px;align-items:center}
+.profile-sidebar .side-btn{width:100%;padding:12px 8px;text-align:center;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(20,20,30,.6);color:#c8c8d8;font-size:.85rem;cursor:pointer;transition:.2s}
+.profile-sidebar .side-btn:hover{background:rgba(138,127,199,.15);border-color:rgba(138,127,199,.3)}
+.side-btn.achieve{border-color:rgba(212,160,224,.2)}.side-btn.achieve:hover{border-color:rgba(212,160,224,.4)}
+.side-btn.learn{border-color:rgba(122,184,122,.2)}.side-btn.learn:hover{border-color:rgba(122,184,122,.4)}
+.side-btn.rival{border-color:rgba(245,85,85,.2)}.side-btn.rival:hover{border-color:rgba(245,85,85,.4)}
+#radarCanvas{background:rgba(10,10,16,.8);border:1px solid rgba(255,255,255,.06);border-radius:8px}
+
+/* 角色信息区 */
+.char-info{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:12px;background:rgba(20,20,30,.6);border-radius:8px;border:1px solid rgba(255,255,255,.04)}
+.char-avatar{width:64px;height:64px;border-radius:50%;border:2px solid rgba(255,255,255,.1);object-fit:cover;background:rgba(10,10,16,.8);display:block}
+.char-avatar.placeholder{display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:rgba(30,30,40,.8);border-radius:50%;width:64px;height:64px;border:2px solid rgba(255,255,255,.1)}
+.char-info-name{font-weight:700;font-size:1.1rem;color:#fff}
+.char-info-origin{font-size:.7rem;color:#7a7a8a;margin-top:2px}
+.char-info-bio{font-size:.78rem;color:#999;line-height:1.5;margin-top:4px}
+
+/* ===== 技能卡片 ===== */
+.skill-grid{display:flex;flex-direction:column;gap:8px}
+.skill-card{position:relative;padding:10px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:linear-gradient(135deg,rgba(20,20,30,.8),rgba(14,14,20,.9));transition:.2s}
+.skill-card:hover{border-color:rgba(138,127,199,.25)}
+.skill-card.normal{border-left:3px solid #7ab87a}
+.skill-card.skill{border-left:3px solid #8a7fc7}
+.skill-card.ultimate{border-left:3px solid #d4a0e0}
+
+.skill-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.skill-name{font-weight:700;font-size:.88rem;color:#e8e8e8}
+.skill-type-badge{padding:1px 6px;border-radius:3px;font-size:.6rem;font-weight:600;letter-spacing:.05em}
+.skill-type-badge.normal{background:rgba(122,184,122,.15);color:#7ab87a}
+.skill-type-badge.skill{background:rgba(138,127,199,.15);color:#8a7fc7}
+.skill-type-badge.ultimate{background:rgba(212,160,224,.15);color:#d4a0e0}
+
+.skill-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-bottom:6px}
+.skill-stat{font-size:.72rem;color:#888}
+.skill-stat span{color:#bbb;font-weight:600}
+
+/* 伤害条 */
+.damage-bar{width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:2px}
+.damage-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.damage-bar-fill.normal{background:linear-gradient(90deg,#4a8a4a,#7ab87a)}
+.damage-bar-fill.skill{background:linear-gradient(90deg,#5a4fa7,#8a7fc7)}
+.damage-bar-fill.ultimate{background:linear-gradient(90deg,#a05cc0,#d4a0e0)}
+
+.skill-effect{font-size:.7rem;color:#9a9aaa;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.04)}
+.skill-taunt{font-size:.68rem;color:#d4a0e0;font-style:italic;margin-top:2px;opacity:.8}
+
+/* ===== 对手选择区 ===== */
+.opponent-area{display:none}
+.opponent-area.active{display:block}
+.opponent-card-wrap{margin-top:12px}
+
+/* ===== 模态框 ===== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,15,.88);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:rgba(18,18,26,.96);border:1px solid rgba(255,255,255,.08);border-radius:12px;max-width:560px;width:100%;max-height:80vh;overflow-y:auto;padding:20px;position:relative}
+.modal-close{position:absolute;top:10px;right:14px;background:none;border:none;color:#888;font-size:1.2rem;cursor:pointer;transition:.2s}
+.modal-close:hover{color:#fff}
+.modal-title{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:14px;text-align:center}
+
+/* 成就卡片 */
+.achieve-grid{display:flex;flex-direction:column;gap:8px}
+.achieve-card{display:flex;align-items:center;gap:12px;padding:10px;border-radius:6px;border:1px solid rgba(255,255,255,.05);background:rgba(20,20,30,.5)}
+.achieve-card.locked{opacity:.45;filter:grayscale(1)}
+.achieve-icon{font-size:1.6rem;width:40px;text-align:center}
+.achieve-card.locked .achieve-icon{filter:grayscale(1)}
+.achieve-info{flex:1}
+.achieve-name{font-weight:600;font-size:.85rem;color:#ddd}
+.achieve-card.locked .achieve-name{color:#888}
+.achieve-desc{font-size:.7rem;color:#888;margin-top:2px}
+.achieve-time{font-size:.6rem;color:#666;margin-top:2px}
+
+/* 学习动画 */
+.learn-anim{display:none;text-align:center;padding:30px 0}
+.learn-anim.active{display:block}
+.learn-anim .check{font-size:3rem;animation:popIn .5s ease}
+@keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+.learn-anim .text{margin-top:10px;color:#7ab87a;font-size:.9rem}
+
+/* VS 栏 */
+.vs-bar{display:flex;align-items:center;justify-content:center;gap:16px;padding:8px;font-size:.85rem;color:#aaa}
+.vs-bar .vs-name{font-weight:600}.vs-bar .vs-name.p1{color:#4af}.vs-bar .vs-name.p2{color:#f55}
+.vs-bar .vs-label{color:#555}.vs-bar .vs-world{font-size:.7rem;color:#d4a0e0;margin-left:8px}
+
+/* 战场 */
+canvas{border:1px solid #222;border-radius:8px;background:#0d0d14;box-shadow:0 0 40px rgba(100,120,255,.08);margin:8px 0;max-width:calc(100% - 24px)}
+#ui{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0 20px}
+#ui button{padding:8px 18px;border:1px solid #333;border-radius:6px;background:#16161e;color:#ccc;font-size:.85rem;cursor:pointer;transition:.2s}
+#ui button:hover{background:#22223a;color:#fff;border-color:#556}
+
+.commentary{text-align:center;font-size:.8rem;color:#d4a0e0;opacity:.8;margin-bottom:4px;min-height:2em;letter-spacing:.05em}
+.commentary.taunt{color:#d4a0e0;font-style:italic}
+.buff-bar{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
+.buff-tag{padding:2px 8px;border-radius:3px;font-size:.65rem;letter-spacing:.05em}
+.buff-tag.buff{background:rgba(122,184,122,.12);color:#7ab87a;border:1px solid rgba(122,184,122,.2)}
+.buff-tag.debuff{background:rgba(196,122,122,.12);color:#c47a7a;border:1px solid rgba(196,122,122,.2)}
+.world-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:.7rem;background:rgba(212,160,224,.08);color:#d4a0e0;border:1px solid rgba(212,160,224,.15);margin:0 auto}
+.err-msg{color:#f66;font-size:.75rem;margin-top:4px}
+.uuid-hint{font-size:.68rem;color:#666;margin-top:6px;line-height:1.5}
+.uuid-hint::before{content:'📌 '}
+.disclaimer{text-align:center;font-size:.65rem;color:#555;margin:8px 0 20px;line-height:1.5;max-width:600px}
+.disclaimer::before{content:'⚠️ '}
+
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,15,.92);z-index:100;align-items:center;justify-content:center;flex-direction:column}
+.loading-overlay.show{display:flex}
+.spinner{width:50px;height:50px;border:3px solid rgba(138,127,199,.2);border-top-color:#8a7fc7;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{margin-top:16px;font-size:.85rem;color:#8a7fc7;letter-spacing:.1em}
+.loading-sub{margin-top:6px;font-size:.7rem;color:#555}
+
+/* ===== 战斗面板 ===== */
+.hp-bars{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.hp-bar-wrap{display:flex;align-items:center;gap:8px}
+.hp-name{font-size:.75rem;font-weight:600;width:80px;text-align:right}
+.hp-bar{flex:1;height:16px;background:rgba(255,255,255,.06);border-radius:8px;overflow:hidden}
+.hp-fill{height:100%;background:linear-gradient(90deg,#4a8a4a,#7ab87a);border-radius:8px;transition:width .5s ease}
+.hp-fill.enemy{background:linear-gradient(90deg,#a05c5c,#f55)}
+.hp-val{font-size:.7rem;width:30px;color:#aaa}
+.turn-info{text-align:center;font-size:.8rem;color:#d4a0e0;margin:8px 0}
+.move-buttons{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.move-btn{padding:8px 14px;border:1px solid rgba(138,127,199,.25);border-radius:6px;background:rgba(138,127,199,.12);color:#c8c8d8;font-size:.78rem;cursor:pointer;transition:.2s;min-width:100px;text-align:center}
+.move-btn:hover{background:rgba(138,127,199,.25)}
+.move-btn.on-cd{opacity:.4;cursor:not-allowed}
+.move-btn .cd-badge{font-size:.6rem;color:#f55}
+.battle-log{max-height:120px;overflow-y:auto;font-size:.72rem;color:#888;line-height:1.6;margin-top:8px;padding:8px;background:rgba(0,0,0,.3);border-radius:6px}
+.balance-warn{padding:8px;text-align:center;font-size:.78rem;border-radius:6px;margin-top:8px}
+.balance-warn.cheat{background:rgba(255,50,50,.1);color:#f55;border:1px solid rgba(255,50,50,.2)}
+.balance-warn.unbalanced{background:rgba(255,200,50,.1);color:#da2;border:1px solid rgba(255,200,50,.2)}
+
+/* 关系标签 */
+.rel-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 12px;border-radius:12px;font-size:.72rem;margin:0 auto 4px}
+.rel-badge.stranger{background:rgba(136,136,136,.12);color:#999;border:1px solid rgba(136,136,136,.2)}
+.rel-badge.acquaintance{background:rgba(100,150,200,.12);color:#8ab;border:1px solid rgba(100,150,200,.2)}
+.rel-badge.friend{background:rgba(122,184,122,.12);color:#7ab87a;border:1px solid rgba(122,184,122,.2)}
+.rel-badge.rival{background:rgba(245,180,85,.12);color:#f5a555;border:1px solid rgba(245,180,85,.2)}
+.rel-badge.enemy{background:rgba(245,85,85,.12);color:#f55;border:1px solid rgba(245,85,85,.2)}
+
+/* 结果页 */
+.result-overlay{display:none;position:absolute;inset:0;background:rgba(10,10,15,.92);z-index:50;align-items:center;justify-content:center;flex-direction:column;padding:30px}
+.result-overlay.show{display:flex}
+.result-title{font-size:1.8rem;font-weight:700;color:#fff;margin-bottom:12px;text-shadow:0 0 30px rgba(138,127,199,.5)}
+.result-sub{font-size:.9rem;color:#aaa;margin-bottom:8px;text-align:center;max-width:400px;line-height:1.6}
+.result-rel{font-size:.8rem;color:#d4a0e0;margin-bottom:20px}
+.result-buttons{display:flex;gap:12px;margin-top:16px}
+.result-buttons button{padding:10px 24px;border:1px solid rgba(138,127,199,.3);border-radius:8px;background:rgba(138,127,199,.15);color:#c8c8d8;font-size:.85rem;cursor:pointer;transition:.2s}
+.result-buttons button:hover{background:rgba(138,127,199,.3)}
+
+@media(max-width:640px){.profile-layout{flex-direction:column}.profile-sidebar{flex-direction:row;flex-wrap:wrap;justify-content:center}.profile-sidebar .side-btn{width:auto;flex:1;min-width:100px}h1{font-size:1.1rem}.hp-name{width:60px;font-size:.65rem}.move-btn{min-width:80px;font-size:.7rem;padding:6px 10px}}
 </style>
 </head>
 <body>
 <h1>🔥 火柴人战斗模拟 🔥</h1>
 
-<!-- 角色输入 -->
-<div class="panel">
-  <div style="font-size:.75rem;color:#7a7a8a;margin-bottom:6px;letter-spacing:.1em">⚡ P1 角色（捏Ta链接）</div>
+<!-- Step 1: Import P1 -->
+<div class="panel step active" id="step1">
+  <div class="step-label">步骤 1 · 导入你的角色</div>
   <div class="input-row">
-    <input id="p1Link" placeholder="捏Ta链接 或角色名" />
-    <button onclick="loadP1()">🔍 查找</button>
+    <input id="p1Link" placeholder="捏Ta链接（支持短链/长链/UUID）" />
+    <button onclick="loadP1()">🔍 导入</button>
   </div>
-  <div style="font-size:.75rem;color:#7a7a8a;margin:10px 0 6px;letter-spacing:.1em">⚡ P2 角色</div>
-  <div class="input-row">
-    <input id="p2Link" placeholder="捏Ta链接 或角色名" />
-    <button onclick="loadP2()">🔍 查找</button>
-    <button onclick="autoEnemy()" style="border-color:rgba(245,85,85,.3);color:#f77;">🎲 随机对手</button>
-  </div>
+  <div class="err-msg" id="p1err"></div>
+  <div class="uuid-hint">💡 只能导入 UUID。获取方式：打开网页版捏Ta → 进入角色页面 → 复制浏览器地址栏链接即可</div>
 </div>
 
-<!-- 角色展示 -->
-<div class="char-section" id="charSection">
-  <div class="char-card p1" id="card1">
-    <div class="char-header">
-      <div class="char-avatar placeholder" id="avatar1">🔵</div>
-      <div>
-        <div class="char-name" id="name1">蓝方战士</div>
-        <div class="char-origin" id="origin1">默认角色</div>
+<!-- Step 2: 个人页面 -->
+<div class="panel step" id="step2">
+  <div class="step-label">步骤 2 · 个人档案</div>
+
+  <!-- 主区域 + 侧栏 -->
+  <div class="profile-layout">
+    <!-- 左侧主区域 -->
+    <div class="profile-main">
+      <!-- 角色信息 -->
+      <div class="char-info" id="charInfo">
+        <div class="char-avatar placeholder" id="avatar1">🔵</div>
+        <div>
+          <div class="char-info-name" id="name1">--</div>
+          <div class="char-info-origin" id="origin1">--</div>
+          <div class="char-info-bio" id="desc1">暂无简介</div>
+        </div>
+      </div>
+
+      <!-- 技能列表 -->
+      <div class="skill-grid" id="skillGrid"></div>
+
+      <!-- 学习成功动画 -->
+      <div class="learn-anim" id="learnAnim">
+        <div class="check">✨📖✨</div>
+        <div class="text">学习成功！新技能已加入</div>
       </div>
     </div>
-    <div class="char-desc" id="desc1">等待导入角色...</div>
-    <div class="moves" id="moves1"></div>
+
+    <!-- 右侧按钮 -->
+    <div class="profile-sidebar">
+      <canvas id="radarCanvas" width="160" height="160" style="border-radius:8px;margin-bottom:4px"></canvas>
+      <button class="side-btn achieve" onclick="showAchievements()">🏆 成就</button>
+      <button class="side-btn learn" onclick="learnNewSkill()">📖 学习新技能</button>
+      <button class="side-btn rival" onclick="showRivalSelect()">🎲 随机对手</button>
+    </div>
   </div>
-  <div class="char-card p2" id="card2">
-    <div class="char-header">
-      <div class="char-avatar placeholder" id="avatar2">🔴</div>
-      <div>
-        <div class="char-name" id="name2">红方战士</div>
-        <div class="char-origin" id="origin2">默认角色</div>
+
+  <!-- 对手选择区（点击随机对手后显示） -->
+  <div class="opponent-area" id="opponentArea">
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,.06);margin:16px 0">
+    <div class="import-opponent-row" style="margin-bottom:12px">
+      <div style="font-size:.75rem;color:#aaa;margin-bottom:4px">📥 导入指定对手</div>
+      <div class="input-row">
+        <input id="oppLink" placeholder="对手捏Ta链接（只支持UUID）" style="font-size:.75rem;padding:6px 10px"/>
+        <button onclick="loadOpponent()" style="font-size:.75rem;padding:6px 12px">🔍 导入</button>
+      </div>
+      <div class="uuid-hint">💡 只能导入 UUID。获取方式：打开网页版捏Ta → 进入角色页面 → 复制浏览器地址栏链接即可</div>
+      <div class="err-msg" id="opperr"></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="step-label" style="margin:0">对手信息</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="refreshRival()">🔄 更换对手</button>
+        <button class="btn-fight" onclick="startFight()" style="padding:6px 18px;font-size:.8rem">⚔️ 开始战斗</button>
       </div>
     </div>
-    <div class="char-desc" id="desc2">等待导入角色...</div>
-    <div class="moves" id="moves2"></div>
+    <div class="opponent-card-wrap">
+      <div class="char-info" id="oppCharInfo" style="border-left:3px solid #f55">
+        <div class="char-avatar placeholder" id="avatar2">🔴</div>
+        <div>
+          <div class="char-info-name" id="name2">--</div>
+          <div class="char-info-origin" id="origin2">--</div>
+          <div class="char-info-bio" id="desc2">暂无简介</div>
+        </div>
+      </div>
+      <div class="skill-grid" id="oppSkillGrid"></div>
+    </div>
   </div>
 </div>
 
-<div class="panel" style="text-align:center;margin-top:10px;">
-  <button onclick="startFight()" style="font-size:1rem;padding:10px 30px;border-color:rgba(212,160,224,.3);color:#d4a0e0;">⚔️ 开始战斗</button>
-</div>
-
-<!-- 对战栏 -->
-<div class="panel" style="padding:6px 12px;">
-  <div class="vs-bar">
-    <span class="vs-name p1" id="vsP1">蓝方战士</span>
-    <span class="vs-label">VS</span>
-    <span class="vs-name p2" id="vsP2">红方战士</span>
-    <span class="vs-world" id="vsWorld"></span>
+<!-- 成就弹窗 -->
+<div class="modal-overlay" id="achieveModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('achieveModal')">✕</button>
+    <div class="modal-title">🏆 成就殿堂</div>
+    <div class="achieve-grid" id="achieveGrid"></div>
   </div>
-  <div class="buff-bar" id="buffBar"></div>
 </div>
 
-<div class="commentary" id="commentary"></div>
-<canvas id="c"></canvas>
-<div id="ui">
-  <button onclick="restart()">🔄 重新战斗</button>
-  <button onclick="toggleSlow()">⏱ 慢放</button>
-  <button onclick="toggleAuto()">▶ 自动重播</button>
+<!-- Battle area -->
+<div id="battleArea" style="display:none">
+  <div class="panel" style="padding:6px 12px;position:relative">
+    <div class="vs-bar">
+      <span class="vs-name p1" id="vsP1">--</span>
+      <span class="vs-label">VS</span>
+      <span class="vs-name p2" id="vsP2">--</span>
+      <span class="vs-world" id="vsWorld"></span>
+    </div>
+    <div class="buff-bar" id="buffBar"></div>
+    <!-- 关系标签 -->
+    <div id="relBadge" style="text-align:center;margin:4px 0"></div>
+    <!-- 平衡警告 -->
+    <div id="balanceWarn" class="balance-warn" style="display:none"></div>
+    <!-- 结果覆盖层 -->
+    <div class="result-overlay" id="resultOverlay">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-sub" id="resultSub"></div>
+      <div class="result-rel" id="resultRel"></div>
+      <div class="result-buttons">
+        <button onclick="restart()">🔄 再来一局</button>
+        <button onclick="resetAll()">🏠 返回主页</button>
+      </div>
+    </div>
+  </div>
+  <div class="commentary" id="commentary"></div>
+  <canvas id="c"></canvas>
+  <div id="fightPanel" style="display:none" class="panel">
+    <div class="hp-bars">
+      <div class="hp-bar-wrap">
+        <span class="hp-name" id="hpName1">P1</span>
+        <div class="hp-bar"><div class="hp-fill" id="hpFill1" style="width:100%"></div></div>
+        <span class="hp-val" id="hpVal1">100</span>
+      </div>
+      <div class="hp-bar-wrap">
+        <span class="hp-name" id="hpName2">P2</span>
+        <div class="hp-bar"><div class="hp-fill enemy" id="hpFill2" style="width:100%"></div></div>
+        <span class="hp-val" id="hpVal2">100</span>
+      </div>
+    </div>
+    <div class="turn-info">
+      <span id="turnNum">准备战斗</span>
+    </div>
+    <div id="p1Moves" class="move-buttons"></div>
+    <div id="battleLog" class="battle-log"></div>
+  </div>
+  <div id="ui" style="display:none">
+    <button onclick="restart()">🔄 重新战斗</button>
+    <button onclick="toggleSlow()">⏱ 慢放</button>
+    <button onclick="resetAll()">🏠 返回主页</button>
+  </div>
+  <div class="disclaimer">所有参战角色均为模拟数据，基于AI演算生成，不代表真实角色本人。技能数值、战斗结果仅供娱乐。</div>
+</div>
+
+<!-- 模拟声明弹窗 -->
+<div class="modal-overlay" id="simModal">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-title">⚠️ 模拟声明</div>
+    <p style="font-size:.82rem;color:#999;line-height:1.6;text-align:center;margin-bottom:16px">
+      所有参战角色均为<b style="color:#ccc">模拟数据</b>，由 AI 根据角色简介分析生成。<br>
+      技能数值、战斗结果<b style="color:#ccc">不代表真实角色本人</b>。<br>
+      仅供娱乐，请勿当真。
+    </p>
+    <div style="text-align:center">
+      <button onclick="confirmFight()" style="padding:8px 30px;font-size:.85rem">我知道了，开始战斗</button>
+    </div>
+  </div>
 </div>
 
 <div class="loading-overlay" id="loading">
@@ -199,640 +345,1570 @@ canvas {
 
 <script src="data.js"></script>
 <script>
-// ===== 常量 & 状态 =====
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-const REF_W = 900, REF_H = 500;
-let W, H, GROUND, scaleX, scaleY;
+// ===== API =====
+const NETA_API='https://api.talesofai.cn';
+const APP_HEADERS={'x-platform':'nieta-app/web','x-nieta-app-version':'6.8.9','device-id':'7588817246181453826'};
+const LLM_URL='https://litellm.talesofai.cn/v1/chat/completions';
+const LLM_KEY='sk-fZrLXE0IEs6EDYJCOsLLaQ';
+const LLM_MODEL='qwen3.5-plus-no-think';
 
-function resizeCanvas() {
-  W = canvas.width = Math.min(REF_W, window.innerWidth - 30);
-  H = canvas.height = Math.min(REF_H, window.innerHeight - 180);
-  GROUND = H - 60;
-  scaleX = W / REF_W;
-  scaleY = H / REF_H;
+// ===== State =====
+let step=1;
+let P1={name:'蓝方战士',desc:'',origin:'默认角色',avatar:'',skills:defaultSkills(),charType:''};
+let P2=null;
+let headImg1=null,headImg2=null;
+let currentWorld=null;
+let currentRival=null;
+
+// ===== 技能数据模型 =====
+function defaultSkills(){return[
+  {type:'normal',name:'普通拳击',desc:'基础的直拳攻击，朴实无华但可靠',damage:15,cd:0,castSpeed:'fast',effect:'无附加效果',taunt:'吃我一拳！',phases:[{f:6,pose:'punch',hit:false},{f:4,pose:'punch',hit:true},{f:8,pose:'fight',hit:false}]},
+  {type:'skill',name:'旋风踢',desc:'旋转一周后踢出，范围可观',damage:30,cd:2,castSpeed:'medium',effect:'击退对手一段距离',taunt:'旋转吧！',phases:[{f:8,pose:'highKick',hit:false},{f:4,pose:'highKick',hit:true},{f:6,pose:'fight',hit:false}]},
+  {type:'ultimate',name:'终结飞踢',desc:'从空中劈下的致命一击，赌上一切的觉悟',damage:55,cd:4,castSpeed:'slow',effect:'造成大量伤害并短暂眩晕',taunt:'这一击，赌上所有！',phases:[{f:8,pose:'jump',hit:false},{f:6,pose:'axeKick',hit:true,big:true},{f:8,pose:'fight',hit:false}]}
+]}
+
+// ===== 成就系统 =====
+const ACHIEVEMENTS=[
+  {id:'first_fight',icon:'⚔️',name:'初次交锋',desc:'完成第一场战斗',unlockKey:'firstFight'},
+  {id:'ten_fights',icon:'🔥',name:'身经百战',desc:'累计完成10场战斗',unlockKey:'fightCount',check:v=>v>=10},
+  {id:'no_damage',icon:'💎',name:'无伤通关',desc:'以满HP赢得战斗',unlockKey:'perfectWins'},
+  {id:'speed_demon',icon:'⚡',name:'闪电战',desc:'在30秒内结束战斗',unlockKey:'fastWins'},
+  {id:'collector',icon:'📚',name:'技能收藏家',desc:'学会4个不同技能',unlockKey:'skillsLearned',check:v=>v>=4},
+  {id:'rival_master',icon:'🎲',name:'挑战者',desc:'与5个不同对手交战',unlockKey:'uniqueRivals',check:v=>v>=5},
+  {id:'combo_king',icon:'💥',name:'连击之王',desc:'单场达成10连击',unlockKey:'maxCombo',check:v=>v>=10},
+  {id:'world_traveler',icon:'🌍',name:'世界旅者',desc:'在3个不同世界战斗',unlockKey:'worldsVisited',check:v=>v>=3},
+];
+
+function getAchievements(){
+  try{return JSON.parse(localStorage.getItem('stickfight_achievements')||'[]')}catch(e){return[]}
 }
-resizeCanvas();
-
-const GRAVITY = 0.55 * scaleY;
-let slow = false, autoReplay = false, time = 0;
-let rafId = null;
-let headImg1 = null, headImg2 = null;
-
-// LLM
-const LLM_URL = 'https://litellm.talesofai.cn/v1/chat/completions';
-const LLM_KEY = 'sk-fZrLXE0IEs6EDYJCOsLLaQ';
-const LLM_MODEL = 'qwen3.5-plus-no-think';
-
-// 里界 buff/debuff 定义
-const WORLD_EFFECTS = {
-  '人监': { buffs: [{name:'器官暴走',icon:'🫀',stat:'sp',val:-5,desc:'器官的注视让理智持续流失'}], debuffs:[{name:'感官压迫',icon:'👁️',stat:'hp',val:-2,desc:'器官环境持续压迫身体'}], bgTint:'#1a0a0a' },
-  '错位花园': { buffs:[{name:'植物庇护',icon:'🌿',stat:'hp',val:3,desc:'植物散发治愈气息'}], debuffs:[], bgTint:'#0a1a0a' },
-  '疫病区': { buffs:[], debuffs:[{name:'瘟疫侵蚀',icon:'☠️',stat:'hp',val:-8,desc:'空气中弥漫病原体'}, {name:'精神污染',icon:'🧪',stat:'sp',val:-5,desc:'死寂荒野侵蚀理智'}], bgTint:'#1a1a0a' },
-  '风暴海': { buffs:[{name:'暴雨洗礼',icon:'🌧️',stat:'sp',val:2,desc:'暴雨冲刷心灵'}], debuffs:[{name:'狂风肆虐',icon:'🌊',stat:'hp',val:-3,desc:'暴风削减体力'}], bgTint:'#0a0a1a' },
-  '童话国': { buffs:[{name:'童话祝福',icon:'🏰',stat:'lk',val:10,desc:'童话世界带来好运'}], debuffs:[{name:'暗黑童话',icon:'📖',stat:'sp',val:-3,desc:'美丽外表下的暗流'}], bgTint:'#1a0a1a' },
-  '「心湖」——"时之海"': { buffs:[{name:'心湖治愈',icon:'💫',stat:'hp',val:5,desc:'童年回忆治愈伤口'}, {name:'宁静',icon:'🌙',stat:'sp',val:5,desc:'湖水般的平静'}], debuffs:[], bgTint:'#0a0a1a' },
-  '天风阁': { buffs:[{name:'古阁灵气',icon:'🏯',stat:'cb',val:5,desc:'古风阁楼赋予战意'}], debuffs:[], bgTint:'#0a0a0a' },
-  '随心': { buffs:[{name:'自由变形',icon:'🟢',stat:'cb',val:3,desc:'史莱姆的流动性'}], debuffs:[{name:'形态不稳',icon:'💧',stat:'hp',val:-2,desc:'身体偶尔失控'}], bgTint:'#0a1a0a' },
-  '永远的家': { buffs:[{name:'奇迹治愈',icon:'✨',stat:'hp',val:8,desc:'奇迹修复一切伤口'}, {name:'麦田温暖',icon:'🌾',stat:'sp',val:5,desc:'金黄麦田的安宁'}], debuffs:[], bgTint:'#1a1a0a' },
-  '白墟之地': { buffs:[], debuffs:[{name:'规则污染',icon:'⬜',stat:'hp',val:-6,desc:'规则在侵蚀身体'}, {name:'文明残响',icon:'🏚️',stat:'sp',val:-6,desc:'远古废墟的压抑'}], bgTint:'#1a1a1a' },
-  '【黑海】': { buffs:[{name:'暗影加护',icon:'🌑',stat:'cb',val:5,desc:'黑暗赋予力量'}], debuffs:[{name:'深寒',icon:'❄️',stat:'hp',val:-4,desc:'北极的极寒'}], bgTint:'#050508' },
-  '【第x号医院】': { buffs:[{name:'医疗支援',icon:'🏥',stat:'hp',val:4,desc:'医院的急救设施'}], debuffs:[{name:'诡异氛围',icon:'💉',stat:'sp',val:-4,desc:'医院中的不安感'}], bgTint:'#0a0a0a' },
-  '【骰子回廊】': { buffs:[], debuffs:[], bgTint:'#0a0a0a', random:true, desc:'骰子决定一切！每回合随机效果' }
-};
-
-// 角色数据
-let P1 = { name:'蓝方战士', desc:'', origin:'默认角色', avatar:'', moves:defaultMoves(), charType:'', tauntOk:true };
-let P2 = { name:'红方战士', desc:'', origin:'默认角色', avatar:'', moves:defaultMoves(), charType:'', tauntOk:true };
-
-// 当前场地
-let currentWorld = null;
-
-function defaultMoves() {
-  return [
-    { type:'normal', name:'普通拳击', desc:'基础的直拳攻击', phases:[{f:6,pose:'punch',hit:false},{f:4,pose:'punch',hit:true},{f:8,pose:'fight',hit:false}] },
-    { type:'skill', name:'旋风踢', desc:'旋转一周后踢出', phases:[{f:8,pose:'highKick',hit:false},{f:4,pose:'highKick',hit:true},{f:6,pose:'fight',hit:false}] },
-    { type:'ultimate', name:'终结飞踢', desc:'从空中劈下的致命一击', phases:[{f:8,pose:'jump',hit:false},{f:6,pose:'axeKick',hit:true,big:true},{f:8,pose:'fight',hit:false}] }
-  ];
+function setAchievements(arr){localStorage.setItem('stickfight_achievements',JSON.stringify(arr))}
+function unlockAchievement(id){
+  const arr=getAchievements();
+  if(!arr.find(a=>a.id===id)){arr.push({id,unlockedAt:new Date().toISOString()});setAchievements(arr)}
 }
+function isUnlocked(id){return!!getAchievements().find(a=>a.id===id)}
+function getUnlockTime(id){const a=getAchievements().find(a=>a.id===id);return a?a.unlockedAt:null}
+function getStat(key){try{return JSON.parse(localStorage.getItem('stickfight_stat_'+key)||'0')}catch(e){return 0}}
+function addStat(key,n=1){const v=getStat(key)+n;localStorage.setItem('stickfight_stat_'+key,JSON.stringify(v));return v}
 
-// ===== 捏Ta API =====
-function extractUUID(url) {
-  if (!url) return '';
-  const m = url.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
-  return m ? m[0] : '';
-}
+// ===== Helpers =====
+function sx(v){return v*(W/900)}function sy(v){return v*(H/500)}
+function showLoading(t,s){document.getElementById('loadText').textContent=t;document.getElementById('loadSub').textContent=s||'';document.getElementById('loading').classList.add('show')}
+function hideLoading(){document.getElementById('loading').classList.remove('show')}
+function setStep(n){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));const el=document.getElementById('step'+n);if(el)el.classList.add('active');step=n}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
 
-async function fetchCharacter(uuid) {
-  const resp = await fetch(`https://api.nieta.com.cn/v1/character/${uuid}`);
-  if (!resp.ok) throw new Error('查询失败: ' + resp.status);
-  const data = await resp.json();
-  return { name: data.name||data.nick_name||'未知角色', desc: data.description||data.desc||data.info||'', avatar: data.cover_image_url||data.avatar_url||data.image_url||data.avatar||'' };
-}
-
-async function searchCharacter(keyword) {
-  const resp = await fetch(`https://api.nieta.com.cn/v1/character/search?keywords=${encodeURIComponent(keyword)}&parent_type=character&sort_scheme=exact`);
-  if (!resp.ok) return null;
-  const data = await resp.json();
-  if (data?.items?.length > 0) {
-    const c = data.items[0];
-    return { name: c.name||c.nick_name||'未知', desc: c.description||c.desc||'', avatar: c.cover_image_url||c.avatar_url||'' };
-  }
-  return null;
+// ===== 渲染技能卡片 =====
+function renderSkillCard(skill,opp=false){
+  const typeLabel=skill.type==='normal'?'普攻':skill.type==='skill'?'技能':'大招';
+  const speedLabel={fast:'快⚡',medium:'中⏱',slow:'慢🐢'}[skill.castSpeed]||'中⏱';
+  const cdText=skill.type==='normal'?'无':(skill.cd||0)+' 回合';
+  const dmgPct=Math.min(skill.damage/70*100,100);
+  return`<div class="skill-card ${skill.type}">
+    <div class="skill-header">
+      <span class="skill-name">${skill.name}</span>
+      <span class="skill-type-badge ${skill.type}">${typeLabel}</span>
+    </div>
+    <div class="skill-stats">
+      <div class="skill-stat">伤害: <span>${skill.damage}</span></div>
+      <div class="skill-stat">CD: <span>${cdText}</span></div>
+      <div class="skill-stat">释放速度: <span>${speedLabel}</span></div>
+    </div>
+    <div class="damage-bar"><div class="damage-bar-fill ${skill.type}" style="width:${dmgPct}%"></div></div>
+    ${skill.effect&&skill.effect!=='无'?`<div class="skill-effect">🔮 效果: ${skill.effect}</div>`:''}
+    ${skill.taunt?`<div class="skill-taunt">"${skill.taunt}"</div>`:''}
+  </div>`;
 }
 
-// ===== 图片处理 =====
-function loadImage(url) {
-  if (!url) return null;
-  return new Promise((resolve) => {
-    const img = new Image(); img.crossOrigin = 'anonymous';
-    img.onload = () => resolve(img); img.onerror = () => resolve(null); img.src = url;
-  });
+function renderSkills(skills,containerId){
+  document.getElementById(containerId).innerHTML=skills.map(s=>renderSkillCard(s)).join('');
 }
 
-function drawCircleAvatar(img, x, y, radius) {
-  ctx.save();
-  ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI*2); ctx.closePath(); ctx.clip();
-  if (img) { const s = radius*2; ctx.drawImage(img, x-radius, y-radius, s, s); }
-  ctx.restore();
-  ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI*2);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 2*scaleX; ctx.stroke();
+// ===== Character extraction =====
+function extractUUID(input){if(!input)return null;const m=input.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);return m?m[0]:null}
+async function fetchCharacter(uuid){const r=await fetch(NETA_API+'/v2/travel/parent/'+uuid+'/profile',{headers:APP_HEADERS});if(!r.ok)throw new Error('查询失败: '+r.status);const d=await r.json();if(!d.uuid)throw new Error('角色不存在或UUID无效');return{name:d.name||d.short_name||'未知角色',desc:d.oc_bio?.description||d.oc_bio?.persona||'',avatar:d.config?.avatar_img||d.config?.header_img||'',type:d.type||'角色'}}
+async function loadCharacter(input){if(input.includes('t.nieta.art')&&!input.includes('uuid=')){throw new Error('短链无法在浏览器中自动解析\n请在电脑浏览器打开短链，从地址栏复制含uuid=的完整链接')}const uuid=extractUUID(input);if(!uuid)throw new Error('无法提取UUID，请检查链接格式');return await fetchCharacter(uuid)}
+function loadImage(url){if(!url)return Promise.resolve(null);return new Promise(r=>{const img=new Image();img.crossOrigin='anonymous';img.onload=()=>r(img);img.onerror=()=>r(null);img.src=url})}
+
+// ===== P1 =====
+async function loadP1(){
+  const v=document.getElementById('p1Link').value.trim();if(!v)return;
+  document.getElementById('p1err').textContent='';showLoading('正在查找角色...',v);
+  try{
+    const d=await loadCharacter(v);
+    P1.name=d.name;P1.desc=d.desc;P1.origin='捏Ta';P1.avatar=d.avatar;P1.charType=d.type||'';
+    if(d.avatar){const img=await loadImage(d.avatar);headImg1=img}
+    showLoading('正在分析战斗风格...',d.name);
+    P1.skills=await genSkills(d);
+    renderProfile(P1,'avatar1','name1','origin1','desc1','skillGrid');
+    hideLoading();setStep(2);
+  }catch(e){document.getElementById('p1err').textContent=e.message;hideLoading()}
 }
 
-// ===== LLM =====
-async function llmCall(system, user, maxT=2048, temp=0.85) {
-  const ctrl = new AbortController();
-  const tmo = setTimeout(() => ctrl.abort(), 30000);
-  const resp = await fetch(LLM_URL, {
-    method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+LLM_KEY},
-    body: JSON.stringify({ model:LLM_MODEL, messages:[{role:'system',content:system},{role:'user',content:user}], max_tokens:maxT, temperature:temp }),
-    signal: ctrl.signal
-  });
-  clearTimeout(tmo);
-  if (!resp.ok) throw new Error('LLM 请求失败: ' + resp.status);
-  const data = await resp.json();
-  return data.choices?.[0]?.message?.content || '';
-}
-
-function parseJSON(t) {
-  t = t.replace(/```(?:json)?/g,'').replace(/```/g,'').trim();
-  for (const open of ['[','{']) {
-    const start = t.indexOf(open); if (start < 0) continue;
-    const close = open==='['?']':'}'; let depth=0, inStr=false, esc=false;
-    for (let i=start; i<t.length; i++) {
-      const c=t[i]; if(esc){esc=false;continue} if(c==='\\'){esc=true;continue}
-      if(c==='"')inStr=!inStr; if(inStr)continue;
-      if(c===open)depth++; if(c===close){depth--;if(depth===0){try{return JSON.parse(t.substring(start,i+1))}catch(e){}break}}
-    }
-  }
-  try{return JSON.parse(t)}catch(e){} return null;
-}
-
-// ===== 角色加载 =====
-function showLoading(t, s) {
-  document.getElementById('loadText').textContent = t;
-  document.getElementById('loadSub').textContent = s || '';
-  document.getElementById('loading').classList.add('show');
-}
-function hideLoading() { document.getElementById('loading').classList.remove('show'); }
-
-async function loadP1() { const v = document.getElementById('p1Link').value.trim(); if(!v) return; await loadChar(1, v); }
-async function loadP2() { const v = document.getElementById('p2Link').value.trim(); if(!v) return; await loadChar(2, v); }
-
-async function loadChar(player, input) {
-  showLoading('正在查找角色...', input);
-  try {
-    let d = null;
-    const uuid = extractUUID(input);
-    if (uuid) { try { d = await fetchCharacter(uuid); d.origin = '捏Ta'; } catch(e) {} }
-    if (!d) { try { d = await searchCharacter(input); if(d) d.origin = '捏Ta搜索'; } catch(e) {} }
-    if (!d) d = { name: input, desc: '', avatar: '', origin: '自定义' };
-
-    const p = player === 1 ? P1 : P2;
-    p.name = d.name; p.desc = d.desc; p.origin = d.origin; p.avatar = d.avatar || '';
-
-    if (d.avatar) {
-      const img = await loadImage(d.avatar);
-      if (player === 1) headImg1 = img; else headImg2 = img;
-    }
-
-    showLoading('正在分析战斗风格...', d.name);
-    p.moves = await genMoves(d);
-    updateUI(player, d);
-    hideLoading();
-  } catch(e) { hideLoading(); alert('加载失败: ' + e.message); }
-}
-
-function updateUI(player, d) {
-  const n = '' + player;
-  document.getElementById('name'+n).textContent = d.name;
-  document.getElementById('origin'+n).textContent = d.origin;
-  document.getElementById('desc'+n).textContent = d.desc || '暂无简介';
-  document.getElementById('vsP'+n).textContent = d.name;
-
-  const avEl = document.getElementById('avatar'+n);
-  if (d.avatar) {
-    const img = document.createElement('img');
-    img.className = 'char-avatar'; img.id = 'avatar'+n; img.src = d.avatar;
-    img.onerror = function() {
-      this.outerHTML = '<div class="char-avatar placeholder" id="avatar'+n+'">'+(player===1?'🔵':'🔴')+'</div>';
-    };
+function renderProfile(ch,avId,nameId,originId,descId,gridId){
+  document.getElementById(nameId).textContent=ch.name;
+  document.getElementById(originId).textContent=ch.origin||'未知';
+  document.getElementById(descId).textContent=ch.desc||'暂无简介';
+  const avEl=document.getElementById(avId);
+  if(ch.avatar){
+    const img=document.createElement('img');img.className='char-avatar';img.id=avId;img.src=ch.avatar;
+    img.onerror=function(){this.outerHTML='<div class="char-avatar placeholder" id="'+avId+'">🔵</div>'};
     avEl.replaceWith(img);
   }
-
-  const p = player === 1 ? P1 : P2;
-  document.getElementById('moves'+n).innerHTML = p.moves.map(m =>
-    `<div class="move-item"><span class="move-type ${m.type}">${m.type==='normal'?'普攻':m.type==='skill'?'技能':'大招'}</span><span class="move-name">${m.name}</span><div class="move-desc">${m.desc}</div></div>`
-  ).join('');
+  renderSkills(ch.skills,gridId);
+  // 绘制占位雷达图
+  const rc=document.getElementById('radarCanvas');
+  if(rc){const c=rc.getContext('2d');c.clearRect(0,0,rc.width,rc.height);c.fillStyle='#888';c.font='11px sans-serif';c.textAlign='center';c.fillText('战斗后显示',rc.width/2,rc.height/2)}
 }
 
-async function genMoves(cd) {
-  try {
-    const r = await llmCall(
-      '只返回JSON数组，不返回其他内容。',
-      `你是火柴人战斗招式设计师。根据角色信息设计3种招式（普攻/技能/大招）：
+// ===== 对手选择 =====
+function randomChar(){if(typeof CHAR_DB==='undefined'||!CHAR_DB.length)return null;return CHAR_DB[Math.floor(Math.random()*CHAR_DB.length)]}
 
-角色：${cd.name}
-简介：${cd.desc || '暂无'}
+function showRivalSelect(){
+  document.getElementById('opponentArea').classList.add('active');
+  refreshRival();
+}
+
+// ===== 对手技能缓存 =====
+const opponentSkillCache={};
+function getEnemySkills(enemy){
+  const key='stickfight_enemy_skills_'+enemy.name;
+  if(opponentSkillCache[key])return opponentSkillCache[key];
+  const cached=localStorage.getItem(key);
+  if(cached){try{opponentSkillCache[key]=JSON.parse(cached);return opponentSkillCache[key]}catch(e){}}
+  return null;
+}
+function cacheEnemySkills(enemyName,skills){
+  const key='stickfight_enemy_skills_'+enemyName;
+  opponentSkillCache[key]=skills;
+  localStorage.setItem(key,JSON.stringify(skills));
+}
+
+async function loadEnemySkills(enemy){
+  const cached=getEnemySkills(enemy);
+  if(cached){return cached}
+  try{
+    const r=await llmCall('只返回JSON数组，不返回其他内容。',
+      `你是火柴人战斗招式设计师。根据角色信息设计3种招式（普攻/技能/大招）。
+角色：${enemy.name}
+简介：${enemy.desc||'暂无'}
 可用pose：stand fight punch heavyPunch kick highKick block hit knockback jump axeKick kneel victory
 
-返回JSON数组：
-[{"type":"normal","name":"招式名","desc":"带吐槽的简短描述","phases":[{"f":8,"pose":"fight","hit":false},{"f":4,"pose":"punch","hit":true},{"f":8,"pose":"fight","hit":false}]},
-{"type":"skill","name":"...","desc":"...","phases":[...]},
-{"type":"ultimate","name":"...","desc":"...","phases":[...,{"f":6,"pose":"axeKick","hit":true,"big":true},...]}]
-每个招式3-5个phase，大招最后一个打击设"big":true。`,
-      1024, 0.85
-    );
-    const m = parseJSON(r);
-    if (m && Array.isArray(m) && m.length >= 3) return m.slice(0,3);
-  } catch(e) {}
-  return defaultMoves();
+返回JSON数组，每个技能含以下字段：
+- type: "normal" | "skill" | "ultimate"
+- name: 技能名称
+- desc: 技能描述
+- damage: 1-60的数字
+- cd: 冷却回合数（普攻为0）
+- castSpeed: "fast" | "medium" | "slow"
+- effect: 附加效果描述
+- taunt: 招式喊话文本
+- phases: 动作阶段数组(3-5个phase)，每个phase含{f:帧数, pose:姿势名, hit:是否命中, big:是否大招(bool可选)}`,1024,0.85);
+    const m=parseJSON(r);
+    if(m&&Array.isArray(m)&&m.length>=3){
+      const skills=m.slice(0,3).map(s=>{
+        s.castSpeed=['fast','medium','slow'].includes(s.castSpeed)?s.castSpeed:'medium';
+        s.damage=Math.min(60,Math.max(1,Number(s.damage)||15));
+        s.cd=Math.max(0,Number(s.cd)||0);
+        if(!s.phases||!Array.isArray(s.phases)){s.phases=[{f:6,pose:'punch',hit:false},{f:4,pose:'punch',hit:true},{f:8,pose:'fight',hit:false}]}
+        if(!s.attrBase||!['str','tech','burst','def','spd','lck'].includes(s.attrBase)){s.attrBase=s.type==='normal'?'str':s.type==='skill'?'tech':'burst'}
+        return s;
+      });
+      cacheEnemySkills(enemy.name,skills);
+      return skills;
+    }
+  }catch(e){}
+  return defaultSkills();
 }
 
-// ===== 随机对手（从Excel数据） =====
-function randomChar() {
-  if (typeof CHAR_DB === 'undefined' || !CHAR_DB.length) return null;
-  return CHAR_DB[Math.floor(Math.random() * CHAR_DB.length)];
-}
+async function refreshRival(){
+  showLoading('正在匹配对手...','从档案中随机选取');
+  let enemy=randomChar();let tries=0;
+  while(enemy&&enemy.name===P1.name&&tries<20){enemy=randomChar();tries++}
+  if(!enemy){hideLoading();return}
 
-async function autoEnemy() {
-  if (!P1.name || P1.name === '蓝方战士') { alert('请先导入P1角色'); return; }
-  showLoading('正在匹配对手...', '从档案中随机选取');
+  currentRival={name:enemy.name,desc:enemy.desc||'',origin:(enemy.type||'档案')+' · 随机匹配',avatar:'',skills:[],charType:enemy.type||''};
+  headImg2=null;
 
-  // 等概率随机选一个（不能和P1同名）
-  let enemy = randomChar();
-  let tries = 0;
-  while (enemy && enemy.name === P1.name && tries < 20) { enemy = randomChar(); tries++; }
-  if (!enemy) { hideLoading(); return; }
+  showLoading('正在加载战斗数据...',enemy.name);
+  currentRival.skills=await loadEnemySkills(enemy);
 
-  P2.name = enemy.name;
-  P2.desc = enemy.desc || '';
-  P2.origin = enemy.type + '档案 · 随机匹配';
-  P2.avatar = '';
-  headImg2 = null;
-
-  // LLM 生成招式
-  showLoading('正在分析战斗风格...', enemy.name);
-  P2.moves = await genMoves(enemy);
-  updateUI(2, { name: enemy.name, desc: enemy.desc || '', origin: P2.origin, avatar: '' });
+  document.getElementById('name2').textContent=enemy.name;
+  document.getElementById('origin2').textContent=currentRival.origin;
+  document.getElementById('desc2').textContent=enemy.desc||'暂无简介';
+  const old=document.getElementById('avatar2');
+  if(old)old.outerHTML='<div class="char-avatar placeholder" id="avatar2">🔴</div>';
+  renderSkills(currentRival.skills,'oppSkillGrid');
   hideLoading();
 }
 
-// ===== 随机里界场地 =====
-function randomWorld() {
-  if (typeof WORLD_DB === 'undefined' || !WORLD_DB.length) return null;
-  return WORLD_DB[Math.floor(Math.random() * WORLD_DB.length)];
+// ===== 导入指定对手 =====
+async function loadOpponent(){
+  const v=document.getElementById('oppLink').value.trim();
+  if(!v)return;
+  document.getElementById('opperr').textContent='';
+  showLoading('正在查找对手...',v);
+  try{
+    const d=await loadCharacter(v);
+    currentRival={name:d.name,desc:d.desc||'',origin:'捏Ta',avatar:d.avatar,skills:[],charType:d.type||''};
+    if(d.avatar){const img=await loadImage(d.avatar);headImg2=img}
+    showLoading('正在分析对手技能...',d.name);
+    currentRival.skills=await loadEnemySkills({name:d.name,desc:d.desc,type:d.type});
+    document.getElementById('name2').textContent=d.name;
+    document.getElementById('origin2').textContent='捏Ta';
+    document.getElementById('desc2').textContent=d.desc||'暂无简介';
+    if(d.avatar){
+      const avEl=document.getElementById('avatar2');
+      const img=document.createElement('img');img.className='char-avatar';img.id='avatar2';img.src=d.avatar;
+      img.onerror=function(){this.outerHTML='<div class="char-avatar placeholder" id="avatar2">🔴</div>'};
+      avEl.replaceWith(img);
+    }
+    renderSkills(currentRival.skills,'oppSkillGrid');
+    hideLoading();
+  }catch(e){document.getElementById('opperr').textContent=e.message;hideLoading()}
 }
 
-function applyWorldEffects() {
-  currentWorld = randomWorld();
-  const wb = document.getElementById('buffBar');
-  const ww = document.getElementById('vsWorld');
-
-  if (!currentWorld) {
-    ww.innerHTML = ''; wb.innerHTML = '';
-    return;
-  }
-
-  ww.innerHTML = `<span class="world-badge">🌐 ${currentWorld.name}</span>`;
-
-  const ef = WORLD_EFFECTS[currentWorld.name];
-  if (!ef) { wb.innerHTML = ''; return; }
-
-  let html = '';
-  (ef.buffs || []).forEach(b => {
-    html += `<span class="buff-tag buff" title="${b.desc}">${b.icon} ${b.name}</span>`;
-  });
-  (ef.debuffs || []).forEach(d => {
-    html += `<span class="buff-tag debuff" title="${d.desc}">${d.icon} ${d.name}</span>`;
-  });
-
-  // 骰子回廊特殊：每回合随机
-  if (ef.random) {
-    html += `<span class="buff-tag buff" title="每回合随机buff/debuff">🎲 骰子回廊</span>`;
-  }
-
-  wb.innerHTML = html;
+// ===== 成就展示 =====
+function showAchievements(){
+  const grid=document.getElementById('achieveGrid');
+  grid.innerHTML=ACHIEVEMENTS.map(a=>{
+    const unlocked=isUnlocked(a.id);
+    const timeStr=unlocked?new Date(getUnlockTime(a.id)).toLocaleString():'未解锁';
+    return`<div class="achieve-card ${unlocked?'':'locked'}">
+      <div class="achieve-icon">${unlocked?a.icon:'❓'}</div>
+      <div class="achieve-info">
+        <div class="achieve-name">${unlocked?a.name:'???'}</div>
+        <div class="achieve-desc">${unlocked?a.desc:'完成条件以解锁'}</div>
+        <div class="achieve-time">${timeStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('achieveModal').classList.add('show');
 }
 
-// ===== 战斗编排 LLM =====
-async function genChoreo() {
-  showLoading('正在编排战斗...', `${P1.name} vs ${P2.name}`);
+// ===== 学习新技能 =====
+async function learnNewSkill(){
+  if(P1.skills.length>=4){
+    const newest=P1.skills[P1.skills.length-1];
+    const replace=confirm('技能栏已满(4个)！是否替换最后一个技能「'+newest.name+'」？\n取消则放弃学习。');
+    if(!replace)return;
+  }
+  showLoading('正在领悟新技能...','冥冥之中灵感涌现');
+  try{
+    const types=['normal','skill','ultimate'];
+    const targetType=types[Math.floor(Math.random()*types.length)];
+    const typeLabel=targetType==='normal'?'普攻':targetType==='skill'?'技能':'大招';
+    const dmgRange=targetType==='normal'?'10-20':targetType==='skill'?'20-40':'40-70';
+    const cdRange=targetType==='normal'?'0':targetType==='skill'?'2-4':'5-8';
+    const sys='只返回JSON对象，不返回其他内容。必须包含type/name/desc/damage/cd/castSpeed/effect/taunt/phases/attrBase字段。';
+    const user=`你是火柴人战斗招式设计师。角色需要学习一个全新技能。
 
-  const m1 = P1.moves.map((m,i) => `${i+1}.【${m.type}】${m.name}：${m.desc}`).join('\n');
-  const m2 = P2.moves.map((m,i) => `${i+1}.【${m.type}】${m.name}：${m.desc}`).join('\n');
+角色：${P1.name}
+简介：${P1.desc||'暂无'}
+类型：${P1.charType||'角色'}
 
-  const tauntHint = `关于垃圾话/嘲讽：请分析两个角色的性格和说话风格。只有外向、话痨、傲慢、恶劣的角色才会说垃圾话。内敛、沉默、温和、三无、书卷气的角色（如C.、冷寂、墨水夜等）不要强求他们说话。如果角色不适合说垃圾话，taunts数组留空[]。`;
+要求学习一个${typeLabel}(type="${targetType}")，不能与已有技能重复。
+已有技能：${P1.skills.map(s=>s.name).join('、')}
 
-  try {
-    const r = await llmCall(
-      '只返回JSON对象，不返回其他内容。',
-      `你是火柴人战斗编排导演。为以下两位角色编排精彩战斗：
+数值规范：
+- damage: ${dmgRange}
+- cd: ${cdRange}回合
+- castSpeed: "fast"|"medium"|"slow"
 
-P1: ${P1.name} (${P1.desc ? P1.desc.substring(0,100) : '默认角色'})
-P1招式:
-${m1}
+每个技能必须包含以下字段：
+- type: "${targetType}"
+- name: 技能名称（不能与已有技能重名）
+- desc: 技能描述
+- damage: 伤害值
+- cd: 冷却回合数
+- castSpeed: 释放速度
+- effect: 附加效果，如"无"/"灼烧(每回合-5HP)"/"眩晕(跳过1回合)"
+- taunt: 招式喊话
+- phases: 动画帧数组(3-5个)，每个{f:帧数, pose:姿势名, hit:是否命中}，大招最后phase加"big":true
+- attrBase: 基础伤害对应的属性名，可选 "str"/"tech"/"burst"/"def"/"spd"/"lck" 或 null。普攻推荐"str"，技能推荐"tech"，大招推荐"burst"。设null时伤害=damage字段值
 
-P2: ${P2.name} (${P2.desc ? P2.desc.substring(0,100) : '默认角色'})
-P2招式:
-${m2}
-
-${currentWorld ? '战斗场地：' + currentWorld.name + '（' + (currentWorld.content||'').substring(0,80) + '）' : ''}
-
-${tauntHint}
-
-战斗流程：开场对峙→双方接近→交替出招→使用大招→最终对决→一方胜利。
 可用pose：stand fight punch heavyPunch kick highKick block hit knockback jump axeKick kneel victory
-x坐标范围：100-800
 
-严格返回JSON：
-{"commentary":"战斗总结/解说","taunts":["垃圾话1","垃圾话2",...],"choreo":[{"f":帧数,"p1":{"pose":"姿势","x":坐标,"vy":可选},"p2":{"pose":"姿势","x":坐标,"vy":可选},"hit":true/false,"big":true/false,"tauntIndex":可选},...]}
+返回单个JSON对象。`;
+    const r=await llmCall(sys,user,1024,0.9);
+    const j=parseJSON(r);
+    if(j&&j.name&&j.damage!==undefined){
+      j.type=targetType;
+      j.castSpeed=['fast','medium','slow'].includes(j.castSpeed)?j.castSpeed:'medium';
+      j.damage=Math.min(70,Math.max(1,Number(j.damage)||20));
+      j.cd=Math.max(0,Number(j.cd)||0);
+      if(!j.phases||!Array.isArray(j.phases)){j.phases=[{f:6,pose:'punch',hit:false},{f:4,pose:'punch',hit:true},{f:8,pose:'fight',hit:false}]}
+      if(!j.attrBase||!['str','tech','burst','def','spd','lck'].includes(j.attrBase)){j.attrBase=targetType==='normal'?'str':targetType==='skill'?'tech':'burst'}
+      if(P1.skills.length>=4)P1.skills[P1.skills.length-1]=j;
+      else P1.skills.push(j);
+      renderSkills(P1.skills,'skillGrid');
+      const anim=document.getElementById('learnAnim');
+      anim.classList.add('active');
+      setTimeout(()=>anim.classList.remove('active'),2000);
+      addStat('skillsLearned',1);
+    }
+  }catch(e){}
+  hideLoading();
+}
 
-choreo至少15个阶段，双方都有高光。`,
-      2048, 0.85
-    );
-    const d = parseJSON(r);
-    hideLoading();
-    return d;
-  } catch(e) {
-    hideLoading();
-    return null;
+// ===== LLM =====
+async function llmCall(sys,user,maxT=2048,temp=0.85){
+  const ctrl=new AbortController();const tmo=setTimeout(()=>ctrl.abort(),30000);
+  try{
+    const r=await fetch(LLM_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+LLM_KEY},body:JSON.stringify({model:LLM_MODEL,messages:[{role:'system',content:sys},{role:'user',content:user}],max_tokens:maxT,temperature:temp}),signal:ctrl.signal});
+    clearTimeout(tmo);if(!r.ok)throw new Error('LLM请求失败: '+r.status);
+    const d=await r.json();return d.choices?.[0]?.message?.content||'';
+  }catch(e){clearTimeout(tmo);return''}
+}
+
+function parseJSON(t){
+  t=t.replace(/```(?:json)?/g,'').replace(/```/g,'').trim();
+  for(const open of ['[','{']){const s=t.indexOf(open);if(s<0)continue;const close=open==='['?']':'}';let d=0,ins=false,esc=false;
+    for(let i=s;i<t.length;i++){const c=t[i];if(esc){esc=false;continue}if(c==='\\'){esc=true;continue}if(c==='"')ins=!ins;if(ins)continue;if(c===open)d++;if(c===close){d--;if(d===0){try{return JSON.parse(t.substring(s,i+1))}catch(e){}break}}}
+  }try{return JSON.parse(t)}catch(e){}return null;
+}
+
+// ===== 技能生成（使用新数据模型）=====
+async function genSkills(cd){
+  try{
+    const r=await llmCall('只返回JSON数组，不返回其他内容。每个技能必须包含type/name/desc/damage/cd/castSpeed/effect/taunt/phases/attrBase字段。',
+      `你是火柴人战斗招式设计师。根据角色信息设计3种招式（1个普攻 + 1个技能 + 1个大招）。
+
+角色：${cd.name}
+简介：${cd.desc||'暂无'}
+类型：${cd.type||cd.charType||'角色'}
+
+数值规范：
+- 普攻(type=normal)：damage 10-20, cd=0, castSpeed="fast"
+- 技能(type=skill)：damage 20-40, cd=2-4, castSpeed="fast"|"medium"|"slow"
+- 大招(type=ultimate)：damage 40-70, cd=5-8, castSpeed="slow"
+
+每个技能必须包含以下字段：
+- type: "normal" | "skill" | "ultimate"
+- name: 技能名称
+- desc: 技能描述
+- damage: 伤害值（严格遵守上述范围）
+- cd: 冷却回合数
+- castSpeed: "fast" | "medium" | "slow"
+- effect: 附加效果描述，如"无"/"灼烧(每回合-5HP)"/"眩晕(跳过1回合)"/"击退"/"破甲(降低防御)"
+- taunt: 招式喊话
+- phases: 动画帧数组，3-5个phase，每个phase含{f:帧数, pose:姿势名, hit:是否命中布尔值}，大招最后一个phase加"big":true
+- attrBase: 基础伤害对应的属性名，可选 "str"/"tech"/"burst"/"def"/"spd"/"lck" 或 null。当不为null时，技能基础伤害=对应属性值而非damage字段。普攻推荐attrBase="str"，技能推荐attrBase="tech"，大招推荐attrBase="burst"。
+
+可用pose：stand fight punch heavyPunch kick highKick block hit knockback jump axeKick kneel victory
+
+示例：
+[{"type":"normal","name":"普通拳击","desc":"基础的直拳攻击","damage":12,"cd":0,"castSpeed":"fast","effect":"无","taunt":"吃我一拳！","phases":[{"f":6,"pose":"punch","hit":false},{"f":4,"pose":"punch","hit":true},{"f":8,"pose":"fight","hit":false}]}]`,1536,0.85);
+    const m=parseJSON(r);
+    if(m&&Array.isArray(m)&&m.length>=3){
+      return m.slice(0,3).map(s=>{
+        s.castSpeed=['fast','medium','slow'].includes(s.castSpeed)?s.castSpeed:'medium';
+        s.damage=Math.min(70,Math.max(1,Number(s.damage)||15));
+        s.cd=Math.max(0,Number(s.cd)||0);
+        if(!s.phases||!Array.isArray(s.phases)){s.phases=[{f:6,pose:'punch',hit:false},{f:4,pose:'punch',hit:true},{f:8,pose:'fight',hit:false}]}
+        if(!s.attrBase||!['str','tech','burst','def','spd','lck'].includes(s.attrBase)){s.attrBase=s.type==='normal'?'str':s.type==='skill'?'tech':'burst'}
+        return s;
+      });
+    }
+  }catch(e){}
+  return defaultSkills();
+}
+
+// ===== World =====
+const WORLD_EFFECTS={'人监':{buffs:[{name:'器官暴走',icon:'🫀',stat:'sp',val:-5,desc:'器官的注视让理智持续流失'}],debuffs:[{name:'感官压迫',icon:'👁️',stat:'hp',val:-2,desc:'器官环境持续压迫身体'}],bgTint:'#1a0a0a'},'错位花园':{buffs:[{name:'植物庇护',icon:'🌿',stat:'hp',val:3,desc:'植物散发治愈气息'}],debuffs:[],bgTint:'#0a1a0a'},'疫病区':{buffs:[],debuffs:[{name:'瘟疫侵蚀',icon:'☠️',stat:'hp',val:-8,desc:'空气中弥漫病原体'},{name:'精神污染',icon:'🧪',stat:'sp',val:-5,desc:'死寂荒野侵蚀理智'}],bgTint:'#1a1a0a'},'风暴海':{buffs:[{name:'暴雨洗礼',icon:'🌧️',stat:'sp',val:2,desc:'暴雨冲刷心灵'}],debuffs:[{name:'狂风肆虐',icon:'🌊',stat:'hp',val:-3,desc:'暴风削减体力'}],bgTint:'#0a0a1a'},'童话国':{buffs:[{name:'童话祝福',icon:'🏰',stat:'lk',val:10,desc:'童话世界带来好运'}],debuffs:[{name:'暗黑童话',icon:'📖',stat:'sp',val:-3,desc:'美丽外表下的暗流'}],bgTint:'#1a0a1a'},'「心湖」——"时之海"':{buffs:[{name:'心湖治愈',icon:'💫',stat:'hp',val:5,desc:'童年回忆治愈伤口'},{name:'宁静',icon:'🌙',stat:'sp',val:5,desc:'湖水般的平静'}],debuffs:[],bgTint:'#0a0a1a'},'天风阁':{buffs:[{name:'古阁灵气',icon:'🏯',stat:'cb',val:5,desc:'古风阁楼赋予战意'}],debuffs:[],bgTint:'#0a0a0a'},'随心':{buffs:[{name:'自由变形',icon:'🟢',stat:'cb',val:3,desc:'史莱姆的流动性'}],debuffs:[{name:'形态不稳',icon:'💧',stat:'hp',val:-2,desc:'身体偶尔失控'}],bgTint:'#0a1a0a'},'永远的家':{buffs:[{name:'奇迹治愈',icon:'✨',stat:'hp',val:8,desc:'奇迹修复一切伤口'},{name:'麦田温暖',icon:'🌾',stat:'sp',val:5,desc:'金黄麦田的安宁'}],debuffs:[],bgTint:'#1a1a0a'},'白墟之地':{buffs:[],debuffs:[{name:'规则污染',icon:'⬜',stat:'hp',val:-6,desc:'规则在侵蚀身体'},{name:'文明残响',icon:'🏚️',stat:'sp',val:-6,desc:'远古废墟的压抑'}],bgTint:'#1a1a1a'},'【黑海】':{buffs:[{name:'暗影加护',icon:'🌑',stat:'cb',val:5,desc:'黑暗赋予力量'}],debuffs:[{name:'深寒',icon:'❄️',stat:'hp',val:-4,desc:'北极的极寒'}],bgTint:'#050508'},'【第x号医院】':{buffs:[{name:'医疗支援',icon:'🏥',stat:'hp',val:4,desc:'医院的急救设施'}],debuffs:[{name:'诡异氛围',icon:'💉',stat:'sp',val:-4,desc:'医院中的不安感'}],bgTint:'#0a0a0a'},'【骰子回廊】':{buffs:[],debuffs:[],bgTint:'#0a0a0a',random:true,desc:'骰子决定一切！'}};
+function randomWorld(){if(typeof WORLD_DB==='undefined'||!WORLD_DB.length)return null;return WORLD_DB[Math.floor(Math.random()*WORLD_DB.length)]}
+function applyWorldEffects(){
+  currentWorld=randomWorld();
+  const wb=document.getElementById('buffBar'),ww=document.getElementById('vsWorld');
+  if(!currentWorld){ww.innerHTML='';wb.innerHTML='';return}
+  ww.innerHTML=`<span class="world-badge">🌐 ${currentWorld.name}</span>`;
+  const ef=WORLD_EFFECTS[currentWorld.name];if(!ef){wb.innerHTML='';return}
+  let h='';(ef.buffs||[]).forEach(b=>{h+=`<span class="buff-tag buff" title="${b.desc}">${b.icon} ${b.name}</span>`});
+  (ef.debuffs||[]).forEach(d=>{h+=`<span class="buff-tag debuff" title="${d.desc}">${d.icon} ${d.name}</span>`});
+  if(ef.random)h+='<span class="buff-tag buff" title="每回合随机">🎲 骰子回廊</span>';
+  wb.innerHTML=h;
+}
+
+// ===== Canvas =====
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const REF_W=900,REF_H=500;let W,H,GROUND,scaleX,scaleY;
+function resizeCanvas(){W=canvas.width=Math.min(900,window.innerWidth-30);H=canvas.height=Math.min(500,window.innerHeight-180);GROUND=H-60;scaleX=W/REF_W;scaleY=H/REF_H}
+resizeCanvas();
+const GRAVITY=0.55*scaleY;
+let slow=false,time=0,rafId=null;
+
+function drawCircleAvatar(img,x,y,radius){ctx.save();ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.closePath();ctx.clip();if(img){const s=radius*2;ctx.drawImage(img,x-radius,y-radius,s,s)}ctx.restore();ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=2*scaleX;ctx.stroke()}
+
+// ===== Poses =====
+const POSES={stand:{head:{x:0,y:-70},neck:{x:0,y:-58},shoulder:{x:0,y:-52},elbow:{x:-12,y:-38},hand:{x:-8,y:-22},hip:{x:0,y:-28},knee:{x:-8,y:-10},foot:{x:-10,y:0}},fight:{head:{x:5,y:-66},neck:{x:3,y:-54},shoulder:{x:5,y:-48},elbow:{x:18,y:-52},hand:{x:30,y:-48},hip:{x:2,y:-26},knee:{x:-5,y:-10},foot:{x:-8,y:0}},punch:{head:{x:10,y:-64},neck:{x:8,y:-52},shoulder:{x:8,y:-46},elbow:{x:25,y:-50},hand:{x:50,y:-46},hip:{x:4,y:-24},knee:{x:-3,y:-8},foot:{x:-5,y:0}},heavyPunch:{head:{x:15,y:-60},neck:{x:12,y:-48},shoulder:{x:12,y:-42},elbow:{x:30,y:-44},hand:{x:60,y:-38},hip:{x:8,y:-20},knee:{x:0,y:-5},foot:{x:2,y:0}},kick:{head:{x:-5,y:-64},neck:{x:-3,y:-52},shoulder:{x:-2,y:-46},elbow:{x:-15,y:-36},hand:{x:-20,y:-24},hip:{x:-2,y:-26},knee:{x:30,y:-30},foot:{x:55,y:-20}},highKick:{head:{x:-3,y:-62},neck:{x:-1,y:-50},shoulder:{x:0,y:-44},elbow:{x:-12,y:-34},hand:{x:-18,y:-22},hip:{x:0,y:-24},knee:{x:28,y:-45},foot:{x:45,y:-60}},block:{head:{x:0,y:-60},neck:{x:0,y:-48},shoulder:{x:2,y:-44},elbow:{x:12,y:-50},hand:{x:15,y:-58},hip:{x:0,y:-24},knee:{x:-6,y:-10},foot:{x:-8,y:0}},hit:{head:{x:-12,y:-58},neck:{x:-8,y:-46},shoulder:{x:-6,y:-40},elbow:{x:-20,y:-30},hand:{x:-25,y:-18},hip:{x:-4,y:-22},knee:{x:-12,y:-8},foot:{x:-14,y:0}},knockback:{head:{x:-18,y:-52},neck:{x:-12,y:-42},shoulder:{x:-8,y:-36},elbow:{x:-22,y:-22},hand:{x:-28,y:-10},hip:{x:-5,y:-18},knee:{x:-10,y:-5},foot:{x:-12,y:0}},jump:{head:{x:0,y:-80},neck:{x:0,y:-68},shoulder:{x:0,y:-62},elbow:{x:-18,y:-55},hand:{x:-25,y:-65},hip:{x:0,y:-38},knee:{x:-12,y:-22},foot:{x:-8,y:-10}},axeKick:{head:{x:5,y:-58},neck:{x:4,y:-46},shoulder:{x:5,y:-40},elbow:{x:-8,y:-30},hand:{x:-12,y:-18},hip:{x:3,y:-22},knee:{x:20,y:-50},foot:{x:18,y:-10}},kneel:{head:{x:-5,y:-38},neck:{x:-3,y:-28},shoulder:{x:-2,y:-24},elbow:{x:-15,y:-14},hand:{x:-18,y:-2},hip:{x:0,y:-14},knee:{x:5,y:-4},foot:{x:10,y:0}},victory:{head:{x:0,y:-72},neck:{x:0,y:-60},shoulder:{x:0,y:-54},elbow:{x:-20,y:-70},hand:{x:-22,y:-88},hip:{x:0,y:-28},knee:{x:-8,y:-10},foot:{x:-10,y:0}}};
+function lerp(a,b,t){return a+(b-a)*t}
+function lerpPose(a,b,t){const r={};for(const k in a)r[k]={x:lerp(a[k].x,b[k].x,t),y:lerp(a[k].y,b[k].y,t)};return r}
+
+// ===== Particles & shake =====
+const particles=[];
+function spawnParticles(x,y,color,count=10,speed=3){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=Math.random()*speed+1;particles.push({x,y,vx:Math.cos(a)*s*scaleX,vy:Math.sin(a)*s*scaleY-scaleY,life:1,color,size:(Math.random()*4+1)*scaleX})}}
+function spawnSparks(x,y,count=15,color='#ff8'){for(let i=0;i<count;i++){const a=Math.random()*Math.PI-Math.PI/2,s=Math.random()*6+2;particles.push({x,y,vx:Math.cos(a)*s*scaleX*(Math.random()>.5?1:-1),vy:Math.sin(a)*s*scaleY-2*scaleY,life:1,color,size:(Math.random()*3+1)*scaleX,spark:true})}}
+function updateParticles(){for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.1*scaleY;p.life-=0.025;if(p.life<=0)particles.splice(i,1)}}
+function drawParticles(){for(const p of particles){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;if(p.ring){ctx.strokeStyle=p.color;ctx.lineWidth=1.5*scaleX;ctx.beginPath();ctx.arc(p.x,p.y,p.size*(2-p.life),0,Math.PI*2);ctx.stroke()}else if(p.spark){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.atan2(p.vy,p.vx));ctx.fillRect(-p.size*2,-0.5,p.size*4,1);ctx.restore()}else{ctx.beginPath();ctx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);ctx.fill()}}ctx.globalAlpha=1}
+let shakeX=0,shakeY=0,shakeDecay=0;
+function doShake(i){shakeDecay=i*scaleX}
+function updateShake(){if(shakeDecay>0){shakeX=(Math.random()-.5)*shakeDecay*2;shakeY=(Math.random()-.5)*shakeDecay*2;shakeDecay*=.85;if(shakeDecay<.3){shakeDecay=0;shakeX=0;shakeY=0}}}
+
+// ===== 技能特效 =====
+function getSkillColor(skill){
+  if(skill.color) return skill.color;
+  if(skill.type==='normal') return '#aaaaaa';
+  if(skill.type==='ultimate') return '#ff4444';
+  if(skill.effect?.includes('火')) return '#ff4444';
+  if(skill.effect?.includes('冰')||skill.effect?.includes('寒')) return '#44aaff';
+  if(skill.effect?.includes('雷')||skill.effect?.includes('电')) return '#ffdd44';
+  if(skill.effect?.includes('毒')||skill.effect?.includes('酸')) return '#44ff88';
+  if(skill.effect?.includes('暗')||skill.effect?.includes('影')) return '#8844aa';
+  return '#8a7fc7';
+}
+function spawnSkillEffect(x,y,skill,big){
+  const color=getSkillColor(skill);
+  if(skill.type==='ultimate'){
+    spawnSparks(x,y,25,color);
+    doShake(big?15:10);
+    for(let i=0;i<12;i++){const a=(Math.PI*2/12)*i;particles.push({x,y,vx:Math.cos(a)*4*scaleX,vy:Math.sin(a)*4*scaleY,life:1,color,size:3*scaleX,ring:true})}
+  }else if(skill.type==='skill'){
+    spawnParticles(x,y,color,12,3);
+    doShake(5);
+  }else{
+    spawnParticles(x,y,color,5,2);
   }
 }
 
-// ===== 姿势系统 =====
-function lerp(a,b,t) { return a+(b-a)*t; }
-function lerpPose(a,b,t) {
-  const r={}; for(const k in a) r[k]={x:lerp(a[k].x,b[k].x,t),y:lerp(a[k].y,b[k].y,t)}; return r;
-}
-
-const POSES = {
-  stand:{head:{x:0,y:-70},neck:{x:0,y:-58},shoulder:{x:0,y:-52},elbow:{x:-12,y:-38},hand:{x:-8,y:-22},hip:{x:0,y:-28},knee:{x:-8,y:-10},foot:{x:-10,y:0}},
-  fight:{head:{x:5,y:-66},neck:{x:3,y:-54},shoulder:{x:5,y:-48},elbow:{x:18,y:-52},hand:{x:30,y:-48},hip:{x:2,y:-26},knee:{x:-5,y:-10},foot:{x:-8,y:0}},
-  punch:{head:{x:10,y:-64},neck:{x:8,y:-52},shoulder:{x:8,y:-46},elbow:{x:25,y:-50},hand:{x:50,y:-46},hip:{x:4,y:-24},knee:{x:-3,y:-8},foot:{x:-5,y:0}},
-  heavyPunch:{head:{x:15,y:-60},neck:{x:12,y:-48},shoulder:{x:12,y:-42},elbow:{x:30,y:-44},hand:{x:60,y:-38},hip:{x:8,y:-20},knee:{x:0,y:-5},foot:{x:2,y:0}},
-  kick:{head:{x:-5,y:-64},neck:{x:-3,y:-52},shoulder:{x:-2,y:-46},elbow:{x:-15,y:-36},hand:{x:-20,y:-24},hip:{x:-2,y:-26},knee:{x:30,y:-30},foot:{x:55,y:-20}},
-  highKick:{head:{x:-3,y:-62},neck:{x:-1,y:-50},shoulder:{x:0,y:-44},elbow:{x:-12,y:-34},hand:{x:-18,y:-22},hip:{x:0,y:-24},knee:{x:28,y:-45},foot:{x:45,y:-60}},
-  block:{head:{x:0,y:-60},neck:{x:0,y:-48},shoulder:{x:2,y:-44},elbow:{x:12,y:-50},hand:{x:15,y:-58},hip:{x:0,y:-24},knee:{x:-6,y:-10},foot:{x:-8,y:0}},
-  hit:{head:{x:-12,y:-58},neck:{x:-8,y:-46},shoulder:{x:-6,y:-40},elbow:{x:-20,y:-30},hand:{x:-25,y:-18},hip:{x:-4,y:-22},knee:{x:-12,y:-8},foot:{x:-14,y:0}},
-  knockback:{head:{x:-18,y:-52},neck:{x:-12,y:-42},shoulder:{x:-8,y:-36},elbow:{x:-22,y:-22},hand:{x:-28,y:-10},hip:{x:-5,y:-18},knee:{x:-10,y:-5},foot:{x:-12,y:0}},
-  jump:{head:{x:0,y:-80},neck:{x:0,y:-68},shoulder:{x:0,y:-62},elbow:{x:-18,y:-55},hand:{x:-25,y:-65},hip:{x:0,y:-38},knee:{x:-12,y:-22},foot:{x:-8,y:-10}},
-  axeKick:{head:{x:5,y:-58},neck:{x:4,y:-46},shoulder:{x:5,y:-40},elbow:{x:-8,y:-30},hand:{x:-12,y:-18},hip:{x:3,y:-22},knee:{x:20,y:-50},foot:{x:18,y:-10}},
-  kneel:{head:{x:-5,y:-38},neck:{x:-3,y:-28},shoulder:{x:-2,y:-24},elbow:{x:-15,y:-14},hand:{x:-18,y:-2},hip:{x:0,y:-14},knee:{x:5,y:-4},foot:{x:10,y:0}},
-  victory:{head:{x:0,y:-72},neck:{x:0,y:-60},shoulder:{x:0,y:-54},elbow:{x:-20,y:-70},hand:{x:-22,y:-88},hip:{x:0,y:-28},knee:{x:-8,y:-10},foot:{x:-10,y:0}}
-};
-
-// ===== 火柴人绘制 =====
-function drawStickman(x, y, pose, color, hp, facing, headImg) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(facing, 1);
-  const {head,neck,shoulder,elbow,hand,hip,knee,foot} = pose;
-  const lw = Math.max(2, 3*scaleX);
-  const hr = 12 * scaleX;
-
-  ctx.strokeStyle = color; ctx.fillStyle = color;
-  ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  function line(x1,y1,x2,y2) { ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); }
-
-  ctx.shadowColor = color; ctx.shadowBlur = 8;
-  line(neck.x,neck.y,shoulder.x,shoulder.y);
-  line(shoulder.x,shoulder.y,hip.x,hip.y);
-  line(shoulder.x,shoulder.y,elbow.x,elbow.y);
-  line(elbow.x,elbow.y,hand.x,hand.y);
-  const ox=shoulder.x-(elbow.x-shoulder.x)*0.3;
-  line(ox,shoulder.y+5*scaleY,shoulder.x-(hand.x-shoulder.x)*0.3,shoulder.y+15*scaleY);
-  line(hip.x,hip.y,knee.x,knee.y); line(knee.x,knee.y,foot.x,foot.y);
-  line(hip.x,hip.y,knee.x+10*scaleX,knee.y+5*scaleY);
-  line(knee.x+10*scaleX,knee.y+5*scaleY,foot.x+15*scaleX,foot.y);
-  ctx.shadowBlur = 0;
-
-  // 头部底色
-  ctx.beginPath(); ctx.arc(head.x,head.y,hr,0,Math.PI*2);
-  ctx.fillStyle = color; ctx.fill();
-
-  // 角色封面圆形头像
-  if (headImg) drawCircleAvatar(headImg, head.x, head.y, hr);
-
-  // 眼睛
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(head.x+4*scaleX,head.y-2*scaleY,2*scaleX,0,Math.PI*2); ctx.fill();
-
-  // 血条
-  if (hp !== undefined) {
-    const bw=50*scaleX, bh=5*scaleY, bx=-bw/2, by=head.y-hr-10*scaleY;
-    ctx.fillStyle='#333'; ctx.fillRect(bx,by,bw,bh);
-    ctx.fillStyle=hp>0.3?'#4f4':'#f44'; ctx.fillRect(bx,by,bw*hp,bh);
-  }
+// ===== Draw =====
+function drawStickman(x,y,pose,color,hp,facing,headImg){
+  ctx.save();ctx.translate(x,y);ctx.scale(facing,1);
+  const{head,neck,shoulder,elbow,hand,hip,knee,foot}=pose;
+  const lw=Math.max(2,3*scaleX),hr=12*scaleX;
+  ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=lw;ctx.lineCap='round';ctx.lineJoin='round';
+  function ln(a,b,c,d){ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke()}
+  ctx.shadowColor=color;ctx.shadowBlur=8;
+  ln(neck.x,neck.y,shoulder.x,shoulder.y);ln(shoulder.x,shoulder.y,hip.x,hip.y);
+  ln(shoulder.x,shoulder.y,elbow.x,elbow.y);ln(elbow.x,elbow.y,hand.x,hand.y);
+  const ox=shoulder.x-(elbow.x-shoulder.x)*.3;ln(ox,shoulder.y+5*scaleY,shoulder.x-(hand.x-shoulder.x)*.3,shoulder.y+15*scaleY);
+  ln(hip.x,hip.y,knee.x,knee.y);ln(knee.x,knee.y,foot.x,foot.y);
+  ln(hip.x,hip.y,knee.x+10*scaleX,knee.y+5*scaleY);ln(knee.x+10*scaleX,knee.y+5*scaleY,foot.x+15*scaleX,foot.y);
+  ctx.shadowBlur=0;
+  ctx.beginPath();ctx.arc(head.x,head.y,hr,0,Math.PI*2);ctx.fill();
+  if(headImg)drawCircleAvatar(headImg,head.x,head.y,hr);
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(head.x+4*scaleX,head.y-2*scaleY,2*scaleX,0,Math.PI*2);ctx.fill();
+  if(hp!==undefined){const bw=50*scaleX,bh=5*scaleY,bx=-bw/2,by=head.y-hr-10*scaleY;ctx.fillStyle='#333';ctx.fillRect(bx,by,bw,bh);ctx.fillStyle=hp>0.3?'#4f4':'#f44';ctx.fillRect(bx,by,bw*hp,bh)}
   ctx.restore();
 }
 
-// ===== 粒子 & 震动 =====
-const particles = [];
-function spawnParticles(x,y,color,count=10,speed=3) {
-  for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=Math.random()*speed+1;
-    particles.push({x,y,vx:Math.cos(a)*s*scaleX,vy:Math.sin(a)*s*scaleY-scaleY,life:1,color,size:(Math.random()*4+1)*scaleX});}
-}
-function spawnSparks(x,y,count=15) {
-  for(let i=0;i<count;i++){const a=Math.random()*Math.PI-Math.PI/2,s=Math.random()*6+2;
-    particles.push({x,y,vx:Math.cos(a)*s*scaleX*(Math.random()>.5?1:-1),vy:Math.sin(a)*s*scaleY-2*scaleY,life:1,color:['#fff','#ff4','#f84','#4af'][Math.floor(Math.random()*4)],size:(Math.random()*3+1)*scaleX,spark:true});}
-}
-function updateParticles() {
-  for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.1*scaleY;p.life-=0.025;if(p.life<=0)particles.splice(i,1);}
-}
-function drawParticles() {
-  for(const p of particles){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;
-    if(p.spark){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.atan2(p.vy,p.vx));ctx.fillRect(-p.size*2,-0.5,p.size*4,1);ctx.restore();}
-    else{ctx.beginPath();ctx.arc(p.x,p.y,p.size*p.life,0,Math.PI*2);ctx.fill();}}
-  ctx.globalAlpha=1;
+// ===== 回合制战斗引擎 =====
+
+// ===== 战斗状态 =====
+let battleState = {
+  p1: { hp: 100, maxHp: 100, skills: [], cooldowns: {}, lastMove: null, combo: 0 },
+  p2: { hp: 100, maxHp: 100, skills: [], cooldowns: {}, lastMove: null, combo: 0 },
+  turn: 0,
+  phase: 'idle',     // 'idle'|'p1select'|'p2select'|'animating'|'result'
+  currentMove: null,
+  log: [],
+  winner: null,
+  animState: null,
+  commentary: '',
+  animFrame: 0,
+};
+
+// 关系数据
+let relationshipData = { type: 'stranger', reason: '', dialogue: '' };
+
+// 六维属性
+let attributes = { p1: null, p2: null }; // { str, tech, burst, def, spd, lck, hp }
+
+// 伤害修正系数
+let dmgModifiers = { p1: 1, p2: 1 };
+
+// 动画用
+let animState = null;
+
+// 出手顺序
+let turnOrder = [];
+
+// ===== 解说数据库 =====
+const COMMENTARY_DB = {
+  normal: [
+    '{name}一记{move}打出，朴实无华但管用！',
+    '{name}使出了{move}，对手微微后退。',
+    '看起来像那么回事——{name}的{move}！',
+  ],
+  skill: [
+    '"{taunt}" —— {name}的{move}呼啸而至！',
+    '{name}蓄力使出{move}，气势不凡！',
+    '来了来了！{name}的{move}！这招有点东西！',
+  ],
+  ultimate: [
+    '🌟 "{taunt}" —— 全场屏息！{name}的大招{move}！！',
+    '💥 {name}赌上了！{move}！这不是演习！',
+    '⚡ 大地在震动...{name}的{move}来了！！',
+  ],
+  critical: [
+    '💥 暴击！这一下打得结结实实！',
+    '哇哦！会心一击！伤害爆炸！',
+    '这伤害...对面要吃不消了！',
+  ],
+  lowHp: [
+    '⚠️ {name}已经摇摇欲坠了！',
+    '血条见底！{name}还能撑住吗？',
+    '危险！{name}岌岌可危！',
+  ],
+  combo: [
+    '🔥 {name}已经连续{count}次使用{move}了！头铁！',
+    '连击！{name}对{move}是真爱啊！',
+  ],
+  dodge: [
+    '漂亮！{name}一个滑步躲开了！',
+    '打歪了！{name}的反应真快！',
+  ],
+  result: {
+    win: '🏆 {winner}赢得了战斗！{loser}败下阵来！',
+    comeback: '🔄 奇迹翻盘！{winner}在劣势下反杀了！',
+    stomp: '💨 压倒性胜利！{winner}太猛了！',
+    close: '⚡ 险胜！{winner}以微弱优势拿下战斗！',
+    draw: '🤝 双方握手言和，这是一场友好的切磋。',
+    holdBack: '🫂 {holder}选择了停手，不忍心对{target}下手...',
+  },
+  relationship: {
+    friend: [
+      '{name}叹了口气：「一定要打吗？」',
+      '{name}和{name2}对视一眼，默契地摆出了架势。',
+      '虽然是朋友，但{name}没有手下留情！',
+    ],
+    rival: [
+      '宿敌相见！{name}眼中燃起了战意！',
+      '{name}和{name2}的宿命对决！',
+    ],
+    enemy: [
+      '{name}咬牙切齿：「终于等到这一天！」',
+      '仇人见面分外眼红！{name}毫不留情！',
+    ],
+    stranger: [
+      '两个陌生人试探性地交手。',
+      '没有多余的话，直接开打！',
+    ],
+  },
+  firstBlood: '{name}拿下了第一滴血！',
+  kill: '💀 {name}击败了{name2}！',
+  worldEvent: '🌐 {world}的力量正在影响战场...',
+};
+
+// ===== 解说生成 =====
+function genCommentary(type, ctx) {
+  const arr = COMMENTARY_DB[type];
+  if (!arr) return '';
+  if (Array.isArray(arr)) {
+    let t = arr[Math.floor(Math.random() * arr.length)];
+    const r = {
+      name: ctx.name || '', name2: ctx.name2 || '',
+      move: ctx.move || '', taunt: ctx.taunt || '',
+      count: ctx.count || 0, winner: ctx.winner || '',
+      loser: ctx.loser || '', holder: ctx.holder || '',
+      target: ctx.target || '', world: ctx.world || '',
+    };
+    for (const [k, v] of Object.entries(r)) t = t.replace(new RegExp('\\{' + k + '\\}', 'g'), v);
+    return t;
+  }
+  // result sub-types
+  if (typeof arr === 'object') {
+    const sub = arr[type + '_sub'] || arr[type] || arr['win'];
+    if (typeof sub === 'string') {
+      let t = sub;
+      for (const [k, v] of Object.entries(ctx)) t = t.replace(new RegExp('\\{' + k + '\\}', 'g'), v);
+      return t;
+    }
+  }
+  return '';
 }
 
-let shakeX=0,shakeY=0,shakeDecay=0;
-function doShake(intensity){shakeDecay=intensity*scaleX;}
-function updateShake(){
-  if(shakeDecay>0){shakeX=(Math.random()-.5)*shakeDecay*2;shakeY=(Math.random()-.5)*shakeDecay*2;shakeDecay*=.85;if(shakeDecay<.3){shakeDecay=0;shakeX=0;shakeY=0;}}
+// ===== 属性分析 =====
+const ATTR_NAMES = ['str', 'tech', 'burst', 'def', 'spd', 'lck', 'hp'];
+const ATTR_LABELS = { str: '力量', tech: '技巧', burst: '爆发', def: '防御', spd: '速度', lck: '幸运', hp: 'HP' };
+
+async function analyzeAttributes(char) {
+  try {
+    const r = await llmCall(
+      '只返回JSON对象，包含str/tech/burst/def/spd/lck/hp七个字段。不要返回其他内容。',
+      `你是角色属性分析师。根据角色信息分析其六维属性和HP值。
+
+角色：${char.name}
+简介：${char.desc || '暂无'}
+类型：${char.charType || '角色'}
+
+分析以下属性（均为1-100的整数，除HP外）：
+- str（力量）：影响普攻伤害。体格强壮、近战型角色偏高
+- tech（技巧）：影响技能伤害。技术流、魔法型角色偏高
+- burst（爆发）：影响大招伤害。爆发力强、一击必杀型角色偏高
+- def（防御）：减伤能力。坦克型、防御型角色偏高
+- spd（速度）：决定出手顺序和出招帧数。敏捷型角色偏高
+- lck（幸运）：暴击率。运气型角色偏高
+- hp（血量）：1000-2000。体格健壮/坦克型接近2000，普通1200-1500，瘦弱/敏捷型1000-1200
+
+规则：
+1. str+tech+burst+def+spd+lck 六项总和 ≤ 350
+2. hp 单独计算，范围 1000-2000
+3. 根据角色简介合理分配，不要平均分配
+
+返回示例：
+{"str":65,"tech":40,"burst":70,"def":45,"spd":80,"lck":50,"hp":1350}`,
+      512, 0.7
+    );
+    const j = parseJSON(r);
+    if (j && j.str !== undefined && j.hp !== undefined) {
+      const a = {
+        str: Math.min(100, Math.max(1, Number(j.str) || 50)),
+        tech: Math.min(100, Math.max(1, Number(j.tech) || 50)),
+        burst: Math.min(100, Math.max(1, Number(j.burst) || 50)),
+        def: Math.min(100, Math.max(1, Number(j.def) || 50)),
+        spd: Math.min(100, Math.max(1, Number(j.spd) || 50)),
+        lck: Math.min(100, Math.max(1, Number(j.lck) || 50)),
+        hp: Math.min(2000, Math.max(1000, Number(j.hp) || 1200)),
+      };
+      // 验证六项和 ≤ 350
+      const sum6 = a.str + a.tech + a.burst + a.def + a.spd + a.lck;
+      if (sum6 > 350) {
+        const scale = 350 / sum6;
+        ['str', 'tech', 'burst', 'def', 'spd', 'lck'].forEach(k => {
+          a[k] = Math.round(a[k] * scale);
+        });
+      }
+      return a;
+    }
+  } catch (e) { }
+  // 默认属性
+  return { str: 50, tech: 50, burst: 50, def: 50, spd: 50, lck: 50, hp: 1300 };
 }
 
-// ===== 场地背景 =====
+// ===== 伤害计算 =====
+function calcDamage(attackerAttr, defenderAttr, skill) {
+  const floatMin = 0.85;
+  const floatMax = 1.15;
+  const floatVal = floatMin + Math.random() * (floatMax - floatMin);
+
+  // 确定基础伤害
+  let baseDmg = skill.damage;
+  const usingAttrBase = skill.attrBase && ATTR_NAMES.includes(skill.attrBase);
+  if (usingAttrBase) {
+    baseDmg = attackerAttr[skill.attrBase]; // 直接用属性值作为基础伤害
+  }
+
+  let dmg = baseDmg;
+
+  if (skill.type === 'normal') {
+    // 如果已经用了attrBase(str)，不再重复乘str系数
+    if (!usingAttrBase || skill.attrBase !== 'str') {
+      dmg = baseDmg * (attackerAttr.str / 50);
+    }
+    dmg *= floatVal;
+  } else if (skill.type === 'skill') {
+    if (!usingAttrBase || skill.attrBase !== 'tech') {
+      dmg = baseDmg * (attackerAttr.tech / 50);
+    }
+    dmg *= floatVal;
+    // 幸运判定暴击
+    if (Math.random() * 100 < attackerAttr.lck * 0.5) {
+      dmg *= 1.5;
+      return { damage: Math.round(dmg), critical: true, dodge: false };
+    }
+  } else if (skill.type === 'ultimate') {
+    if (!usingAttrBase || skill.attrBase !== 'burst') {
+      dmg = baseDmg * (attackerAttr.burst / 50);
+    }
+    dmg *= (1 - defenderAttr.def / 200) * floatVal;
+  }
+
+  return { damage: Math.max(1, Math.round(dmg)), critical: false, dodge: false };
+}
+
+// ===== 出手顺序判定 =====
+function calcTurnOrder(p1Attr, p2Attr) {
+  const p1Val = p1Attr.spd + Math.random() * 30;
+  const p2Val = p2Attr.spd + Math.random() * 30;
+  if (p1Val >= p2Val) return ['p1', 'p2'];
+  return ['p2', 'p1'];
+}
+
+// 速度对帧数的影响：实际帧 = 基础帧 × (100/速度)
+function getActualFrames(skill, spd) {
+  return (skill.phases || []).map(p => ({
+    ...p,
+    actualFrames: Math.max(1, Math.round(p.f * (100 / spd))),
+  }));
+}
+
+// ===== AI选技能 =====
+function aiSelectMove(side) {
+  const bs = battleState[side];
+  const oppSide = side === 'p1' ? 'p2' : 'p1';
+  const opp = battleState[oppSide];
+  const skills = bs.skills;
+  if (!skills || skills.length === 0) return P1.skills[0];
+
+  // 过滤CD中的技能
+  const available = skills.filter(s => !(bs.cooldowns[s.name] && bs.cooldowns[s.name] > 0));
+  if (available.length === 0) return skills.find(s => s.type === 'normal') || skills[0];
+
+  // 简单AI策略
+  const hpRatio = bs.hp / bs.maxHp;
+  const oppHpRatio = opp.hp / opp.maxHp;
+
+  // 低血量倾向保守
+  if (hpRatio < 0.3 && available.find(s => s.type === 'normal')) {
+    return available.find(s => s.type === 'normal');
+  }
+  // 对手低血量倾向用大招终结
+  if (oppHpRatio < 0.25 && available.find(s => s.type === 'ultimate')) {
+    return available.find(s => s.type === 'ultimate');
+  }
+  // 随机权重选择
+  const weights = available.map(s => {
+    let w = 1;
+    if (s.type === 'ultimate') w = 1.5;
+    if (s.type === 'skill') w = 1.2;
+    return w;
+  });
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < available.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return available[i];
+  }
+  return available[0];
+}
+
+// ===== PVP平衡检测 =====
+function checkBalance() {
+  const p1Sum = attributes.p1.str + attributes.p1.tech + attributes.p1.burst +
+    attributes.p1.def + attributes.p1.spd + attributes.p1.lck;
+  const p2Sum = attributes.p2.str + attributes.p2.tech + attributes.p2.burst +
+    attributes.p2.def + attributes.p2.spd + attributes.p2.lck;
+  const ratio = Math.min(p1Sum, p2Sum) / Math.max(p1Sum, p2Sum);
+  if (ratio > 0.9) return { status: 'balanced', ratio };
+  if (ratio > 0.7) return { status: 'unbalanced', ratio };
+  return { status: 'cheat', ratio };
+}
+
+function calcPower() {
+  const p1Pow = attributes.p1.str * 0.25 + attributes.p1.tech * 0.25 + attributes.p1.burst * 0.25 +
+    attributes.p1.def * 0.15 + attributes.p1.spd * 0.1;
+  const p2Pow = attributes.p2.str * 0.25 + attributes.p2.tech * 0.25 + attributes.p2.burst * 0.25 +
+    attributes.p2.def * 0.15 + attributes.p2.spd * 0.1;
+  return { p1: Math.round(p1Pow), p2: Math.round(p2Pow) };
+}
+
+// ===== 熟人判定 =====
+async function checkRelationship() {
+  try {
+    const r = await llmCall(
+      '只返回JSON对象，包含type/reason/dialogue三个字段。不要返回其他内容。',
+      `你是人际关系分析师。根据两个角色的简介判断他们的关系。
+
+角色A：${P1.name}
+简介A：${P1.desc || '暂无'}
+
+角色B：${P2.name}
+简介B：${P2.desc || '暂无'}
+
+判断关系类型（type）：
+- "stranger": 完全陌生，没有任何交集
+- "acquaintance": 认识但不熟，偶尔有接触
+- "friend": 朋友关系，互相信任
+- "rival": 竞争对手，亦敌亦友
+- "enemy": 死对头，互相敌视
+
+返回JSON：
+{"type":"stranger","reason":"简要说明判断理由","dialogue":"一句符合角色性格的战斗前对话"}`,
+      512, 0.6
+    );
+    const j = parseJSON(r);
+    if (j && j.type) {
+      relationshipData = {
+        type: ['stranger', 'acquaintance', 'friend', 'rival', 'enemy'].includes(j.type) ? j.type : 'stranger',
+        reason: j.reason || '',
+        dialogue: j.dialogue || '',
+      };
+    }
+  } catch (e) { }
+}
+
+function getRelationshipMult(rel) {
+  const mults = {
+    stranger: { p1: 1.0, p2: 1.0 },
+    acquaintance: { p1: 1.0, p2: 1.0 },
+    friend: { p1: 0.85, p2: 0.85 }, // 朋友手下留情
+    rival: { p1: 1.15, p2: 1.15 },  // 宿敌全力以赴
+    enemy: { p1: 1.25, p2: 1.25 },  // 死敌不留情
+  };
+  return mults[rel] || mults.stranger;
+}
+
+// ===== 技能数量同步 =====
+async function syncP2Skills() {
+  const p1Count = P1.skills.length;
+  const p2Count = P2.skills.length;
+  if (p2Count >= p1Count) {
+    P2.skills = P2.skills.slice(0, p1Count);
+    return;
+  }
+  // 需要补齐
+  const need = p1Count - p2Count;
+  showLoading('正在生成对手额外技能...', `还需要${need}个技能`);
+  const types = p1Count <= 3 ? ['normal', 'skill', 'ultimate'].slice(0, p1Count) :
+    ['normal', 'skill', 'ultimate', 'skill'];
+  for (let i = 0; i < need; i++) {
+    const targetType = types[p2Count + i] || types[i % 3];
+    const dmgRange = targetType === 'normal' ? '10-20' : targetType === 'skill' ? '20-40' : '40-70';
+    const cdRange = targetType === 'normal' ? '0' : targetType === 'skill' ? '2-4' : '5-8';
+    try {
+      const r = await llmCall(
+        '只返回JSON对象，不返回其他内容。必须包含type/name/desc/damage/cd/castSpeed/effect/taunt/phases/attrBase字段。',
+        `为角色 ${P2.name} 生成一个额外技能。
+简介：${P2.desc || '暂无'}
+类型：${targetType}(type="${targetType}")
+damage范围：${dmgRange}, cd：${cdRange}
+
+返回JSON，包含：type,name,desc,damage,cd,castSpeed,effect,taunt,phases(3-5个phase),attrBase("str"/"tech"/"burst"/"def"/"spd"/"lck"/null)`,
+        512, 0.8
+      );
+      const j = parseJSON(r);
+      if (j && j.name) {
+        j.type = targetType;
+        j.damage = Math.min(70, Math.max(1, Number(j.damage) || 20));
+        j.cd = Math.max(0, Number(j.cd) || 0);
+        j.castSpeed = ['fast', 'medium', 'slow'].includes(j.castSpeed) ? j.castSpeed : 'medium';
+        if (!j.attrBase || !['str', 'tech', 'burst', 'def', 'spd', 'lck', null].includes(j.attrBase)) {
+          j.attrBase = targetType === 'normal' ? 'str' : targetType === 'skill' ? 'tech' : 'burst';
+        }
+        if (!j.phases || !Array.isArray(j.phases)) {
+          j.phases = [{ f: 6, pose: 'punch', hit: false }, { f: 4, pose: 'punch', hit: true }, { f: 8, pose: 'fight', hit: false }];
+        }
+        P2.skills.push(j);
+      }
+    } catch (e) { }
+  }
+}
+
+// ===== 雷达图绘制 =====
+function drawRadarChart(canvasEl, attrs, label) {
+  if (!canvasEl || !attrs) return;
+  const c = canvasEl.getContext('2d');
+  const w = canvasEl.width, h = canvasEl.height;
+  const cx = w / 2, cy = h / 2;
+  const r = Math.min(w, h) / 2 - 16;
+  c.clearRect(0, 0, w, h);
+
+  const keys = ['str', 'tech', 'burst', 'def', 'spd', 'lck'];
+  const labels = keys.map(k => ATTR_LABELS[k]);
+  const n = keys.length;
+  const angleStep = (Math.PI * 2) / n;
+  const startAngle = -Math.PI / 2;
+
+  // 网格
+  for (let lvl = 1; lvl <= 4; lvl++) {
+    const lr = (r / 4) * lvl;
+    c.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const a = startAngle + angleStep * i;
+      const x = cx + lr * Math.cos(a);
+      const y = cy + lr * Math.sin(a);
+      i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.strokeStyle = 'rgba(255,255,255,0.08)';
+    c.lineWidth = 1;
+    c.stroke();
+  }
+
+  // 轴线和标签
+  for (let i = 0; i < n; i++) {
+    const a = startAngle + angleStep * i;
+    c.beginPath();
+    c.moveTo(cx, cy);
+    c.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+    c.strokeStyle = 'rgba(255,255,255,0.1)';
+    c.stroke();
+
+    // 标签
+    const lx = cx + (r + 12) * Math.cos(a);
+    const ly = cy + (r + 12) * Math.sin(a);
+    c.fillStyle = '#aaa';
+    c.font = '9px sans-serif';
+    c.textAlign = 'center';
+    c.textBaseline = 'middle';
+    c.fillText(labels[i], lx, ly);
+  }
+
+  // 数据区域
+  c.beginPath();
+  for (let i = 0; i <= n; i++) {
+    const idx = i % n;
+    const val = (attrs[keys[idx]] || 50) / 100;
+    const a = startAngle + angleStep * idx;
+    const x = cx + r * val * Math.cos(a);
+    const y = cy + r * val * Math.sin(a);
+    i === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+  }
+  const color = label === 'p1' ? 'rgba(74,170,255,0.25)' : 'rgba(255,85,85,0.25)';
+  const strokeColor = label === 'p1' ? '#4af' : '#f55';
+  c.fillStyle = color;
+  c.fill();
+  c.strokeStyle = strokeColor;
+  c.lineWidth = 2;
+  c.stroke();
+
+  // 数据点
+  for (let i = 0; i < n; i++) {
+    const val = (attrs[keys[i]] || 50) / 100;
+    const a = startAngle + angleStep * i;
+    const x = cx + r * val * Math.cos(a);
+    const y = cy + r * val * Math.sin(a);
+    c.beginPath();
+    c.arc(x, y, 3, 0, Math.PI * 2);
+    c.fillStyle = strokeColor;
+    c.fill();
+  }
+
+  // HP 显示在底部
+  c.fillStyle = '#d4a0e0';
+  c.font = 'bold 10px sans-serif';
+  c.textAlign = 'center';
+  c.fillText('HP: ' + attrs.hp, cx, h - 4);
+}
+
+// ===== 确认战斗 =====
+async function confirmFight() {
+  document.getElementById('simModal').classList.remove('show');
+
+  showLoading('正在分析角色属性...', 'AI演算中');
+
+  // 同步P2技能数量
+  await syncP2Skills();
+
+  // 分析属性
+  const [a1, a2] = await Promise.all([
+    analyzeAttributes(P1),
+    analyzeAttributes({ name: P2.name, desc: P2.desc, charType: P2.charType }),
+  ]);
+  attributes.p1 = a1;
+  attributes.p2 = a2;
+
+  // 熟人判定
+  await checkRelationship();
+
+  // 初始化battleState
+  battleState = {
+    p1: {
+      hp: a1.hp, maxHp: a1.hp,
+      skills: [...P1.skills], cooldowns: {}, lastMove: null, combo: 0,
+    },
+    p2: {
+      hp: a2.hp, maxHp: a2.hp,
+      skills: [...P2.skills], cooldowns: {}, lastMove: null, combo: 0,
+    },
+    turn: 0, phase: 'idle', currentMove: null, log: [],
+    winner: null, animState: null, commentary: '', animFrame: 0,
+  };
+
+  dmgModifiers = getRelationshipMult(relationshipData.type);
+  turnOrder = calcTurnOrder(a1, a2);
+
+  // 隐藏加载
+  hideLoading();
+
+  // 显示战斗区域
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('battleArea').style.display = 'block';
+
+  // VS栏
+  document.getElementById('vsP1').textContent = P1.name;
+  document.getElementById('vsP2').textContent = P2.name;
+
+  // 关系标签
+  const relEl = document.getElementById('relBadge');
+  const relLabels = {
+    stranger: ['陌生人', 'stranger'],
+    acquaintance: ['点头之交', 'acquaintance'],
+    friend: ['朋友', 'friend'],
+    rival: ['宿敌', 'rival'],
+    enemy: ['死敌', 'enemy'],
+  };
+  const [relText, relClass] = relLabels[relationshipData.type] || ['陌生人', 'stranger'];
+  relEl.innerHTML = `<span class="rel-badge ${relClass}">🤝 ${relText}${relationshipData.reason ? ' · ' + relationshipData.reason : ''}</span>`;
+
+  // 平衡警告
+  const bal = checkBalance();
+  const balEl = document.getElementById('balanceWarn');
+  const pow = calcPower();
+  if (bal.status === 'cheat') {
+    balEl.style.display = 'block';
+    balEl.className = 'balance-warn cheat';
+    balEl.textContent = `⚠️ 战力差距过大！${P1.name}(${pow.p1}) vs ${P2.name}(${pow.p2})`;
+  } else if (bal.status === 'unbalanced') {
+    balEl.style.display = 'block';
+    balEl.className = 'balance-warn unbalanced';
+    balEl.textContent = `⚡ 战力有些差距：${P1.name}(${pow.p1}) vs ${P2.name}(${pow.p2})`;
+  } else {
+    balEl.style.display = 'none';
+  }
+
+  // 世界效果
+  applyWorldEffects();
+
+  // 显示战斗面板
+  document.getElementById('fightPanel').style.display = 'block';
+  document.getElementById('ui').style.display = 'flex';
+
+  // 更新HP条
+  updateHPBars();
+
+  // 渲染雷达图（战斗后更新个人页面的雷达图）
+  const rc=document.getElementById('radarCanvas');
+  if(rc&&attributes.p1){
+    rc.width=160;rc.height=160;
+    drawRadarChart(rc,attributes.p1,'p1');
+  }
+
+  // 渲染出手顺序
+  renderTurnOrderPreview();
+
+  // 显示预计出手顺序弹窗（首次）
+  showTurnOrderDialog();
+
+  // 开始回合
+  battleState.phase = 'p1select';
+  // 启动游戏循环
+  if(!rafId) gameLoop();
+  updateState();
+}
+
+// ===== 渲染出手顺序 =====
+function renderTurnOrderPreview() {
+  // 在buffBar下方显示出手顺序
+  const orderEl = document.getElementById('buffBar');
+  if (!orderEl) return;
+  const p1First = turnOrder[0] === 'p1';
+  const spd1 = attributes.p1.spd;
+  const spd2 = attributes.p2.spd;
+  orderEl.innerHTML += `
+    <div style="width:100%;text-align:center;margin-top:4px">
+      <span style="font-size:.68rem;color:#888">出手顺序: </span>
+      <span style="color:#4af;font-weight:600">${p1First ? P1.name : P2.name}</span>
+      <span style="color:#888"> → </span>
+      <span style="color:#f55;font-weight:600">${p1First ? P2.name : P1.name}</span>
+      <span style="color:#666;margin-left:8px">(${p1First ? '↑' : ''}${spd1} vs ${spd2}${!p1First ? '↑' : ''})</span>
+    </div>`;
+}
+
+function showTurnOrderDialog() {
+  const p1First = turnOrder[0] === 'p1';
+  const msg = `⚔️ 战斗即将开始！\n\n` +
+    `📊 属性分析完成\n` +
+    `${P1.name} | 力量${attributes.p1.str} 技巧${attributes.p1.tech} 爆发${attributes.p1.burst} 防御${attributes.p1.def} 速度${attributes.p1.spd} 幸运${attributes.p1.lck} HP${attributes.p1.hp}\n` +
+    `${P2.name} | 力量${attributes.p2.str} 技巧${attributes.p2.tech} 爆发${attributes.p2.burst} 防御${attributes.p2.def} 速度${attributes.p2.spd} 幸运${attributes.p2.lck} HP${attributes.p2.hp}\n\n` +
+    `🤝 关系：${relationshipData.type === 'friend' ? '朋友' : relationshipData.type === 'rival' ? '宿敌' : relationshipData.type === 'enemy' ? '死敌' : '陌生人'}\n` +
+    `💬 ${relationshipData.dialogue || '...'}\n\n` +
+    `⚡ 先手：${p1First ? P1.name : P2.name}（速度优势）`;
+  alert(msg);
+}
+
+// ===== 回合处理 =====
+function processTurn(p1Move, p2Move) {
+  battleState.turn++;
+  battleState.phase = 'animating';
+
+  // 计算速度调整后的帧数
+  const p1Frames = getActualFrames(p1Move, attributes.p1.spd);
+  const p2Frames = getActualFrames(p2Move, attributes.p2.spd);
+
+  // 计算总帧数
+  const p1TotalFrames = p1Frames.reduce((s, p) => s + p.actualFrames, 0);
+  const p2TotalFrames = p2Frames.reduce((s, p) => s + p.actualFrames, 0);
+
+  // 设置动画状态
+  battleState.animState = {
+    p1: {
+      move: p1Move,
+      frames: p1Frames,
+      totalFrames: p1TotalFrames,
+      currentFrame: 0,
+      phaseIndex: 0,
+      frameInPhase: 0,
+      damage: 0,
+      hit: false,
+      critical: false,
+    },
+    p2: {
+      move: p2Move,
+      frames: p2Frames,
+      totalFrames: p2TotalFrames,
+      currentFrame: 0,
+      phaseIndex: 0,
+      frameInPhase: 0,
+      damage: 0,
+      hit: false,
+      critical: false,
+    },
+    globalFrame: 0,
+    totalDuration: Math.max(p1TotalFrames, p2TotalFrames),
+    p1Done: false,
+    p2Done: false,
+  };
+
+  // 计算伤害（延迟到命中帧）
+  const p1Result = calcDamage(attributes.p1, attributes.p2, p1Move);
+  const p2Result = calcDamage(attributes.p2, attributes.p1, p2Move);
+  battleState.animState.p1.damage = Math.round(p1Result.damage * dmgModifiers.p1);
+  battleState.animState.p1.critical = p1Result.critical;
+  battleState.animState.p2.damage = Math.round(p2Result.damage * dmgModifiers.p2);
+  battleState.animState.p2.critical = p2Result.critical;
+
+  // 更新CD
+  updateCooldown('p1', p1Move);
+  updateCooldown('p2', p2Move);
+
+  updateCommentary(genCommentary('normal', {
+    name: P1.name, move: p1Move.name,
+  }));
+  addLog(`${P1.name} 使用了「${p1Move.name}」`);
+  addLog(`${P2.name} 使用了「${p2Move.name}」`);
+}
+
+function updateCooldown(side, move) {
+  const bs = battleState[side];
+  // 减少所有CD
+  for (const skill of bs.skills) {
+    if (bs.cooldowns[skill.name] > 0) bs.cooldowns[skill.name]--;
+  }
+  if (move.cd > 0) {
+    bs.cooldowns[move.name] = move.cd;
+  }
+}
+
+// ===== 攻击执行 =====
+function executeAttack(attacker, defender, relMult) {
+  // 在animState的命中帧调用，不在此处直接扣血
+  // 此函数保留作为备用逻辑
+}
+
+// ===== 播放攻击动画 =====
+function playAttackAnimation(attacker, defender, skill, damage) {
+  // 由updateState的animating阶段处理
+}
+
+// ===== 更新状态 =====
+function updateState() {
+  if (battleState.phase === 'animating' && battleState.animState) {
+    const as = battleState.animState;
+    as.globalFrame++;
+
+    // 更新P1动画
+    if (!as.p1Done) {
+      as.p1.frameInPhase++;
+      const phase = as.p1.frames[as.p1.phaseIndex];
+      if (as.p1.frameInPhase >= phase.actualFrames) {
+        // 命中帧
+        if (phase.hit && !as.p1.hit) {
+          as.p1.hit = true;
+          const def = battleState.p2;
+          def.hp = Math.max(0, def.hp - as.p1.damage);
+          // 特效
+          const hitX = W * 0.65, hitY = GROUND - 80 * scaleY;
+          spawnSparks(hitX, hitY, as.p1.move.type === 'ultimate' ? 25 : 15);
+          doShake(as.p1.move.type === 'ultimate' ? 12 : 6);
+          if (as.p1.critical) {
+            spawnParticles(hitX, hitY, '#ff4', 20, 5);
+            updateCommentary(genCommentary('critical', { name: P1.name }));
+          }
+          addLog(`${P1.name} 的「${as.p1.move.name}」命中！造成 ${as.p1.damage} 伤害${as.p1.critical ? '（暴击！）' : ''}`);
+        }
+        as.p1.phaseIndex++;
+        as.p1.frameInPhase = 0;
+        if (as.p1.phaseIndex >= as.p1.frames.length) {
+          as.p1Done = true;
+        }
+      }
+    }
+
+    // 更新P2动画
+    if (!as.p2Done) {
+      as.p2.frameInPhase++;
+      const phase = as.p2.frames[as.p2.phaseIndex];
+      if (as.p2.frameInPhase >= phase.actualFrames) {
+        if (phase.hit && !as.p2.hit) {
+          as.p2.hit = true;
+          const def = battleState.p1;
+          def.hp = Math.max(0, def.hp - as.p2.damage);
+          const hitX = W * 0.35, hitY = GROUND - 80 * scaleY;
+          spawnSparks(hitX, hitY, as.p2.move.type === 'ultimate' ? 25 : 15);
+          doShake(as.p2.move.type === 'ultimate' ? 12 : 6);
+          if (as.p2.critical) {
+            spawnParticles(hitX, hitY, '#ff4', 20, 5);
+            updateCommentary(genCommentary('critical', { name: P2.name }));
+          }
+          addLog(`${P2.name} 的「${as.p2.move.name}」命中！造成 ${as.p2.damage} 伤害${as.p2.critical ? '（暴击！）' : ''}`);
+        }
+        as.p2.phaseIndex++;
+        as.p2.frameInPhase = 0;
+        if (as.p2.phaseIndex >= as.p2.frames.length) {
+          as.p2Done = true;
+        }
+      }
+    }
+
+    updateHPBars();
+
+    // 双方动画完成
+    if (as.p1Done && as.p2Done) {
+      updateParticles();
+      // 检查战斗结束
+      if (battleState.p1.hp <= 0 || battleState.p2.hp <= 0) {
+        battleState.winner = battleState.p1.hp > 0 ? P1.name : P2.name;
+        battleState.phase = 'result';
+        renderBattleResult();
+        return;
+      }
+      // 下一回合
+      battleState.phase = 'p1select';
+      battleState.animState = null;
+      updateCommentary(`—— 第 ${battleState.turn + 1} 回合 ——`);
+    }
+    return;
+  }
+
+  if (battleState.phase === 'p1select') {
+    renderMoveButtons();
+  }
+}
+
+// ===== 渲染技能按钮 =====
+function renderMoveButtons() {
+  const container = document.getElementById('p1Moves');
+  if (!container) return;
+  const skills = battleState.p1.skills;
+  container.innerHTML = skills.map((s, i) => {
+    const cd = battleState.p1.cooldowns[s.name] || 0;
+    const onCd = cd > 0;
+    return `<button class="move-btn ${onCd ? 'on-cd' : ''}" onclick="selectMove(${i})" ${onCd ? 'disabled' : ''}>
+      ${s.name}${onCd ? ` <span class="cd-badge">CD:${cd}</span>` : ''}
+    </button>`;
+  }).join('');
+
+  document.getElementById('turnNum').textContent = `第 ${battleState.turn + 1} 回合 · 选择你的技能`;
+}
+
+// ===== 玩家选技能 =====
+function selectMove(index) {
+  if (battleState.phase !== 'p1select') return;
+  const skill = battleState.p1.skills[index];
+  if (battleState.p1.cooldowns[skill.name] > 0) return;
+
+  // AI选择P2技能
+  const p2Move = aiSelectMove('p2', battleState.p2);
+
+  processTurn(skill, p2Move);
+}
+
+// ===== 更新HP条 =====
+function updateHPBars() {
+  const p1Pct = Math.max(0, (battleState.p1.hp / battleState.p1.maxHp) * 100);
+  const p2Pct = Math.max(0, (battleState.p2.hp / battleState.p2.maxHp) * 100);
+
+  document.getElementById('hpFill1').style.width = p1Pct + '%';
+  document.getElementById('hpFill2').style.width = p2Pct + '%';
+  document.getElementById('hpVal1').textContent = battleState.p1.hp;
+  document.getElementById('hpVal2').textContent = battleState.p2.hp;
+  document.getElementById('hpName1').textContent = P1.name.substring(0, 6);
+  document.getElementById('hpName2').textContent = P2.name.substring(0, 6);
+
+  // 低血解说
+  if (p1Pct < 20 && battleState.phase === 'animating') {
+    updateCommentary(genCommentary('lowHp', { name: P1.name }));
+  } else if (p2Pct < 20 && battleState.phase === 'animating') {
+    updateCommentary(genCommentary('lowHp', { name: P2.name }));
+  }
+}
+
+// ===== 更新解说 =====
+function updateCommentary(text) {
+  battleState.commentary = text;
+  const el = document.getElementById('commentary');
+  if (el) el.textContent = text;
+}
+
+// ===== 战斗日志 =====
+function addLog(text) {
+  battleState.log.push(text);
+  const el = document.getElementById('battleLog');
+  if (el) {
+    el.innerHTML = battleState.log.map(l => `<div>${l}</div>`).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+}
+
+// ===== 战斗结束 =====
+function renderBattleResult() {
+  const winner = battleState.winner;
+  const loser = winner === P1.name ? P2.name : P1.name;
+  const winPct = winner === P1.name
+    ? (battleState.p1.hp / battleState.p1.maxHp)
+    : (battleState.p2.hp / battleState.p2.maxHp);
+
+  let resultType = 'win';
+  if (winPct > 0.9) resultType = 'stomp';
+  else if (winPct < 0.2) resultType = 'comeback';
+  else if (winPct < 0.4) resultType = 'close';
+
+  if (relationshipData.type === 'friend' && winPct > 0.8) {
+    resultType = 'holdBack';
+  }
+
+  const resultText = genCommentary(resultType, {
+    winner, loser, holder: winner,
+    target: loser,
+  });
+
+  const overlay = document.getElementById('resultOverlay');
+  document.getElementById('resultTitle').textContent =
+    winner === P1.name ? `🏆 ${P1.name} 获胜！` : `💀 ${P2.name} 获胜！`;
+  document.getElementById('resultSub').textContent = resultText;
+  document.getElementById('resultRel').textContent =
+    `🤝 关系：${relationshipData.type} · ${battleState.turn} 回合结束`;
+  overlay.classList.add('show');
+
+  updateCommentary(genCommentary('result', {
+    winner, loser,
+    type: resultType,
+  }));
+
+  addLog(`🏆 ${winner} 获得了胜利！`);
+
+  // 统计
+  addStat('fightCount', 1);
+  addStat('firstFight', 1);
+  if (winPct >= 1.0) addStat('perfectWins', 1);
+  addStat('uniqueRivals', 1);
+}
+
+// ===== 成就弹窗 =====
+function getRandomAchievements(count = 3) {
+  return ACHIEVEMENTS.slice(0, count).map(a => ({
+    ...a,
+    unlocked: isUnlocked(a.id),
+  }));
+}
+
+function showAchievementPopup(ach) {
+  if (!ach) return;
+  const existing = document.getElementById('achPopup');
+  if (existing) existing.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'achPopup';
+  popup.style.cssText = 'position:fixed;top:20px;right:20px;z-index:300;padding:16px 20px;border-radius:10px;background:rgba(18,18,26,.95);border:1px solid rgba(212,160,224,.3);color:#d4a0e0;animation:popIn .5s ease;max-width:280px;';
+  popup.innerHTML = `
+    <div style="font-size:1.5rem;margin-bottom:6px">${ach.icon}</div>
+    <div style="font-weight:700;color:#fff;font-size:.9rem">${ach.name}</div>
+    <div style="font-size:.75rem;color:#999;margin-top:4px">${ach.desc}</div>
+  `;
+  document.body.appendChild(popup);
+  setTimeout(() => {
+    popup.style.opacity = '0';
+    popup.style.transition = 'opacity .5s';
+    setTimeout(() => popup.remove(), 500);
+  }, 3000);
+}
+
+// ===== 开始战斗（只显示弹窗）=====
+function startFight() {
+  document.getElementById('simModal').classList.add('show');
+}
+
+// ===== 重新开始 =====
+function restart() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.getElementById('balanceWarn').style.display = 'none';
+  document.getElementById('battleLog').innerHTML = '';
+  document.getElementById('p1Moves').innerHTML = '';
+  document.getElementById('commentary').textContent = '';
+
+  battleState = {
+    p1: { hp: attributes.p1.hp, maxHp: attributes.p1.hp, skills: [...P1.skills], cooldowns: {}, lastMove: null, combo: 0 },
+    p2: { hp: attributes.p2.hp, maxHp: attributes.p2.hp, skills: [...P2.skills], cooldowns: {}, lastMove: null, combo: 0 },
+    turn: 0, phase: 'p1select', currentMove: null, log: [],
+    winner: null, animState: null, commentary: '', animFrame: 0,
+  };
+
+  turnOrder = calcTurnOrder(attributes.p1, attributes.p2);
+  dmgModifiers = getRelationshipMult(relationshipData.type);
+
+  updateHPBars();
+  renderMoveButtons();
+}
+
+// ===== 重置全部 =====
+function resetAll() {
+  document.getElementById('battleArea').style.display = 'none';
+  document.getElementById('fightPanel').style.display = 'none';
+  document.getElementById('ui').style.display = 'none';
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.getElementById('buffBar').innerHTML = '';
+  document.getElementById('relBadge').innerHTML = '';
+  document.getElementById('balanceWarn').style.display = 'none';
+  document.getElementById('commentary').textContent = '';
+  document.getElementById('battleLog').innerHTML = '';
+  document.getElementById('opponentArea').classList.remove('active');
+  battleState.phase = 'idle';
+  relationshipData = { type: 'stranger', reason: '', dialogue: '' };
+  attributes = { p1: null, p2: null };
+  turnOrder = [];
+  setStep(1);
+}
+
+// ===== 绘制（兼容新战斗状态）=====
 function drawBG() {
   const tint = currentWorld && WORLD_EFFECTS[currentWorld.name] ? WORLD_EFFECTS[currentWorld.name]?.bgTint : '#111118';
   ctx.fillStyle = tint || '#111118';
-  ctx.fillRect(0,GROUND,W,H-GROUND);
-  // 天空色调
-  ctx.fillStyle = tint ? tint + 'cc' : '#0d0d14';
-  ctx.fillRect(0,0,W,GROUND);
-  ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,GROUND);ctx.lineTo(W,GROUND);ctx.stroke();
-
-  // 网格
-  ctx.strokeStyle='#222';const gs=sx(40);
-  for(let i=0;i<W;i+=gs){ctx.beginPath();ctx.moveTo(i,GROUND);ctx.lineTo(i,H);ctx.stroke();}
-
-  // 建筑
-  ctx.fillStyle='#0e0e14';
-  const blds=[[30,120],[80,80],[130,150],[200,90],[260,130],[340,100],[400,160],[480,70],[540,140],[610,110],[670,130],[740,90],[800,150],[860,80]];
-  for(const[bx,bh] of blds){const sbx=sx(bx),sbh=sy(bh);ctx.fillRect(sbx,GROUND-sbh,sx(35),sbh);
-    ctx.fillStyle='#1a1a22';for(let wy=GROUND-sbh+sy(10);wy<GROUND-sy(10);wy+=sy(18)){for(let wx=sbx+sx(5);wx<sbx+sx(30);wx+=sx(12)){ctx.fillRect(wx,wy,sx(5),sy(8));}}
-    ctx.fillStyle='#0e0e14';}
-}
-
-// ===== 战斗状态 =====
-let state={};
-let choreoData=null;
-let currentTaunt='';
-
-function buildFallbackChoreo() {
-  return [
-    {f:40,p1:{pose:'fight',x:250},p2:{pose:'fight',x:650}},
-    {f:20,p1:{pose:'fight',x:320},p2:{pose:'fight',x:580}},
-    {f:6,p1:{pose:'punch',x:370},p2:{pose:'block',x:530}},
-    {f:4,p1:{pose:'punch',x:380},p2:{pose:'hit',x:520},hit:true},
-    {f:8,p1:{pose:'fight',x:370},p2:{pose:'knockback',x:490}},
-    {f:8,p1:{pose:'block',x:380},p2:{pose:'kick',x:500}},
-    {f:4,p1:{pose:'hit',x:360},p2:{pose:'kick',x:510},hit:true},
-    {f:8,p1:{pose:'knockback',x:310},p2:{pose:'fight',x:510}},
-    {f:10,p1:{pose:'jump',x:350,vy:-8},p2:{pose:'fight',x:480}},
-    {f:6,p1:{pose:'highKick',x:460},p2:{pose:'block',x:480}},
-    {f:4,p1:{pose:'highKick',x:470},p2:{pose:'hit',x:490},hit:true},
-    {f:8,p1:{pose:'fight',x:420},p2:{pose:'knockback',x:520}},
-    {f:5,p1:{pose:'punch',x:430},p2:{pose:'hit',x:510},hit:true},
-    {f:5,p1:{pose:'punch',x:440},p2:{pose:'hit',x:500},hit:true},
-    {f:5,p1:{pose:'heavyPunch',x:450},p2:{pose:'hit',x:480},hit:true},
-    {f:10,p1:{pose:'fight',x:430},p2:{pose:'knockback',x:430}},
-    {f:12,p1:{pose:'fight',x:420},p2:{pose:'jump',x:460,vy:-10}},
-    {f:6,p1:{pose:'hit',x:410},p2:{pose:'axeKick',x:470},hit:true},
-    {f:10,p1:{pose:'knockback',x:370},p2:{pose:'fight',x:470}},
-    {f:5,p1:{pose:'hit',x:370},p2:{pose:'kick',x:450},hit:true},
-    {f:5,p1:{pose:'hit',x:360},p2:{pose:'highKick',x:440},hit:true},
-    {f:5,p1:{pose:'hit',x:350},p2:{pose:'kick',x:430},hit:true},
-    {f:10,p1:{pose:'knockback',x:300},p2:{pose:'fight',x:430}},
-    {f:15,p1:{pose:'fight',x:350},p2:{pose:'fight',x:480}},
-    {f:8,p1:{pose:'heavyPunch',x:400},p2:{pose:'heavyPunch',x:430}},
-    {f:4,p1:{pose:'heavyPunch',x:415},p2:{pose:'hit',x:440},hit:true,big:true},
-    {f:4,p1:{pose:'hit',x:410},p2:{pose:'heavyPunch',x:435},hit:true,big:true},
-    {f:10,p1:{pose:'jump',x:400,vy:-12},p2:{pose:'hit',x:440}},
-    {f:6,p1:{pose:'axeKick',x:445},p2:{pose:'hit',x:445},hit:true,big:true},
-    {f:10,p1:{pose:'fight',x:420},p2:{pose:'knockback',x:470}},
-    {f:20,p1:{pose:'fight',x:420},p2:{pose:'kneel',x:500}},
-    {f:30,p1:{pose:'victory',x:420},p2:{pose:'kneel',x:520}}
-  ];
-}
-
-function initState() {
-  state={p1:{x:sx(250),y:GROUND,pose:POSES.stand,vy:0,hp:1,color:'#4af',facing:1},
-    p2:{x:sx(650),y:GROUND,pose:POSES.stand,vy:0,hp:1,color:'#f55',facing:-1},
-    phase:0,frameInPhase:0,p1StartPose:null,p2StartPose:null,p1TargetPose:null,p2TargetPose:null,
-    p1StartX:sx(250),p2StartX:sx(650),p1TargetX:sx(250),p2TargetX:sx(650),
-    phaseFrames:40,hitFlash:0,combo:0,text:'',textTimer:0,textX:W/2,textY:H/2-40*scaleY,
-    finished:false,hasHit:false,hitData:null,opening:true};
-}
-
-function loadPhase(idx) {
-  const choreo = choreoData?.choreo || buildFallbackChoreo();
-  if(idx>=choreo.length){state.finished=true;return;}
-  const ph=choreo[idx];
-  state.p1StartPose={...state.p1.pose};state.p2StartPose={...state.p2.pose};
-  state.p1TargetPose=POSES[ph.p1.pose]||POSES.fight;
-  state.p2TargetPose=POSES[ph.p2.pose]||POSES.fight;
-  state.p1StartX=state.p1.x;state.p2StartX=state.p2.x;
-  state.p1TargetX=sx(ph.p1.x);state.p2TargetX=sx(ph.p2.x);
-  state.p1.vy=(ph.p1.vy||0)*scaleY;state.p2.vy=(ph.p2.vy||0)*scaleY;
-  state.phaseFrames=ph.f;state.hasHit=false;
-  state.hitData=ph.hit?{big:ph.big||false}:null;
-  if(ph.tauntIndex!==undefined&&choreoData?.taunts) currentTaunt=choreoData.taunts[ph.tauntIndex]||'';
-}
-
-function updateState() {
-  if(state.finished)return;
-  const choreo=choreoData?.choreo||buildFallbackChoreo();
-  const ph=choreo[state.phase];if(!ph){state.finished=true;return;}
-  if(state.opening&&time>80)state.opening=false;
-  const t=Math.min(state.frameInPhase/state.phaseFrames,1);
-  const ease=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-  state.p1.pose=lerpPose(state.p1StartPose,state.p1TargetPose,ease);
-  state.p2.pose=lerpPose(state.p2StartPose,state.p2TargetPose,ease);
-  state.p1.x=lerp(state.p1StartX,state.p1TargetX,ease);
-  state.p2.x=lerp(state.p2StartX,state.p2TargetX,ease);
-  if(state.p1.vy!==0){state.p1.y+=state.p1.vy;state.p1.vy+=GRAVITY;if(state.p1.y>=GROUND){state.p1.y=GROUND;state.p1.vy=0;}}
-  if(state.p2.vy!==0){state.p2.y+=state.p2.vy;state.p2.vy+=GRAVITY;if(state.p2.y>=GROUND){state.p2.y=GROUND;state.p2.vy=0;}}
-
-  // 打击
-  if(state.hitData&&!state.hasHit&&t>.4){
-    state.hasHit=true;
-    const hx=(state.p1.x+state.p2.x)/2, hy=Math.min(state.p1.y,state.p2.y)-50*scaleY;
-    if(state.hitData.big){spawnSparks(hx,hy,25);doShake(12);state.p2.hp=Math.max(0,state.p2.hp-.15);state.p1.hp=Math.max(0,state.p1.hp-.1);}
-    else{spawnParticles(hx,hy,'#ff8',8);doShake(5);state.p2.hp=Math.max(0,state.p2.hp-.08);}
-    state.hitFlash=6;state.combo++;
-    if(state.combo>=2){state.text=state.combo+' HIT!';state.textTimer=30;state.textX=hx;state.textY=hy-20*scaleY;}
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, GROUND);
+  ctx.lineTo(W, GROUND);
+  ctx.stroke();
+  ctx.strokeStyle = '#222';
+  const gs = sx(40);
+  for (let i = 0; i < W; i += gs) {
+    ctx.beginPath();
+    ctx.moveTo(i, GROUND);
+    ctx.lineTo(i, H);
+    ctx.stroke();
   }
-  if(state.textTimer>0)state.textTimer--;
-  state.frameInPhase++;
-  if(state.frameInPhase>=state.phaseFrames){state.phase++;state.frameInPhase=0;if(state.combo>0&&!state.hitData)state.combo=0;loadPhase(state.phase);}
-  if(state.hitFlash>0)state.hitFlash--;
-
-  // 场地效果
-  applyFieldEffects();
+  ctx.fillStyle = '#0e0e14';
+  const blds = [[30, 120], [80, 80], [130, 150], [200, 90], [260, 130], [340, 100], [400, 160], [480, 70], [540, 140], [610, 110], [670, 130], [740, 90], [800, 150], [860, 80]];
+  for (const [bx, bh] of blds) {
+    const sbx = sx(bx), sbh = sy(bh);
+    ctx.fillRect(sbx, GROUND - sbh, sx(35), sbh);
+    ctx.fillStyle = '#1a1a22';
+    for (let wy = GROUND - sbh + sy(10); wy < GROUND - sy(10); wy += sy(18))
+      for (let wx = sbx + sx(5); wx < sbx + sx(30); wx += sx(12))
+        ctx.fillRect(wx, wy, sx(5), sy(8));
+    ctx.fillStyle = '#0e0e14';
+  }
 }
 
-function applyFieldEffects() {
-  if (!currentWorld) return;
-  const ef = WORLD_EFFECTS[currentWorld.name];
-  if (!ef) return;
+function draw() {
+  drawBG();
+  updateParticles();
+  updateShake();
 
-  // 骰子回廊随机效果
-  if (ef.random && state.frameInPhase === 0) {
-    const effects = [
-      {stat:'hp',val:-3},{stat:'hp',val:3},{stat:'sp',val:-5},{stat:'sp',val:5},
-      {stat:'cb',val:5},{stat:'lk',val:10},{}
-    ];
-    const e = effects[Math.floor(Math.random()*effects.length)];
-    if (e.stat) {
-      if (e.stat==='hp') state.p1.hp=Math.max(0,state.p1.hp+e.val/100);
+  const as = battleState.animState;
+
+  if (battleState.phase === 'result' && battleState.winner) {
+    // 胜利姿势
+    const p1X = W * 0.3, p2X = W * 0.7;
+    const winnerPose = battleState.winner === P1.name ? 'victory' : 'kneel';
+    const loserPose = battleState.winner === P1.name ? 'kneel' : 'victory';
+    drawStickman(p1X, GROUND, POSES[winnerPose] || POSES.victory, '#4af',
+      battleState.p1.hp / battleState.p1.maxHp, 1, headImg1);
+    drawStickman(p2X, GROUND, POSES[loserPose] || POSES.kneel, '#f55',
+      battleState.p2.hp / battleState.p2.maxHp, -1, headImg2);
+  } else if (as && battleState.phase === 'animating') {
+    // 动画播放中
+    const p1X = W * 0.3, p2X = W * 0.7;
+    let p1PoseName = 'fight';
+    let p2PoseName = 'fight';
+
+    // P1 当前 pose
+    if (!as.p1Done && as.p1.phaseIndex < as.p1.frames.length) {
+      const phase = as.p1.frames[as.p1.phaseIndex];
+      p1PoseName = phase.pose || 'fight';
+    } else if (as.p1.hit) {
+      p1PoseName = battleState.p1.hp > 0 ? 'fight' : 'kneel';
+    }
+
+    // P2 当前 pose
+    if (!as.p2Done && as.p2.phaseIndex < as.p2.frames.length) {
+      const phase = as.p2.frames[as.p2.phaseIndex];
+      p2PoseName = phase.pose || 'fight';
+    } else if (as.p2.hit) {
+      p2PoseName = battleState.p2.hp > 0 ? 'fight' : 'kneel';
+    }
+
+    const p1Pose = POSES[p1PoseName] || POSES.fight;
+    const p2Pose = POSES[p2PoseName] || POSES.fight;
+
+    drawStickman(p1X, GROUND, p1Pose, '#4af',
+      battleState.p1.hp / battleState.p1.maxHp, 1, headImg1);
+    drawStickman(p2X, GROUND, p2Pose, '#f55',
+      battleState.p2.hp / battleState.p2.maxHp, -1, headImg2);
+
+    // 命中特效
+    if (as.p1.hit || as.p2.hit) {
+      drawParticles();
+    }
+  } else if (battleState.phase === 'p1select' || battleState.phase === 'idle') {
+    // 待机
+    const p1X = W * 0.3, p2X = W * 0.7;
+    drawStickman(p1X, GROUND, POSES.fight, '#4af',
+      battleState.p1.hp / battleState.p1.maxHp, 1, headImg1);
+    drawStickman(p2X, GROUND, POSES.fight, '#f55',
+      battleState.p2.hp / battleState.p2.maxHp, -1, headImg2);
+  } else {
+    // 兜底
+    const p1X = W * 0.3, p2X = W * 0.7;
+    drawStickman(p1X, GROUND, POSES.stand, '#4af', undefined, 1, headImg1);
+    drawStickman(p2X, GROUND, POSES.stand, '#f55', undefined, -1, headImg2);
+  }
+
+  // 伤害数字浮动
+  if (as && battleState.phase === 'animating') {
+    if (as.p1.hit && as.p1.damage > 0) {
+      drawFloatingText(W * 0.65, GROUND - 120 * scaleY, '-' + as.p1.damage,
+        as.p1.critical ? '#ff4' : '#f55', as.p1.critical);
+    }
+    if (as.p2.hit && as.p2.damage > 0) {
+      drawFloatingText(W * 0.35, GROUND - 120 * scaleY, '-' + as.p2.damage,
+        as.p2.critical ? '#ff4' : '#4af', as.p2.critical);
     }
   }
 }
 
-// ===== 文字 =====
-function drawText() {
-  if(state.textTimer>0){
-    const a=Math.min(state.textTimer/10,1),s=1+(1-a)*.5;
-    ctx.save();ctx.globalAlpha=a;ctx.translate(state.textX,state.textY);ctx.scale(s,s);
-    ctx.font=`bold ${36*scaleX}px sans-serif`;ctx.textAlign='center';ctx.fillStyle='#fff';
-    ctx.shadowColor='#f84';ctx.shadowBlur=15;ctx.fillText(state.text,0,0);
-    ctx.shadowBlur=0;ctx.strokeStyle='#f84';ctx.lineWidth=1;ctx.strokeText(state.text,0,0);
-    ctx.restore();ctx.globalAlpha=1;
+let floatingTexts = [];
+function drawFloatingText(x, y, text, color, big) {
+  floatingTexts.push({ x, y, text, color, big, life: 1, vy: -1.5 * scaleY });
+  for (let i = floatingTexts.length - 1; i >= 0; i--) {
+    const ft = floatingTexts[i];
+    ft.y += ft.vy;
+    ft.life -= 0.02;
+    if (ft.life <= 0) { floatingTexts.splice(i, 1); continue; }
+    ctx.globalAlpha = ft.life;
+    ctx.fillStyle = ft.color;
+    ctx.font = `${ft.big ? 'bold ' : ''}${ft.big ? 20 : 16}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(ft.text, ft.x, ft.y);
   }
-  if(state.opening){
-    const a=time<40?time/40:Math.max(1-(time-40)/40,0);
-    ctx.save();ctx.globalAlpha=a;ctx.font=`bold ${24*scaleX}px sans-serif`;ctx.textAlign='center';
-    ctx.fillStyle='#fff';ctx.shadowColor='#4af';ctx.shadowBlur=20;
-    ctx.fillText(`⚔ ${P1.name} VS ${P2.name} ⚔`,sx(450),H/2);
-    ctx.restore();
-  }
-  if(state.finished){
-    const tf=getTotalFrames(),a=Math.min((time-tf+60)/30,1);
-    const winner=state.p2.hp<=0?P1.name:(state.p1.hp<=0?P2.name:'平局');
-    ctx.save();ctx.globalAlpha=a;ctx.font=`bold ${32*scaleX}px sans-serif`;ctx.textAlign='center';
-    ctx.fillStyle='#4af';ctx.shadowColor='#4af';ctx.shadowBlur=20;
-    ctx.fillText('K.O.!',sx(450),H/2-20*scaleY);
-    ctx.font=`${18*scaleX}px sans-serif`;ctx.fillStyle='#aaa';
-    ctx.fillText('🏆 Winner: '+winner,sx(450),H/2+20*scaleY);
-    ctx.restore();
-  }
+  ctx.globalAlpha = 1;
 }
 
-function getTotalFrames(){const c=choreoData?.choreo||buildFallbackChoreo();let t=80;for(const p of c)t+=p.f;return t;}
-
-// ===== 主循环 =====
-function draw() {
-  time+=slow?.5:1;
-  ctx.save();ctx.translate(shakeX,shakeY);
-  ctx.fillStyle='#0d0d14';ctx.fillRect(-10,-10,W+20,H+20);
-  drawBG();
-  if(!state.finished||time<getTotalFrames()+60)updateState();
-  updateShake();updateParticles();
-  if(state.hitFlash>0){ctx.fillStyle=`rgba(255,255,255,${state.hitFlash*.03})`;ctx.fillRect(0,0,W,H);}
-  drawStickman(state.p1.x,state.p1.y,state.p1.pose,state.p1.color,state.p1.hp,1,headImg1);
-  drawStickman(state.p2.x,state.p2.y,state.p2.pose,state.p2.color,state.p2.hp,-1,headImg2);
-  drawParticles();drawText();
-  ctx.restore();
-
-  // 解说
-  const el=document.getElementById('commentary');
-  if(state.opening) el.textContent='⚔ 战斗开始！';
-  else if(currentTaunt&&state.textTimer<=0) el.textContent=currentTaunt;
-  else if(state.finished) el.textContent=choreoData?.commentary||'精彩的战斗！';
-  else el.textContent='';
-
-  rafId=requestAnimationFrame(draw);
+// ===== 游戏循环 =====
+function gameLoop() {
+  updateState();
+  draw();
+  rafId = requestAnimationFrame(gameLoop);
 }
 
-// ===== 控制 =====
-function restart(){
-  if(rafId)cancelAnimationFrame(rafId);
-  particles.length=0;time=0;currentTaunt='';
-  resizeCanvas();initState();loadPhase(0);draw();
-}
-function toggleSlow(){slow=!slow;}
-function toggleAuto(){autoReplay=!autoReplay;if(autoReplay)autoCheck();}
-function autoCheck(){if(!autoReplay)return;if(state.finished)restart();setTimeout(autoCheck,500);}
-
-window.addEventListener('resize',()=>{if(rafId)cancelAnimationFrame(rafId);particles.length=0;resizeCanvas();restart();});
-
-// ===== 开始战斗 =====
-async function startFight(){
-  applyWorldEffects();
-  try { choreoData = await genChoreo(); } catch(e) { choreoData = null; }
-  restart();
+function toggleSlow() {
+  slow = !slow;
 }
 
-// 初始化默认招式UI
-function initDefaultMovesUI() {
-  ['moves1','moves2'].forEach(id => {
-    document.getElementById(id).innerHTML = defaultMoves().map(m =>
-      `<div class="move-item"><span class="move-type ${m.type}">${m.type==='normal'?'普攻':m.type==='skill'?'技能':'大招'}</span><span class="move-name">${m.name}</span><div class="move-desc">${m.desc}</div></div>`
-    ).join('');
-  });
-}
-
-initDefaultMovesUI();
-initState();loadPhase(0);draw();
+// 启动
+window.addEventListener('resize', resizeCanvas);
+</script>
+</body>
+</html>
